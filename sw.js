@@ -1,4 +1,4 @@
-const CACHE = 'cyc-v20260627';
+const CACHE = 'cyc-v20260628';
 const URLS = ['/control-confianza-/seguridad-chile.html'];
 
 // Al instalar, guardar en caché
