@@ -877,15 +877,16 @@ function scoreMensaje(s,nombre){
 async function mostrarPredictor(key,nombre){
   var el=document.getElementById('iPred');
   if(!el)return;
-  el.innerHTML='<div class="pred-card"><div class="pred-titulo">🔮 Predicción — Próximas 2 horas <span class="pred-beta">BETA</span></div><div style="color:#555;font-size:12px">Calculando...</div></div>';
+  el.innerHTML='<div class="pred-card"><div class="pred-titulo">🔮 Predicción de riesgo <span class="pred-beta">PREMIUM</span></div><div style="color:#555;font-size:12px">Calculando...</div></div>';
   var r=await calcularScore(key);
   if(!r){el.innerHTML='';return;}
   var col=scoreColor(r.score);
   var lbl=scoreLabel(r.score);
   var msg=scoreMensaje(r.score,nombre);
   var factH=r.factores.length?'<div class="pred-factores"><strong>Factores activos:</strong> '+r.factores.join(' · ')+'</div>':'';
-  el.innerHTML='<div class="pred-card">'+
-    '<div class="pred-titulo">🔮 Predicción — Próximas 2 horas <span class="pred-beta">BETA</span></div>'+
+
+  // Contenido real (borroso)
+  var contenido=
     '<div class="pred-score-wrap">'+
       '<div><div class="pred-numero" style="color:'+col+'">'+r.score+'</div><div class="pred-label" style="color:'+col+'">'+lbl+'</div></div>'+
       '<div class="pred-bar-wrap">'+
@@ -898,7 +899,19 @@ async function mostrarPredictor(key,nombre){
       '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.B+'</div><div class="pred-sub-lbl">Perfil zona</div></div>'+
       '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.C+'</div><div class="pred-sub-lbl">Contexto</div></div>'+
     '</div>'+
-    factH+
+    factH;
+
+  el.innerHTML='<div class="pred-card">'+
+    '<div class="pred-titulo">🔮 Predicción de riesgo <span class="pred-beta">PREMIUM</span></div>'+
+    '<div style="position:relative">'+
+      '<div style="filter:blur(5px);pointer-events:none;user-select:none">'+contenido+'</div>'+
+      '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">'+
+        '<div style="font-size:32px">🔒</div>'+
+        '<div style="font-size:13px;color:#f0e8d0;font-weight:700;text-align:center">Función exclusiva Premium</div>'+
+        '<div style="font-size:11px;color:#888;text-align:center;max-width:220px">Descubre el score predictivo de riesgo basado en 3 capas de análisis</div>'+
+        '<button onclick="abrirModal()" style="background:#d4a017;color:#111;border:none;padding:10px 22px;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer;margin-top:4px">Ver planes Premium</button>'+
+      '</div>'+
+    '</div>'+
   '</div>';
 }
 
