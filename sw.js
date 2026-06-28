@@ -17,6 +17,17 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
+// Abrir la app al hacer clic en una notificación
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({type:'window'}).then(cs => {
+      if(cs.length>0){cs[0].focus();}
+      else{clients.openWindow(e.notification.data&&e.notification.data.url||'/');}
+    })
+  );
+});
+
 // Red primero: si hay internet carga la versión nueva, si no usa caché
 self.addEventListener('fetch', e => {
   e.respondWith(

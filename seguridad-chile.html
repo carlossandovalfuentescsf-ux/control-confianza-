@@ -740,6 +740,59 @@ setTimeout(actualizarReloj,200);
 setInterval(actualizarReloj,60000);
 window.addEventListener('load',verificarApp);
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+
+// === ALERTAS DE ZONA DE RIESGO ===
+var GEO={watchId:null,alertadas:{},activo:false};
+
+function iniciarAlertas(){
+  if(!('Notification' in window)||!navigator.geolocation){return;}
+  Notification.requestPermission().then(function(p){
+    if(p!=='granted'){return;}
+    GEO.activo=true;
+    GEO.watchId=navigator.geolocation.watchPosition(function(pos){
+      chequearZona(pos.coords.latitude,pos.coords.longitude);
+    },function(){},
+    {enableHighAccuracy:true,maximumAge:30000,timeout:15000});
+  });
+}
+
+function chequearZona(lat,lng){
+  var mejor=null,minD=999;
+  for(var k in DB){
+    var d=DB[k];
+    var dist=dKm(lat,lng,d.lat,d.lng);
+    if(dist<minD){minD=dist;mejor={k:k,d:d,dist:dist};}
+  }
+  if(!mejor||mejor.dist>8){return;}
+  var k=mejor.k,d=mejor.d;
+  if(GEO.alertadas[k]){return;}
+  if(d.niv!=='c'&&d.niv!=='a'){return;}
+  GEO.alertadas[k]=true;
+  var nv=NV[d.niv];
+  var titulo='⚠ Zona '+nv.lbl+': '+d.n;
+  var cuerpo=d.niv==='c'
+    ?'Estás en una zona CRÍTICA. Extrema precaución. Llama al 133 si necesitas ayuda.'
+    :'Estás ingresando a una zona de ALTO riesgo. Mantén atención a tu entorno.';
+  navigator.serviceWorker.ready.then(function(sw){
+    sw.showNotification(titulo,{
+      body:cuerpo,
+      icon:'https://carlossandovalfuentescsf-ux.github.io/control-confianza-/icon-192.png',
+      badge:'https://carlossandovalfuentescsf-ux.github.io/control-confianza-/icon-192.png',
+      tag:'alerta-'+k,
+      vibrate:[200,100,200],
+      data:{url:window.location.href}
+    });
+  }).catch(function(){
+    if(Notification.permission==='granted'){
+      new Notification(titulo,{body:cuerpo,tag:'alerta-'+k});
+    }
+  });
+  toast('⚠ '+d.n+' — zona '+nv.lbl.toLowerCase());
+}
+
+window.addEventListener('load',function(){
+  setTimeout(iniciarAlertas,3000);
+});
 (function(){var selReg=document.getElementById("selReg");if(selReg){selReg.addEventListener('change',function(){loadComunas();});}setInterval(function(){var reg=document.getElementById("selReg").value;var com=document.getElementById("selCom");if(reg&&com.disabled){loadComunas();}},600);})();
 function irGM(){window.open(gmUrl,"_blank");}
 function volver(){document.getElementById("res").style.display="none";document.getElementById("pInicio").style.display="flex";userLat=null;userLng=null;userCalle=null;var el=document.getElementById("mInfoCalle");if(el){el.style.display="none";el.textContent="";}}
