@@ -813,7 +813,7 @@ function activarDevMode(){
 function esDev(){return localStorage.getItem('cyc_dev')==='1';}
 
 // === PREDICTOR DE RIESGO ===
-async function calcularScore(key){
+function calcularScore(key){
   var d=DB[key];
   if(!d||!d.pred)return null;
   var p=d.pred;
@@ -844,20 +844,8 @@ async function calcularScore(key){
   if(diaMes===15||diaMes>=28)C+=20;
   if(diaSem===5||diaSem===6)C+=10;
   else if(diaSem===0)C+=6;
-
-  // Clima via Open-Meteo con timeout de 4 segundos
-  var climaDesc=[];
-  try{
-    var url='https://api.open-meteo.com/v1/forecast?latitude='+d.lat+'&longitude='+d.lng+'&current=temperature_2m,precipitation&timezone=America/Santiago&forecast_days=1';
-    var timeout=new Promise(function(_,rej){setTimeout(function(){rej('timeout');},4000);});
-    var clima=await Promise.race([fetch(url).then(function(r){return r.json();}),timeout]);
-    var temp=clima.current.temperature_2m;
-    var lluvia=clima.current.precipitation;
-    if(temp>25){C+=10;climaDesc.push('Temperatura alta ('+Math.round(temp)+'°C)');}
-    if(lluvia>2){C-=15;climaDesc.push('Lluvia activa (menor riesgo en calle)');}
-  }catch(e){}
-
   C=Math.max(0,Math.min(C,100));
+
   var score=Math.round((A*0.40)+(B*0.35)+(C*0.25));
 
   // Factores activos
@@ -868,7 +856,6 @@ async function calcularScore(key){
   if(diaSem===5)factores.push('Viernes');
   else if(diaSem===6)factores.push('Sábado');
   else if(diaSem===0)factores.push('Domingo');
-  if(climaDesc.length)factores=factores.concat(climaDesc);
   if(p.transp>=80)factores.push('Alto acceso a transporte');
   if(p.ilum<=30)factores.push('Baja iluminación nocturna');
 
@@ -980,12 +967,11 @@ function informeDetallado(r,nombre,d){
   document.body.appendChild(bg);
 }
 
-async function mostrarPredictor(key,nombre){
+function mostrarPredictor(key,nombre){
   var el=document.getElementById('iPred');
   if(!el)return;
-  el.innerHTML='<div class="pred-card"><div class="pred-titulo">🔮 Predicción de riesgo <span class="pred-beta">PREMIUM</span></div><div style="color:#555;font-size:12px">Calculando...</div></div>';
   var r=null;
-  try{r=await calcularScore(key);}catch(e){r=null;}
+  try{r=calcularScore(key);}catch(e){r=null;}
   if(!r){el.innerHTML='';return;}
   var d=DB[key];
   var col=scoreColor(r.score);
