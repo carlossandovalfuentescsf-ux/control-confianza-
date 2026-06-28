@@ -845,11 +845,12 @@ async function calcularScore(key){
   if(diaSem===5||diaSem===6)C+=10;
   else if(diaSem===0)C+=6;
 
-  // Clima via Open-Meteo (gratis, sin registro)
+  // Clima via Open-Meteo con timeout de 4 segundos
   var climaDesc=[];
   try{
     var url='https://api.open-meteo.com/v1/forecast?latitude='+d.lat+'&longitude='+d.lng+'&current=temperature_2m,precipitation&timezone=America/Santiago&forecast_days=1';
-    var clima=await fetch(url).then(function(r){return r.json();});
+    var timeout=new Promise(function(_,rej){setTimeout(function(){rej('timeout');},4000);});
+    var clima=await Promise.race([fetch(url).then(function(r){return r.json();}),timeout]);
     var temp=clima.current.temperature_2m;
     var lluvia=clima.current.precipitation;
     if(temp>25){C+=10;climaDesc.push('Temperatura alta ('+Math.round(temp)+'°C)');}
