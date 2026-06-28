@@ -972,7 +972,10 @@ function mostrarPredictor(key,nombre){
   if(!el)return;
   var r=null;
   try{r=calcularScore(key);}catch(e){r=null;}
-  if(!r){el.innerHTML='';return;}
+  if(!r){
+    el.innerHTML='<div class="pred-card"><div class="pred-titulo">🔮 Predicción de riesgo <span class="pred-beta">PREMIUM</span></div><div style="font-size:12px;color:#555;margin-top:4px">Próximamente disponible para esta región. Actualmente cubre las 29 comunas principales de Santiago.</div></div>';
+    return;
+  }
   var d=DB[key];
   var col=scoreColor(r.score);
   var lbl=scoreLabel(r.score);
