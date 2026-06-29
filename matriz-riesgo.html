@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Riesgo — Ley 21.659</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a2e;min-height:100vh;}
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;padding:20px;text-align:center;}
+.header img{height:44px;margin-bottom:8px;}
+.header h1{font-size:1.2rem;font-weight:700;}
+.header p{font-size:0.8rem;opacity:0.7;margin-top:4px;}
+.progress-wrap{background:#16213e;padding:12px 20px;}
+.progress-bar-bg{background:rgba(255,255,255,0.15);border-radius:99px;height:6px;}
+.progress-bar-fill{background:#e94560;border-radius:99px;height:6px;transition:width 0.4s ease;}
+.progress-label{color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:6px;}
+.progress-tags{display:flex;gap:6px;margin-top:8px;}
+.ptag{font-size:0.65rem;padding:2px 8px;border-radius:99px;font-weight:700;}
+.ptag.active{background:#e94560;color:#fff;}
+.ptag.done{background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);}
+.ptag.pending{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);}
+.container{max-width:640px;margin:0 auto;padding:20px 16px 100px;}
+.step{display:none;}
+.step.active{display:block;}
+.step-card{background:#fff;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.08);}
+
+/* Etiqueta de fuente */
+.source-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:0.68rem;font-weight:700;margin-bottom:10px;}
+.source-badge.propio{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
+.source-badge.publico{background:#f0fdf4;color:#15803d;border:1px solid #86efac;}
+.source-badge.percep{background:#faf5ff;color:#7c3aed;border:1px solid #ddd6fe;}
+.source-badge.reservado{background:#fff1f2;color:#be123c;border:1px solid #fecdd3;}
+
+.step-num{font-size:0.7rem;font-weight:700;color:#e94560;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.step-num.percep{color:#7c3aed;}
+.step-title{font-size:1.05rem;font-weight:700;color:#1a1a2e;margin-bottom:6px;line-height:1.3;}
+.step-sub{font-size:0.82rem;color:#666;margin-bottom:18px;line-height:1.5;}
+.step-law{font-size:0.7rem;color:#bbb;font-style:italic;margin-top:12px;padding-top:10px;border-top:1px solid #f0f0f0;}
+
+/* Opciones */
+.opts{display:flex;flex-direction:column;gap:10px;}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid #e8e8e8;border-radius:10px;cursor:pointer;transition:all 0.2s;user-select:none;}
+.opt:hover{border-color:#e94560;background:#fff5f7;}
+.opt.selected{border-color:#e94560;background:#fff0f3;}
+.opt.percep:hover{border-color:#7c3aed;background:#faf5ff;}
+.opt.percep.selected{border-color:#7c3aed;background:#f5eeff;}
+.opt.reservado:hover{border-color:#be123c;background:#fff1f2;}
+.opt.reservado.selected{border-color:#be123c;background:#fff1f2;}
+.opt input{display:none;}
+.opt-icon{font-size:1.1rem;min-width:26px;text-align:center;}
+.opt-text{flex:1;}
+.opt-label{font-size:0.88rem;font-weight:600;color:#1a1a2e;}
+.opt-hint{font-size:0.74rem;color:#888;margin-top:2px;}
+.opt-check{width:18px;height:18px;border-radius:50%;border:2px solid #ddd;transition:all 0.2s;flex-shrink:0;}
+.opt.selected .opt-check{background:#e94560;border-color:#e94560;}
+.opt.percep.selected .opt-check{background:#7c3aed;border-color:#7c3aed;}
+.opt.reservado.selected .opt-check{background:#be123c;border-color:#be123c;}
+.opt.checkbox .opt-check{border-radius:4px;}
+
+/* Select */
+.sel-wrap{position:relative;}
+select{width:100%;padding:13px 14px;border:2px solid #e8e8e8;border-radius:10px;font-size:0.9rem;color:#1a1a2e;background:#fff;appearance:none;cursor:pointer;}
+select:focus{outline:none;border-color:#15803d;}
+.sel-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:#888;}
+
+/* Bloque auto-relleno */
+.commune-auto{background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:14px;margin-top:14px;display:none;}
+.commune-auto h4{font-size:0.78rem;font-weight:700;color:#15803d;margin-bottom:10px;}
+.commune-auto-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #dcfce7;font-size:0.8rem;}
+.commune-auto-row:last-child{border-bottom:none;}
+.commune-auto-label{color:#444;}
+.commune-auto-val{font-weight:700;color:#15803d;}
+
+/* Nota reservado */
+.reservado-note{background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:14px;margin-bottom:16px;font-size:0.8rem;color:#9f1239;line-height:1.5;}
+.reservado-note strong{display:block;margin-bottom:4px;font-size:0.82rem;}
+
+/* Leyenda de fuentes */
+.legend{background:#fff;border-radius:12px;padding:16px;display:flex;flex-wrap:wrap;gap:8px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#555;}
+
+/* Botones */
+.btn-row{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:14px 20px;display:flex;gap:10px;box-shadow:0 -2px 12px rgba(0,0,0,0.08);}
+.btn{flex:1;padding:14px;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-back{background:#f0f2f5;color:#666;}
+.btn-next{background:#e94560;color:#fff;}
+.btn-next.percep{background:#7c3aed;}
+
+/* Resultado */
+.result-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.1);}
+.result-dual{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.result-box{border-radius:12px;padding:16px;text-align:center;}
+.result-box.oficial{background:#fff5f7;border:2px solid #ffd6de;}
+.result-box.percep{background:#f5eeff;border:2px solid #ddd6fe;}
+.result-box-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+.result-box.oficial .result-box-label{color:#e94560;}
+.result-box.percep .result-box-label{color:#7c3aed;}
+.result-score-sm{font-size:2.4rem;font-weight:900;line-height:1;}
+.result-nivel-sm{font-size:0.8rem;font-weight:700;margin-top:4px;}
+.rh{color:#e94560;}.rm{color:#f39c12;}.rl{color:#16a34a;}.rp{color:#7c3aed;}
+.result-insight{border-radius:12px;padding:14px;margin-bottom:14px;font-size:0.84rem;line-height:1.6;}
+.result-insight.gap-warn{background:#fef3c7;border-left:4px solid #f59e0b;}
+.result-insight.gap-ok{background:#f0fdf4;border-left:4px solid #22c55e;}
+.result-insight.gap-alert{background:#fef2f2;border-left:4px solid #ef4444;}
+.result-insight.gap-blue{background:#eff6ff;border-left:4px solid #3b82f6;}
+.result-oblig{border-radius:10px;padding:13px;margin-bottom:14px;font-size:0.84rem;font-weight:600;line-height:1.5;}
+.result-oblig.high{background:#ffeef2;color:#be123c;}
+.result-oblig.med{background:#fef9e7;color:#b45309;}
+.result-oblig.low{background:#f0fdf4;color:#15803d;}
+.result-breakdown{background:#f8f9fa;border-radius:12px;padding:16px;margin-top:14px;}
+.result-breakdown h3{font-size:0.76rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #eee;font-size:0.79rem;}
+.breakdown-row:last-child{border-bottom:none;}
+.breakdown-src{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-right:4px;}
+.btn-cta{display:block;width:100%;padding:15px;background:#1a1a2e;color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:12px;text-align:center;text-decoration:none;}
+.btn-cta span{display:block;font-size:0.73rem;font-weight:400;opacity:0.7;margin-top:2px;}
+
+/* Intro */
+.intro-banner{background:linear-gradient(135deg,#e94560,#c0392b);color:#fff;border-radius:12px;padding:18px;margin-bottom:14px;}
+.intro-banner h2{font-size:1rem;font-weight:700;margin-bottom:6px;}
+.intro-banner p{font-size:0.8rem;opacity:0.9;line-height:1.5;}
+.intro-steps{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.intro-step{display:flex;align-items:center;gap:12px;background:#fff;padding:12px;border-radius:10px;}
+.intro-step-num{width:28px;height:28px;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0;}
+.intro-step-text{font-size:0.82rem;color:#444;line-height:1.4;}
+.percep-banner{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-radius:12px;padding:16px;margin-bottom:14px;}
+.percep-banner h3{font-size:0.95rem;font-weight:700;margin-bottom:4px;}
+.percep-banner p{font-size:0.78rem;opacity:0.9;line-height:1.4;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 20px;border-radius:8px;font-size:0.84rem;z-index:999;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img src="icon-192.png" alt="Logo">
+  <h1>Calculadora de Riesgo — Ley 21.659</h1>
+  <p>Matriz oficial · Res. 1.820/2025 + Índice de percepción C&C</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="pBar" style="width:0%"></div></div>
+  <div class="progress-label" id="pLabel">Bienvenido</div>
+  <div class="progress-tags">
+    <span class="ptag" id="ptag-oficial">Cálculo oficial</span>
+    <span class="ptag pending" id="ptag-percep">Percepción</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- INTRO -->
+<div class="step active" id="step-0">
+  <div class="intro-banner">
+    <h2>¿Tu empresa estará obligada a contratar seguridad privada?</h2>
+    <p>Calcula tu nivel de riesgo con la fórmula oficial del gobierno y compara con tu percepción real de inseguridad.</p>
+  </div>
+  <div class="intro-steps">
+    <div class="intro-step"><div class="intro-step-num" style="background:#e94560;">10</div><div class="intro-step-text"><strong>Preguntas oficiales.</strong> Score según Ley 21.659. Cada pregunta indica claramente de dónde viene el dato.</div></div>
+    <div class="intro-step"><div class="intro-step-num" style="background:#7c3aed;">4</div><div class="intro-step-text"><strong>Preguntas de percepción.</strong> Cómo ves y sientes la seguridad de tu entorno. Dato exclusivo de Control & Confianza.</div></div>
+    <div class="intro-step"><div class="intro-step-num" style="background:#1a1a2e;">✓</div><div class="intro-step-text"><strong>Resultado dual.</strong> Score oficial + índice de percepción, con análisis de la brecha entre ambos.</div></div>
+  </div>
+  <div class="step-card">
+    <div style="font-size:0.8rem;font-weight:700;color:#444;margin-bottom:10px;">Tipos de dato en esta evaluación:</div>
+    <div class="legend">
+      <div class="legend-item"><span class="source-badge propio">🔵 Dato propio</span> Lo conoces de tu empresa</div>
+      <div class="legend-item"><span class="source-badge publico">🟢 Dato público</span> Lo cargamos automáticamente</div>
+      <div class="legend-item"><span class="source-badge percep">🟣 Percepción</span> Tu experiencia subjetiva</div>
+      <div class="legend-item"><span class="source-badge reservado">🔴 Dato reservado</span> Solo en fiscalización oficial</div>
+    </div>
+    <div style="font-size:0.76rem;color:#888;margin-top:12px;line-height:1.5;">Basado en la Resolución Exenta N° 1.820 del Ministerio de Seguridad Pública, publicada en el Diario Oficial el 17 de septiembre de 2025. Resultado orientativo — la clasificación definitiva la determina la autoridad fiscalizadora.</div>
+  </div>
+</div>
+
+<!-- P1: RUBRO -->
+<div class="step" id="step-1">
+  <div class="step-card">
+    <div class="step-num">Pregunta 1 de 10 — Cálculo oficial</div>
+    <span class="source-badge propio">🔵 Dato propio de tu empresa</span>
+    <div class="step-title">¿Cuál es el rubro de tu empresa?</div>
+    <div class="step-sub">Selecciona la categoría que mejor describe tu actividad principal según el SII.</div>
+    <div class="sel-wrap">
+      <select id="q1" onchange="answers.q1=this.value?parseFloat(this.value):null">
+        <option value="">— Selecciona tu rubro —</option>
+        <option value="8">Servicios de transporte de pasajeros</option>
+        <option value="7">Actividades de entretenimiento adultos</option>
+        <option value="7">Servicios de salud</option>
+        <option value="6">Almacenamiento y distribución / Logística</option>
+        <option value="6">Comercio al por mayor y al por menor</option>
+        <option value="6">Servicios básicos</option>
+        <option value="5">Servicios de educación</option>
+        <option value="5">Sector industrial / Producción</option>
+        <option value="4">Servicios de información y telecomunicaciones</option>
+        <option value="4">Servicios automotrices</option>
+        <option value="4">Servicios financieros y seguros</option>
+        <option value="4">Servicios de previsión social</option>
+        <option value="4">Servicios públicos</option>
+        <option value="4">Servicios de hotelería y turismo</option>
+        <option value="3">Actividades de entretenimiento general / Recreativo</option>
+        <option value="3">Servicios profesionales, científicos y técnicos</option>
+        <option value="3">Otros</option>
+      </select>
+      <span class="sel-arrow">▼</span>
+    </div>
+    <div class="step-law">Fuente: Tabla "Riesgo según rubros" — Res. 1.820, Art. 5 N°1 · Ponderación: 0.112</div>
+  </div>
+</div>
+
+<!-- P2: CRITICIDAD -->
+<div class="step" id="step-2">
+  <div class="step-card">
+    <div class="step-num">Pregunta 2 de 10 — Cálculo oficial</div>
+    <span class="source-badge propio">🔵 Dato propio de tu empresa</span>
+    <div class="step-title">¿Tu empresa cumple funciones críticas?</div>
+    <div class="step-sub">Marca todas las que apliquen. Los valores se suman.</div>
+    <div class="opts" id="q2">
+      <label class="opt checkbox" onclick="toggleCheck(this,'q2')"><span class="opt-icon">🏥</span><span class="opt-text"><span class="opt-label">Servicio esencial</span><span class="opt-hint">Salud, transporte, servicios básicos cuya interrupción afecta a la población</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
+      <label class="opt checkbox" onclick="toggleCheck(this,'q2')"><span class="opt-icon">🔒</span><span class="opt-text"><span class="opt-label">No sustituible</span><span class="opt-hint">Única entidad en el territorio que presta este servicio</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt checkbox" onclick="toggleCheck(this,'q2')"><span class="opt-icon">⚡</span><span class="opt-text"><span class="opt-label">Sector estratégico</span><span class="opt-hint">Área fundamental para el desarrollo, seguridad o estabilidad del país</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt checkbox" id="q2-ninguno" onclick="toggleNinguno('q2','q2-ninguno')"><span class="opt-icon">➖</span><span class="opt-text"><span class="opt-label">Ninguna de las anteriores</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+    <div class="step-law">Fuente: Tabla "Criticidad de las funciones" — Res. 1.820, Art. 5 N°2 · Ponderación: 0.112</div>
+  </div>
+</div>
+
+<!-- P3: VICTIMIZACION -->
+<div class="step" id="step-3">
+  <div class="step-card">
+    <div class="step-num">Pregunta 3 de 10 — Cálculo oficial</div>
+    <span class="source-badge propio">🔵 Dato propio de tu empresa</span>
+    <div class="step-title">¿Con qué frecuencia han ocurrido delitos en tu empresa en los últimos 12 meses?</div>
+    <div class="step-sub">Considera robos, asaltos, hurtos, vandalismo u otros ilícitos que afectaron a la entidad, su personal o clientes.</div>
+    <div class="opts" id="q3">
+      <label class="opt" onclick="selectOpt(this,'q3')"><span class="opt-icon">🔴</span><span class="opt-text"><span class="opt-label">Muy frecuentes</span><span class="opt-hint">Varias veces al mes</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
+      <label class="opt" onclick="selectOpt(this,'q3')"><span class="opt-icon">🟠</span><span class="opt-text"><span class="opt-label">Algo frecuentes</span><span class="opt-hint">Varias ocasiones en el año</span></span><span class="opt-check"></span><input type="hidden" value="6"></label>
+      <label class="opt" onclick="selectOpt(this,'q3')"><span class="opt-icon">🟡</span><span class="opt-text"><span class="opt-label">Poco frecuentes</span><span class="opt-hint">Uno o dos casos aislados</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
+      <label class="opt" onclick="selectOpt(this,'q3')"><span class="opt-icon">🟢</span><span class="opt-text"><span class="opt-label">Nada frecuente</span><span class="opt-hint">No han ocurrido delitos en el período</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+    <div class="step-law">Fuente: Tabla "Victimización por delitos" — Res. 1.820, Art. 5 N°3 · Ponderación: 0.056</div>
+  </div>
+</div>
+
+<!-- P4: EFECTIVO -->
+<div class="step" id="step-4">
+  <div class="step-card">
+    <div class="step-num">Pregunta 4 de 10 — Cálculo oficial</div>
+    <span class="source-badge propio">🔵 Dato propio de tu empresa</span>
+    <div class="step-title">¿Cuánto efectivo maneja tu empresa en promedio diario?</div>
+    <div class="step-sub">Monto promedio en caja durante un día normal de operación.</div>
+    <div class="opts" id="q4">
+      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">💰</span><span class="opt-text"><span class="opt-label">$15.000.000 o más</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
+      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">💵</span><span class="opt-text"><span class="opt-label">Entre $10.000.000 y $14.999.999</span></span><span class="opt-check"></span><input type="hidden" value="6"></label>
+      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">💴</span><span class="opt-text"><span class="opt-label">Entre $5.000.000 y $9.999.999</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
+      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">💶</span><span class="opt-text"><span class="opt-label">Entre $2.000.000 y $4.999.999</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
+      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">🪙</span><span class="opt-text"><span class="opt-label">Menos de $2.000.000</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+    <div class="step-law">Fuente: Tabla "Mantención de efectivo según tramos" — Res. 1.820, Art. 5 N°4 · Ponderación: 0.063</div>
+  </div>
+</div>
+
+<!-- P5: CUALIDADES ATRACTIVAS -->
+<div class="step" id="step-5">
+  <div class="step-card">
+    <div class="step-num">Pregunta 5 de 10 — Cálculo oficial</div>
+    <span class="source-badge propio">🔵 Dato propio de tu empresa</span>
+    <div class="step-title">¿Qué características tienen los bienes o productos que maneja tu empresa?</div>
+    <div class="step-sub">Marca todas las que apliquen. Los valores se suman.</div>
+    <div class="opts" id="q5">
+      <label class="opt checkbox" onclick="toggleCheck(this,'q5')"><span class="opt-icon">⚠️</span><span class="opt-text"><span class="opt-label">Peligrosos</span><span class="opt-hint">Armas, explosivos, precursores químicos</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
+      <label class="opt checkbox" onclick="toggleCheck(this,'q5')"><span class="opt-icon">💎</span><span class="opt-text"><span class="opt-label">Alto valor comercial</span><span class="opt-hint">Artículos de alta gama, medicamentos controlados, tecnología valiosa</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt checkbox" onclick="toggleCheck(this,'q5')"><span class="opt-icon">📦</span><span class="opt-text"><span class="opt-label">Fáciles de transportar</span><span class="opt-hint">Objetos pequeños y fácilmente sustraíbles</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt checkbox" id="q5-ninguno" onclick="toggleNinguno('q5','q5-ninguno')"><span class="opt-icon">➖</span><span class="opt-text"><span class="opt-label">Ninguna de las anteriores</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+    <div class="step-law">Fuente: Tabla "Cualidades atractivas" — Res. 1.820, Art. 5 N°5 · Ponderación: 0.147</div>
+  </div>
+</div>
+
+<!-- P6: HORARIO -->
+<div class="step" id="step-6">
+  <div class="step-card">
+    <div class="step-num">Pregunta 6 de 10 — Cálculo oficial</div>
+    <span class="source-badge propio">🔵 Dato propio de tu empresa</span>
+    <div class="step-title">¿En qué horarios funciona tu empresa?</div>
+    <div class="step-sub">Marca todos los que apliquen. Los valores se suman.</div>
+    <div class="opts" id="q6">
+      <label class="opt checkbox" onclick="toggleCheck(this,'q6')"><span class="opt-icon">🌙</span><span class="opt-text"><span class="opt-label">Horario nocturno</span><span class="opt-hint">Entre las 20:00 y las 08:00 hrs.</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
+      <label class="opt checkbox" onclick="toggleCheck(this,'q6')"><span class="opt-icon">☀️</span><span class="opt-text"><span class="opt-label">Horario diurno</span><span class="opt-hint">Entre las 08:00 y las 20:00 hrs.</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
+      <label class="opt checkbox" onclick="toggleCheck(this,'q6')"><span class="opt-icon">📅</span><span class="opt-text"><span class="opt-label">Días hábiles</span><span class="opt-hint">Lunes a viernes</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt checkbox" onclick="toggleCheck(this,'q6')"><span class="opt-icon">🎉</span><span class="opt-text"><span class="opt-label">Días inhábiles</span><span class="opt-hint">Sábados, domingos o feriados</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+    </div>
+    <div class="step-law">Fuente: Tabla "Horario de funcionamiento" — Res. 1.820, Art. 5 N°6 · Ponderación: 0.084</div>
+  </div>
+</div>
+
+<!-- P7: AFORO -->
+<div class="step" id="step-7">
+  <div class="step-card">
+    <div class="step-num">Pregunta 7 de 10 — Cálculo oficial</div>
+    <span class="source-badge propio">🔵 Dato propio de tu empresa</span>
+    <div class="step-title">¿Con qué frecuencia alcanza su aforo máximo de personas?</div>
+    <div class="opts" id="q7">
+      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">🔴</span><span class="opt-text"><span class="opt-label">Permanentemente</span><span class="opt-hint">Casi siempre a capacidad máxima</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
+      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">🟠</span><span class="opt-text"><span class="opt-label">Frecuentemente</span><span class="opt-hint">Varias veces a la semana</span></span><span class="opt-check"></span><input type="hidden" value="7"></label>
+      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">🟡</span><span class="opt-text"><span class="opt-label">Algunas veces</span><span class="opt-hint">Ocasionalmente, fechas especiales</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
+      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">🟢</span><span class="opt-text"><span class="opt-label">Pocas veces</span><span class="opt-hint">Raramente alcanza el aforo máximo</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
+      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">⚪</span><span class="opt-text"><span class="opt-label">Nunca</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+    <div class="step-law">Fuente: Tabla "Frecuencia aforo máximo" — Res. 1.820, Art. 5 N°7 · Ponderación: 0.063</div>
+  </div>
+</div>
+
+<!-- P8: PUBLICO -->
+<div class="step" id="step-8">
+  <div class="step-card">
+    <div class="step-num">Pregunta 8 de 10 — Cálculo oficial</div>
+    <span class="source-badge propio">🔵 Dato propio de tu empresa</span>
+    <div class="step-title">¿Cómo es el público que ingresa a tu empresa?</div>
+    <div class="opts" id="q8">
+      <label class="opt" onclick="selectOpt(this,'q8')"><span class="opt-icon">🚶</span><span class="opt-text"><span class="opt-label">Público dinámico</span><span class="opt-hint">Clientes que ingresan sin restricciones (tiendas, comercio)</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
+      <label class="opt" onclick="selectOpt(this,'q8')"><span class="opt-icon">🪪</span><span class="opt-text"><span class="opt-label">Público regulado</span><span class="opt-hint">Se solicita identificación o cita previa</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
+      <label class="opt" onclick="selectOpt(this,'q8')"><span class="opt-icon">🏢</span><span class="opt-text"><span class="opt-label">Público estático</span><span class="opt-hint">Solo trabajadores o clientes muy específicos</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+    <div class="step-law">Fuente: Tabla "Público en la entidad" — Res. 1.820, Art. 5 N°8 · Ponderación: 0.063</div>
+  </div>
+</div>
+
+<!-- P9: COMUNA (auto-rellena q10 y q11) -->
+<div class="step" id="step-9">
+  <div class="step-card">
+    <div class="step-num">Pregunta 9 de 10 — Cálculo oficial</div>
+    <span class="source-badge publico">🟢 Dato público oficial — se carga automáticamente</span>
+    <div class="step-title">¿En qué comuna está ubicada tu empresa?</div>
+    <div class="step-sub">Con esto el sistema completa automáticamente el <strong>patrullaje municipal</strong> (SINIM) y la <strong>vulnerabilidad socio-delictual</strong> (Subsecretaría de Prevención del Delito) sin que tengas que buscarlos.</div>
+    <div class="sel-wrap">
+      <select id="q_comuna" onchange="onComunaChange(this.value)">
+        <option value="">— Selecciona la comuna —</option>
+        <optgroup label="Región Metropolitana — Santiago">
+          <option value="cerrillos">Cerrillos</option><option value="cerro_navia">Cerro Navia</option>
+          <option value="conchal">Conchalí</option><option value="el_bosque">El Bosque</option>
+          <option value="estacion_central">Estación Central</option><option value="huechuraba">Huechuraba</option>
+          <option value="independencia">Independencia</option><option value="la_cisterna">La Cisterna</option>
+          <option value="la_florida">La Florida</option><option value="la_granja">La Granja</option>
+          <option value="la_pintana">La Pintana</option><option value="la_reina">La Reina</option>
+          <option value="las_condes">Las Condes</option><option value="lo_barnechea">Lo Barnechea</option>
+          <option value="lo_espejo">Lo Espejo</option><option value="lo_prado">Lo Prado</option>
+          <option value="macul">Macul</option><option value="maipu">Maipú</option>
+          <option value="nunoa">Ñuñoa</option><option value="pac">Pedro Aguirre Cerda</option>
+          <option value="penalolen">Peñalolén</option><option value="providencia">Providencia</option>
+          <option value="pudahuel">Pudahuel</option><option value="puente_alto">Puente Alto</option>
+          <option value="quilicura">Quilicura</option><option value="quinta_normal">Quinta Normal</option>
+          <option value="recoleta">Recoleta</option><option value="renca">Renca</option>
+          <option value="san_bernardo">San Bernardo</option><option value="san_joaquin">San Joaquín</option>
+          <option value="san_miguel">San Miguel</option><option value="san_ramon">San Ramón</option>
+          <option value="santiago">Santiago Centro</option><option value="vitacura">Vitacura</option>
+        </optgroup>
+        <optgroup label="Región de Valparaíso">
+          <option value="valparaiso">Valparaíso</option><option value="vina_del_mar">Viña del Mar</option>
+          <option value="quilpue">Quilpué</option><option value="villa_alemana">Villa Alemana</option>
+          <option value="san_antonio">San Antonio</option>
+        </optgroup>
+        <optgroup label="Región del Biobío">
+          <option value="concepcion">Concepción</option><option value="talcahuano">Talcahuano</option>
+          <option value="coronel">Coronel</option><option value="los_angeles">Los Ángeles</option>
+        </optgroup>
+        <optgroup label="Región de La Araucanía">
+          <option value="temuco">Temuco</option><option value="padre_las_casas">Padre Las Casas</option>
+        </optgroup>
+        <optgroup label="Otras regiones">
+          <option value="antofagasta">Antofagasta</option><option value="iquique">Iquique</option>
+          <option value="la_serena">La Serena</option><option value="rancagua">Rancagua</option>
+          <option value="talca">Talca</option><option value="puerto_montt">Puerto Montt</option>
+          <option value="otra">Otra comuna / zona rural</option>
+        </optgroup>
+      </select>
+      <span class="sel-arrow">▼</span>
+    </div>
+    <div class="commune-auto" id="comunaAuto">
+      <h4>✓ Datos cargados automáticamente</h4>
+      <div class="commune-auto-row"><span class="commune-auto-label">Patrullaje municipal (SINIM)</span><span class="commune-auto-val" id="autoPatrullaje">—</span></div>
+      <div class="commune-auto-row"><span class="commune-auto-label">Vulnerabilidad socio-delictual (SPD)</span><span class="commune-auto-val" id="autoVulnerabilidad">—</span></div>
+    </div>
+    <div class="step-law">Fuente: SINIM (Subsecretaría Desarrollo Regional) + Subsecretaría de Prevención del Delito — Res. 1.820, Art. 5 N°10–11 · Ponderaciones: 0.048 y 0.096</div>
+  </div>
+</div>
+
+<!-- P10: RUTAS DE ESCAPE -->
+<div class="step" id="step-10">
+  <div class="step-card">
+    <div class="step-num">Pregunta 10 de 10 — Cálculo oficial</div>
+    <span class="source-badge propio">🔵 Dato observable de tu entorno</span>
+    <div class="step-title">¿Qué vías de escape hay cerca de tu empresa?</div>
+    <div class="step-sub">Vías que podrían facilitar la huida de un delincuente tras cometer un delito. Marca todas las que apliquen.</div>
+    <div class="opts" id="q12">
+      <label class="opt checkbox" onclick="toggleCheck(this,'q12')"><span class="opt-icon">🛣️</span><span class="opt-text"><span class="opt-label">Autopista o acceso rápido</span><span class="opt-hint">Vespucio, Costanera u otra autopista a menos de 500m</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
+      <label class="opt checkbox" onclick="toggleCheck(this,'q12')"><span class="opt-icon">🚗</span><span class="opt-text"><span class="opt-label">Avenida principal</span><span class="opt-hint">Avenida de alto flujo que permite desplazamiento rápido</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt checkbox" onclick="toggleCheck(this,'q12')"><span class="opt-icon">⚠️</span><span class="opt-text"><span class="opt-label">Zona de alta complejidad cercana</span><span class="opt-hint">Sector reconocido por alta actividad delictiva</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
+      <label class="opt checkbox" id="q12-ninguno" onclick="toggleNinguno('q12','q12-ninguno')"><span class="opt-icon">➖</span><span class="opt-text"><span class="opt-label">Ninguna de las anteriores</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+    <div class="step-law">Fuente: Tabla "Proximidad a rutas de escape" — Res. 1.820, Art. 5 N°12 · Ponderación: 0.060</div>
+  </div>
+</div>
+
+<!-- TRANSICION -->
+<div class="step" id="step-trans">
+  <div class="percep-banner">
+    <h3>Cálculo oficial completado ✓</h3>
+    <p>Ahora 4 preguntas de percepción. Estas miden cómo ves y sientes la seguridad de tu entorno — un dato que la ley no captura pero que es igual de importante.</p>
+  </div>
+  <div class="step-card">
+    <div style="font-size:0.82rem;color:#444;font-weight:700;margin-bottom:10px;">¿Por qué preguntar sobre percepción?</div>
+    <div style="font-size:0.8rem;color:#666;line-height:1.6;">La brecha entre el riesgo oficial y la percepción real revela información que ninguna estadística captura. Muchas empresas tienen riesgo oficial bajo pero sus dueños se sienten inseguros — y ese sentimiento es válido y merece una respuesta profesional.</div>
+  </div>
+</div>
+
+<!-- PERCEPCION 1: SENSACION -->
+<div class="step" id="step-p1">
+  <div class="step-card">
+    <div class="step-num percep">Percepción 1 de 4</div>
+    <span class="source-badge percep">🟣 Tu percepción subjetiva</span>
+    <div class="step-title">¿Qué tan seguro/a te sientes en el entorno de tu empresa?</div>
+    <div class="step-sub">Habla de tu sensación real del día a día, sin importar lo que digan las estadísticas.</div>
+    <div class="opts" id="qp1">
+      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">😰</span><span class="opt-text"><span class="opt-label">Muy inseguro/a</span><span class="opt-hint">Siento que hay riesgo real todos los días</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">😟</span><span class="opt-text"><span class="opt-label">Bastante inseguro/a</span><span class="opt-hint">Me preocupa la seguridad con frecuencia</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">😐</span><span class="opt-text"><span class="opt-label">Ni seguro ni inseguro</span><span class="opt-hint">A veces me preocupa, a veces no</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">🙂</span><span class="opt-text"><span class="opt-label">Bastante seguro/a</span><span class="opt-hint">Me siento cómodo/a en general</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">😊</span><span class="opt-text"><span class="opt-label">Muy seguro/a</span><span class="opt-hint">No me preocupa la seguridad del entorno</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+  </div>
+</div>
+
+<!-- PERCEPCION 2: CARABINEROS (antes P9 oficial) -->
+<div class="step" id="step-p2">
+  <div class="step-card">
+    <div class="step-num percep">Percepción 2 de 4</div>
+    <span class="source-badge reservado">🔴 Dato reservado — se aproxima con tu percepción</span>
+    <div class="step-title">¿Cómo evalúas la presencia y respuesta de Carabineros en tu sector?</div>
+    <div class="reservado-note">
+      <strong>¿Por qué aparece aquí y no en el cálculo oficial?</strong>
+      El Índice de Cobertura de Demanda Policial es un indicador interno de Carabineros de Chile, no disponible como dato público. Solo se obtiene formalmente durante una Visita Inspectiva oficial de la Ley 21.659. Tu percepción es el mejor proxy disponible y también es un dato valioso en sí mismo.
+    </div>
+    <div class="opts" id="qp2">
+      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Muy alta — respuesta inmediata</span><span class="opt-hint">Carabineros frecuentes, llegan en minutos (Tramo 1)</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Alta cobertura</span><span class="opt-hint">Buena presencia en el sector (Tramo 2)</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Cobertura media-alta (Tramo 3)</span></span><span class="opt-check"></span><input type="hidden" value="6"></label>
+      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Cobertura media-baja (Tramo 4)</span></span><span class="opt-check"></span><input type="hidden" value="7"></label>
+      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Baja — demoran en llegar (Tramo 5)</span></span><span class="opt-check"></span><input type="hidden" value="8"></label>
+      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Muy baja — escasa presencia (Tramo 6)</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
+    </div>
+    <div class="step-law">Indicador oficial: Índice de Cobertura de Demanda Policial — Res. 1.820, Art. 5 N°9 · Ponderación oficial: 0.096 (se usa como dato de percepción en esta versión)</div>
+  </div>
+</div>
+
+<!-- PERCEPCION 3: MEDIDAS TOMADAS -->
+<div class="step" id="step-p3">
+  <div class="step-card">
+    <div class="step-num percep">Percepción 3 de 4</div>
+    <span class="source-badge percep">🟣 Tu percepción subjetiva</span>
+    <div class="step-title">¿Has tomado medidas de seguridad por cuenta propia en el último año?</div>
+    <div class="step-sub">Cámaras, rejas, alarmas, guardia privado, cambios de rutina — cualquier acción motivada por inseguridad.</div>
+    <div class="opts" id="qp3">
+      <label class="opt percep" onclick="selectOpt(this,'qp3')"><span class="opt-icon">🔐</span><span class="opt-text"><span class="opt-label">Sí, varias medidas importantes</span><span class="opt-hint">He invertido significativamente en seguridad</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp3')"><span class="opt-icon">🔒</span><span class="opt-text"><span class="opt-label">Sí, algunas medidas básicas</span><span class="opt-hint">He tomado precauciones, pero no es suficiente</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp3')"><span class="opt-icon">🤔</span><span class="opt-text"><span class="opt-label">Lo he pensado pero no he actuado</span><span class="opt-hint">Tengo la intención pero no me he decidido</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp3')"><span class="opt-icon">😌</span><span class="opt-text"><span class="opt-label">No, no he sentido necesidad</span><span class="opt-hint">La situación no me ha llevado a actuar</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+  </div>
+</div>
+
+<!-- PERCEPCION 4: DENUNCIAS -->
+<div class="step" id="step-p4">
+  <div class="step-card">
+    <div class="step-num percep">Percepción 4 de 4</div>
+    <span class="source-badge percep">🟣 Tu experiencia con el sistema</span>
+    <div class="step-title">¿Has denunciado algún hecho delictivo a Carabineros o PDI en el último año?</div>
+    <div class="opts" id="qp4">
+      <label class="opt percep" onclick="selectOpt(this,'qp4')"><span class="opt-icon">📋</span><span class="opt-text"><span class="opt-label">Sí, más de una vez</span><span class="opt-hint">He realizado múltiples denuncias</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp4')"><span class="opt-icon">📝</span><span class="opt-text"><span class="opt-label">Sí, una vez</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp4')"><span class="opt-icon">😶</span><span class="opt-text"><span class="opt-label">No, aunque ocurrieron hechos</span><span class="opt-hint">Hubo incidentes pero preferí no denunciar</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
+      <label class="opt percep" onclick="selectOpt(this,'qp4')"><span class="opt-icon">✅</span><span class="opt-text"><span class="opt-label">No, porque no fue necesario</span><span class="opt-hint">No hubo hechos que reportar</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTADO -->
+<div class="step" id="step-result"><div id="resultContent"></div></div>
+
+</div>
+
+<div class="btn-row" id="btnRow">
+  <button class="btn btn-back" id="btnBack" onclick="goBack()" style="display:none">← Atrás</button>
+  <button class="btn btn-next" id="btnNext" onclick="goNext()">Comenzar →</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var COMUNAS={
+  la_pintana:[8,'10','Baja (decil 4)','Urgente 1'],lo_espejo:[8,'10','Baja (decil 4)','Urgente 1'],
+  el_bosque:[7,'10','Media-baja (decil 5)','Urgente 1'],cerro_navia:[8,'10','Baja (decil 4)','Urgente 1'],
+  la_granja:[7,'10','Media-baja (decil 5)','Urgente 1'],pac:[8,'10','Baja (decil 4)','Urgente 1'],
+  lo_prado:[8,'10','Baja (decil 4)','Urgente 1'],san_ramon:[8,'10','Baja (decil 4)','Urgente 1'],
+  renca:[7,'8','Media-baja (decil 5)','Urgente 2'],pudahuel:[6,'8','Media (decil 6)','Urgente 2'],
+  quinta_normal:[7,'8','Media-baja (decil 5)','Urgente 2'],quilicura:[6,'8','Media (decil 6)','Urgente 2'],
+  conchal:[7,'8','Media-baja (decil 5)','Urgente 2'],recoleta:[5,'8','Media (decil 6)','Urgente 2'],
+  estacion_central:[7,'8','Media-baja (decil 5)','Urgente 2'],san_joaquin:[7,'8','Media-baja (decil 5)','Urgente 2'],
+  huechuraba:[6,'8','Media (decil 6)','Urgente 2'],
+  santiago:[4,'6','Alta (decil 8)','Urgente 3'],san_bernardo:[6,'6','Media (decil 6)','Urgente 3'],
+  penalolen:[5,'6','Media (decil 6)','Urgente 3'],la_cisterna:[6,'6','Media (decil 6)','Urgente 3'],
+  macul:[6,'6','Media (decil 6)','Urgente 3'],independencia:[6,'6','Media (decil 6)','Urgente 3'],
+  cerrillos:[6,'6','Media (decil 6)','Urgente 3'],
+  maipu:[4,'4','Alta (decil 8)','Rotativa 1'],nunoa:[3,'4','Muy alta (decil 9)','Rotativa 1'],
+  san_miguel:[4,'4','Alta (decil 8)','Rotativa 1'],la_florida:[4,'4','Alta (decil 8)','Rotativa 1'],
+  puente_alto:[5,'4','Media (decil 6)','Rotativa 1'],la_reina:[3,'4','Muy alta (decil 9)','Rotativa 1'],
+  las_condes:[2,'2','Muy alta (decil 9)','Rotativa 2'],vitacura:[1,'2','Máxima (decil 10)','Rotativa 2'],
+  providencia:[2,'2','Muy alta (decil 9)','Rotativa 2'],lo_barnechea:[3,'2','Alta (decil 9)','Rotativa 2'],
+  valparaiso:[6,'8','Media (decil 6)','Urgente 2'],vina_del_mar:[4,'4','Alta (decil 8)','Rotativa 1'],
+  quilpue:[5,'4','Media (decil 6)','Rotativa 1'],villa_alemana:[5,'4','Media (decil 6)','Rotativa 1'],
+  san_antonio:[6,'6','Media (decil 6)','Urgente 3'],concepcion:[5,'6','Media (decil 6)','Urgente 3'],
+  talcahuano:[5,'4','Media (decil 6)','Rotativa 1'],coronel:[7,'8','Baja (decil 4)','Urgente 2'],
+  los_angeles:[5,'4','Media (decil 6)','Rotativa 1'],temuco:[5,'6','Media (decil 6)','Urgente 3'],
+  padre_las_casas:[7,'8','Baja (decil 4)','Urgente 2'],antofagasta:[4,'4','Alta (decil 8)','Rotativa 1'],
+  iquique:[4,'6','Alta (decil 8)','Urgente 3'],la_serena:[4,'4','Alta (decil 8)','Rotativa 1'],
+  rancagua:[5,'4','Media (decil 6)','Rotativa 1'],talca:[5,'4','Media (decil 6)','Rotativa 1'],
+  puerto_montt:[5,'4','Media (decil 6)','Rotativa 1'],otra:[6,'6','No disponible','No disponible']
+};
+
+var STEPS=['0','1','2','3','4','5','6','7','8','9','10','trans','p1','p2','p3','p4','result'];
+var current=0;
+var answers={};
+var PESOS={q1:0.112,q2:0.112,q3:0.056,q4:0.063,q5:0.147,q6:0.084,q7:0.063,q8:0.063,q10:0.048,q11:0.096,q12:0.060};
+// Nota: q9 (cobertura policial) se usa solo en percepción, no en el cálculo oficial ponderado
+
+function onComunaChange(val){
+  var box=document.getElementById('comunaAuto');
+  if(!val||!COMUNAS[val]){box.style.display='none';answers.q10=null;answers.q11=null;return;}
+  var d=COMUNAS[val];
+  answers.q10=d[0];answers.q11=parseFloat(d[1]);
+  document.getElementById('autoPatrullaje').textContent=d[2];
+  document.getElementById('autoVulnerabilidad').textContent=d[3];
+  box.style.display='block';
+}
+
+function selectOpt(el,group){
+  document.getElementById(group).querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');});
+  el.classList.add('selected');
+  answers[group]=parseFloat(el.querySelector('input').value);
+}
+
+function toggleCheck(el,group){
+  var ning=document.getElementById(group+'-ninguno');
+  if(ning&&ning!==el)ning.classList.remove('selected');
+  el.classList.toggle('selected');
+  computeCheck(group);
+}
+
+function toggleNinguno(group,nId){
+  var ning=document.getElementById(nId);
+  var was=ning.classList.contains('selected');
+  document.getElementById(group).querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');});
+  if(!was)ning.classList.add('selected');
+  computeCheck(group);
+}
+
+function computeCheck(group){
+  var total=0,any=false;
+  document.getElementById(group).querySelectorAll('.opt').forEach(function(o){
+    if(o.classList.contains('selected')){any=true;total+=parseFloat(o.querySelector('input').value);}
+  });
+  answers[group]=any?total:null;
+}
+
+function validate(){
+  var id=STEPS[current];
+  if(['0','trans','result'].indexOf(id)>=0)return true;
+  if(id==='1')return !!(document.getElementById('q1').value);
+  if(id==='9'){var s=document.getElementById('q_comuna').value;return !!(s&&COMUNAS[s]);}
+  var qmap={'2':'q2','3':'q3','4':'q4','5':'q5','6':'q6','7':'q7','8':'q8','10':'q12','p1':'qp1','p2':'qp2','p3':'qp3','p4':'qp4'};
+  var q=qmap[id];if(!q)return true;
+  if(['q2','q5','q6','q12'].indexOf(q)>=0)computeCheck(q);
+  return answers[q]!=null;
+}
+
+function goNext(){if(!validate()){showToast('Selecciona una opción para continuar');return;}if(current<STEPS.length-1){current++;render();}}
+function goBack(){if(current>0){current--;render();}}
+
+function render(){
+  document.querySelectorAll('.step').forEach(function(s){s.classList.remove('active');});
+  var id=STEPS[current];
+  var el=document.getElementById('step-'+id);
+  if(el)el.classList.add('active');
+  updateProgress();
+  var back=document.getElementById('btnBack');
+  var next=document.getElementById('btnNext');
+  var row=document.getElementById('btnRow');
+  back.style.display=current>0?'block':'none';
+  if(id==='result'){row.style.display='none';showResult();return;}
+  row.style.display='flex';
+  var isPercep=['trans','p1','p2','p3','p4'].indexOf(id)>=0;
+  next.className='btn btn-next'+(isPercep?' percep':'');
+  next.textContent=id==='0'?'Comenzar →':id==='trans'?'Comenzar preguntas de percepción →':id==='p4'?'Ver mi resultado completo →':'Siguiente →';
+  window.scrollTo(0,0);
+}
+
+function updateProgress(){
+  var id=STEPS[current];
+  var isPercep=['trans','p1','p2','p3','p4','result'].indexOf(id)>=0;
+  var pct=id==='0'?0:id==='result'?100:isPercep?75+((current-11)/5*25):(current/11*75);
+  document.getElementById('pBar').style.width=pct+'%';
+  document.getElementById('pLabel').textContent=
+    id==='0'?'Bienvenido':id==='trans'?'Bloque oficial completado ✓':id==='result'?'Análisis completo':
+    isPercep?('Percepción '+(current-11)+' de 4'):('Pregunta '+current+' de 10');
+  document.getElementById('ptag-oficial').className='ptag '+(isPercep?'done':'active');
+  document.getElementById('ptag-percep').className='ptag '+(id==='result'?'done':isPercep?'active':'pending');
+}
+
+function calcOficial(){
+  var score=0;
+  var q1v=answers.q1?parseFloat(answers.q1):1;score+=q1v*PESOS.q1;
+  ['q2','q5','q6','q12'].forEach(function(q){computeCheck(q);});
+  var qs=['q2','q3','q4','q5','q6','q7','q8','q10','q11','q12'];
+  qs.forEach(function(q){score+=(answers[q]||1)*PESOS[q];});
+  return Math.round(score*100)/100;
+}
+
+function calcPercepcion(){
+  var p1=answers.qp1||3,p2=answers.qp2||5,p3=answers.qp3||1,p4=answers.qp4||1;
+  return Math.round(((p1*0.40)+(p2*0.30)+(p3*0.20)+(p4*0.10))/1*100)/100;
+  // normalizado a escala 1-5
+}
+
+function nivelOficial(s){return s>=8?['Alto','rh']:s>=5?['Medio','rm']:['Bajo','rl'];}
+function nivelPercep(s){return s>=4?['Alta','rp']:s>=2.5?['Media','rm']:['Baja','rl'];}
+
+function insightBrecha(of,pe){
+  var on=nivelOficial(of)[0],pn=nivelPercep(pe)[0];
+  if((on==='Alto'||on==='Medio')&&pn==='Alta')
+    return{cls:'gap-alert',txt:'⚠️ <strong>Doble alerta.</strong> Tanto el cálculo oficial como tu percepción indican alto riesgo. Tu empresa necesita un plan de seguridad antes de que llegue la fiscalización.'};
+  if((on==='Alto'||on==='Medio')&&pn!=='Alta')
+    return{cls:'gap-warn',txt:'🔶 <strong>Riesgo oficial subestimado.</strong> La Ley 21.659 clasifica tu empresa con riesgo '+on.toLowerCase()+', pero tu percepción de inseguridad es menor. Muchas empresas en esta situación se ven sorprendidas por la fiscalización sin estar preparadas.'};
+  if(on==='Bajo'&&pn==='Alta')
+    return{cls:'gap-blue',txt:'🔷 <strong>Percepción elevada, score oficial bajo.</strong> Tu empresa probablemente no quede obligada por ley, pero tú te sientes inseguro/a. Ese sentimiento tiene valor real: un diagnóstico profesional puede identificar los riesgos específicos que te preocupan.'};
+  return{cls:'gap-ok',txt:'✅ <strong>Coherencia entre riesgo oficial y percepción.</strong> Tu empresa muestra riesgo bajo y tu percepción de seguridad es positiva. Un diagnóstico periódico te ayudará a mantener ese nivel.'};
+}
+
+function showResult(){
+  var of=calcOficial(),pe=calcPercepcion();
+  var[on,oc]=nivelOficial(of),[pn,pc]=nivelPercep(pe);
+  var brecha=insightBrecha(of,pe);
+  var obligCls=on==='Alto'?'high':on==='Medio'?'med':'low';
+  var obligTxt=on==='Alto'?'⚠️ <strong>Alta probabilidad de quedar obligada.</strong> Deberás implementar medidas de seguridad privada conforme a la Ley 21.659. Actúa antes de la fiscalización.':
+    on==='Medio'?'🔶 <strong>Riesgo moderado de quedar obligada.</strong> Revisa tus medidas actuales y considera anticiparte a la normativa.':
+    '✅ <strong>Riesgo bajo de quedar obligada.</strong> Un diagnóstico preventivo siempre es recomendable.';
+
+  var q1v=answers.q1?parseFloat(answers.q1):1;
+  ['q2','q5','q6','q12'].forEach(function(q){computeCheck(q);});
+  var srcColors={q1:'#1d4ed8',q2:'#1d4ed8',q3:'#1d4ed8',q4:'#1d4ed8',q5:'#1d4ed8',q6:'#1d4ed8',q7:'#1d4ed8',q8:'#1d4ed8',q10:'#15803d',q11:'#15803d',q12:'#1d4ed8'};
+  var qLabels={q1:'Rubro (propio)',q2:'Criticidad funciones (propio)',q3:'Victimización (propio)',q4:'Efectivo diario (propio)',q5:'Cualidades atractivas (propio)',q6:'Horario (propio)',q7:'Aforo máximo (propio)',q8:'Control público (propio)',q10:'Patrullaje municipal (público)',q11:'Vulnerabilidad socio-delictual (público)',q12:'Rutas de escape (observable)'};
+  var rows='';
+  Object.keys(PESOS).forEach(function(q){
+    var val=q==='q1'?q1v:(answers[q]||1);
+    var contrib=(val*PESOS[q]).toFixed(2);
+    rows+='<div class="breakdown-row"><span style="display:flex;align-items:center;gap:6px;color:#444"><span style="width:8px;height:8px;border-radius:50%;background:'+srcColors[q]+';display:inline-block;flex-shrink:0"></span>'+qLabels[q]+'</span><span style="font-weight:700">'+contrib+'</span></div>';
+  });
+
+  document.getElementById('resultContent').innerHTML=
+    '<div class="result-card">'+
+      '<div class="result-dual">'+
+        '<div class="result-box oficial"><div class="result-box-label">Score Ley 21.659</div><div class="result-score-sm '+oc+'">'+of.toFixed(1)+'</div><div class="result-nivel-sm '+oc+'">Riesgo '+on+'</div></div>'+
+        '<div class="result-box percep"><div class="result-box-label">Índice Percepción</div><div class="result-score-sm '+pc+'">'+pe.toFixed(1)+'</div><div class="result-nivel-sm '+pc+'">'+pn+'</div></div>'+
+      '</div>'+
+      '<div class="result-insight '+brecha.cls+'">'+brecha.txt+'</div>'+
+      '<div class="result-oblig '+obligCls+'">'+obligTxt+'</div>'+
+      '<div class="result-breakdown">'+
+        '<h3>Detalle cálculo oficial &nbsp; <span style="font-size:0.68rem;font-weight:400;color:#aaa">🔵 dato propio &nbsp; 🟢 dato público</span></h3>'+rows+
+      '</div>'+
+      '<div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:12px;margin-top:12px;font-size:0.76rem;color:#9f1239;line-height:1.5;">'+
+        '<strong>🔴 Dato no incluido:</strong> El Índice de Cobertura de Demanda Policial (peso oficial: 0.096) requiere información de Carabineros de Chile y solo se obtiene en la Visita Inspectiva formal. Está reflejado en tu percepción pero no en el score oficial de esta calculadora.'+
+      '</div>'+
+      '<div style="background:#f8f9fa;border-radius:10px;padding:12px;margin-top:10px;font-size:0.74rem;color:#666;line-height:1.5;">'+
+        '⚖️ Resultado orientativo — Res. 1.820/2025. La clasificación definitiva la determina la Subsecretaría de Prevención del Delito tras una Visita Inspectiva.'+
+      '</div>'+
+      '<a href="https://wa.me/56949018735?text=Hice%20el%20test%20de%20riesgo%20Ley%2021.659%20y%20quiero%20asesor%C3%ADa%20de%20Control%20%26%20Confianza" class="btn-cta" target="_blank">Solicitar asesoría profesional<span>Control & Confianza — Asesores acreditados en seguridad privada</span></a>'+
+      '<button class="btn-cta" style="background:#f0f2f5;color:#444;border:none;margin-top:10px;" onclick="reiniciar()">Calcular de nuevo</button>'+
+    '</div>';
+}
+
+function reiniciar(){
+  current=0;answers={};
+  document.querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');});
+  document.getElementById('q1').value='';
+  document.getElementById('q_comuna').value='';
+  document.getElementById('comunaAuto').style.display='none';
+  document.getElementById('btnRow').style.display='flex';
+  render();
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}
+
+render();
+</script>
+</body>
+</html>
