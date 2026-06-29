@@ -8,465 +8,593 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100vh}
+body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100vh;padding-bottom:30px}
 
-/* HEADER */
-.header{background:#1a1a1a;border-bottom:2px solid #d4a017;padding:12px 16px;display:flex;align-items:center;gap:12px}
-.header img{width:40px;height:40px;border-radius:8px}
-.header-title{flex:1}
-.header-title h1{font-size:15px;font-weight:800;color:#fff}
-.header-title p{font-size:11px;color:#d4a017}
-.btn-volver{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none}
+.header{background:#1a1a1a;border-bottom:2px solid #d4a017;padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:999}
+.header-title h1{font-size:14px;font-weight:800;color:#fff}
+.header-title p{font-size:10px;color:#d4a017}
+.btn-volver{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap}
 
-/* PLAN BADGE */
-.plan-badge{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.5);color:#d4a017;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;text-align:center;margin:12px 16px 0}
+.plan-badge{background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.4);color:#d4a017;font-size:11px;font-weight:800;padding:6px 16px;text-align:center;letter-spacing:.3px}
 
 /* PASOS */
-.pasos{display:flex;gap:0;margin:12px 16px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
-.paso{flex:1;text-align:center;padding:8px 4px;font-size:10px;font-weight:700;color:#777;background:#1a1a1a;cursor:pointer;transition:.2s}
-.paso.activo{background:#d4a017;color:#111}
-.paso.completado{background:rgba(212,160,23,.2);color:#d4a017}
+.pasos{display:flex;background:#1a1a1a;border-bottom:1px solid rgba(255,255,255,.06)}
+.paso{flex:1;text-align:center;padding:10px 4px;font-size:10px;font-weight:700;color:#555;cursor:pointer;transition:.2s;border-bottom:3px solid transparent;position:relative}
+.paso.activo{color:#d4a017;border-bottom-color:#d4a017}
+.paso.completado{color:#27ae60;border-bottom-color:#27ae60}
+.paso-num{display:block;font-size:16px;margin-bottom:2px}
 
-/* SECCIONES */
-.seccion{display:none;padding:16px}
+.seccion{display:none;padding:14px 16px}
 .seccion.activa{display:block}
 
-/* BUSQUEDA */
-.busqueda-wrap{position:relative}
-.busqueda-input{width:100%;background:#1a1a1a;border:1px solid rgba(212,160,23,.4);color:#fff;padding:12px 16px;border-radius:10px;font-size:14px;outline:none}
-.busqueda-input:focus{border-color:#d4a017}
-.busqueda-btn{width:100%;margin-top:8px;background:#d4a017;color:#111;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer}
-.sugerencias{position:absolute;top:100%;left:0;right:0;background:#222;border:1px solid rgba(212,160,23,.3);border-radius:8px;z-index:1000;max-height:200px;overflow-y:auto;margin-top:4px}
-.sugerencia-item{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
-.sugerencia-item:hover{background:rgba(212,160,23,.1);color:#d4a017}
+/* INPUTS */
+.label{font-size:11px;color:#888;margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block}
+.input{width:100%;background:#1a1a1a;border:1px solid rgba(212,160,23,.3);color:#fff;padding:11px 14px;border-radius:10px;font-size:14px;outline:none;margin-bottom:8px}
+.input:focus{border-color:#d4a017}
+.btn-gold{width:100%;background:#d4a017;color:#111;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px}
+.btn-outline{width:100%;background:transparent;border:1px solid rgba(255,255,255,.2);color:#ccc;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px}
+.btn-red{width:100%;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);color:#e74c3c;padding:10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:6px}
+
+.sugerencias{background:#222;border:1px solid rgba(212,160,23,.3);border-radius:8px;overflow:hidden;margin-bottom:8px}
+.sug-item{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
+.sug-item:last-child{border-bottom:none}
+.sug-item:hover{background:rgba(212,160,23,.1);color:#d4a017}
 
 /* MAPA */
-#mapa{height:320px;border-radius:10px;border:1px solid rgba(212,160,23,.3);margin-bottom:12px}
+.mapa-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid rgba(212,160,23,.3);margin-bottom:10px}
+#mapa1,#mapa2{height:260px}
+.mapa-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#d4a017;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;white-space:nowrap;pointer-events:none;z-index:500}
 
-/* HERRAMIENTAS */
-.herramientas-titulo{font-size:12px;font-weight:800;color:#d4a017;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
-.herramientas-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.tool-btn{background:#1a1a1a;border:2px solid transparent;color:#eee;padding:10px 8px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:4px}
-.tool-btn:hover{border-color:#d4a017;color:#d4a017}
-.tool-btn.activo{border-color:#d4a017;background:rgba(212,160,23,.15);color:#d4a017}
-.tool-btn .tool-icon{font-size:20px}
-.tool-btn .tool-count{font-size:10px;color:#777;font-weight:400}
+/* MODO SELECTOR */
+.modo-selector{display:flex;gap:0;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.1);margin-bottom:12px}
+.modo-btn{flex:1;padding:10px 6px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;transition:.2s;color:#666;background:#1a1a1a;border:none}
+.modo-btn.activo{background:#d4a017;color:#111}
 
-.btn-limpiar{width:100%;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);color:#e74c3c;padding:9px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:8px}
-.btn-analizar{width:100%;background:#d4a017;color:#111;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer}
-.btn-analizar:disabled{opacity:.4;cursor:not-allowed}
+/* INFO BOX */
+.info-box{background:#1a1a1a;border-radius:10px;padding:12px;margin-bottom:10px;border-left:3px solid #d4a017}
+.info-box h4{font-size:12px;font-weight:800;color:#d4a017;margin-bottom:6px}
+.info-box p{font-size:12px;color:#aaa;line-height:1.5}
 
-.instruccion{background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#aaa;text-align:center;margin-bottom:12px}
-.instruccion strong{color:#d4a017}
+/* SISTEMAS GRID */
+.sistemas-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.sis-btn{background:#1a1a1a;border:2px solid transparent;color:#eee;padding:10px 6px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.sis-btn .sis-icon{font-size:22px}
+.sis-btn .sis-desc{font-size:9px;color:#666;font-weight:400;line-height:1.3}
+.sis-btn .sis-cnt{font-size:10px;color:#555;margin-top:2px}
+.sis-btn:hover,.sis-btn.activo{border-color:#d4a017;background:rgba(212,160,23,.12);color:#d4a017}
+.sis-btn.activo .sis-desc{color:#a08010}
 
-/* CONTADOR */
-.contador{background:#1a1a1a;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#777;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px}
-.contador span{color:#eee;font-weight:700}
+/* PERIMETRO STATUS */
+.perim-status{display:flex;align-items:center;gap:8px;background:#1a1a1a;border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:12px}
+.perim-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.perim-dot.ok{background:#27ae60}
+.perim-dot.pending{background:#e67e22}
+.perim-dot.none{background:#555}
 
-/* ANALISIS */
-.analisis-header{background:linear-gradient(135deg,rgba(212,160,23,.2),rgba(212,160,23,.05));border:1px solid rgba(212,160,23,.4);border-radius:12px;padding:16px;margin-bottom:16px;text-align:center}
-.analisis-header h2{font-size:18px;color:#d4a017;margin-bottom:4px}
-.analisis-header p{font-size:12px;color:#aaa}
+/* ANÁLISIS */
+.analisis-hero{background:linear-gradient(135deg,rgba(212,160,23,.18),rgba(212,160,23,.04));border:1px solid rgba(212,160,23,.4);border-radius:12px;padding:16px;margin-bottom:14px;text-align:center}
+.analisis-hero h2{font-size:17px;color:#d4a017;margin-bottom:3px}
+.analisis-hero .dir{font-size:11px;color:#888;margin-bottom:10px}
+.riesgo-badge{display:inline-block;padding:6px 18px;border-radius:20px;font-size:13px;font-weight:800}
+.rc{background:rgba(192,57,43,.25);color:#e74c3c;border:1px solid #c0392b}
+.ra{background:rgba(230,126,34,.2);color:#e67e22;border:1px solid #e67e22}
+.rm{background:rgba(243,156,18,.2);color:#f39c12;border:1px solid #f39c12}
+.rb{background:rgba(39,174,96,.2);color:#27ae60;border:1px solid #27ae60}
 
-.riesgo-badge{display:inline-block;padding:6px 20px;border-radius:20px;font-size:14px;font-weight:800;margin-top:8px}
-.riesgo-c{background:rgba(192,57,43,.3);color:#e74c3c;border:1px solid #c0392b}
-.riesgo-a{background:rgba(230,126,34,.2);color:#e67e22;border:1px solid #e67e22}
-.riesgo-m{background:rgba(243,156,18,.2);color:#f39c12;border:1px solid #f39c12}
-.riesgo-b{background:rgba(39,174,96,.2);color:#27ae60;border:1px solid #27ae60}
+.mapa-final-wrap{border-radius:10px;overflow:hidden;border:1px solid rgba(212,160,23,.3);margin-bottom:14px}
+#mapa3{height:240px}
 
-.seccion-analisis{background:#1a1a1a;border-radius:10px;padding:14px;margin-bottom:12px}
-.seccion-analisis h3{font-size:13px;font-weight:800;color:#d4a017;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.rec-item{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-.rec-item:last-child{border-bottom:none}
-.rec-icon{font-size:18px;flex-shrink:0;margin-top:1px}
-.rec-text{font-size:12px;line-height:1.5;color:#ccc}
-.rec-text strong{color:#fff;display:block;margin-bottom:2px}
+.card{background:#1a1a1a;border-radius:10px;padding:13px;margin-bottom:10px}
+.card h3{font-size:12px;font-weight:800;color:#d4a017;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.alerta{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.25);border-radius:8px;padding:9px 11px;margin-bottom:6px;font-size:12px;color:#e07060;display:flex;gap:8px;align-items:flex-start;line-height:1.4}
+.rec{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.rec:last-child{border-bottom:none}
+.rec-icon{font-size:18px;flex-shrink:0}
+.rec-body{font-size:12px;line-height:1.5;color:#ccc}
+.rec-body strong{color:#fff;display:block;margin-bottom:1px}
 
-.alerta-item{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#e74c3c;display:flex;gap:8px;align-items:flex-start}
+.sistemas-resumen{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.sis-tag{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);color:#d4a017;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:700}
 
-.puntos-resumen{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
-.punto-r{background:#1a1a1a;border-radius:8px;padding:8px 10px;font-size:12px;display:flex;align-items:center;gap:6px}
-.punto-r span{font-size:16px}
-.punto-r .cnt{margin-left:auto;background:rgba(212,160,23,.2);color:#d4a017;font-weight:800;padding:2px 8px;border-radius:10px;font-size:11px}
-
-/* CTA FINAL */
-.cta-final{background:linear-gradient(135deg,rgba(212,160,23,.15),rgba(212,160,23,.05));border:2px solid rgba(212,160,23,.5);border-radius:12px;padding:20px 16px;text-align:center;margin-bottom:16px}
-.cta-final h3{font-size:16px;color:#fff;margin-bottom:6px}
-.cta-final p{font-size:12px;color:#aaa;margin-bottom:14px;line-height:1.5}
-.btn-whatsapp{display:block;background:#25D366;color:#fff;padding:14px;border-radius:10px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:8px}
-.btn-nueva{display:block;background:rgba(255,255,255,.08);color:#eee;padding:12px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer;border:none;width:100%}
-
-.label{font-size:12px;color:#888;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.cta{background:linear-gradient(135deg,rgba(212,160,23,.15),rgba(212,160,23,.04));border:2px solid rgba(212,160,23,.45);border-radius:12px;padding:18px 14px;text-align:center;margin-bottom:10px}
+.cta h3{font-size:15px;color:#fff;margin-bottom:5px}
+.cta p{font-size:12px;color:#999;margin-bottom:14px;line-height:1.5}
+.btn-wa{display:block;background:#25D366;color:#fff;padding:14px;border-radius:10px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:8px}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <a href="seguridad-chile.html" class="btn-volver">← Volver</a>
-  <div style="width:36px;height:36px;background:#d4a017;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">🗺️</div>
+  <div style="width:34px;height:34px;background:#d4a017;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">🗺️</div>
   <div class="header-title">
     <h1>Georeferenciación de Predio</h1>
-    <p>Control & Confianza — Plan Empresa</p>
+    <p>Planificación de Seguridad — Plan Empresa</p>
   </div>
 </div>
 
-<div class="plan-badge">🏢 HERRAMIENTA EXCLUSIVA PLAN EMPRESA</div>
+<div class="plan-badge">🏢 Herramienta exclusiva Plan Empresa · Certificado OS.10 Carabineros</div>
 
-<!-- PASOS -->
 <div class="pasos">
-  <div class="paso activo" id="paso1-tab" onclick="irPaso(1)">1. Dirección</div>
-  <div class="paso" id="paso2-tab" onclick="irPaso(2)">2. Marcar predio</div>
-  <div class="paso" id="paso3-tab">3. Análisis</div>
+  <div class="paso activo" id="tab1" onclick="irPaso(1)"><span class="paso-num">📍</span>Dirección</div>
+  <div class="paso" id="tab2" onclick="irPaso(2)"><span class="paso-num">✏️</span>Plano</div>
+  <div class="paso" id="tab3" onclick="irPaso(3)"><span class="paso-num">📊</span>Análisis</div>
 </div>
 
-<!-- PASO 1: BUSCAR DIRECCIÓN -->
+<!-- ====== PASO 1: DIRECCIÓN ====== -->
 <div class="seccion activa" id="paso1">
-  <p class="label">Dirección del predio o empresa</p>
-  <div class="busqueda-wrap">
-    <input class="busqueda-input" id="dir-input" type="text" placeholder="Ej: Av. Providencia 1234, Santiago" autocomplete="off" oninput="buscarDireccion(this.value)" onkeydown="if(event.key==='Enter')geocodificar()"/>
-    <div class="sugerencias" id="sugerencias" style="display:none"></div>
+  <div class="info-box">
+    <h4>¿Para qué sirve esta herramienta?</h4>
+    <p>Permite mapear tu predio o local, dibujar su perímetro y ubicar los sistemas de seguridad (cámaras, guardias, alarmas, accesos). El resultado es la base para tu <strong>Directiva de Funcionamiento OS.10</strong> oficial.</p>
   </div>
-  <button class="busqueda-btn" onclick="geocodificar()">📍 Ubicar en el mapa</button>
 
-  <br>
-  <p class="label" style="margin-top:12px">Vista previa del mapa</p>
-  <div id="mapa-preview" style="height:260px;border-radius:10px;border:1px solid rgba(212,160,23,.3)"></div>
-  <br>
-  <button class="busqueda-btn" id="btn-siguiente1" onclick="irPaso(2)" style="display:none">Continuar → Marcar el predio</button>
+  <span class="label">Dirección del predio o empresa</span>
+  <input class="input" id="dir-input" type="text" placeholder="Ej: Av. Providencia 1234, Santiago" oninput="autocompletar(this.value)" onkeydown="if(event.key==='Enter')geocodificar()"/>
+  <div id="sugs" class="sugerencias" style="display:none"></div>
+  <button class="btn-gold" onclick="geocodificar()">📍 Ubicar en el mapa</button>
+
+  <div class="mapa-wrap">
+    <div id="mapa1"></div>
+    <div class="mapa-hint" id="hint1" style="display:none">✓ Predio ubicado — continúa abajo</div>
+  </div>
+
+  <button class="btn-gold" id="btn-sig1" onclick="irPaso(2)" style="display:none">Continuar → Dibujar plano del predio</button>
 </div>
 
-<!-- PASO 2: MARCAR PREDIO -->
+<!-- ====== PASO 2: PLANO ====== -->
 <div class="seccion" id="paso2">
-  <div class="instruccion">
-    Selecciona un tipo de marcador y luego <strong>toca el mapa</strong> para colocarlo en el predio
+
+  <div class="modo-selector">
+    <button class="modo-btn activo" id="modo-perim" onclick="setModo('perimetro')">✏️ Dibujar perímetro</button>
+    <button class="modo-btn" id="modo-sis" onclick="setModo('sistemas')">🔧 Colocar sistemas</button>
   </div>
 
-  <p class="label">Tipo de marcador activo</p>
-  <div class="herramientas-grid">
-    <button class="tool-btn activo" id="tool-entrada_p" onclick="seleccionarTool('entrada_p')">
-      <span class="tool-icon">🚪</span>
-      <span>Entrada Principal</span>
-      <span class="tool-count" id="cnt-entrada_p">0 marcados</span>
-    </button>
-    <button class="tool-btn" id="tool-entrada_s" onclick="seleccionarTool('entrada_s')">
-      <span class="tool-icon">🚧</span>
-      <span>Entrada Secundaria</span>
-      <span class="tool-count" id="cnt-entrada_s">0 marcados</span>
-    </button>
-    <button class="tool-btn" id="tool-bodega" onclick="seleccionarTool('bodega')">
-      <span class="tool-icon">📦</span>
-      <span>Bodega / Activos</span>
-      <span class="tool-count" id="cnt-bodega">0 marcados</span>
-    </button>
-    <button class="tool-btn" id="tool-estac" onclick="seleccionarTool('estac')">
-      <span class="tool-icon">🅿️</span>
-      <span>Estacionamiento</span>
-      <span class="tool-count" id="cnt-estac">0 marcados</span>
-    </button>
-    <button class="tool-btn" id="tool-ciego" onclick="seleccionarTool('ciego')">
-      <span class="tool-icon">👁️</span>
-      <span>Punto Ciego</span>
-      <span class="tool-count" id="cnt-ciego">0 marcados</span>
-    </button>
-    <button class="tool-btn" id="tool-guardia" onclick="seleccionarTool('guardia')">
-      <span class="tool-icon">💂</span>
-      <span>Puesto Guardia</span>
-      <span class="tool-count" id="cnt-guardia">0 marcados</span>
-    </button>
+  <!-- MODO PERIMETRO -->
+  <div id="panel-perimetro">
+    <div class="info-box">
+      <h4>✏️ Dibuja el perímetro del predio</h4>
+      <p>Toca cada <strong>esquina del edificio</strong> en el mapa para trazar el contorno. Cuando termines presiona <strong>"Cerrar perímetro"</strong>. Usa el mapa satelital para guiarte.</p>
+    </div>
+    <div class="perim-status">
+      <div class="perim-dot none" id="perim-dot"></div>
+      <span id="perim-txt">Sin perímetro — toca el mapa para comenzar</span>
+    </div>
   </div>
 
-  <div id="mapa" style="height:320px"></div>
-
-  <div class="contador" id="contador">
-    Sin marcadores aún — toca el mapa para comenzar
+  <!-- MODO SISTEMAS -->
+  <div id="panel-sistemas" style="display:none">
+    <div class="info-box">
+      <h4>🔧 Coloca los sistemas de seguridad</h4>
+      <p>Selecciona el tipo de sistema y toca el mapa donde lo instalarías. Cada sistema tiene un propósito específico en la Directiva OS.10.</p>
+    </div>
+    <div class="sistemas-grid">
+      <button class="sis-btn activo" id="sis-camara" onclick="setSistema('camara')">
+        <span class="sis-icon">📷</span>
+        <span>Cámara</span>
+        <span class="sis-desc">Vigilancia y registro de accesos e interior</span>
+        <span class="sis-cnt" id="cnt-camara">0 ubicadas</span>
+      </button>
+      <button class="sis-btn" id="sis-guardia" onclick="setSistema('guardia')">
+        <span class="sis-icon">💂</span>
+        <span>Puesto Guardia</span>
+        <span class="sis-desc">Posición fija del guardia con visión de entradas</span>
+        <span class="sis-cnt" id="cnt-guardia">0 ubicados</span>
+      </button>
+      <button class="sis-btn" id="sis-alarma" onclick="setSistema('alarma')">
+        <span class="sis-icon">🚨</span>
+        <span>Sensor / Alarma</span>
+        <span class="sis-desc">Detección de movimiento o intrusión perimetral</span>
+        <span class="sis-cnt" id="cnt-alarma">0 ubicados</span>
+      </button>
+      <button class="sis-btn" id="sis-acceso" onclick="setSistema('acceso')">
+        <span class="sis-icon">🔒</span>
+        <span>Control de Acceso</span>
+        <span class="sis-desc">Lector, intercomunicador o barrera vehicular</span>
+        <span class="sis-cnt" id="cnt-acceso">0 ubicados</span>
+      </button>
+      <button class="sis-btn" id="sis-ilum" onclick="setSistema('ilum')">
+        <span class="sis-icon">💡</span>
+        <span>Iluminación</span>
+        <span class="sis-desc">Luz de seguridad en zonas oscuras o accesos</span>
+        <span class="sis-cnt" id="cnt-ilum">0 ubicadas</span>
+      </button>
+      <button class="sis-btn" id="sis-ciego" onclick="setSistema('ciego')">
+        <span class="sis-icon">👁️</span>
+        <span>Punto Ciego</span>
+        <span class="sis-desc">Zona sin visibilidad — requiere cámara o guardia</span>
+        <span class="sis-cnt" id="cnt-ciego">0 marcados</span>
+      </button>
+      <button class="sis-btn" id="sis-entrada" onclick="setSistema('entrada')">
+        <span class="sis-icon">🚪</span>
+        <span>Entrada / Acceso</span>
+        <span class="sis-desc">Puerta principal o secundaria del predio</span>
+        <span class="sis-cnt" id="cnt-entrada">0 marcadas</span>
+      </button>
+      <button class="sis-btn" id="sis-bodega" onclick="setSistema('bodega')">
+        <span class="sis-icon">📦</span>
+        <span>Bodega / Activos</span>
+        <span class="sis-desc">Zona de mayor valor — prioridad de protección</span>
+        <span class="sis-cnt" id="cnt-bodega">0 marcadas</span>
+      </button>
+    </div>
   </div>
 
-  <button class="btn-limpiar" onclick="limpiarMarcadores()">🗑️ Limpiar todos los marcadores</button>
-  <button class="busqueda-btn" id="btn-analizar" onclick="analizarPredio()" disabled>📊 Analizar el predio</button>
+  <div class="mapa-wrap">
+    <div id="mapa2"></div>
+    <div class="mapa-hint" id="hint2">Toca el mapa para marcar una esquina</div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <button onclick="undoUltimo()" style="flex:1;background:#1a1a1a;border:1px solid rgba(255,255,255,.15);color:#ccc;padding:10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">↩ Deshacer</button>
+    <button onclick="cerrarPerimetro()" id="btn-cerrar-perim" style="flex:1;background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.4);color:#2ecc71;padding:10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer" disabled>✓ Cerrar perímetro</button>
+  </div>
+  <button class="btn-red" onclick="limpiarTodo()">🗑️ Limpiar todo</button>
+  <button class="btn-gold" id="btn-analizar" onclick="analizarPredio()" disabled>📊 Generar análisis de seguridad</button>
 </div>
 
-<!-- PASO 3: ANÁLISIS -->
+<!-- ====== PASO 3: ANÁLISIS ====== -->
 <div class="seccion" id="paso3">
-  <div class="analisis-header">
+  <div class="analisis-hero">
     <h2>Análisis de Seguridad del Predio</h2>
-    <p id="dir-resultado">—</p>
-    <div id="riesgo-zona-badge" class="riesgo-badge riesgo-a">Cargando...</div>
+    <p class="dir" id="dir-result">—</p>
+    <div class="riesgo-badge ra" id="badge-riesgo">Calculando...</div>
   </div>
 
-  <div class="puntos-resumen" id="puntos-resumen"></div>
+  <div class="mapa-final-wrap">
+    <div id="mapa3"></div>
+  </div>
 
-  <div class="seccion-analisis" id="alertas-section">
-    <h3>⚠️ Alertas detectadas</h3>
+  <div class="card">
+    <h3>🔧 Sistemas de seguridad planificados</h3>
+    <div class="sistemas-resumen" id="sis-resumen"></div>
+  </div>
+
+  <div class="card" id="card-alertas">
+    <h3>⚠️ Vulnerabilidades detectadas</h3>
     <div id="alertas-lista"></div>
   </div>
 
-  <div class="seccion-analisis">
-    <h3>💡 Recomendaciones</h3>
-    <div id="recomendaciones-lista"></div>
+  <div class="card">
+    <h3>💡 Recomendaciones para la Directiva OS.10</h3>
+    <div id="recs-lista"></div>
   </div>
 
-  <div class="cta-final">
-    <h3>Obtén tu Directiva de Funcionamiento OS.10</h3>
-    <p>Con este análisis, Carlos Sandoval — asesor acreditado OS.10 Carabineros de Chile — prepara tu Directiva oficial para cumplir con la ley.</p>
-    <a id="btn-wa" class="btn-whatsapp" href="#" target="_blank">💬 Solicitar Directiva por WhatsApp</a>
-    <button class="btn-nueva" onclick="irPaso(1);reiniciar()">← Analizar otro predio</button>
+  <div class="cta">
+    <h3>📄 Obtén tu Directiva de Funcionamiento OS.10</h3>
+    <p>Este plano y análisis es entregado a Carlos Sandoval — asesor acreditado OS.10 Carabineros de Chile — para preparar tu Directiva oficial y cumplir con la ley.</p>
+    <a id="btn-wa" class="btn-wa" href="#" target="_blank">💬 Solicitar Directiva por WhatsApp</a>
+    <button class="btn-outline" onclick="reiniciar()">← Analizar otro predio</button>
   </div>
 </div>
 
 <script>
 // ============================================================
-// ESTADO GLOBAL
+// ESTADO
 // ============================================================
-let mapaPreview = null;
-let mapaEditor = null;
-let marcadores = [];
-let toolActivo = 'entrada_p';
-let latPredio = null, lngPredio = null;
-let direccionTexto = '';
-let busquedaTimeout = null;
+let map1=null, map2=null, map3=null;
+let latC=null, lngC=null, dirTexto='';
+let puntosPoly=[], polyLine=null, polyFill=null, polyMarkers=[];
+let perimeroCerrado=false;
+let sistemas=[], sisActivo='camara';
+let modoActual='perimetro';
+let sugTimeout=null;
+let markerPreview=null;
 
-const TOOLS = {
-  entrada_p: { emoji: '🚪', label: 'Entrada Principal', color: '#d4a017' },
-  entrada_s: { emoji: '🚧', label: 'Entrada Secundaria', color: '#e67e22' },
-  bodega:    { emoji: '📦', label: 'Bodega / Activos',  color: '#9b59b6' },
-  estac:     { emoji: '🅿️', label: 'Estacionamiento',  color: '#3498db' },
-  ciego:     { emoji: '👁️', label: 'Punto Ciego',      color: '#c0392b' },
-  guardia:   { emoji: '💂', label: 'Puesto Guardia',   color: '#27ae60' },
+const SIS = {
+  camara:  {e:'📷', n:'Cámara',           c:'#e74c3c'},
+  guardia: {e:'💂', n:'Puesto Guardia',    c:'#27ae60'},
+  alarma:  {e:'🚨', n:'Sensor / Alarma',   c:'#e67e22'},
+  acceso:  {e:'🔒', n:'Control de Acceso', c:'#3498db'},
+  ilum:    {e:'💡', n:'Iluminación',        c:'#f1c40f'},
+  ciego:   {e:'👁️', n:'Punto Ciego',       c:'#c0392b'},
+  entrada: {e:'🚪', n:'Entrada / Acceso',  c:'#d4a017'},
+  bodega:  {e:'📦', n:'Bodega / Activos',  c:'#9b59b6'},
 };
 
 // ============================================================
-// MAPA PREVIEW (Paso 1)
+// MAPA 1
 // ============================================================
-window.addEventListener('DOMContentLoaded', () => {
-  mapaPreview = L.map('mapa-preview', { zoomControl: true }).setView([-33.45, -70.67], 11);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap © CARTO', maxZoom: 19
-  }).addTo(mapaPreview);
+window.addEventListener('DOMContentLoaded',()=>{
+  map1=L.map('mapa1',{zoomControl:true}).setView([-33.45,-70.67],11);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:20}).addTo(map1);
 });
 
 // ============================================================
-// GEOCODIFICACIÓN
+// GEOCODING
 // ============================================================
-let markerPreview = null;
-
-async function buscarDireccion(val) {
-  clearTimeout(busquedaTimeout);
-  if (val.length < 5) { document.getElementById('sugerencias').style.display = 'none'; return; }
-  busquedaTimeout = setTimeout(async () => {
-    try {
-      const q = encodeURIComponent(val + ', Chile');
-      const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&countrycodes=cl`);
-      const data = await r.json();
-      mostrarSugerencias(data);
-    } catch(e) {}
-  }, 400);
+async function autocompletar(v){
+  clearTimeout(sugTimeout);
+  if(v.length<5){document.getElementById('sugs').style.display='none';return;}
+  sugTimeout=setTimeout(async()=>{
+    try{
+      const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(v+', Chile')}&format=json&limit=5&countrycodes=cl`);
+      const d=await r.json();
+      const el=document.getElementById('sugs');
+      if(!d.length){el.style.display='none';return;}
+      el.innerHTML=d.map(x=>`<div class="sug-item" onclick="elegirSug('${x.display_name.replace(/'/g,"\\'")}',${x.lat},${x.lon})">${x.display_name}</div>`).join('');
+      el.style.display='block';
+    }catch(e){}
+  },400);
 }
 
-function mostrarSugerencias(data) {
-  const el = document.getElementById('sugerencias');
-  if (!data.length) { el.style.display = 'none'; return; }
-  el.innerHTML = data.map(d => `<div class="sugerencia-item" onclick="seleccionarSugerencia('${d.display_name.replace(/'/g,"\\'")}',${d.lat},${d.lon})">${d.display_name}</div>`).join('');
-  el.style.display = 'block';
+function elegirSug(n,lat,lon){
+  document.getElementById('dir-input').value=n;
+  document.getElementById('sugs').style.display='none';
+  ubicar(lat,lon,n);
 }
 
-function seleccionarSugerencia(nombre, lat, lon) {
-  document.getElementById('dir-input').value = nombre;
-  document.getElementById('sugerencias').style.display = 'none';
-  ubicarEnMapa(lat, lon, nombre);
+async function geocodificar(){
+  const v=document.getElementById('dir-input').value.trim();
+  if(!v)return;
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(v+', Chile')}&format=json&limit=1&countrycodes=cl`);
+    const d=await r.json();
+    if(!d.length){alert('Dirección no encontrada.');return;}
+    document.getElementById('sugs').style.display='none';
+    elegirSug(d[0].display_name,d[0].lat,d[0].lon);
+  }catch(e){alert('Error de conexión.');}
 }
 
-async function geocodificar() {
-  const val = document.getElementById('dir-input').value.trim();
-  if (!val) return;
-  try {
-    const q = encodeURIComponent(val + ', Chile');
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=cl`);
-    const data = await r.json();
-    if (!data.length) { alert('Dirección no encontrada. Intenta con otra.'); return; }
-    document.getElementById('sugerencias').style.display = 'none';
-    ubicarEnMapa(data[0].lat, data[0].lon, data[0].display_name);
-  } catch(e) { alert('Error al buscar la dirección. Verifica tu conexión.'); }
-}
-
-function ubicarEnMapa(lat, lon, nombre) {
-  latPredio = parseFloat(lat);
-  lngPredio = parseFloat(lon);
-  direccionTexto = nombre;
-  mapaPreview.setView([latPredio, lngPredio], 17);
-  if (markerPreview) mapaPreview.removeLayer(markerPreview);
-  markerPreview = L.marker([latPredio, lngPredio]).addTo(mapaPreview).bindPopup('📍 ' + nombre.split(',')[0]).openPopup();
-  document.getElementById('btn-siguiente1').style.display = 'block';
+function ubicar(lat,lon,nombre){
+  latC=parseFloat(lat); lngC=parseFloat(lon); dirTexto=nombre;
+  map1.setView([latC,lngC],18);
+  if(markerPreview)map1.removeLayer(markerPreview);
+  markerPreview=L.marker([latC,lngC]).addTo(map1).bindPopup('📍 '+nombre.split(',')[0]).openPopup();
+  document.getElementById('hint1').style.display='block';
+  document.getElementById('btn-sig1').style.display='block';
 }
 
 // ============================================================
 // PASOS
 // ============================================================
-function irPaso(n) {
-  if (n === 2 && !latPredio) { alert('Primero debes ubicar la dirección del predio.'); return; }
-  document.querySelectorAll('.seccion').forEach((s,i) => {
-    s.classList.toggle('activa', i === n - 1);
+function irPaso(n){
+  if(n>=2&&!latC){alert('Primero ubica la dirección.');return;}
+  [1,2,3].forEach(i=>{
+    document.getElementById('paso'+i).classList.toggle('activa',i===n);
+    const t=document.getElementById('tab'+i);
+    t.classList.remove('activo','completado');
+    if(i===n)t.classList.add('activo');
+    if(i<n)t.classList.add('completado');
   });
-  document.querySelectorAll('.paso').forEach((p, i) => {
-    p.classList.remove('activo', 'completado');
-    if (i + 1 === n) p.classList.add('activo');
-    if (i + 1 < n) p.classList.add('completado');
-  });
-  if (n === 2) iniciarMapaEditor();
+  if(n===2&&!map2)iniciarMapa2();
 }
 
 // ============================================================
-// MAPA EDITOR (Paso 2)
+// MAPA 2 — EDITOR
 // ============================================================
-function iniciarMapaEditor() {
-  if (mapaEditor) {
-    mapaEditor.setView([latPredio, lngPredio], 18);
-    return;
+function iniciarMapa2(){
+  map2=L.map('mapa2',{zoomControl:true}).setView([latC,lngC],18);
+  // Tile satelital + labels
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:20,attribution:'© Esri'}).addTo(map2);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:20,opacity:.8}).addTo(map2);
+  map2.on('click',onMapClick);
+}
+
+function onMapClick(e){
+  if(modoActual==='perimetro'&&!perimeroCerrado){
+    agregarPunto(e.latlng.lat,e.latlng.lng);
+  } else if(modoActual==='sistemas'){
+    agregarSistema(e.latlng.lat,e.latlng.lng);
   }
-  mapaEditor = L.map('mapa', { zoomControl: true }).setView([latPredio, lngPredio], 18);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap © CARTO', maxZoom: 20
-  }).addTo(mapaEditor);
-
-  // Círculo referencia del predio
-  L.circle([latPredio, lngPredio], { radius: 50, color: '#d4a017', fillColor: '#d4a017', fillOpacity: 0.08, weight: 2, dashArray: '6,4' }).addTo(mapaEditor);
-  L.marker([latPredio, lngPredio], { icon: L.divIcon({ html: '<div style="background:#d4a017;color:#111;font-size:10px;font-weight:800;padding:3px 7px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.4)">📍 PREDIO</div>', className:'', iconAnchor:[30,10] }) }).addTo(mapaEditor);
-
-  mapaEditor.on('click', (e) => agregarMarcador(e.latlng.lat, e.latlng.lng));
 }
 
-function agregarMarcador(lat, lng) {
-  const t = TOOLS[toolActivo];
-  const icon = L.divIcon({
-    html: `<div style="background:#111;border:2px solid ${t.color};border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.5)">${t.emoji}</div>`,
-    className: '', iconAnchor: [18, 18]
-  });
-  const m = L.marker([lat, lng], { icon }).addTo(mapaEditor);
-  m.bindPopup(`<strong>${t.emoji} ${t.label}</strong>`);
-  marcadores.push({ tipo: toolActivo, lat, lng, marker: m });
-  actualizarContadores();
+// ============================================================
+// PERIMETRO
+// ============================================================
+function agregarPunto(lat,lng){
+  puntosPoly.push([lat,lng]);
+  // Marcador de esquina
+  const m=L.circleMarker([lat,lng],{radius:6,color:'#d4a017',fillColor:'#d4a017',fillOpacity:1,weight:2}).addTo(map2);
+  polyMarkers.push(m);
+  // Línea provisional
+  if(polyLine)map2.removeLayer(polyLine);
+  if(puntosPoly.length>1){
+    polyLine=L.polyline(puntosPoly,{color:'#d4a017',weight:2,dashArray:'6,4'}).addTo(map2);
+  }
+  actualizarEstadoPerim();
+  document.getElementById('btn-cerrar-perim').disabled=puntosPoly.length<3;
 }
 
-function seleccionarTool(tipo) {
-  toolActivo = tipo;
-  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('activo'));
-  document.getElementById('tool-' + tipo).classList.add('activo');
+function cerrarPerimetro(){
+  if(puntosPoly.length<3)return;
+  if(polyLine)map2.removeLayer(polyLine);
+  if(polyFill)map2.removeLayer(polyFill);
+  polyFill=L.polygon(puntosPoly,{color:'#d4a017',weight:2,fillColor:'#d4a017',fillOpacity:.15}).addTo(map2);
+  perimeroCerrado=true;
+  actualizarEstadoPerim();
+  setModo('sistemas');
+  document.getElementById('btn-analizar').disabled=false;
 }
 
-function limpiarMarcadores() {
-  if (!marcadores.length) return;
-  if (!confirm('¿Eliminar todos los marcadores?')) return;
-  marcadores.forEach(m => mapaEditor.removeLayer(m.marker));
-  marcadores = [];
-  actualizarContadores();
-}
-
-function actualizarContadores() {
-  const cnts = {};
-  Object.keys(TOOLS).forEach(k => cnts[k] = 0);
-  marcadores.forEach(m => cnts[m.tipo]++);
-  Object.keys(TOOLS).forEach(k => {
-    document.getElementById('cnt-' + k).textContent = cnts[k] + ' marcado' + (cnts[k] !== 1 ? 's' : '');
-  });
-  const total = marcadores.length;
-  const el = document.getElementById('contador');
-  if (!total) {
-    el.innerHTML = 'Sin marcadores aún — toca el mapa para comenzar';
+function actualizarEstadoPerim(){
+  const dot=document.getElementById('perim-dot');
+  const txt=document.getElementById('perim-txt');
+  if(perimeroCerrado){
+    dot.className='perim-dot ok'; txt.textContent='Perímetro cerrado ✓ — ahora coloca los sistemas de seguridad';
+  } else if(puntosPoly.length===0){
+    dot.className='perim-dot none'; txt.textContent='Sin perímetro — toca el mapa para comenzar';
   } else {
-    el.innerHTML = Object.keys(TOOLS).filter(k => cnts[k] > 0)
-      .map(k => `<div>${TOOLS[k].emoji} <span>${cnts[k]}</span> ${TOOLS[k].label}</div>`).join('');
+    dot.className='perim-dot pending'; txt.textContent=`${puntosPoly.length} punto(s) marcado(s) — necesitas al menos 3 para cerrar`;
   }
-  document.getElementById('btn-analizar').disabled = total < 1;
+}
+
+function undoUltimo(){
+  if(modoActual==='perimetro'&&!perimeroCerrado&&puntosPoly.length>0){
+    puntosPoly.pop();
+    const m=polyMarkers.pop();
+    if(m)map2.removeLayer(m);
+    if(polyLine)map2.removeLayer(polyLine);
+    if(puntosPoly.length>1) polyLine=L.polyline(puntosPoly,{color:'#d4a017',weight:2,dashArray:'6,4'}).addTo(map2);
+    actualizarEstadoPerim();
+    document.getElementById('btn-cerrar-perim').disabled=puntosPoly.length<3;
+  } else if(modoActual==='sistemas'&&sistemas.length>0){
+    const last=sistemas.pop();
+    if(last.marker)map2.removeLayer(last.marker);
+    actualizarContSistemas();
+  }
+}
+
+function limpiarTodo(){
+  if(!confirm('¿Limpiar todo el plano?'))return;
+  puntosPoly=[]; perimeroCerrado=false;
+  polyMarkers.forEach(m=>map2.removeLayer(m)); polyMarkers=[];
+  if(polyLine)map2.removeLayer(polyLine); polyLine=null;
+  if(polyFill)map2.removeLayer(polyFill); polyFill=null;
+  sistemas.forEach(s=>s.marker&&map2.removeLayer(s.marker)); sistemas=[];
+  actualizarEstadoPerim(); actualizarContSistemas();
+  setModo('perimetro');
+  document.getElementById('btn-analizar').disabled=true;
+  document.getElementById('btn-cerrar-perim').disabled=true;
+}
+
+// ============================================================
+// MODO
+// ============================================================
+function setModo(m){
+  modoActual=m;
+  document.getElementById('modo-perim').classList.toggle('activo',m==='perimetro');
+  document.getElementById('modo-sis').classList.toggle('activo',m==='sistemas');
+  document.getElementById('panel-perimetro').style.display=m==='perimetro'?'block':'none';
+  document.getElementById('panel-sistemas').style.display=m==='sistemas'?'block':'none';
+  document.getElementById('hint2').textContent=m==='perimetro'
+    ? 'Toca el mapa para marcar cada esquina del predio'
+    : 'Selecciona un sistema arriba y toca el mapa para ubicarlo';
+}
+
+// ============================================================
+// SISTEMAS
+// ============================================================
+function setSistema(tipo){
+  sisActivo=tipo;
+  document.querySelectorAll('.sis-btn').forEach(b=>b.classList.remove('activo'));
+  document.getElementById('sis-'+tipo).classList.add('activo');
+}
+
+function agregarSistema(lat,lng){
+  const s=SIS[sisActivo];
+  const icon=L.divIcon({
+    html:`<div style="background:#111;border:2px solid ${s.c};border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.6)">${s.e}</div>`,
+    className:'',iconAnchor:[17,17]
+  });
+  const m=L.marker([lat,lng],{icon}).addTo(map2);
+  m.bindPopup(`<strong>${s.e} ${s.n}</strong>`);
+  sistemas.push({tipo:sisActivo,lat,lng,marker:m});
+  actualizarContSistemas();
+}
+
+function actualizarContSistemas(){
+  const cnts={};
+  Object.keys(SIS).forEach(k=>cnts[k]=0);
+  sistemas.forEach(s=>cnts[s.tipo]++);
+  Object.keys(SIS).forEach(k=>{
+    const el=document.getElementById('cnt-'+k);
+    if(el) el.textContent=cnts[k]+' ubica'+(cnts[k]===1?'do':'dos');
+  });
 }
 
 // ============================================================
 // ANÁLISIS
 // ============================================================
-function analizarPredio() {
-  const cnts = {};
-  Object.keys(TOOLS).forEach(k => cnts[k] = 0);
-  marcadores.forEach(m => cnts[m.tipo]++);
+function analizarPredio(){
+  const cnts={};
+  Object.keys(SIS).forEach(k=>cnts[k]=0);
+  sistemas.forEach(s=>cnts[s.tipo]++);
 
-  // Resumen de puntos
-  const resumen = document.getElementById('puntos-resumen');
-  resumen.innerHTML = Object.keys(TOOLS).map(k => cnts[k] > 0 ? `
-    <div class="punto-r">
-      <span>${TOOLS[k].emoji}</span>
-      <div style="font-size:11px">${TOOLS[k].label}</div>
-      <span class="cnt">${cnts[k]}</span>
-    </div>` : '').join('');
+  // Badge de riesgo
+  const puntaje=(cnts.ciego*3)+(cnts.bodega*2)+(cnts.entrada===0?2:0)+(cnts.guardia===0&&sistemas.length>2?2:0);
+  let nivelTxt,nivelCls;
+  if(puntaje>=8){nivelTxt='🔴 RIESGO CRÍTICO';nivelCls='rc';}
+  else if(puntaje>=5){nivelTxt='🟠 RIESGO ALTO';nivelCls='ra';}
+  else if(puntaje>=2){nivelTxt='🟡 RIESGO MEDIO';nivelCls='rm';}
+  else{nivelTxt='🟢 RIESGO BAJO';nivelCls='rb';}
+
+  document.getElementById('badge-riesgo').textContent=nivelTxt;
+  document.getElementById('badge-riesgo').className='riesgo-badge '+nivelCls;
+  document.getElementById('dir-result').textContent=dirTexto.split(',').slice(0,2).join(',');
+
+  // Resumen sistemas
+  const sisRes=document.getElementById('sis-resumen');
+  const tieneAlgo=Object.keys(SIS).some(k=>cnts[k]>0);
+  if(tieneAlgo){
+    sisRes.innerHTML=Object.keys(SIS).filter(k=>cnts[k]>0)
+      .map(k=>`<div class="sis-tag">${SIS[k].e} ${cnts[k]} ${SIS[k].n}</div>`).join('');
+  } else {
+    sisRes.innerHTML='<p style="font-size:12px;color:#666">No se ubicaron sistemas — el plano solo tiene el perímetro</p>';
+  }
 
   // Alertas
-  const alertas = [];
-  if (cnts['ciego'] > 0) alertas.push({ txt: `Se detectaron <strong>${cnts['ciego']} punto(s) ciego(s)</strong>. Estas zonas sin visibilidad son los lugares más vulnerables a robos e intrusiones.` });
-  if (cnts['entrada_p'] === 0) alertas.push({ txt: 'No marcaste ninguna <strong>entrada principal</strong>. Es fundamental identificar los accesos para asignar vigilancia.' });
-  if (cnts['guardia'] === 0 && marcadores.length > 3) alertas.push({ txt: 'No definiste <strong>puestos de guardia</strong>. Para un predio con múltiples accesos y bodegas se recomienda al menos 1 puesto fijo.' });
-  if (cnts['bodega'] > 0 && cnts['guardia'] === 0) alertas.push({ txt: `Tienes <strong>${cnts['bodega']} bodega(s)/activos</strong> pero ningún puesto de guardia cercano. Las bodegas son el objetivo más frecuente.` });
-  if (cnts['estac'] > 0) alertas.push({ txt: `El estacionamiento es un punto de alta vulnerabilidad: robo de vehículos y acceso no autorizado al predio.` });
+  const alertas=[];
+  if(cnts.ciego>0) alertas.push(`<strong>${cnts.ciego} punto(s) ciego(s)</strong> detectados sin cobertura de cámara o guardia. Son las zonas de mayor riesgo de intrusión.`);
+  if(cnts.entrada===0) alertas.push('No se definieron <strong>entradas o accesos</strong>. La Directiva OS.10 exige identificar todos los puntos de acceso al predio.');
+  if(cnts.guardia===0&&perimeroCerrado) alertas.push('No hay <strong>puestos de guardia</strong> definidos. Para instalaciones con personal de seguridad, la posición debe quedar en la Directiva.');
+  if(cnts.bodega>0&&cnts.camara===0) alertas.push(`Hay <strong>${cnts.bodega} bodega(s)/activos</strong> sin cobertura de cámara de seguridad.`);
+  if(cnts.ciego>0&&cnts.camara===0) alertas.push('Los puntos ciegos marcados no tienen cámara asignada. Considera agregar cámaras en esas posiciones.');
 
-  const alertasEl = document.getElementById('alertas-lista');
-  if (alertas.length) {
-    alertasEl.innerHTML = alertas.map(a => `<div class="alerta-item">⚠️ <span>${a.txt}</span></div>`).join('');
-    document.getElementById('alertas-section').style.display = 'block';
+  const alertasEl=document.getElementById('alertas-lista');
+  if(alertas.length){
+    alertasEl.innerHTML=alertas.map(a=>`<div class="alerta">⚠️ <span>${a}</span></div>`).join('');
+    document.getElementById('card-alertas').style.display='block';
   } else {
-    document.getElementById('alertas-section').style.display = 'none';
+    document.getElementById('card-alertas').style.display='none';
   }
 
   // Recomendaciones
-  const recs = [];
-  if (cnts['ciego'] > 0) recs.push({ icon: '📷', titulo: 'Instalar cámaras en puntos ciegos', desc: `Los ${cnts['ciego']} punto(s) ciego(s) marcados requieren cobertura de cámara o reubicación de iluminación para eliminar ángulos muertos.` });
-  if (cnts['entrada_p'] + cnts['entrada_s'] > 1) recs.push({ icon: '🚨', titulo: 'Control de acceso diferenciado', desc: 'Con múltiples entradas se recomienda un sistema de control de acceso con lector o intercomunicador en cada punto.' });
-  if (cnts['bodega'] > 0) recs.push({ icon: '🔒', titulo: 'Seguridad perimetral en bodega', desc: 'Las bodegas con activos deben tener cerradura de alta seguridad, alarma perimetral y cámara apuntando directamente a la puerta.' });
-  if (cnts['guardia'] > 0) recs.push({ icon: '💂', titulo: 'Ruta de ronda para guardias', desc: `Con ${cnts['guardia']} puesto(s) de guardia, define una ruta de ronda fija que cubra las entradas, bodegas y puntos ciegos marcados.` });
-  if (cnts['estac'] > 0) recs.push({ icon: '🅿️', titulo: 'Iluminación del estacionamiento', desc: 'Los estacionamientos deben tener iluminación LED de alta potencia y cámara con visión nocturna. Es la zona más vulnerable fuera del horario laboral.' });
-  recs.push({ icon: '📄', titulo: 'Directiva de Funcionamiento OS.10', desc: 'Este análisis es la base para tu Directiva oficial. Carlos Sandoval, asesor acreditado OS.10, la prepara y firma para cumplir con la ley.' });
+  const recs=[];
+  if(cnts.camara>0) recs.push({i:'📷',t:'Posición de cámaras',d:`Ubicaste ${cnts.camara} cámara(s). La Directiva debe especificar el ángulo de cobertura, resolución mínima y si incluye visión nocturna.`});
+  if(cnts.guardia>0) recs.push({i:'💂',t:'Ruta de ronda del guardia',d:`Con ${cnts.guardia} puesto(s) definido(s), la Directiva debe incluir la ruta de ronda, frecuencia y protocolo de relevo.`});
+  if(cnts.alarma>0) recs.push({i:'🚨',t:'Zonas de alarma',d:`Los ${cnts.alarma} sensor(es) deben integrarse a una central de monitoreo. La Directiva especifica el protocolo de respuesta.`});
+  if(cnts.acceso>0) recs.push({i:'🔒',t:'Control de acceso',d:`Los ${cnts.acceso} punto(s) de control de acceso deben tener registro de entradas y salidas según la Ley 21.659.`});
+  if(cnts.ilum>0) recs.push({i:'💡',t:'Iluminación de seguridad',d:`La iluminación en los ${cnts.ilum} punto(s) marcados debe estar operativa durante toda la noche y mencionada en la Directiva.`});
+  if(perimeroCerrado) recs.push({i:'📐',t:'Perímetro del predio',d:'El plano del perímetro queda como anexo gráfico de la Directiva de Funcionamiento, identificando el área de responsabilidad del servicio de seguridad.'});
+  recs.push({i:'📄',t:'Directiva de Funcionamiento OS.10',d:'Basado en este plano, Carlos Sandoval prepara la Directiva oficial requerida por DL 3.607 y Ley 21.659 para tu empresa.'});
 
-  document.getElementById('recomendaciones-lista').innerHTML = recs.map(r => `
-    <div class="rec-item">
-      <span class="rec-icon">${r.icon}</span>
-      <div class="rec-text"><strong>${r.titulo}</strong>${r.desc}</div>
+  document.getElementById('recs-lista').innerHTML=recs.map(r=>`
+    <div class="rec">
+      <span class="rec-icon">${r.i}</span>
+      <div class="rec-body"><strong>${r.t}</strong>${r.d}</div>
     </div>`).join('');
 
-  // Nivel de riesgo (basado en cantidad de puntos críticos)
-  const puntajeRiesgo = (cnts['ciego'] * 3) + (cnts['bodega'] * 2) + (cnts['estac'] * 1) + (marcadores.length > 5 ? 2 : 0);
-  let nivBadge, nivClass;
-  if (puntajeRiesgo >= 8)      { nivBadge = '🔴 RIESGO CRÍTICO'; nivClass = 'riesgo-c'; }
-  else if (puntajeRiesgo >= 5) { nivBadge = '🟠 RIESGO ALTO';    nivClass = 'riesgo-a'; }
-  else if (puntajeRiesgo >= 2) { nivBadge = '🟡 RIESGO MEDIO';   nivClass = 'riesgo-m'; }
-  else                          { nivBadge = '🟢 RIESGO BAJO';    nivClass = 'riesgo-b'; }
+  // Mapa 3 (vista final)
+  irPaso(3);
+  setTimeout(()=>{
+    if(!map3){
+      map3=L.map('mapa3',{zoomControl:false,dragging:false,scrollWheelZoom:false}).setView([latC,lngC],18);
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:20}).addTo(map3);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:20,opacity:.7}).addTo(map3);
+    }
+    // Copiar perímetro
+    if(puntosPoly.length>2){
+      L.polygon(puntosPoly,{color:'#d4a017',weight:2,fillColor:'#d4a017',fillOpacity:.18}).addTo(map3);
+    }
+    // Copiar sistemas
+    sistemas.forEach(s=>{
+      const si=SIS[s.tipo];
+      const icon=L.divIcon({
+        html:`<div style="background:#111;border:2px solid ${si.c};border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.6)">${si.e}</div>`,
+        className:'',iconAnchor:[15,15]
+      });
+      L.marker([s.lat,s.lng],{icon}).addTo(map3).bindPopup(si.e+' '+si.n);
+    });
+    if(puntosPoly.length>0) map3.fitBounds(L.polygon(puntosPoly).getBounds(),{padding:[20,20]});
+  },400);
 
-  const badge = document.getElementById('riesgo-zona-badge');
-  badge.textContent = nivBadge;
-  badge.className = 'riesgo-badge ' + nivClass;
-  document.getElementById('dir-resultado').textContent = direccionTexto.split(',').slice(0,2).join(',');
+  // WhatsApp
+  const resumen=Object.keys(SIS).filter(k=>cnts[k]>0).map(k=>`${SIS[k].e} ${cnts[k]} ${SIS[k].n}`).join(', ')||'Solo perímetro';
+  const msg=encodeURIComponent(`Hola Carlos, usé la herramienta de Georeferenciación de Predio.\n\n📍 Predio: ${dirTexto.split(',').slice(0,2).join(',')}\n${nivelTxt}\n🔧 Sistemas planificados: ${resumen}\n\nMe gustaría solicitar mi Directiva de Funcionamiento OS.10.`);
+  document.getElementById('btn-wa').href=`https://wa.me/56984600273?text=${msg}`;
 
-  // WhatsApp mensaje
-  const msg = encodeURIComponent(
-    `Hola Carlos, acabo de usar la herramienta de Georeferenciación de Predio de Control & Confianza.\n\n` +
-    `📍 Predio: ${direccionTexto.split(',').slice(0,2).join(',')}\n` +
-    `${nivBadge}\n` +
-    `Marcadores: ${marcadores.length} puntos marcados\n\n` +
-    `Me gustaría solicitar una cotización para mi Directiva de Funcionamiento OS.10.`
-  );
-  document.getElementById('btn-wa').href = `https://wa.me/56984600273?text=${msg}`;
-
-  // Activar tab paso 3
-  document.querySelectorAll('.paso').forEach((p, i) => {
-    p.classList.remove('activo', 'completado');
-    if (i === 2) p.classList.add('activo');
-    else p.classList.add('completado');
-  });
-  document.querySelectorAll('.seccion').forEach((s, i) => s.classList.toggle('activa', i === 2));
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
-function reiniciar() {
-  latPredio = null; lngPredio = null; direccionTexto = '';
-  marcadores = [];
-  mapaEditor = null;
-  document.getElementById('dir-input').value = '';
-  document.getElementById('btn-siguiente1').style.display = 'none';
-  actualizarContadores();
+function reiniciar(){
+  latC=null;lngC=null;dirTexto='';
+  puntosPoly=[];perimeroCerrado=false;
+  sistemas=[];
+  map2=null;map3=null;
+  document.getElementById('dir-input').value='';
+  document.getElementById('btn-sig1').style.display='none';
+  document.getElementById('hint1').style.display='none';
+  irPaso(1);
 }
 </script>
 </body>
