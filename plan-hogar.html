@@ -144,6 +144,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <body>
 
 <div class="header">
+  <a href="seguridad-chile.html" style="display:inline-flex;align-items:center;gap:5px;font-size:0.72rem;color:#888;text-decoration:none;border:1px solid #333;padding:4px 10px;border-radius:99px;margin-bottom:8px;">← Volver a la App</a>
   <img src="icon-192.png" alt="Logo">
   <h1>Plan de Seguridad del Hogar</h1>
   <p>Control & Confianza — Asesor acreditado OS.10</p>
@@ -184,7 +185,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div style="background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:12px;font-size:0.75rem;color:#666;line-height:1.5;">
-    📚 Diagnóstico basado en la Cartilla de Autoprotección del Diplomado en Seguridad (Crl. Corrales, U. de Chile) y metodología OS.10 de Carabineros de Chile.
+    📋 Diagnóstico elaborado con metodología de seguridad residencial y buenas prácticas internacionales en prevención situacional del delito.
   </div>
 </div>
 
@@ -490,35 +491,41 @@ function showResult(){
     html+='</div>';
   });
 
-  // Recomendaciones
-  if(criticas.length||importantes.length||sugeridas.length){
-    html+='<div style="font-size:0.8rem;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 8px;">Recomendaciones por prioridad</div>';
-    if(criticas.length){
-      html+='<div class="recom-card critica"><div class="recom-title">🔴 Crítico — Actuar de inmediato</div><div class="recom-items">';
-      criticas.forEach(function(i){html+='• <strong>['+i.sec+']</strong> '+i.txt+'<br>';});
-      html+='</div></div>';
-    }
-    if(importantes.length){
-      html+='<div class="recom-card importante"><div class="recom-title">🟡 Importante — Corregir pronto</div><div class="recom-items">';
-      importantes.forEach(function(i){html+='• <strong>['+i.sec+']</strong> '+i.txt+'<br>';});
-      html+='</div></div>';
-    }
-    if(sugeridas.length){
-      html+='<div class="recom-card sugerida"><div class="recom-title">🔵 Sugerido — Mejora progresiva</div><div class="recom-items">';
-      sugeridas.forEach(function(i){html+='• <strong>['+i.sec+']</strong> '+i.txt+'<br>';});
-      html+='</div></div>';
-    }
+  // Resumen de vulnerabilidades (conteo visible gratis)
+  var totalVulns = criticas.length + importantes.length + sugeridas.length;
+  if(totalVulns > 0){
+    html += '<div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:12px;">' +
+      '<div style="font-size:0.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Resumen de hallazgos</div>' +
+      '<div style="display:flex;gap:10px;">';
+    if(criticas.length) html += '<div style="flex:1;text-align:center;background:#2a0a00;border:1px solid #7c2000;border-radius:8px;padding:10px;"><div style="font-size:1.4rem;font-weight:900;color:#e05000;">'+criticas.length+'</div><div style="font-size:0.65rem;color:#e05000;font-weight:700;">CRÍTICO</div></div>';
+    if(importantes.length) html += '<div style="flex:1;text-align:center;background:#2a1a00;border:1px solid #7c5000;border-radius:8px;padding:10px;"><div style="font-size:1.4rem;font-weight:900;color:#d4a017;">'+importantes.length+'</div><div style="font-size:0.65rem;color:#d4a017;font-weight:700;">IMPORTANTE</div></div>';
+    if(sugeridas.length) html += '<div style="flex:1;text-align:center;background:#0a1a2a;border:1px solid #1a4a7a;border-radius:8px;padding:10px;"><div style="font-size:1.4rem;font-weight:900;color:#7abaff;">'+sugeridas.length+'</div><div style="font-size:0.65rem;color:#7abaff;font-weight:700;">SUGERIDO</div></div>';
+    html += '</div></div>';
   }
 
-  // CTA
-  var msgWa = encodeURIComponent('Hice el diagnóstico de seguridad del hogar en la app de Control & Confianza y me gustaría una asesoría profesional. Mi resultado fue '+r.scorePct+'% ('+nivelLabel(r.scorePct)+').');
-  html+='<div class="cta-box">'+
-    '<div class="cta-title">¿Quieres que un profesional revise tu situación?</div>'+
-    '<div class="cta-desc">Este informe es orientativo y fue generado por ti en tu propio dispositivo. Si deseas que un asesor acreditado OS.10 de Control & Confianza diseñe un Plan de Seguridad personalizado para tu hogar, contáctanos.</div>'+
-    '<a href="https://wa.me/56984600273?text='+msgWa+'" class="btn-wa" target="_blank">💬 Contactar a un asesor por WhatsApp</a>'+
-    '<button class="btn-print" onclick="window.print()">🖨️ Imprimir o guardar como PDF</button>'+
-  '</div>'+
-  '<div class="disclaimer">⚖️ Diagnóstico orientativo generado localmente en tu dispositivo. Ningún dato fue transmitido a servidores externos. No constituye un informe de seguridad certificado.</div>'+
+  // Bloque bloqueado — recomendaciones detalladas
+  var msgWa = encodeURIComponent('Hice el diagnóstico de seguridad del hogar en la app de Control & Confianza y quiero contratar el Plan Personal para ver mis recomendaciones. Mi resultado fue '+r.scorePct+'% ('+nivelLabel(r.scorePct)+').');
+  html += '<div style="position:relative;margin-bottom:12px;">' +
+    // Vista borrosa de ejemplo
+    '<div style="filter:blur(4px);pointer-events:none;user-select:none;opacity:0.4;">' +
+      '<div class="recom-card critica"><div class="recom-title">🔴 Crítico — Actuar de inmediato</div><div class="recom-items">• [Perímetro exterior] ¿Los muros tienen altura suficiente para dificultar el ingreso?<br>• [Puertas y ventanas] ¿Las puertas exteriores tienen cerradura de seguridad?<br>• [Sistema de alarma] ¿El sistema tiene batería de respaldo ante corte de luz?</div></div>' +
+      '<div class="recom-card importante"><div class="recom-title">🟡 Importante — Corregir pronto</div><div class="recom-items">• [Iluminación exterior] ¿Tienes sensores de movimiento en el exterior?<br>• [Interior] ¿Tu dormitorio tiene cerradura por dentro?</div></div>' +
+    '</div>' +
+    // Overlay de bloqueo
+    '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(17,17,17,0.85);border-radius:12px;padding:20px;text-align:center;">' +
+      '<div style="font-size:1.6rem;margin-bottom:8px;">🔓</div>' +
+      '<div style="font-size:0.95rem;font-weight:800;color:#f0e8d0;margin-bottom:6px;">Desbloquea tus recomendaciones</div>' +
+      '<div style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:14px;">Con el <strong style="color:#d4a017;">Plan Personal</strong> recibes el listado completo de vulnerabilidades detectadas, las acciones concretas por prioridad y el informe en PDF.</div>' +
+      '<div style="background:#1a1200;border:1px solid #d4a017;border-radius:10px;padding:12px 16px;margin-bottom:14px;">' +
+        '<div style="font-size:1.1rem;font-weight:900;color:#d4a017;">$4.990<span style="font-size:0.7rem;font-weight:400;color:#888;">/mes</span></div>' +
+        '<div style="font-size:0.7rem;color:#888;margin-top:3px;">Plan Personal — Control & Confianza</div>' +
+        '<div style="font-size:0.72rem;color:#aaa;margin-top:6px;line-height:1.5;">✓ Informe completo con todas las vulnerabilidades<br>✓ Recomendaciones priorizadas en PDF<br>✓ 1 consulta anual con asesor acreditado<br>✓ Boletín mensual de seguridad preventiva</div>' +
+      '</div>' +
+      '<a href="https://wa.me/56984600273?text='+msgWa+'" class="btn-wa" style="margin-bottom:0;" target="_blank">💬 Activar Plan Personal por WhatsApp</a>' +
+    '</div>' +
+  '</div>';
+
+  html += '<div class="disclaimer">⚖️ Diagnóstico orientativo generado localmente en tu dispositivo. Ningún dato fue transmitido a servidores externos. No constituye un informe de seguridad certificado.</div>' +
   '<button class="btn-reiniciar" onclick="reiniciar()">← Hacer nuevo diagnóstico</button>';
 
   document.getElementById('resultContent').innerHTML = html;
