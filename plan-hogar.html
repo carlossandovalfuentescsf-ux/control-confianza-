@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de Seguridad del Hogar — Control & Confianza</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh;}
+
+/* Header */
+.header{background:linear-gradient(135deg,#1a1a1a,#111);padding:18px 20px;text-align:center;border-bottom:1px solid #222;}
+.header img{height:40px;margin-bottom:8px;}
+.header h1{font-size:1.05rem;font-weight:800;color:#f0e8d0;}
+.header p{font-size:0.75rem;color:#888;margin-top:3px;}
+
+/* Progress */
+.prog-wrap{background:#1a1a1a;padding:10px 20px;border-bottom:1px solid #222;}
+.prog-bg{background:#222;border-radius:99px;height:5px;}
+.prog-fill{background:#d4a017;border-radius:99px;height:5px;transition:width 0.4s;}
+.prog-label{color:#888;font-size:0.7rem;margin-top:5px;}
+.prog-sections{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
+.psec{font-size:0.6rem;padding:2px 7px;border-radius:99px;font-weight:700;}
+.psec.done{background:#d4a017;color:#111;}
+.psec.active{background:#333;color:#d4a017;border:1px solid #d4a017;}
+.psec.pending{background:#1a1a1a;color:#444;border:1px solid #222;}
+
+/* Container */
+.container{max-width:600px;margin:0 auto;padding:16px 14px 100px;}
+.step{display:none;}
+.step.active{display:block;}
+
+/* Privacy screen */
+.privacy-box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:22px;margin-bottom:14px;}
+.privacy-icon{font-size:2.4rem;text-align:center;margin-bottom:12px;}
+.privacy-title{font-size:1rem;font-weight:800;color:#d4a017;text-align:center;margin-bottom:10px;}
+.privacy-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:0.82rem;color:#ccc;line-height:1.5;}
+.privacy-item-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
+.privacy-warn{background:#1a1200;border:1px solid #3a2e00;border-radius:10px;padding:13px;font-size:0.78rem;color:#d4a017;line-height:1.5;margin-top:14px;}
+
+/* Intro card */
+.intro-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:12px;}
+.intro-badge{display:inline-flex;align-items:center;gap:5px;background:#1a1200;border:1px solid #d4a017;color:#d4a017;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:99px;margin-bottom:10px;}
+.intro-title{font-size:1rem;font-weight:800;color:#f0e8d0;margin-bottom:6px;line-height:1.3;}
+.intro-desc{font-size:0.8rem;color:#999;line-height:1.5;}
+.intro-steps{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.intro-step{display:flex;align-items:center;gap:12px;background:#111;border:1px solid #222;padding:11px;border-radius:10px;}
+.intro-step-n{width:26px;height:26px;background:#d4a017;color:#111;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;flex-shrink:0;}
+.intro-step-t{font-size:0.8rem;color:#ccc;line-height:1.4;}
+
+/* Section header */
+.sec-header{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:16px;margin-bottom:12px;}
+.sec-icon{font-size:1.8rem;margin-bottom:6px;}
+.sec-num{font-size:0.68rem;font-weight:700;color:#d4a017;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.sec-title{font-size:1rem;font-weight:800;color:#f0e8d0;margin-bottom:4px;}
+.sec-desc{font-size:0.78rem;color:#777;}
+
+/* Questions */
+.q-card{background:#1a1a1a;border:1px solid #222;border-radius:12px;padding:16px;margin-bottom:10px;}
+.q-num{font-size:0.65rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.q-txt{font-size:0.88rem;color:#e0d8c8;line-height:1.5;margin-bottom:12px;font-weight:500;}
+.q-opts{display:flex;gap:8px;}
+.q-btn{flex:1;padding:10px 6px;border:1px solid #333;border-radius:8px;background:#111;color:#777;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;text-align:center;}
+.q-btn:hover{border-color:#d4a017;color:#d4a017;}
+.q-btn.sel-si{background:#1a2e00;border-color:#4a7c00;color:#7dc800;}
+.q-btn.sel-no{background:#2e0a00;border-color:#7c2000;color:#e05000;}
+.q-btn.sel-na{background:#1a1a2e;border-color:#2a2a5e;color:#6666bb;}
+.q-hint{font-size:0.7rem;color:#555;margin-top:8px;line-height:1.4;font-style:italic;}
+
+/* Botones nav */
+.btn-row{position:fixed;bottom:0;left:0;right:0;background:#111;padding:12px 16px;display:flex;gap:10px;border-top:1px solid #222;}
+.btn{flex:1;padding:14px;border:none;border-radius:10px;font-size:0.92rem;font-weight:800;cursor:pointer;}
+.btn-back{background:#1a1a1a;color:#777;border:1px solid #2a2a2a;}
+.btn-next{background:#d4a017;color:#111;}
+.btn-next:disabled{background:#333;color:#555;cursor:not-allowed;}
+
+/* Resultado */
+.result-header{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:20px;text-align:center;margin-bottom:12px;}
+.score-circle{width:100px;height:100px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 12px;}
+.score-circle.verde{background:#0a2200;border:3px solid #4a7c00;}
+.score-circle.amarillo{background:#2a1a00;border:3px solid #d4a017;}
+.score-circle.rojo{background:#2a0a00;border:3px solid #c0392b;}
+.score-num{font-size:2rem;font-weight:900;}
+.score-circle.verde .score-num{color:#7dc800;}
+.score-circle.amarillo .score-num{color:#d4a017;}
+.score-circle.rojo .score-num{color:#e05000;}
+.score-label{font-size:0.65rem;font-weight:700;color:#888;text-transform:uppercase;}
+.score-nivel{font-size:0.95rem;font-weight:800;margin-bottom:4px;}
+.score-desc{font-size:0.78rem;color:#888;line-height:1.4;}
+
+.sec-result{background:#1a1a1a;border:1px solid #222;border-radius:12px;padding:14px;margin-bottom:10px;}
+.sec-result-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sec-result-icon{font-size:1.2rem;}
+.sec-result-name{font-size:0.88rem;font-weight:700;color:#f0e8d0;flex:1;}
+.sec-result-pct{font-size:0.9rem;font-weight:900;}
+.sec-bar-bg{background:#222;border-radius:99px;height:5px;margin-bottom:10px;}
+.sec-bar-fill{border-radius:99px;height:5px;}
+.vuln-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;font-size:0.78rem;color:#ccc;line-height:1.4;}
+.vuln-icon{flex-shrink:0;margin-top:1px;}
+
+.recom-card{border-radius:10px;padding:13px;margin-bottom:10px;}
+.recom-card.critica{background:#2a0a00;border-left:3px solid #c0392b;}
+.recom-card.importante{background:#2a1a00;border-left:3px solid #d4a017;}
+.recom-card.sugerida{background:#0a1a2a;border-left:3px solid #2980b9;}
+.recom-title{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+.recom-card.critica .recom-title{color:#e05000;}
+.recom-card.importante .recom-title{color:#d4a017;}
+.recom-card.sugerida .recom-title{color:#2980b9;}
+.recom-items{font-size:0.78rem;color:#ccc;line-height:1.7;}
+
+.cta-box{background:#1a1200;border:1px solid #3a2a00;border-radius:12px;padding:18px;margin-top:14px;}
+.cta-title{font-size:0.88rem;font-weight:800;color:#d4a017;margin-bottom:6px;}
+.cta-desc{font-size:0.78rem;color:#999;line-height:1.5;margin-bottom:14px;}
+.btn-wa{display:block;width:100%;padding:14px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:0.92rem;font-weight:800;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:8px;}
+.btn-print{display:block;width:100%;padding:13px;background:#1a1a1a;color:#d4a017;border:1px solid #d4a017;border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;text-align:center;}
+.disclaimer{font-size:0.7rem;color:#444;text-align:center;margin-top:12px;line-height:1.5;}
+.btn-reiniciar{display:block;width:100%;padding:12px;background:#1a1a1a;color:#555;border:1px solid #222;border-radius:10px;font-size:0.82rem;font-weight:600;cursor:pointer;text-align:center;margin-top:8px;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#d4a017;color:#111;padding:10px 20px;border-radius:8px;font-size:0.84rem;z-index:999;opacity:0;transition:opacity 0.3s;white-space:nowrap;font-weight:700;}
+.toast.show{opacity:1;}
+
+/* Print styles */
+@media print {
+  body{background:#fff;color:#111;}
+  .btn-row,.btn-wa,.btn-print,.btn-reiniciar,.header,.prog-wrap{display:none!important;}
+  .container{padding:0;}
+  .result-header,.sec-result,.recom-card,.cta-box{background:#fff!important;border:1px solid #ccc!important;border-radius:4px!important;color:#111!important;margin-bottom:10px!important;}
+  .score-circle{border:3px solid #333!important;background:#f5f5f5!important;}
+  .score-num,.sec-result-name,.sec-result-pct,.recom-title,.cta-title{color:#111!important;}
+  .score-desc,.vuln-item,.recom-items,.cta-desc,.disclaimer,.sec-desc,.intro-desc,.sec-num{color:#444!important;}
+  .sec-bar-bg{background:#eee!important;}
+  .recom-card.critica{border-left:3px solid #c0392b!important;}
+  .recom-card.importante{border-left:3px solid #b8860b!important;}
+  .recom-card.sugerida{border-left:3px solid #2980b9!important;}
+  .print-header{display:block!important;text-align:center;padding:16px 0;border-bottom:2px solid #d4a017;margin-bottom:16px;}
+  .print-title{font-size:1.1rem;font-weight:800;color:#111;}
+  .print-sub{font-size:0.8rem;color:#666;margin-top:4px;}
+  .step{display:none!important;}
+  #step-result{display:block!important;}
+  .cta-box{display:none!important;}
+}
+.print-header{display:none;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img src="icon-192.png" alt="Logo">
+  <h1>Plan de Seguridad del Hogar</h1>
+  <p>Control & Confianza — Asesor acreditado OS.10</p>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-label" id="progLabel">Bienvenido</div>
+  <div class="prog-sections" id="progSecs"></div>
+</div>
+
+<div class="container">
+
+<!-- PRIVACIDAD -->
+<div class="step active" id="step-privacy">
+  <div class="privacy-box">
+    <div class="privacy-icon">🔒</div>
+    <div class="privacy-title">Tu información nunca sale de este dispositivo</div>
+    <div class="privacy-item"><span class="privacy-item-icon">📵</span><span>No enviamos ningún dato a servidores. Todo se procesa en tu teléfono o computador.</span></div>
+    <div class="privacy-item"><span class="privacy-item-icon">🗑️</span><span>Al cerrar esta pestaña, toda la información desaparece. No guardamos nada.</span></div>
+    <div class="privacy-item"><span class="privacy-item-icon">👁️</span><span>Control & Confianza no ve tus respuestas. El informe lo generas tú y decides qué hacer con él.</span></div>
+    <div class="privacy-item"><span class="privacy-item-icon">📄</span><span>Si deseas que un asesor profesional revise tu situación, puedes contactarnos — pero es tu decisión.</span></div>
+    <div class="privacy-warn">⚠️ Este diagnóstico es de carácter <strong>orientativo</strong>. Las respuestas quedan solo en tu dispositivo y no constituyen un informe de seguridad profesional. Para una evaluación certificada, contáctanos.</div>
+  </div>
+</div>
+
+<!-- INTRO -->
+<div class="step" id="step-intro">
+  <div class="intro-card">
+    <span class="intro-badge">🏠 Diagnóstico del Hogar</span>
+    <div class="intro-title">¿Qué tan seguro es tu hogar?</div>
+    <div class="intro-desc">Responde 42 preguntas en 7 áreas clave. Al final recibirás un informe con tus vulnerabilidades y recomendaciones concretas.</div>
+    <div class="intro-steps">
+      <div class="intro-step"><div class="intro-step-n">1</div><div class="intro-step-t"><strong>Perímetro, iluminación y accesos</strong> — muros, rejas y entradas</div></div>
+      <div class="intro-step"><div class="intro-step-n">2</div><div class="intro-step-t"><strong>Puertas, ventanas y sistema de alarma</strong> — barreras físicas y electrónicas</div></div>
+      <div class="intro-step"><div class="intro-step-n">3</div><div class="intro-step-t"><strong>Rutinas, vehículo y entorno familiar</strong> — hábitos que reducen o aumentan el riesgo</div></div>
+      <div class="intro-step"><div class="intro-step-n">✓</div><div class="intro-step-t"><strong>Informe personalizado</strong> con semáforo de riesgo y recomendaciones por prioridad</div></div>
+    </div>
+  </div>
+  <div style="background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:12px;font-size:0.75rem;color:#666;line-height:1.5;">
+    📚 Diagnóstico basado en la Cartilla de Autoprotección del Diplomado en Seguridad (Crl. Corrales, U. de Chile) y metodología OS.10 de Carabineros de Chile.
+  </div>
+</div>
+
+<!-- SECCIONES (generadas por JS) -->
+<div class="step" id="step-sec"></div>
+
+<!-- RESULTADO -->
+<div class="step" id="step-result">
+  <div class="print-header">
+    <div class="print-title">Plan de Seguridad del Hogar — Control & Confianza</div>
+    <div class="print-sub">Informe generado localmente · Asesor acreditado OS.10 · www.controlyconfianza.cl</div>
+  </div>
+  <div id="resultContent"></div>
+</div>
+
+</div>
+
+<div class="btn-row" id="btnRow">
+  <button class="btn btn-back" id="btnBack" onclick="goBack()" style="display:none">← Atrás</button>
+  <button class="btn btn-next" id="btnNext" onclick="goNext()">Entendido — Comenzar →</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var SECCIONES = [
+  {
+    id:'s1', icon:'🧱', titulo:'Perímetro exterior',
+    desc:'Muros, rejas y accesos a tu propiedad',
+    preguntas:[
+      {id:'s1p1', txt:'¿Los muros o rejas tienen altura suficiente para dificultar el ingreso no autorizado?', hint:'Al menos 2 metros con terminación que dificulte el escalamiento (vidrio, voladizo, malla).'},
+      {id:'s1p2', txt:'¿El perímetro (muros, rejas, cerco) está en buenas condiciones y sin daños?', hint:'Sin huecos, rejas oxidadas o secciones caídas.'},
+      {id:'s1p3', txt:'¿La entrada principal tiene citófono, portero automático o timbre con cámara?', hint:'Permite saber quién llama antes de abrir.'},
+      {id:'s1p4', txt:'¿Puedes ver a los visitantes desde el interior antes de abrir la puerta?', hint:'Cámara, visor óptico o ventana estratégica.'},
+      {id:'s1p5', txt:'¿La puerta exterior puede abrirse desde adentro sin necesidad de salir?', hint:'Control remoto, sistema eléctrico o cadena larga.'},
+      {id:'s1p6', txt:'¿Los muros no tienen elementos cercanos (árboles, postes, estructuras) que faciliten el escalamiento?', hint:'Ramas sobre muros o estructuras adosadas son puntos de vulnerabilidad.'},
+    ]
+  },
+  {
+    id:'s2', icon:'💡', titulo:'Iluminación exterior',
+    desc:'Cobertura de luz en accesos, patios y jardines',
+    preguntas:[
+      {id:'s2p1', txt:'¿La iluminación exterior cubre todas las entradas y patios?', hint:'Sin zonas oscuras donde alguien pueda ocultarse.'},
+      {id:'s2p2', txt:'¿El control de iluminación exterior está dentro de tu casa?', hint:'Puedes encender luces exteriores sin salir.'},
+      {id:'s2p3', txt:'¿Las luces exteriores permanecen encendidas desde el atardecer hasta el amanecer?'},
+      {id:'s2p4', txt:'¿Tienes sensores de movimiento o fotocélula en el exterior?', hint:'Se activan automáticamente ante presencia o al oscurecer.'},
+      {id:'s2p5', txt:'¿No hay sectores oscuros donde una persona pueda ocultarse en el patio o jardín?'},
+      {id:'s2p6', txt:'¿Tienes sistema de iluminación de emergencia (batería o generador)?'},
+    ]
+  },
+  {
+    id:'s3', icon:'🚪', titulo:'Puertas y ventanas',
+    desc:'Barreras físicas de acceso al interior',
+    preguntas:[
+      {id:'s3p1', txt:'¿Las puertas exteriores son sólidas y resistentes (madera maciza, metal)?', hint:'Puertas de madera delgada o PVC son fáciles de forzar.'},
+      {id:'s3p2', txt:'¿Las puertas tienen cerradura de seguridad (doble golpe o cerrojo)?', hint:'Las cerraduras de pomo simples se abren en segundos.'},
+      {id:'s3p3', txt:'¿Las puertas exteriores tienen mirilla gran angular o visor óptico?'},
+      {id:'s3p4', txt:'¿Las ventanas del primer piso tienen rejas o protección metálica?'},
+      {id:'s3p5', txt:'¿Todas las ventanas tienen seguros o pestillos en buen estado?'},
+      {id:'s3p6', txt:'¿Las cortinas o visillos impiden ver el interior del hogar desde afuera?', hint:'La observación desde el exterior es el primer paso de cualquier robo.'},
+      {id:'s3p7', txt:'¿Tienes control sobre quién tiene copia de llaves de tu casa?', hint:'Incluye ex inquilinos, trabajadores o visitas anteriores.'},
+      {id:'s3p8', txt:'¿Las puertas corredizas no pueden desmontarse o abrirse desde el exterior?', hint:'Coloca un palo o pasador adicional en el riel.'},
+    ]
+  },
+  {
+    id:'s4', icon:'🛏️', titulo:'Interior y dormitorios',
+    desc:'Seguridad dentro del hogar ante una intrusión',
+    preguntas:[
+      {id:'s4p1', txt:'¿Tu dormitorio principal tiene cerradura por dentro?', hint:'En caso de intrusión nocturna, es tu última barrera.'},
+      {id:'s4p2', txt:'¿Tienes un teléfono o celular cargado y disponible en el dormitorio?', hint:'Para llamar al 133 sin salir del cuarto.'},
+      {id:'s4p3', txt:'¿Tienes una linterna operativa y de fácil acceso en el dormitorio?'},
+      {id:'s4p4', txt:'¿Tienes a la vista (o memorizado) el número de la comisaría de tu sector?', hint:'El 133 es para urgencias. Tu comisaría local puede ser más rápida en ciertos casos.'},
+      {id:'s4p5', txt:'¿Tienes al menos un extintor de incendio en el hogar?'},
+      {id:'s4p6', txt:'¿Tienes detector de humo instalado y con batería operativa?'},
+    ]
+  },
+  {
+    id:'s5', icon:'🔔', titulo:'Sistema de alarma',
+    desc:'Detección y respuesta electrónica ante intrusos',
+    preguntas:[
+      {id:'s5p1', txt:'¿Tienes un sistema de alarma instalado en tu hogar?'},
+      {id:'s5p2', txt:'¿El sistema tiene batería de respaldo ante corte de electricidad?', hint:'Los delincuentes cortan la luz antes de actuar.'},
+      {id:'s5p3', txt:'¿El sistema está conectado a una central de monitoreo externa?', hint:'Sin central, la alarma solo hace ruido sin que nadie responda.'},
+      {id:'s5p4', txt:'¿Las puertas y ventanas principales tienen sensores de apertura?'},
+      {id:'s5p5', txt:'¿El sistema tiene botón de pánico o sirena manual?'},
+      {id:'s5p6', txt:'¿Realizas pruebas periódicas del sistema de alarma?', hint:'Al menos una vez al mes.'},
+    ]
+  },
+  {
+    id:'s6', icon:'🚗', titulo:'Rutinas y vehículo',
+    desc:'Hábitos que pueden exponerte o protegerte',
+    preguntas:[
+      {id:'s6p1', txt:'¿Varías tus horarios habituales de salida y llegada?', hint:'La rutina fija te convierte en un objetivo predecible.'},
+      {id:'s6p2', txt:'¿Observas el entorno antes de salir o entrar a tu casa?', hint:'Personas o vehículos detenidos cerca son señal de alerta.'},
+      {id:'s6p3', txt:'¿Evitas publicar rutinas, horarios o ausencias del hogar en redes sociales?', hint:'Publicar "de vacaciones" es avisarle a cualquiera que la casa está sola.'},
+      {id:'s6p4', txt:'¿Cuando te ausentas por varios días, un vecino de confianza cuida la propiedad?'},
+      {id:'s6p5', txt:'¿Tu vehículo tiene alarma y seguro en todas las puertas?'},
+      {id:'s6p6', txt:'¿Revisas tu vehículo brevemente antes de abordarlo (puertas, alrededores)?', hint:'Observa si algo cambió desde que lo estacionaste.'},
+    ]
+  },
+  {
+    id:'s7', icon:'👨‍👩‍👧', titulo:'Familia y entorno',
+    desc:'Protocolos familiares y red de apoyo vecinal',
+    preguntas:[
+      {id:'s7p1', txt:'¿Tu familia sabe qué hacer ante una intrusión o emergencia en el hogar?', hint:'Punto de reunión, a quién llamar, no abrir sin identificar.'},
+      {id:'s7p2', txt:'¿Los niños saben que no deben abrir la puerta a desconocidos?'},
+      {id:'s7p3', txt:'¿El personal de servicio (si lo hay) conoce y respeta las normas de seguridad?', hint:'No abrir sin identificar, no dar información a desconocidos por teléfono.'},
+      {id:'s7p4', txt:'¿Tienes comunicación con tus vecinos para alertarse mutuamente ante situaciones sospechosas?'},
+      {id:'s7p5', txt:'¿Cuando recibes un paquete o visita inesperada, verificas su origen antes de abrir?'},
+      {id:'s7p6', txt:'¿No publicas el nombre de tus hijos, colegio o rutinas familiares en redes sociales?', hint:'Esa información puede usarse para presionarte o ubicarte.'},
+    ]
+  }
+];
+
+var STEPS = ['privacy','intro'].concat(SECCIONES.map(function(s){return s.id;})).concat(['result']);
+var current = 0;
+var answers = {}; // {questionId: 'si'|'no'|'na'}
+
+// Construir HTML de la sección activa
+function buildSection(sec){
+  var html = '<div class="sec-header"><div class="sec-icon">'+sec.icon+'</div><div class="sec-num">Sección '+
+    (SECCIONES.indexOf(sec)+1)+' de '+SECCIONES.length+'</div><div class="sec-title">'+sec.titulo+'</div><div class="sec-desc">'+sec.desc+'</div></div>';
+  sec.preguntas.forEach(function(p,i){
+    var si=answers[p.id]==='si', no=answers[p.id]==='no', na=answers[p.id]==='na';
+    html+='<div class="q-card" id="card-'+p.id+'">'+
+      '<div class="q-num">Pregunta '+(i+1)+' de '+sec.preguntas.length+'</div>'+
+      '<div class="q-txt">'+p.txt+'</div>'+
+      '<div class="q-opts">'+
+        '<button class="q-btn'+(si?' sel-si':'')+'" onclick="setAnswer(\''+p.id+'\',\'si\')">✓ Sí</button>'+
+        '<button class="q-btn'+(no?' sel-no':'')+'" onclick="setAnswer(\''+p.id+'\',\'no\')">✗ No</button>'+
+        '<button class="q-btn'+(na?' sel-na':'')+'" onclick="setAnswer(\''+p.id+'\',\'na\')">&mdash; N/A</button>'+
+      '</div>'+
+      (p.hint?'<div class="q-hint">💡 '+p.hint+'</div>':'')+
+    '</div>';
+  });
+  return html;
+}
+
+function setAnswer(qid, val){
+  answers[qid] = val;
+  // Actualizar UI del botón
+  var card = document.getElementById('card-'+qid);
+  if(!card) return;
+  var btns = card.querySelectorAll('.q-btn');
+  btns[0].className = 'q-btn'+(val==='si'?' sel-si':'');
+  btns[1].className = 'q-btn'+(val==='no'?' sel-no':'');
+  btns[2].className = 'q-btn'+(val==='na'?' sel-na':'');
+}
+
+function secIdxFromStep(){
+  var id = STEPS[current];
+  for(var i=0;i<SECCIONES.length;i++){if(SECCIONES[i].id===id)return i;}
+  return -1;
+}
+
+function validate(){
+  var id = STEPS[current];
+  if(id==='privacy'||id==='intro'||id==='result') return true;
+  var si = secIdxFromStep();
+  if(si<0) return true;
+  var sec = SECCIONES[si];
+  for(var i=0;i<sec.preguntas.length;i++){
+    if(!answers[sec.preguntas[i].id]){ showToast('Responde todas las preguntas'); return false; }
+  }
+  return true;
+}
+
+function goNext(){
+  if(!validate()) return;
+  if(current < STEPS.length-1){ current++; render(); }
+}
+function goBack(){
+  if(current > 0){ current--; render(); }
+}
+
+function render(){
+  // Ocultar todos
+  ['privacy','intro','sec','result'].forEach(function(id){
+    var el=document.getElementById('step-'+id);
+    if(el) el.classList.remove('active');
+  });
+
+  var id = STEPS[current];
+  var si = secIdxFromStep();
+
+  if(id==='privacy'){ document.getElementById('step-privacy').classList.add('active'); }
+  else if(id==='intro'){ document.getElementById('step-intro').classList.add('active'); }
+  else if(id==='result'){ document.getElementById('step-result').classList.add('active'); showResult(); }
+  else if(si>=0){
+    var secEl = document.getElementById('step-sec');
+    secEl.innerHTML = buildSection(SECCIONES[si]);
+    secEl.classList.add('active');
+  }
+
+  updateProgress();
+  var back = document.getElementById('btnBack');
+  var next = document.getElementById('btnNext');
+  var row = document.getElementById('btnRow');
+  back.style.display = current>0 ? 'block':'none';
+  if(id==='result'){ row.style.display='none'; return; }
+  row.style.display='flex';
+  next.textContent =
+    id==='privacy' ? 'Entendido — Comenzar →' :
+    id==='intro' ? 'Iniciar diagnóstico →' :
+    si===SECCIONES.length-1 ? 'Ver mi diagnóstico →' : 'Siguiente sección →';
+  window.scrollTo(0,0);
+}
+
+function updateProgress(){
+  var id = STEPS[current];
+  var total = STEPS.length - 1; // exclude result from count
+  var pct = id==='result' ? 100 : (current/total*100);
+  document.getElementById('progFill').style.width = pct+'%';
+  var si = secIdxFromStep();
+  var labels = {privacy:'Bienvenido',intro:'Introducción',result:'Diagnóstico completo'};
+  document.getElementById('progLabel').textContent =
+    labels[id] || ('Sección '+(si+1)+' de '+SECCIONES.length+' — '+SECCIONES[si].titulo);
+
+  // Tags de secciones
+  var tagsHtml = '';
+  SECCIONES.forEach(function(sec,i){
+    var stepIdx = STEPS.indexOf(sec.id);
+    var cls = current > stepIdx ? 'done' : current===stepIdx ? 'active' : 'pending';
+    tagsHtml += '<span class="psec '+cls+'">'+sec.icon+'</span>';
+  });
+  document.getElementById('progSecs').innerHTML = tagsHtml;
+}
+
+/* ---- Cálculo de resultados ---- */
+function calcResultados(){
+  var resultSecs = [];
+  var totalSi=0, totalApl=0;
+
+  SECCIONES.forEach(function(sec){
+    var si=0, no=0, na=0, vulns=[];
+    sec.preguntas.forEach(function(p){
+      var ans = answers[p.id];
+      if(ans==='si') si++;
+      else if(ans==='no'){ no++; vulns.push(p.txt); }
+      else na++;
+    });
+    var apl = si+no;
+    var pct = apl>0 ? Math.round(si/apl*100) : 100;
+    totalSi+=si; totalApl+=apl;
+    resultSecs.push({sec:sec, si:si, no:no, na:na, pct:pct, vulns:vulns});
+  });
+
+  var scorePct = totalApl>0 ? Math.round(totalSi/totalApl*100) : 100;
+  return {scorePct:scorePct, secciones:resultSecs};
+}
+
+function nivelColor(pct){ return pct>=80?'verde':pct>=55?'amarillo':'rojo'; }
+function nivelLabel(pct){ return pct>=80?'Buen nivel de seguridad':pct>=55?'Riesgo moderado':'Vulnerabilidades críticas'; }
+function nivelDesc(pct){
+  if(pct>=80) return 'Tu hogar cuenta con medidas de seguridad adecuadas. Mantén los controles activos y realiza una revisión anual.';
+  if(pct>=55) return 'Existen áreas que necesitan mejora. Prioriza las recomendaciones críticas antes de que ocurra un incidente.';
+  return 'Tu hogar presenta vulnerabilidades significativas que deben corregirse con urgencia. Considera una asesoría profesional.';
+}
+
+function showResult(){
+  var r = calcResultados();
+  var color = nivelColor(r.scorePct);
+  var colorHex = color==='verde'?'#7dc800':color==='amarillo'?'#d4a017':'#e05000';
+  var barColor = colorHex;
+
+  // Juntar todas las vulnerabilidades clasificadas por sección
+  var criticas=[], importantes=[], sugeridas=[];
+  r.secciones.forEach(function(rs){
+    var pct=rs.pct;
+    rs.vulns.forEach(function(v){
+      if(pct<55) criticas.push({sec:rs.sec.titulo, txt:v});
+      else if(pct<80) importantes.push({sec:rs.sec.titulo, txt:v});
+      else sugeridas.push({sec:rs.sec.titulo, txt:v});
+    });
+  });
+
+  var html = '<div class="result-header">'+
+    '<div class="score-circle '+color+'">'+
+      '<div class="score-num">'+r.scorePct+'%</div>'+
+      '<div class="score-label">seguridad</div>'+
+    '</div>'+
+    '<div class="score-nivel" style="color:'+colorHex+'">'+nivelLabel(r.scorePct)+'</div>'+
+    '<div class="score-desc">'+nivelDesc(r.scorePct)+'</div>'+
+  '</div>';
+
+  // Por sección
+  r.secciones.forEach(function(rs){
+    var c = nivelColor(rs.pct);
+    var ch = c==='verde'?'#7dc800':c==='amarillo'?'#d4a017':'#e05000';
+    html+='<div class="sec-result">'+
+      '<div class="sec-result-top">'+
+        '<span class="sec-result-icon">'+rs.sec.icon+'</span>'+
+        '<span class="sec-result-name">'+rs.sec.titulo+'</span>'+
+        '<span class="sec-result-pct" style="color:'+ch+'">'+rs.pct+'%</span>'+
+      '</div>'+
+      '<div class="sec-bar-bg"><div class="sec-bar-fill" style="width:'+rs.pct+'%;background:'+ch+'"></div></div>';
+    if(rs.vulns.length){
+      rs.vulns.forEach(function(v){
+        html+='<div class="vuln-item"><span class="vuln-icon">⚠️</span><span>'+v+'</span></div>';
+      });
+    } else {
+      html+='<div style="font-size:0.78rem;color:#4a7c00;">✓ Sin vulnerabilidades en esta sección</div>';
+    }
+    html+='</div>';
+  });
+
+  // Recomendaciones
+  if(criticas.length||importantes.length||sugeridas.length){
+    html+='<div style="font-size:0.8rem;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 8px;">Recomendaciones por prioridad</div>';
+    if(criticas.length){
+      html+='<div class="recom-card critica"><div class="recom-title">🔴 Crítico — Actuar de inmediato</div><div class="recom-items">';
+      criticas.forEach(function(i){html+='• <strong>['+i.sec+']</strong> '+i.txt+'<br>';});
+      html+='</div></div>';
+    }
+    if(importantes.length){
+      html+='<div class="recom-card importante"><div class="recom-title">🟡 Importante — Corregir pronto</div><div class="recom-items">';
+      importantes.forEach(function(i){html+='• <strong>['+i.sec+']</strong> '+i.txt+'<br>';});
+      html+='</div></div>';
+    }
+    if(sugeridas.length){
+      html+='<div class="recom-card sugerida"><div class="recom-title">🔵 Sugerido — Mejora progresiva</div><div class="recom-items">';
+      sugeridas.forEach(function(i){html+='• <strong>['+i.sec+']</strong> '+i.txt+'<br>';});
+      html+='</div></div>';
+    }
+  }
+
+  // CTA
+  var msgWa = encodeURIComponent('Hice el diagnóstico de seguridad del hogar en la app de Control & Confianza y me gustaría una asesoría profesional. Mi resultado fue '+r.scorePct+'% ('+nivelLabel(r.scorePct)+').');
+  html+='<div class="cta-box">'+
+    '<div class="cta-title">¿Quieres que un profesional revise tu situación?</div>'+
+    '<div class="cta-desc">Este informe es orientativo y fue generado por ti en tu propio dispositivo. Si deseas que un asesor acreditado OS.10 de Control & Confianza diseñe un Plan de Seguridad personalizado para tu hogar, contáctanos.</div>'+
+    '<a href="https://wa.me/56984600273?text='+msgWa+'" class="btn-wa" target="_blank">💬 Contactar a un asesor por WhatsApp</a>'+
+    '<button class="btn-print" onclick="window.print()">🖨️ Imprimir o guardar como PDF</button>'+
+  '</div>'+
+  '<div class="disclaimer">⚖️ Diagnóstico orientativo generado localmente en tu dispositivo. Ningún dato fue transmitido a servidores externos. No constituye un informe de seguridad certificado.</div>'+
+  '<button class="btn-reiniciar" onclick="reiniciar()">← Hacer nuevo diagnóstico</button>';
+
+  document.getElementById('resultContent').innerHTML = html;
+}
+
+function reiniciar(){
+  current=0; answers={};
+  render();
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2200);
+}
+
+render();
+</script>
+</body>
+</html>
