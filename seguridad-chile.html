@@ -399,6 +399,16 @@ select:disabled{opacity:0.4}
     <a href="matriz-riesgo.html" style="flex:1;display:block;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.5);color:#d4a017;text-align:center;padding:11px 6px;font-size:13px;font-weight:800;text-decoration:none;border-radius:10px;">🧮 Riesgo Empresa</a>
     <a href="plan-hogar.html" style="flex:1;display:block;background:rgba(100,160,212,.15);border:1px solid rgba(100,160,212,.5);color:#7abaff;text-align:center;padding:11px 6px;font-size:13px;font-weight:800;text-decoration:none;border-radius:10px;">🏠 Plan Hogar</a>
   </div>
+  <div style="padding:4px 10px 0 10px;">
+    <div onclick="abrirModal()" style="cursor:pointer;background:linear-gradient(135deg,rgba(100,160,212,.12),rgba(212,160,23,.08));border:1px solid rgba(100,160,212,.35);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:12px;">
+      <div style="font-size:1.4rem;">⭐</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:800;color:#f0e8d0;">Plan Personal — $4.990<span style="font-size:11px;font-weight:400;color:#777;">/mes</span></div>
+        <div style="font-size:11px;color:#666;margin-top:2px;">Plan Hogar completo · predicción de riesgo · 1 consulta anual</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#d4a017;white-space:nowrap;">Ver →</div>
+    </div>
+  </div>
 
   <div style="display:flex;gap:8px;padding:6px 10px 4px 10px;">
     <button onclick="togglePanel('panelProtos')" style="flex:1;background:rgba(192,57,43,.25);border:1px solid rgba(192,57,43,.6);color:#ff6b6b;padding:11px 8px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
@@ -507,7 +517,7 @@ select:disabled{opacity:0.4}
     </div>
     <div><div class="stit"><span>Delitos mas frecuentes</span></div><div class="dgrid" id="iDelitos"></div></div>
     <div class="card"><div class="stit"><span>Horarios de mayor riesgo</span></div><div id="iHorarios"></div></div>
-    <div class="card" id="iPred"></div>
+    <div id="iPred"></div>
     <div><div class="stit"><span>Recomendaciones</span></div><div id="iRecs"></div></div>
     <div class="card" id="iIlum"></div>
     <div class="card" id="iContactos"></div>
