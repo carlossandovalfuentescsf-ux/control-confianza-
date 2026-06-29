@@ -1033,8 +1033,18 @@ function mostrarPredictor(key,nombre){
       '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.C+'</div><div class="pred-sub-lbl">Contexto</div></div>'+
     '</div>';
 
+  // Nivel general — visible para todos (Básico y Personal)
+  var nivelHTML=
+    '<div style="display:flex;align-items:center;gap:14px;padding:12px;background:#111;border-radius:10px;margin-bottom:10px">'+
+      '<div style="text-align:center;min-width:60px">'+
+        '<div style="font-size:13px;font-weight:900;color:'+col+';letter-spacing:1px">'+lbl+'</div>'+
+        '<div style="font-size:10px;color:#555;margin-top:2px">nivel ahora</div>'+
+      '</div>'+
+      '<div style="font-size:12px;color:#999;line-height:1.5;flex:1">'+scoreMensaje(r.score,nombre)+'</div>'+
+    '</div>';
+
   if(dev){
-    // Modo desarrollador — acceso completo
+    // Plan Empresa — acceso completo
     el.innerHTML='<div class="pred-card">'+
       '<div class="pred-titulo">🔮 Predicción de riesgo <span class="pred-beta" style="background:rgba(100,200,100,.15);color:#a5d6a7;border-color:rgba(100,200,100,.3)">🛠 DEV</span></div>'+
       scoreHTML+
@@ -1044,19 +1054,23 @@ function mostrarPredictor(key,nombre){
       '</div>'+
     '</div>';
   } else {
-    // Versión bloqueada — contenido borroso
+    // Plan Personal y Básico — nivel visible, score y detalles bloqueados
     el.innerHTML='<div class="pred-card">'+
-      '<div class="pred-titulo">🔮 Predicción de riesgo <span class="pred-beta">PREMIUM</span></div>'+
-      '<div style="position:relative">'+
-        '<div style="filter:blur(5px);pointer-events:none;user-select:none">'+scoreHTML+'</div>'+
-        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">'+
-          '<div style="font-size:32px">🔒</div>'+
-          '<div style="font-size:13px;color:#f0e8d0;font-weight:700;text-align:center">Función exclusiva Premium</div>'+
-          '<div style="font-size:11px;color:#888;text-align:center;max-width:220px">Score predictivo basado en historial, perfil de la zona y contexto actual</div>'+
-          '<div style="display:flex;gap:8px;margin-top:4px">'+
-            '<button onclick="explicarScore(window._predR.score,window._predNom)" style="background:#222;border:1px solid #444;color:#d4a017;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">¿Qué significa?</button>'+
-            '<button onclick="abrirModal()" style="background:#d4a017;color:#111;border:none;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer">Ver planes</button>'+
+      '<div class="pred-titulo">🔮 Predicción de riesgo</div>'+
+      nivelHTML+
+      '<div style="position:relative;border-radius:10px;overflow:hidden">'+
+        '<div style="filter:blur(4px);pointer-events:none;user-select:none;opacity:0.45">'+
+          '<div class="pred-subcols">'+
+            '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.A+'</div><div class="pred-sub-lbl">Historial</div></div>'+
+            '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.B+'</div><div class="pred-sub-lbl">Perfil zona</div></div>'+
+            '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.C+'</div><div class="pred-sub-lbl">Contexto</div></div>'+
           '</div>'+
+          '<div style="background:#1a1a1a;border-radius:8px;padding:10px;font-size:11px;color:#888">Score exacto · Factores detallados · Informe completo</div>'+
+        '</div>'+
+        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(17,17,17,0.82);border-radius:10px;padding:12px;text-align:center">'+
+          '<div style="font-size:11px;color:#ccc;font-weight:700">Score exacto + factores detallados</div>'+
+          '<div style="font-size:10px;color:#666;max-width:200px">Disponible en el plan Empresa</div>'+
+          '<button onclick="abrirModal()" style="background:#d4a017;color:#111;border:none;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;margin-top:2px">Ver plan Empresa →</button>'+
         '</div>'+
       '</div>'+
     '</div>';
