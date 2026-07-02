@@ -271,6 +271,41 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
 // ============================================================
 // ESTADO
 // ============================================================
+// CUENTA Y PLAN PREMIUM (misma sesión que seguridad-chile.html, comparten dominio)
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+let CYC_PREMIUM=false;
+async function cycVerificarPremium(){
+  const token=localStorage.getItem('cyc_token')||'';
+  if(!token){CYC_PREMIUM=false;return;}
+  try{
+    const res=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+token}});
+    if(!res.ok){CYC_PREMIUM=false;return;}
+    const data=await res.json();
+    CYC_PREMIUM=!!data.premium;
+  }catch(e){CYC_PREMIUM=false;}
+}
+function cycBloquearCard(id){
+  const card=document.getElementById(id);
+  if(!card||card.querySelector('.cyc-overlay'))return;
+  card.style.position='relative';
+  const inner=document.createElement('div');
+  inner.className='cyc-inner-blur';
+  inner.style.cssText='filter:blur(4px);pointer-events:none;user-select:none;opacity:.4';
+  while(card.firstChild){inner.appendChild(card.firstChild);}
+  card.appendChild(inner);
+  const overlay=document.createElement('div');
+  overlay.className='cyc-overlay';
+  overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(17,17,17,.85);border-radius:12px;padding:16px;text-align:center';
+  overlay.innerHTML='<div style="font-size:12px;color:#ccc;font-weight:700">Disponible en el plan Empresa</div><div style="font-size:11px;color:#888;max-width:220px">Inicia sesión en la app principal (seguridad-chile) con tu cuenta Empresa para desbloquear este análisis.</div>';
+  card.appendChild(overlay);
+}
+function cycAplicarBloqueoPredio(){
+  if(CYC_PREMIUM)return;
+  cycBloquearCard('card-alertas');
+  const recsCard=document.getElementById('recs-lista').closest('.card');
+  if(recsCard)cycBloquearCard(recsCard.id||(recsCard.id='card-recs'));
+}
+window.addEventListener('load',cycVerificarPremium);
 let map1=null, map2=null, map3=null;
 let latC=null, lngC=null, dirTexto='';
 let puntosPoly=[], polyLine=null, polyFill=null, polyMarkers=[];
@@ -311,7 +346,14 @@ async function autocompletar(v){
       const d=await r.json();
       const el=document.getElementById('sugs');
       if(!d.length){el.style.display='none';return;}
-      el.innerHTML=d.map(x=>`<div class="sug-item" onclick="elegirSug('${x.display_name.replace(/'/g,"\\'")}',${x.lat},${x.lon})">${x.display_name}</div>`).join('');
+      el.innerHTML='';
+      d.forEach(x=>{
+        const item=document.createElement('div');
+        item.className='sug-item';
+        item.textContent=x.display_name;
+        item.addEventListener('click',()=>elegirSug(x.display_name,x.lat,x.lon));
+        el.appendChild(item);
+      });
       el.style.display='block';
     }catch(e){}
   },400);
@@ -583,6 +625,7 @@ function analizarPredio(){
   const msg=encodeURIComponent(`Hola Carlos, usé la herramienta de Georeferenciación de Predio.\n\n📍 Predio: ${dirTexto.split(',').slice(0,2).join(',')}\n${nivelTxt}\n🔧 Sistemas planificados: ${resumen}\n\nMe gustaría solicitar mi Directiva de Funcionamiento OS.10.`);
   document.getElementById('btn-wa').href=`https://wa.me/56984600273?text=${msg}`;
 
+  cycAplicarBloqueoPredio();
   window.scrollTo(0,0);
 }
 

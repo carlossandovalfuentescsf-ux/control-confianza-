@@ -50,7 +50,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .step-num.percep{color:#7c3aed;}
 .step-title{font-size:1.05rem;font-weight:700;color:#1a1a2e;margin-bottom:6px;line-height:1.3;}
 .step-sub{font-size:0.82rem;color:#666;margin-bottom:18px;line-height:1.5;}
-.step-law{font-size:0.7rem;color:#bbb;font-style:italic;margin-top:12px;padding-top:10px;border-top:1px solid #f0f0f0;}
+.step-law{font-size:0.7rem;color:#767676;font-style:italic;margin-top:12px;padding-top:10px;border-top:1px solid #f0f0f0;}
 
 .opts{display:flex;flex-direction:column;gap:10px;}
 .opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid #e8e8e8;border-radius:10px;cursor:pointer;transition:all 0.2s;user-select:none;}
@@ -744,8 +744,8 @@ function onComunaChange(val){
   if(!val||!COMUNAS[val]){box.style.display='none';answers.q10=null;answers.q11=null;return;}
   var d=COMUNAS[val];
   answers.q10=d[0];answers.q11=parseFloat(d[1]);
-  document.getElementById('autoPatrullaje').textContent=d[2];
-  document.getElementById('autoVulnerabilidad').textContent=d[3];
+  document.getElementById('autoPatrullaje').textContent=d[3];
+  document.getElementById('autoVulnerabilidad').textContent=d[2];
   box.style.display='block';
 }
 

@@ -229,7 +229,7 @@ select:disabled{opacity:0.4}
       <div class="pvico">🚫</div>
       <div class="pvtxt"><strong>Sin seguimiento</strong>No guardamos tu historial de movimiento. No vendemos datos a terceros. Tu privacidad es nuestra prioridad.</div>
     </div>
-    <div class="pvley">📋 <strong>Ley 21.719 — Protección de Datos Personales (Chile)</strong><br>De acuerdo a la normativa vigente, informamos que los datos de ubicación se procesan en tu propio dispositivo, únicamente durante el uso de la app, con tu consentimiento expreso.</div>
+    <div class="pvley">📋 <strong>Ley 21.719 — Protección de Datos Personales (Chile)</strong><br>De acuerdo a la normativa vigente, informamos que tu ubicación se usa únicamente durante el uso de la app, con tu consentimiento expreso, y que para calcular direcciones y mostrar el mapa se envía a servicios de terceros (Nominatim/OpenStreetMap) exclusivamente con ese fin.</div>
     <button class="pvbtn-ok" onclick="aceptarPrivacidad()">Entiendo y acepto</button>
     <button class="pvbtn-no" onclick="rechazarPrivacidad()">Prefiero no activar alertas</button>
   </div>
@@ -275,7 +275,7 @@ select:disabled{opacity:0.4}
 
 <header>
   <div class="logo">
-    <img onclick="activarDevMode()" src="data:image/jpeg;base64,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" alt="Logo">
+    <img src="data:image/jpeg;base64,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" alt="Logo">
     <div>
       <span class="lnombre">Control <em>&amp;</em> Confianza</span>
       <span class="lsub">SEGURIDAD PRIVADA</span>
@@ -587,6 +587,24 @@ select:disabled{opacity:0.4}
         </span>
       </div>
     </div>
+    <div id="cycCuenta" style="background:#1a1a1a;border-radius:10px;padding:12px;margin:12px 0;font-size:12px;color:#ccc">
+      <div id="cycCuentaLogueado" style="display:none">
+        Sesión iniciada: <strong id="cycEmailActual"></strong> —
+        <span id="cycEstadoPlan"></span>
+        <button onclick="cycLogout()" style="background:none;border:none;color:#d4a017;text-decoration:underline;cursor:pointer;font-size:12px;margin-left:6px">Cerrar sesión</button>
+      </div>
+      <div id="cycCuentaAnonimo">
+        <div style="font-weight:800;margin-bottom:6px">Inicia sesión o crea tu cuenta</div>
+        <input id="cycEmail" type="email" placeholder="Email" style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff">
+        <input id="cycPassword" type="password" placeholder="Contraseña (mínimo 8 caracteres)" style="width:100%;box-sizing:border-box;margin-bottom:8px;padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff">
+        <div style="display:flex;gap:8px">
+          <button onclick="cycLogin()" style="flex:1;background:#d4a017;color:#111;border:none;padding:8px;border-radius:6px;font-weight:800;cursor:pointer">Iniciar sesión</button>
+          <button onclick="cycRegistro()" style="flex:1;background:#333;color:#fff;border:none;padding:8px;border-radius:6px;font-weight:800;cursor:pointer">Crear cuenta</button>
+        </div>
+        <div id="cycAuthMsg" style="margin-top:6px;font-size:11px;color:#e74c3c"></div>
+      </div>
+    </div>
+    <button class="btnc" id="btnPagarEmpresa" onclick="cycIniciarPago()" style="display:none">Suscribirme al Plan Empresa</button>
     <button class="btnc" onclick="contactar()">Quiero que me contacten</button>
     <a class="wlink" href="https://www.controlyconfianza.cl" target="_blank">www.controlyconfianza.cl</a>
     <button class="btnclose" onclick="cerrarModal()">Cerrar</button>
@@ -827,26 +845,6 @@ setInterval(actualizarReloj,60000);
 window.addEventListener('load',verificarApp);
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 
-// === MODO DESARROLLADOR ===
-var DEV={toques:0,timer:null};
-function activarDevMode(){
-  DEV.toques++;
-  clearTimeout(DEV.timer);
-  DEV.timer=setTimeout(function(){DEV.toques=0;},2000);
-  if(DEV.toques>=5){
-    DEV.toques=0;
-    var actual=localStorage.getItem('cyc_dev')==='1';
-    if(actual){
-      localStorage.removeItem('cyc_dev');
-      toast('Modo desarrollador desactivado');
-    } else {
-      localStorage.setItem('cyc_dev','1');
-      toast('🛠 Modo desarrollador activado');
-    }
-  }
-}
-function esDev(){return localStorage.getItem('cyc_dev')==='1';}
-
 // === PREDICTOR DE RIESGO ===
 function calcularScore(key){
   var d=DB[key];
@@ -974,7 +972,6 @@ function informeDetallado(r,nombre,d){
     '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">'+
       '<button onclick="this.closest(\'[style*=fixed]\').remove()" style="background:none;border:none;color:#d4a017;font-size:22px;cursor:pointer">←</button>'+
       '<div><div style="font-size:16px;font-weight:800;color:#f0e8d0">Informe de riesgo</div><div style="font-size:11px;color:#666">'+nombre+' · '+ahora+'</div></div>'+
-      (esDev()?'<span style="margin-left:auto;font-size:10px;background:#333;color:#d4a017;padding:3px 8px;border-radius:4px">🛠 DEV</span>':'')+
     '</div>'+
     '<div style="background:#1a1a1a;border-radius:14px;padding:16px;margin-bottom:12px;text-align:center">'+
       '<div style="font-size:11px;color:#666;margin-bottom:6px">Score predictivo ahora</div>'+
@@ -1014,26 +1011,6 @@ function mostrarPredictor(key,nombre){
   var d=DB[key];
   var col=scoreColor(r.score);
   var lbl=scoreLabel(r.score);
-  var dev=esDev();
-  window._predR=r;window._predKey=key;window._predNom=nombre;
-
-  var scoreHTML=
-    '<div class="pred-score-wrap">'+
-      '<div>'+
-        '<div class="pred-numero" style="color:'+col+'">'+r.score+'</div>'+
-        '<div class="pred-label" style="color:'+col+'">'+lbl+'</div>'+
-      '</div>'+
-      '<div class="pred-bar-wrap">'+
-        '<div class="pred-bar-track"><div class="pred-bar-fill" style="width:'+r.score+'%;background:'+col+'"></div></div>'+
-        '<div style="font-size:11px;color:#888;margin-top:4px">'+scoreMensaje(r.score,nombre)+'</div>'+
-      '</div>'+
-    '</div>'+
-    '<div class="pred-subcols">'+
-      '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.A+'</div><div class="pred-sub-lbl">Historial</div></div>'+
-      '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.B+'</div><div class="pred-sub-lbl">Perfil zona</div></div>'+
-      '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.C+'</div><div class="pred-sub-lbl">Contexto</div></div>'+
-    '</div>';
-
   // Nivel general — visible para todos (Básico y Personal)
   var nivelHTML=
     '<div style="display:flex;align-items:center;gap:14px;padding:12px;background:#111;border-radius:10px;margin-bottom:10px">'+
@@ -1044,38 +1021,39 @@ function mostrarPredictor(key,nombre){
       '<div style="font-size:12px;color:#999;line-height:1.5;flex:1">'+scoreMensaje(r.score,nombre)+'</div>'+
     '</div>';
 
-  if(dev){
-    // Plan Empresa — acceso completo
-    el.innerHTML='<div class="pred-card">'+
-      '<div class="pred-titulo">🔮 Predicción de riesgo <span class="pred-beta" style="background:rgba(100,200,100,.15);color:#a5d6a7;border-color:rgba(100,200,100,.3)">🛠 DEV</span></div>'+
-      scoreHTML+
-      '<div style="display:flex;gap:8px;margin-top:12px">'+
-        '<button onclick="explicarScore(window._predR.score,window._predNom)" style="flex:1;background:#1a1a1a;border:1px solid #333;color:#d4a017;padding:9px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">¿Qué significa?</button>'+
-        '<button onclick="informeDetallado(window._predR,window._predNom,DB[window._predKey])" style="flex:1;background:#d4a017;color:#111;border:none;padding:9px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer">Ver informe completo</button>'+
-      '</div>'+
-    '</div>';
-  } else {
-    // Plan Personal y Básico — nivel visible, score y detalles bloqueados
+  if(CYC_PREMIUM){
+    // Plan Empresa verificado por el servidor — score y detalles visibles de verdad
     el.innerHTML='<div class="pred-card">'+
       '<div class="pred-titulo">🔮 Predicción de riesgo</div>'+
       nivelHTML+
-      '<div style="position:relative;border-radius:10px;overflow:hidden">'+
-        '<div style="filter:blur(4px);pointer-events:none;user-select:none;opacity:0.45">'+
-          '<div class="pred-subcols">'+
-            '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.A+'</div><div class="pred-sub-lbl">Historial</div></div>'+
-            '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.B+'</div><div class="pred-sub-lbl">Perfil zona</div></div>'+
-            '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.C+'</div><div class="pred-sub-lbl">Contexto</div></div>'+
-          '</div>'+
-          '<div style="background:#1a1a1a;border-radius:8px;padding:10px;font-size:11px;color:#888">Score exacto · Factores detallados · Informe completo</div>'+
-        '</div>'+
-        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(17,17,17,0.82);border-radius:10px;padding:12px;text-align:center">'+
-          '<div style="font-size:11px;color:#ccc;font-weight:700">Score exacto + factores detallados</div>'+
-          '<div style="font-size:10px;color:#666;max-width:200px">Disponible en el plan Empresa</div>'+
-          '<button onclick="abrirModal()" style="background:#d4a017;color:#111;border:none;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;margin-top:2px">Ver plan Empresa →</button>'+
-        '</div>'+
+      '<div class="pred-subcols">'+
+        '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.A+'</div><div class="pred-sub-lbl">Historial</div></div>'+
+        '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.B+'</div><div class="pred-sub-lbl">Perfil zona</div></div>'+
+        '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.C+'</div><div class="pred-sub-lbl">Contexto</div></div>'+
       '</div>'+
     '</div>';
+    return;
   }
+  // Plan Personal y Básico — nivel visible, score y detalles bloqueados
+  el.innerHTML='<div class="pred-card">'+
+    '<div class="pred-titulo">🔮 Predicción de riesgo</div>'+
+    nivelHTML+
+    '<div style="position:relative;border-radius:10px;overflow:hidden">'+
+      '<div style="filter:blur(4px);pointer-events:none;user-select:none;opacity:0.45">'+
+        '<div class="pred-subcols">'+
+          '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.A+'</div><div class="pred-sub-lbl">Historial</div></div>'+
+          '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.B+'</div><div class="pred-sub-lbl">Perfil zona</div></div>'+
+          '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.C+'</div><div class="pred-sub-lbl">Contexto</div></div>'+
+        '</div>'+
+        '<div style="background:#1a1a1a;border-radius:8px;padding:10px;font-size:11px;color:#888">Score exacto · Factores detallados · Informe completo</div>'+
+      '</div>'+
+      '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(17,17,17,0.82);border-radius:10px;padding:12px;text-align:center">'+
+        '<div style="font-size:11px;color:#ccc;font-weight:700">Score exacto + factores detallados</div>'+
+        '<div style="font-size:10px;color:#666;max-width:200px">Disponible en el plan Empresa</div>'+
+        '<button onclick="abrirModal()" style="background:#d4a017;color:#111;border:none;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;margin-top:2px">Ver plan Empresa →</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
 }
 
 // === ALERTAS DE ZONA DE RIESGO ===
@@ -1158,7 +1136,72 @@ function abrirPeligro(){document.getElementById("mpeligro").classList.add("open"
 function cerrarPeligro(){document.getElementById("mpeligro").classList.remove("open");}
 (function(){setTimeout(function(){var s=document.getElementById("splash");if(s){s.classList.add("oculto");setTimeout(function(){s.style.display="none";},700);}},2000);})();
 function irWeb(){window.open("https://www.controlyconfianza.cl","_blank");}
-function contactar(){toast("Nos contactaremos pronto");cerrarModal();}
+function contactar(){window.open("https://wa.me/56984600273?text=Hola%2C%20me%20interesa%20contratar%20un%20plan%20de%20Control%20%26%20Confianza.","_blank");cerrarModal();}
+// CUENTA Y PLAN PREMIUM
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+var CYC_PREMIUM=false;
+function cycToken(){return localStorage.getItem('cyc_token')||'';}
+function cycSetToken(t){localStorage.setItem('cyc_token',t);}
+function cycLogout(){localStorage.removeItem('cyc_token');CYC_PREMIUM=false;cycActualizarUI();}
+async function cycVerificarPremium(){
+  var token=cycToken();
+  if(!token){CYC_PREMIUM=false;cycActualizarUI();return;}
+  try{
+    var res=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+token}});
+    if(!res.ok){cycLogout();return;}
+    var data=await res.json();
+    CYC_PREMIUM=!!data.premium;
+    cycActualizarUI(data.email);
+  }catch(e){}
+}
+function cycActualizarUI(email){
+  var logueado=!!cycToken();
+  var elLog=document.getElementById('cycCuentaLogueado');
+  var elAnon=document.getElementById('cycCuentaAnonimo');
+  var btnPagar=document.getElementById('btnPagarEmpresa');
+  if(elLog)elLog.style.display=logueado?'block':'none';
+  if(elAnon)elAnon.style.display=logueado?'none':'block';
+  if(email)document.getElementById('cycEmailActual').textContent=email;
+  var elEstado=document.getElementById('cycEstadoPlan');
+  if(elEstado)elEstado.textContent=CYC_PREMIUM?'Plan Empresa activo ✓':'Sin plan pago activo';
+  if(btnPagar)btnPagar.style.display=(logueado&&!CYC_PREMIUM)?'block':'none';
+}
+async function cycRegistro(){
+  var email=document.getElementById('cycEmail').value.trim();
+  var password=document.getElementById('cycPassword').value;
+  var msg=document.getElementById('cycAuthMsg');
+  msg.textContent='';
+  try{
+    var res=await fetch(API_URL+'/auth/registro',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:password})});
+    var data=await res.json();
+    if(!res.ok){msg.textContent=data.error||'No se pudo crear la cuenta.';return;}
+    cycSetToken(data.token);
+    await cycVerificarPremium();
+  }catch(e){msg.textContent='Error de conexión.';}
+}
+async function cycLogin(){
+  var email=document.getElementById('cycEmail').value.trim();
+  var password=document.getElementById('cycPassword').value;
+  var msg=document.getElementById('cycAuthMsg');
+  msg.textContent='';
+  try{
+    var res=await fetch(API_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:password})});
+    var data=await res.json();
+    if(!res.ok){msg.textContent=data.error||'Credenciales inválidas.';return;}
+    cycSetToken(data.token);
+    await cycVerificarPremium();
+  }catch(e){msg.textContent='Error de conexión.';}
+}
+async function cycIniciarPago(){
+  var msg=document.getElementById('cycAuthMsg');
+  try{
+    var res=await fetch(API_URL+'/pago/iniciar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cycToken()},body:JSON.stringify({plan:'empresa'})});
+    var data=await res.json();
+    if(data.url){window.location.href=data.url;return;}
+    msg.textContent=data.error||'El pago automático no está disponible todavía — usa el botón de WhatsApp mientras tanto.';
+  }catch(e){msg.textContent='Error de conexión.';}
+}
+window.addEventListener('load',function(){cycVerificarPremium();});
 // ASISTENTE IA
 const WORKER_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
 const CHAT_LIMIT=3;
