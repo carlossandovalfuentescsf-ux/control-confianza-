@@ -522,8 +522,8 @@ select:disabled{opacity:0.4}
       <div class="prem-box">
         <div class="prem-tit">Potencia tu seguridad con un plan</div>
         <div class="prem-desc">Accede a herramientas exclusivas segun tus necesidades.</div>
-        <div class="pf">⭐ <strong>Personal $4.990/mes</strong> — Plan Hogar completo + prediccion de riesgo</div>
-        <div class="pf">🏢 <strong>Empresa $49.990/mes</strong> — Prediccion detallada + Directiva de Funcionamiento</div>
+        <div class="pf">⭐ <strong>Personal $4.990/mes</strong> — Plan Hogar completo + indice de riesgo</div>
+        <div class="pf">🏢 <strong>Empresa $49.990/mes</strong> — Indice de riesgo detallado + Directiva de Funcionamiento</div>
         <button class="btnpagar" onclick="abrirModal()">Ver planes y precios</button>
       </div>
     </div>
@@ -560,7 +560,7 @@ select:disabled{opacity:0.4}
       <div class="ptop"><div class="pnom">Personal ⭐</div><div class="pprc"><strong>$4.990</strong>/mes</div></div>
       <div class="pft">
         ✓ Todo lo gratuito mas:<br>
-        🔮 <strong>Prediccion de riesgo</strong> — nivel general (Alto / Medio / Bajo)<br>
+        📊 <strong>Indice de riesgo</strong> — nivel general (Alto / Medio / Bajo)<br>
         🏠 <strong>Plan de Seguridad del Hogar completo</strong><br>
         📋 Vulnerabilidades detectadas en tu hogar<br>
         🎯 Recomendaciones por prioridad (critico / importante)<br>
@@ -573,7 +573,7 @@ select:disabled{opacity:0.4}
       <div class="ptop"><div class="pnom">Empresa</div><div class="pprc"><strong>$49.990</strong>/mes</div></div>
       <div class="pft">
         ✓ Todo lo anterior mas:<br>
-        🔮 <strong>Prediccion de riesgo en tiempo real</strong><br>
+        📊 <strong>Indice de riesgo con detalle completo</strong><br>
         🧮 Calculadora de riesgo OS.10 ilimitada<br>
         💬 <strong>2 consultas/mes</strong> con asesor acreditado OS.10<br>
         🏅 Carta de respaldo como empresa asesorada<br>
@@ -1006,12 +1006,13 @@ function mostrarPredictor(key,nombre){
   var r=null;
   try{r=calcularScore(key);}catch(e){r=null;}
   if(!r){
-    el.innerHTML='<div class="pred-card"><div class="pred-titulo">🔮 Predicción de riesgo <span class="pred-beta">PREMIUM</span></div><div style="font-size:12px;color:#555;margin-top:4px">Próximamente disponible para esta región. Actualmente cubre las 29 comunas principales de Santiago.</div></div>';
+    el.innerHTML='<div class="pred-card"><div class="pred-titulo">📊 Índice de riesgo <span class="pred-beta">PREMIUM</span></div><div style="font-size:12px;color:#555;margin-top:4px">Próximamente disponible para esta región. Actualmente cubre las 29 comunas principales de Santiago.</div></div>';
     return;
   }
   var d=DB[key];
   var col=scoreColor(r.score);
   var lbl=scoreLabel(r.score);
+  var metodologia='<div style="font-size:10px;color:#666;line-height:1.5;margin-top:8px">Calculado con tasa histórica del sector, iluminación, flujo peatonal, presencia policial y el horario/día actual. No es una predicción de hechos futuros.</div>';
   // Nivel general — visible para todos (Básico y Personal)
   var nivelHTML=
     '<div style="display:flex;align-items:center;gap:14px;padding:12px;background:#111;border-radius:10px;margin-bottom:10px">'+
@@ -1025,19 +1026,20 @@ function mostrarPredictor(key,nombre){
   if(CYC_PREMIUM){
     // Plan Empresa verificado por el servidor — score y detalles visibles de verdad
     el.innerHTML='<div class="pred-card">'+
-      '<div class="pred-titulo">🔮 Predicción de riesgo</div>'+
+      '<div class="pred-titulo">📊 Índice de riesgo</div>'+
       nivelHTML+
       '<div class="pred-subcols">'+
         '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.A+'</div><div class="pred-sub-lbl">Historial</div></div>'+
         '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.B+'</div><div class="pred-sub-lbl">Perfil zona</div></div>'+
         '<div class="pred-sub"><div class="pred-sub-val" style="color:#d4a017">'+r.C+'</div><div class="pred-sub-lbl">Contexto</div></div>'+
       '</div>'+
+      metodologia+
     '</div>';
     return;
   }
   // Plan Personal y Básico — nivel visible, score y detalles bloqueados
   el.innerHTML='<div class="pred-card">'+
-    '<div class="pred-titulo">🔮 Predicción de riesgo</div>'+
+    '<div class="pred-titulo">📊 Índice de riesgo</div>'+
     nivelHTML+
     '<div style="position:relative;border-radius:10px;overflow:hidden">'+
       '<div style="filter:blur(4px);pointer-events:none;user-select:none;opacity:0.45">'+
@@ -1054,6 +1056,7 @@ function mostrarPredictor(key,nombre){
         '<button onclick="abrirModal()" style="background:#d4a017;color:#111;border:none;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;margin-top:2px">Ver plan Empresa →</button>'+
       '</div>'+
     '</div>'+
+    metodologia+
   '</div>';
 }
 
