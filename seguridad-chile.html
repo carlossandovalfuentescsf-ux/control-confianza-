@@ -604,7 +604,8 @@ select:disabled{opacity:0.4}
         <div id="cycAuthMsg" style="margin-top:6px;font-size:11px;color:#e74c3c"></div>
       </div>
     </div>
-    <button class="btnc" id="btnPagarEmpresa" onclick="cycIniciarPago()" style="display:none">Suscribirme al Plan Empresa</button>
+    <button class="btnc" id="btnPagarPersonal" onclick="cycIniciarPago('personal')" style="display:none">Pagar Plan Personal — $4.990</button>
+    <button class="btnc" id="btnPagarEmpresa" onclick="cycIniciarPago('empresa')" style="display:none">Suscribirme al Plan Empresa</button>
     <button class="btnc" onclick="contactar()">Quiero que me contacten</button>
     <a class="wlink" href="https://www.controlyconfianza.cl" target="_blank">www.controlyconfianza.cl</a>
     <button class="btnclose" onclick="cerrarModal()">Cerrar</button>
@@ -1140,17 +1141,19 @@ function contactar(){window.open("https://wa.me/56984600273?text=Hola%2C%20me%20
 // CUENTA Y PLAN PREMIUM
 const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
 var CYC_PREMIUM=false;
+var CYC_PLAN=null;
 function cycToken(){return localStorage.getItem('cyc_token')||'';}
 function cycSetToken(t){localStorage.setItem('cyc_token',t);}
-function cycLogout(){localStorage.removeItem('cyc_token');CYC_PREMIUM=false;cycActualizarUI();}
+function cycLogout(){localStorage.removeItem('cyc_token');CYC_PREMIUM=false;CYC_PLAN=null;cycActualizarUI();}
 async function cycVerificarPremium(){
   var token=cycToken();
-  if(!token){CYC_PREMIUM=false;cycActualizarUI();return;}
+  if(!token){CYC_PREMIUM=false;CYC_PLAN=null;cycActualizarUI();return;}
   try{
     var res=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+token}});
     if(!res.ok){cycLogout();return;}
     var data=await res.json();
-    CYC_PREMIUM=!!data.premium;
+    CYC_PLAN=data.plan||null;
+    CYC_PREMIUM=(CYC_PLAN==='empresa');
     cycActualizarUI(data.email);
   }catch(e){}
 }
@@ -1158,13 +1161,15 @@ function cycActualizarUI(email){
   var logueado=!!cycToken();
   var elLog=document.getElementById('cycCuentaLogueado');
   var elAnon=document.getElementById('cycCuentaAnonimo');
-  var btnPagar=document.getElementById('btnPagarEmpresa');
+  var btnPagarE=document.getElementById('btnPagarEmpresa');
+  var btnPagarP=document.getElementById('btnPagarPersonal');
   if(elLog)elLog.style.display=logueado?'block':'none';
   if(elAnon)elAnon.style.display=logueado?'none':'block';
   if(email)document.getElementById('cycEmailActual').textContent=email;
   var elEstado=document.getElementById('cycEstadoPlan');
-  if(elEstado)elEstado.textContent=CYC_PREMIUM?'Plan Empresa activo ✓':'Sin plan pago activo';
-  if(btnPagar)btnPagar.style.display=(logueado&&!CYC_PREMIUM)?'block':'none';
+  if(elEstado)elEstado.textContent=CYC_PLAN==='empresa'?'Plan Empresa activo ✓':(CYC_PLAN==='personal'?'Plan Personal activo ✓':'Sin plan pago activo');
+  if(btnPagarE)btnPagarE.style.display=(logueado&&CYC_PLAN!=='empresa')?'block':'none';
+  if(btnPagarP)btnPagarP.style.display=(logueado&&!CYC_PLAN)?'block':'none';
 }
 async function cycRegistro(){
   var email=document.getElementById('cycEmail').value.trim();
@@ -1192,10 +1197,10 @@ async function cycLogin(){
     await cycVerificarPremium();
   }catch(e){msg.textContent='Error de conexión.';}
 }
-async function cycIniciarPago(){
+async function cycIniciarPago(plan){
   var msg=document.getElementById('cycAuthMsg');
   try{
-    var res=await fetch(API_URL+'/pago/iniciar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cycToken()},body:JSON.stringify({plan:'empresa'})});
+    var res=await fetch(API_URL+'/pago/iniciar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cycToken()},body:JSON.stringify({plan:plan})});
     var data=await res.json();
     if(data.url){window.location.href=data.url;return;}
     msg.textContent=data.error||'El pago automático no está disponible todavía — usa el botón de WhatsApp mientras tanto.';

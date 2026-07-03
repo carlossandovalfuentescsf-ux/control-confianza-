@@ -100,20 +100,40 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
 .cta h3{font-size:15px;color:#fff;margin-bottom:5px}
 .cta p{font-size:12px;color:#999;margin-bottom:14px;line-height:1.5}
 .btn-wa{display:block;background:#25D366;color:#fff;padding:14px;border-radius:10px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:8px}
+
+/* SEGMENTACION */
+.seg-overlay{position:fixed;inset:0;background:#111;z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
+.seg-box{max-width:360px;text-align:center}
+.seg-box .seg-icon{font-size:40px;margin-bottom:10px}
+.seg-box h2{font-size:18px;color:#fff;margin-bottom:8px}
+.seg-box p{font-size:12px;color:#999;margin-bottom:20px;line-height:1.5}
+.seg-btn{width:100%;text-align:left;background:#1a1a1a;border:2px solid rgba(212,160,23,.3);color:#eee;padding:14px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px;line-height:1.4}
+.seg-btn b{display:block;font-size:15px;margin-bottom:3px}
+.seg-btn:hover{border-color:#d4a017;background:rgba(212,160,23,.1)}
 </style>
 </head>
 <body>
+
+<div class="seg-overlay" id="segOverlay">
+  <div class="seg-box">
+    <div class="seg-icon">🗺️</div>
+    <h2>¿Para qué necesitas esta herramienta?</h2>
+    <p>Así te mostramos la información y el precio correcto para tu caso.</p>
+    <button class="seg-btn" onclick="elegirSegmento('hogar')"><b>🏠 Es mi hogar</b>Quiero saber qué tan seguro está mi casa</button>
+    <button class="seg-btn" onclick="elegirSegmento('empresa')"><b>🏢 Es una empresa</b>Debo cumplir con la ley de guardias (OS.10)</button>
+  </div>
+</div>
 
 <div class="header">
   <a href="seguridad-chile.html" class="btn-volver">← Volver</a>
   <div style="width:34px;height:34px;background:#d4a017;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">🗺️</div>
   <div class="header-title">
     <h1>Georeferenciación de Predio</h1>
-    <p>Planificación de Seguridad — Plan Empresa</p>
+    <p id="headerSub">Planificación de Seguridad — Plan Empresa</p>
   </div>
 </div>
 
-<div class="plan-badge">🏢 Herramienta exclusiva Plan Empresa · Certificado OS.10 Carabineros</div>
+<div class="plan-badge" id="planBadge">🏢 Herramienta exclusiva Plan Empresa · Certificado OS.10 Carabineros</div>
 
 <div class="pasos">
   <div class="paso activo" id="tab1" onclick="irPaso(1)"><span class="paso-num">📍</span>Dirección</div>
@@ -124,8 +144,8 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
 <!-- ====== PASO 1: DIRECCIÓN ====== -->
 <div class="seccion activa" id="paso1">
   <div class="info-box">
-    <h4>¿Para qué sirve esta herramienta?</h4>
-    <p>Permite mapear tu predio o local, dibujar su perímetro y ubicar los sistemas de seguridad (cámaras, guardias, alarmas, accesos). El resultado es la base para tu <strong>Directiva de Funcionamiento OS.10</strong> oficial.</p>
+    <h4 id="info1-h4">¿Para qué sirve esta herramienta?</h4>
+    <p id="info1-p">Permite mapear tu predio o local, dibujar su perímetro y ubicar los sistemas de seguridad (cámaras, guardias, alarmas, accesos). El resultado es la base para tu <strong>Directiva de Funcionamiento OS.10</strong> oficial.</p>
   </div>
 
   <span class="label">Dirección del predio o empresa</span>
@@ -260,8 +280,8 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
   </div>
 
   <div class="cta">
-    <h3>📄 Obtén tu Directiva de Funcionamiento OS.10</h3>
-    <p>Este plano y análisis es entregado a Carlos Sandoval — asesor acreditado OS.10 Carabineros de Chile — para preparar tu Directiva oficial y cumplir con la ley.</p>
+    <h3 id="cta-titulo">📄 Obtén tu Directiva de Funcionamiento OS.10</h3>
+    <p id="cta-desc">Este plano y análisis es entregado a Carlos Sandoval — asesor acreditado OS.10 Carabineros de Chile — para preparar tu Directiva oficial y cumplir con la ley.</p>
     <a id="btn-wa" class="btn-wa" href="#" target="_blank">💬 Solicitar Directiva por WhatsApp</a>
     <button class="btn-outline" onclick="reiniciar()">← Analizar otro predio</button>
   </div>
@@ -274,17 +294,56 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
 // CUENTA Y PLAN PREMIUM (misma sesión que seguridad-chile.html, comparten dominio)
 const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
 let CYC_PREMIUM=false;
+let CYC_PLAN=null;
 async function cycVerificarPremium(){
   const token=localStorage.getItem('cyc_token')||'';
-  if(!token){CYC_PREMIUM=false;return;}
+  if(!token){CYC_PREMIUM=false;CYC_PLAN=null;return;}
   try{
     const res=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+token}});
-    if(!res.ok){CYC_PREMIUM=false;return;}
+    if(!res.ok){CYC_PREMIUM=false;CYC_PLAN=null;return;}
     const data=await res.json();
+    CYC_PLAN=data.plan||null;
     CYC_PREMIUM=!!data.premium;
-  }catch(e){CYC_PREMIUM=false;}
+  }catch(e){CYC_PREMIUM=false;CYC_PLAN=null;}
 }
-function cycBloquearCard(id){
+
+// SEGMENTACION: hogar (paga Plan Personal $4.990 unico) vs empresa (gratis, embudo a Directiva OS.10)
+let SEGMENTO=null;
+function elegirSegmento(tipo){
+  SEGMENTO=tipo;
+  sessionStorage.setItem('georef_segmento',tipo);
+  document.getElementById('segOverlay').style.display='none';
+  aplicarCopySegmento();
+}
+function aplicarCopySegmento(){
+  const sub=document.getElementById('headerSub');
+  const badge=document.getElementById('planBadge');
+  const h4=document.getElementById('info1-h4');
+  const p=document.getElementById('info1-p');
+  const ctaT=document.getElementById('cta-titulo');
+  const ctaD=document.getElementById('cta-desc');
+  if(SEGMENTO==='hogar'){
+    if(sub)sub.textContent='Protege tu hogar — Plan Personal';
+    if(badge){badge.textContent='🏠 Analiza la seguridad de tu casa';badge.style.color='#7abaff';badge.style.borderColor='rgba(122,186,255,.4)';badge.style.background='rgba(122,186,255,.12)';}
+    if(h4)h4.textContent='¿Para qué sirve esta herramienta?';
+    if(p)p.innerHTML='Dibuja el perímetro de tu casa y marca cámaras, alarmas, luces y accesos. Te mostramos las vulnerabilidades y qué mejorar primero para reducir el riesgo.';
+    if(ctaT)ctaT.textContent='🛡️ ¿Quieres reforzar la seguridad de tu casa?';
+    if(ctaD)ctaD.textContent='Escríbenos para cotizar guardias, cámaras o mejoras según lo que detectamos en tu predio.';
+  } else {
+    if(sub)sub.textContent='Planificación de Seguridad — Plan Empresa';
+    if(badge){badge.textContent='🏢 Herramienta exclusiva Plan Empresa · Certificado OS.10 Carabineros';badge.style.color='';badge.style.borderColor='';badge.style.background='';}
+    if(h4)h4.textContent='¿Para qué sirve esta herramienta?';
+    if(p)p.innerHTML='Permite mapear tu predio o local, dibujar su perímetro y ubicar los sistemas de seguridad (cámaras, guardias, alarmas, accesos). El resultado es la base para tu <strong>Directiva de Funcionamiento OS.10</strong> oficial.';
+    if(ctaT)ctaT.textContent='📄 Obtén tu Directiva de Funcionamiento OS.10';
+    if(ctaD)ctaD.textContent='Este plano y análisis es entregado a Carlos Sandoval — asesor acreditado OS.10 Carabineros de Chile — para preparar tu Directiva oficial y cumplir con la ley.';
+  }
+}
+window.addEventListener('load',()=>{
+  const previo=sessionStorage.getItem('georef_segmento');
+  if(previo){SEGMENTO=previo;document.getElementById('segOverlay').style.display='none';aplicarCopySegmento();}
+});
+
+function cycBloquearCardHogar(id){
   const card=document.getElementById(id);
   if(!card||card.querySelector('.cyc-overlay'))return;
   card.style.position='relative';
@@ -295,15 +354,53 @@ function cycBloquearCard(id){
   card.appendChild(inner);
   const overlay=document.createElement('div');
   overlay.className='cyc-overlay';
-  overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(17,17,17,.85);border-radius:12px;padding:16px;text-align:center';
-  overlay.innerHTML='<div style="font-size:12px;color:#ccc;font-weight:700">Disponible en el plan Empresa</div><div style="font-size:11px;color:#888;max-width:220px">Inicia sesión en la app principal (seguridad-chile) con tu cuenta Empresa para desbloquear este análisis.</div>';
+  overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(17,17,17,.92);border-radius:12px;padding:14px;text-align:center';
+  const logueado=!!localStorage.getItem('cyc_token');
+  if(logueado){
+    overlay.innerHTML='<div style="font-size:12px;color:#ccc;font-weight:700">Informe completo — Plan Personal</div>'+
+      '<div style="font-size:11px;color:#888;max-width:220px">Pago único de $4.990. Incluye vulnerabilidades detalladas y recomendaciones para tu casa.</div>'+
+      '<button onclick="cycPagarPersonalGeoref()" style="background:#d4a017;color:#111;border:none;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;margin-top:4px">Pagar $4.990 y desbloquear</button>';
+  } else {
+    overlay.innerHTML='<div style="font-size:12px;color:#ccc;font-weight:700">Informe completo — Plan Personal $4.990</div>'+
+      '<input id="geoEmail" type="email" placeholder="Email" style="width:100%;max-width:220px;box-sizing:border-box;margin-top:6px;padding:7px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;font-size:12px">'+
+      '<input id="geoPassword" type="password" placeholder="Contraseña (mín. 8)" style="width:100%;max-width:220px;box-sizing:border-box;margin-top:5px;padding:7px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;font-size:12px">'+
+      '<div style="display:flex;gap:6px;margin-top:6px;width:100%;max-width:220px">'+
+        '<button onclick="cycAuthYPagarGeoref(\'login\')" style="flex:1;background:#333;color:#fff;border:none;padding:7px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Ya tengo cuenta</button>'+
+        '<button onclick="cycAuthYPagarGeoref(\'registro\')" style="flex:1;background:#d4a017;color:#111;border:none;padding:7px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Crear cuenta y pagar</button>'+
+      '</div>'+
+      '<div id="geoAuthMsg" style="font-size:10px;color:#e74c3c;margin-top:4px"></div>';
+  }
   card.appendChild(overlay);
 }
+async function cycPagarPersonalGeoref(){
+  const token=localStorage.getItem('cyc_token')||'';
+  try{
+    const res=await fetch(API_URL+'/pago/iniciar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({plan:'personal'})});
+    const data=await res.json();
+    if(data.url){window.location.href=data.url;return;}
+    alert(data.error||'No se pudo iniciar el pago.');
+  }catch(e){alert('Error de conexión.');}
+}
+async function cycAuthYPagarGeoref(modo){
+  const email=document.getElementById('geoEmail').value.trim();
+  const password=document.getElementById('geoPassword').value;
+  const msg=document.getElementById('geoAuthMsg');
+  if(msg)msg.textContent='';
+  try{
+    const ruta=modo==='login'?'/auth/login':'/auth/registro';
+    const res=await fetch(API_URL+ruta,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data=await res.json();
+    if(!res.ok){if(msg)msg.textContent=data.error||'No se pudo continuar.';return;}
+    localStorage.setItem('cyc_token',data.token);
+    await cycPagarPersonalGeoref();
+  }catch(e){if(msg)msg.textContent='Error de conexión.';}
+}
 function cycAplicarBloqueoPredio(){
-  if(CYC_PREMIUM)return;
-  cycBloquearCard('card-alertas');
+  if(SEGMENTO==='empresa')return;
+  if(CYC_PLAN==='personal'||CYC_PLAN==='empresa')return;
+  cycBloquearCardHogar('card-alertas');
   const recsCard=document.getElementById('recs-lista').closest('.card');
-  if(recsCard)cycBloquearCard(recsCard.id||(recsCard.id='card-recs'));
+  if(recsCard){if(!recsCard.id)recsCard.id='card-recs';cycBloquearCardHogar(recsCard.id);}
 }
 window.addEventListener('load',cycVerificarPremium);
 let map1=null, map2=null, map3=null;
@@ -620,10 +717,15 @@ function analizarPredio(){
     if(puntosPoly.length>0) map3.fitBounds(L.polygon(puntosPoly).getBounds(),{padding:[20,20]});
   },400);
 
-  // WhatsApp
+  // WhatsApp (mensaje distinto segun segmento)
   const resumen=Object.keys(SIS).filter(k=>cnts[k]>0).map(k=>`${SIS[k].e} ${cnts[k]} ${SIS[k].n}`).join(', ')||'Solo perímetro';
-  const msg=encodeURIComponent(`Hola Carlos, usé la herramienta de Georeferenciación de Predio.\n\n📍 Predio: ${dirTexto.split(',').slice(0,2).join(',')}\n${nivelTxt}\n🔧 Sistemas planificados: ${resumen}\n\nMe gustaría solicitar mi Directiva de Funcionamiento OS.10.`);
-  document.getElementById('btn-wa').href=`https://wa.me/56984600273?text=${msg}`;
+  const cierre=SEGMENTO==='hogar'
+    ?'Me gustaría cotizar mejoras de seguridad para mi casa.'
+    :'Me gustaría solicitar mi Directiva de Funcionamiento OS.10.';
+  const msg=encodeURIComponent(`Hola Carlos, usé la herramienta de Georeferenciación de Predio.\n\n📍 Predio: ${dirTexto.split(',').slice(0,2).join(',')}\n${nivelTxt}\n🔧 Sistemas planificados: ${resumen}\n\n${cierre}`);
+  const btnWa=document.getElementById('btn-wa');
+  btnWa.href=`https://wa.me/56984600273?text=${msg}`;
+  btnWa.textContent=SEGMENTO==='hogar'?'💬 Cotizar seguridad por WhatsApp':'💬 Solicitar Directiva por WhatsApp';
 
   cycAplicarBloqueoPredio();
   window.scrollTo(0,0);
