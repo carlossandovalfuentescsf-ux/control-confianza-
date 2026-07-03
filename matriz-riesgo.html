@@ -580,6 +580,21 @@ select:focus{outline:none;border-color:#15803d;}
 <div class="toast" id="toast"></div>
 
 <script>
+// CUENTA Y PLAN PREMIUM (misma sesión que seguridad-chile.html, comparten dominio)
+var API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+var CYC_PLAN=null;
+async function cycVerificarPremium(){
+  var token=localStorage.getItem('cyc_token')||'';
+  if(!token){CYC_PLAN=null;return;}
+  try{
+    var res=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+token}});
+    if(!res.ok){CYC_PLAN=null;return;}
+    var data=await res.json();
+    CYC_PLAN=data.plan||null;
+  }catch(e){CYC_PLAN=null;}
+}
+window.addEventListener('load',cycVerificarPremium);
+
 var COMUNAS={
   la_pintana:[8,'10','Baja (decil 4)','Urgente 1'],lo_espejo:[8,'10','Baja (decil 4)','Urgente 1'],
   el_bosque:[7,'10','Media-baja (decil 5)','Urgente 1'],cerro_navia:[8,'10','Baja (decil 4)','Urgente 1'],
@@ -908,59 +923,67 @@ function showResult(){
   var[on,oc]=nivelOficial(of),[pn,pc]=nivelPercep(pe);
   var modeChip='<span class="mode-chip '+useCase+'">'+
     {legal:'⚖️ Ley 21.659',evento:'🎪 Planificación evento',sucursal:'🏪 Nueva sucursal',anual:'📅 Revisión anual'}[useCase]+'</span>';
-  var html='<div class="result-card">'+modeChip;
+  var libre='',detalle='';
+  var ctaMap={
+    legal:'<a href="https://wa.me/56984600273?text=Hice%20el%20diagn%C3%B3stico%20Ley%2021.659%20y%20quiero%20asesor%C3%ADa%20de%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#e94560;">Solicitar asesoría Ley 21.659<span>Control & Confianza — Asesores acreditados OS.10</span></a>',
+    evento:'<a href="https://wa.me/56984600273?text=Hice%20el%20diagn%C3%B3stico%20de%20seguridad%20para%20mi%20evento%20y%20quiero%20cotizar%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#f59e0b;color:#111;">Cotizar seguridad para mi evento<span>Control & Confianza — Coordinamos guardias, protocolos y logística</span></a>',
+    sucursal:'<a href="https://wa.me/56984600273?text=Hice%20el%20diagn%C3%B3stico%20de%20nueva%20sucursal%20y%20quiero%20un%20diagn%C3%B3stico%20in%20situ%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#16a34a;">Solicitar diagnóstico in situ<span>Control & Confianza — Evaluamos la ubicación antes de que firmes</span></a>',
+    anual:'<a href="https://wa.me/56984600273?text=Hice%20la%20revisi%C3%B3n%20anual%20de%20seguridad%20y%20quiero%20actualizar%20mi%20plan%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#3b82f6;">Actualizar mi plan de seguridad<span>Control & Confianza — Revisión anual con asesor acreditado OS.10</span></a>'
+  };
 
   if(useCase==='legal'){
-    // Resultado original: dual score
-    var brecha=insightBrecha(of,pe);
+    // Libre: score oficial + probabilidad de obligación (la promesa central del gancho gratuito)
     var obligCls=on==='Alto'?'high':on==='Medio'?'med':'low';
     var obligTxt=on==='Alto'?'⚠️ <strong>Alta probabilidad de quedar obligada.</strong> Deberás implementar medidas de seguridad privada conforme a la Ley 21.659. Actúa antes de la fiscalización.':
       on==='Medio'?'🔶 <strong>Riesgo moderado de quedar obligada.</strong> Revisa tus medidas actuales y considera anticiparte a la normativa.':
       '✅ <strong>Baja probabilidad de quedar obligada.</strong> Un diagnóstico preventivo siempre es recomendable.';
-    html+=
-      '<div class="result-dual">'+
-        '<div class="result-box oficial"><div class="result-box-label">Score Ley 21.659</div><div class="result-score-sm '+oc+'">'+of.toFixed(1)+'</div><div class="result-nivel-sm '+oc+'">Riesgo '+on+'</div></div>'+
-        '<div class="result-box percep"><div class="result-box-label">Índice Percepción</div><div class="result-score-sm '+pc+'">'+pe.toFixed(1)+'</div><div class="result-nivel-sm '+pc+'">'+pn+'</div></div>'+
-      '</div>'+
-      '<div class="result-insight '+brecha.cls+'">'+brecha.txt+'</div>'+
-      '<div class="result-oblig '+obligCls+'">'+obligTxt+'</div>'+
-      '<a href="https://wa.me/56984600273?text=Hice%20el%20diagn%C3%B3stico%20Ley%2021.659%20y%20quiero%20asesor%C3%ADa%20de%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#e94560;">Solicitar asesoría Ley 21.659<span>Control & Confianza — Asesores acreditados OS.10</span></a>';
+    libre=
+      '<div class="result-box oficial" style="margin-bottom:14px;"><div class="result-box-label">Score Ley 21.659</div><div class="result-score-sm '+oc+'">'+of.toFixed(1)+'</div><div class="result-nivel-sm '+oc+'">Riesgo '+on+'</div></div>'+
+      '<div class="result-oblig '+obligCls+'">'+obligTxt+'</div>';
+    // Empresa: índice de percepción + análisis de brecha
+    var brecha=insightBrecha(of,pe);
+    detalle=
+      '<div class="result-box percep" style="margin-bottom:14px;"><div class="result-box-label">Índice Percepción</div><div class="result-score-sm '+pc+'">'+pe.toFixed(1)+'</div><div class="result-nivel-sm '+pc+'">'+pn+'</div></div>'+
+      '<div class="result-insight '+brecha.cls+'">'+brecha.txt+'</div>';
 
   } else if(useCase==='evento'){
     var q7v=answers.q7||1;
     var staff=staffEvento(of,q7v);
     var riskColor=on==='Alto'?'red':on==='Medio'?'orange':'green';
-    html+=
+    libre=
+      '<div class="recom-card '+riskColor+'"><div class="recom-card-title">Perfil de riesgo del evento — '+on+'</div><div class="recom-card-body">Score: '+of.toFixed(1)+'/10 · Percepción: '+pe.toFixed(1)+'/5</div></div>';
+    // Empresa: numero exacto de guardias + servicios + protocolo
+    detalle=
       '<div class="staff-box">'+
         '<div class="staff-num">'+staff.guardias+'</div>'+
         '<div class="staff-label">Guardias recomendados para tu evento</div>'+
         '<div class="staff-detail">'+staff.jefe+'<br>'+staff.detalle+'</div>'+
       '</div>'+
-      '<div class="recom-grid">'+
-        '<div class="recom-card '+riskColor+'"><div class="recom-card-title">Perfil de riesgo del evento — '+on+'</div><div class="recom-card-body">Score: '+of.toFixed(1)+'/10 · Percepción: '+pe.toFixed(1)+'/5<br>'+staff.serv+'</div></div>'+
-        '<div class="recom-card blue"><div class="recom-card-title">Servicios recomendados</div><div class="recom-card-body">✓ Control de acceso<br>✓ Rondas perimetrales<br>'+(on==='Alto'?'✓ Coordinación con Carabineros<br>✓ Punto fijo en zona de caja':'✓ Punto fijo en caja y escenario')+'</div></div>'+
-        '<div class="recom-card orange"><div class="recom-card-title">Protocolo de contingencia</div><div class="recom-card-body">Antes del evento: reunión de coordinación con toda la seguridad.<br>Durante: canal de comunicación exclusivo entre jefes de turno.<br>Después: informe de incidentes por escrito.</div></div>'+
-      '</div>'+
-      '<a href="https://wa.me/56984600273?text=Hice%20el%20diagn%C3%B3stico%20de%20seguridad%20para%20mi%20evento%20y%20quiero%20cotizar%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#f59e0b;color:#111;">Cotizar seguridad para mi evento<span>Control & Confianza — Coordinamos guardias, protocolos y logística</span></a>';
+      '<div class="recom-card blue"><div class="recom-card-title">Servicios recomendados</div><div class="recom-card-body">✓ Control de acceso<br>✓ Rondas perimetrales<br>'+(on==='Alto'?'✓ Coordinación con Carabineros<br>✓ Punto fijo en zona de caja':'✓ Punto fijo en caja y escenario')+'</div></div>'+
+      '<div class="recom-card orange"><div class="recom-card-title">Protocolo de contingencia</div><div class="recom-card-body">Antes del evento: reunión de coordinación con toda la seguridad.<br>Durante: canal de comunicación exclusivo entre jefes de turno.<br>Después: informe de incidentes por escrito.</div></div>';
 
   } else if(useCase==='sucursal'){
     var sem=semaforo(of);
-    html+=
+    libre=
       '<div style="text-align:center;padding:20px 0 10px;">' +
         '<div style="font-size:3rem;">'+sem.icon+'</div>'+
         '<div style="font-size:1.3rem;font-weight:900;margin:8px 0 4px;">'+sem.label+'</div>'+
         '<div style="font-size:0.82rem;color:#666;">Score: '+of.toFixed(1)+'/10 · Percepción: '+pe.toFixed(1)+'/5</div>'+
-      '</div>'+
-      '<div class="recom-grid">'+
-        '<div class="recom-card '+(sem.color==='red'?'red':sem.color==='orange'?'orange':'green')+'"><div class="recom-card-title">Evaluación de la ubicación</div><div class="recom-card-body">'+sem.desc+'</div></div>'+
-        '<div class="recom-card blue"><div class="recom-card-title">Antes de firmar el contrato</div><div class="recom-card-body">✓ Visita el sector de noche y de día<br>✓ Consulta en la comisaría local la tasa delictual<br>✓ Revisa si hay cámaras municipales en el sector<br>✓ Solicita diagnóstico in situ a un asesor OS.10</div></div>'+
-        (on==='Alto'?'<div class="recom-card red"><div class="recom-card-title">Medidas mínimas antes de abrir</div><div class="recom-card-body">✓ CCTV con grabación 30 días<br>✓ Alarma conectada a central<br>✓ Guardia en horario nocturno<br>✓ Protocolo de apertura y cierre seguro</div></div>':'<div class="recom-card orange"><div class="recom-card-title">Medidas recomendadas</div><div class="recom-card-body">✓ CCTV en accesos<br>✓ Alarma conectada<br>✓ Protocolo de apertura y cierre<br>✓ Revisión anual del perfil de riesgo</div></div>')+
-      '</div>'+
-      '<a href="https://wa.me/56984600273?text=Hice%20el%20diagn%C3%B3stico%20de%20nueva%20sucursal%20y%20quiero%20un%20diagn%C3%B3stico%20in%20situ%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#16a34a;">Solicitar diagnóstico in situ<span>Control & Confianza — Evaluamos la ubicación antes de que firmes</span></a>';
+      '</div>';
+    // Empresa: desglose de la evaluación + medidas concretas antes de abrir/firmar
+    detalle=
+      '<div class="recom-card '+(sem.color==='red'?'red':sem.color==='orange'?'orange':'green')+'"><div class="recom-card-title">Evaluación de la ubicación</div><div class="recom-card-body">'+sem.desc+'</div></div>'+
+      '<div class="recom-card blue"><div class="recom-card-title">Antes de firmar el contrato</div><div class="recom-card-body">✓ Visita el sector de noche y de día<br>✓ Consulta en la comisaría local la tasa delictual<br>✓ Revisa si hay cámaras municipales en el sector<br>✓ Solicita diagnóstico in situ a un asesor OS.10</div></div>'+
+      (on==='Alto'?'<div class="recom-card red"><div class="recom-card-title">Medidas mínimas antes de abrir</div><div class="recom-card-body">✓ CCTV con grabación 30 días<br>✓ Alarma conectada a central<br>✓ Guardia en horario nocturno<br>✓ Protocolo de apertura y cierre seguro</div></div>':'<div class="recom-card orange"><div class="recom-card-title">Medidas recomendadas</div><div class="recom-card-body">✓ CCTV en accesos<br>✓ Alarma conectada<br>✓ Protocolo de apertura y cierre<br>✓ Revisión anual del perfil de riesgo</div></div>');
 
   } else if(useCase==='anual'){
+    libre=
+      '<div class="result-dual">'+
+        '<div class="result-box oficial"><div class="result-box-label">Score actual</div><div class="result-score-sm '+oc+'">'+of.toFixed(1)+'</div><div class="result-nivel-sm '+oc+'">Riesgo '+on+'</div></div>'+
+        '<div class="result-box percep"><div class="result-box-label">Percepción actual</div><div class="result-score-sm '+pc+'">'+pe.toFixed(1)+'</div><div class="result-nivel-sm '+pc+'">'+pn+'</div></div>'+
+      '</div>';
+    // Empresa: analisis de brecha + recomendacion concreta para los proximos 12 meses
     var brecha=insightBrecha(of,pe);
-    var obligCls2=on==='Alto'?'high':on==='Medio'?'med':'low';
     var percp3=answers.qp3||1;
     var percp4=answers.qp4||1;
     var cambiosTxt='';
@@ -968,24 +991,19 @@ function showResult(){
     if(percp4>=3)cambiosTxt+='⚠️ Ha habido incidentes o denuncias — el riesgo operacional es real.<br>';
     if(answers.q3>=6)cambiosTxt+='🔴 Alta victimización en el periodo — prioridad crítica de revisión.<br>';
     if(!cambiosTxt)cambiosTxt='✓ Sin cambios críticos detectados. Mantén el plan actual con revisión en 12 meses.';
-    html+=
-      '<div class="result-dual">'+
-        '<div class="result-box oficial"><div class="result-box-label">Score actual</div><div class="result-score-sm '+oc+'">'+of.toFixed(1)+'</div><div class="result-nivel-sm '+oc+'">Riesgo '+on+'</div></div>'+
-        '<div class="result-box percep"><div class="result-box-label">Percepción actual</div><div class="result-score-sm '+pc+'">'+pe.toFixed(1)+'</div><div class="result-nivel-sm '+pc+'">'+pn+'</div></div>'+
-      '</div>'+
+    detalle=
       '<div class="result-insight '+brecha.cls+'">'+brecha.txt+'</div>'+
-      '<div class="recom-grid">'+
-        '<div class="recom-card blue"><div class="recom-card-title">Estado del plan — resumen</div><div class="recom-card-body">'+cambiosTxt+'</div></div>'+
-        '<div class="recom-card '+(on==='Alto'?'red':on==='Medio'?'orange':'green')+'"><div class="recom-card-title">Recomendación para los próximos 12 meses</div><div class="recom-card-body">'+
-          (on==='Alto'?'Actualización urgente del plan de seguridad. Solicita una revisión profesional antes del próximo trimestre.':
-          on==='Medio'?'Revisa y actualiza los protocolos de respuesta. Considera ampliar las medidas preventivas actuales.':
-          'El plan actual es adecuado. Revisión formal en 12 meses o ante cualquier cambio significativo en el entorno.')+
-        '</div></div>'+
-      '</div>'+
-      '<a href="https://wa.me/56984600273?text=Hice%20la%20revisi%C3%B3n%20anual%20de%20seguridad%20y%20quiero%20actualizar%20mi%20plan%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#3b82f6;">Actualizar mi plan de seguridad<span>Control & Confianza — Revisión anual con asesor acreditado OS.10</span></a>';
+      '<div class="recom-card blue"><div class="recom-card-title">Estado del plan — resumen</div><div class="recom-card-body">'+cambiosTxt+'</div></div>'+
+      '<div class="recom-card '+(on==='Alto'?'red':on==='Medio'?'orange':'green')+'"><div class="recom-card-title">Recomendación para los próximos 12 meses</div><div class="recom-card-body">'+
+        (on==='Alto'?'Actualización urgente del plan de seguridad. Solicita una revisión profesional antes del próximo trimestre.':
+        on==='Medio'?'Revisa y actualiza los protocolos de respuesta. Considera ampliar las medidas preventivas actuales.':
+        'El plan actual es adecuado. Revisión formal en 12 meses o ante cualquier cambio significativo en el entorno.')+
+      '</div>';
   }
 
-  html+=
+  var html='<div class="result-card">'+modeChip+libre+
+    '<div id="result-detalle">'+detalle+'</div>'+
+    ctaMap[useCase]+
     '<div style="background:#f8f9fa;border-radius:10px;padding:12px;margin-top:10px;font-size:0.74rem;color:#666;line-height:1.5;">'+
       '⚖️ Resultado orientativo — Res. 1.820/2025. La clasificación definitiva bajo Ley 21.659 la determina la Subsecretaría de Prevención del Delito.'+
     '</div>'+
@@ -993,6 +1011,61 @@ function showResult(){
   '</div>';
 
   document.getElementById('resultContent').innerHTML=html;
+  cycAplicarBloqueoResultado();
+}
+
+function cycAplicarBloqueoResultado(){
+  if(CYC_PLAN==='empresa')return;
+  var card=document.getElementById('result-detalle');
+  if(!card||card.querySelector('.cyc-overlay'))return;
+  card.style.position='relative';
+  var inner=document.createElement('div');
+  inner.className='cyc-inner-blur';
+  inner.style.cssText='filter:blur(4px);pointer-events:none;user-select:none;opacity:.4';
+  while(card.firstChild){inner.appendChild(card.firstChild);}
+  card.appendChild(inner);
+  var overlay=document.createElement('div');
+  overlay.className='cyc-overlay';
+  overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,.92);border-radius:12px;padding:14px;text-align:center';
+  var logueado=!!localStorage.getItem('cyc_token');
+  if(logueado){
+    overlay.innerHTML='<div style="font-size:0.82rem;color:#1a1a2e;font-weight:800">Desglose completo — Plan Empresa</div>'+
+      '<div style="font-size:0.72rem;color:#666;max-width:220px">Índice de percepción, análisis de brecha y recomendaciones detalladas, sin límite de usos.</div>'+
+      '<button onclick="cycPagarEmpresaMatriz()" style="background:#1a1a2e;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:0.78rem;font-weight:800;cursor:pointer;margin-top:4px">Ver Plan Empresa — $49.990</button>';
+  } else {
+    overlay.innerHTML='<div style="font-size:0.82rem;color:#1a1a2e;font-weight:800">Desglose completo — Plan Empresa $49.990</div>'+
+      '<input id="mrEmail" type="email" placeholder="Email" style="width:100%;max-width:220px;box-sizing:border-box;margin-top:6px;padding:7px;border-radius:6px;border:1px solid #ddd;font-size:0.78rem">'+
+      '<input id="mrPassword" type="password" placeholder="Contraseña (mín. 8)" style="width:100%;max-width:220px;box-sizing:border-box;margin-top:5px;padding:7px;border-radius:6px;border:1px solid #ddd;font-size:0.78rem">'+
+      '<div style="display:flex;gap:6px;margin-top:6px;width:100%;max-width:220px">'+
+        '<button onclick="cycAuthYPagarMatriz(\'login\')" style="flex:1;background:#f0f2f5;color:#1a1a2e;border:none;padding:7px;border-radius:6px;font-size:0.7rem;font-weight:700;cursor:pointer">Ya tengo cuenta</button>'+
+        '<button onclick="cycAuthYPagarMatriz(\'registro\')" style="flex:1;background:#1a1a2e;color:#fff;border:none;padding:7px;border-radius:6px;font-size:0.7rem;font-weight:700;cursor:pointer">Crear cuenta y pagar</button>'+
+      '</div>'+
+      '<div id="mrAuthMsg" style="font-size:0.68rem;color:#e94560;margin-top:4px"></div>';
+  }
+  card.appendChild(overlay);
+}
+async function cycPagarEmpresaMatriz(){
+  var token=localStorage.getItem('cyc_token')||'';
+  try{
+    var res=await fetch(API_URL+'/pago/iniciar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({plan:'empresa'})});
+    var data=await res.json();
+    if(data.url){window.location.href=data.url;return;}
+    alert(data.error||'No se pudo iniciar el pago.');
+  }catch(e){alert('Error de conexión.');}
+}
+async function cycAuthYPagarMatriz(modo){
+  var email=document.getElementById('mrEmail').value.trim();
+  var password=document.getElementById('mrPassword').value;
+  var msg=document.getElementById('mrAuthMsg');
+  if(msg)msg.textContent='';
+  try{
+    var ruta=modo==='login'?'/auth/login':'/auth/registro';
+    var res=await fetch(API_URL+ruta,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:password})});
+    var data=await res.json();
+    if(!res.ok){if(msg)msg.textContent=data.error||'No se pudo continuar.';return;}
+    localStorage.setItem('cyc_token',data.token);
+    await cycPagarEmpresaMatriz();
+  }catch(e){if(msg)msg.textContent='Error de conexión.';}
 }
 
 function reiniciar(){
