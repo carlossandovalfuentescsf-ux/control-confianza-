@@ -1,5 +1,13 @@
-const CACHE = 'cyc-v20260628';
-const URLS = ['/control-confianza-/seguridad-chile.html'];
+const CACHE = 'cyc-v20260703';
+const URLS = [
+  '/control-confianza-/',
+  '/control-confianza-/index.html',
+  '/control-confianza-/seguridad-chile.html',
+  '/control-confianza-/matriz-riesgo.html',
+  '/control-confianza-/plan-hogar.html',
+  '/control-confianza-/georef-predio.html',
+  '/control-confianza-/icon-192.png'
+];
 
 // Al instalar, guardar en caché
 self.addEventListener('install', e => {
