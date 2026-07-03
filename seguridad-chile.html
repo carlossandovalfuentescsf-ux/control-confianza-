@@ -10,8 +10,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="C&amp;C Seguridad">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" async></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous" async></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,sans-serif;background:#111;color:#f0e8d0;min-height:100vh}
@@ -1132,15 +1132,15 @@ window.addEventListener('load',function(){
   },2500);
 });
 (function(){var selReg=document.getElementById("selReg");if(selReg){selReg.addEventListener('change',function(){loadComunas();});}setInterval(function(){var reg=document.getElementById("selReg").value;var com=document.getElementById("selCom");if(reg&&com.disabled){loadComunas();}},600);})();
-function irGM(){window.open(gmUrl,"_blank");}
+function irGM(){window.open(gmUrl,"_blank","noopener,noreferrer");}
 function volver(){document.getElementById("res").style.display="none";document.getElementById("pInicio").style.display="flex";userLat=null;userLng=null;userCalle=null;var el=document.getElementById("mInfoCalle");if(el){el.style.display="none";el.textContent="";}}
 function abrirModal(){document.getElementById("modal").className="mbg open";}
 function cerrarModal(){document.getElementById("modal").className="mbg";}
 function abrirPeligro(){document.getElementById("mpeligro").classList.add("open");}
 function cerrarPeligro(){document.getElementById("mpeligro").classList.remove("open");}
 (function(){setTimeout(function(){var s=document.getElementById("splash");if(s){s.classList.add("oculto");setTimeout(function(){s.style.display="none";},700);}},2000);})();
-function irWeb(){window.open("https://www.controlyconfianza.cl","_blank");}
-function contactar(){window.open("https://wa.me/56984600273?text=Hola%2C%20me%20interesa%20contratar%20un%20plan%20de%20Control%20%26%20Confianza.","_blank");cerrarModal();}
+function irWeb(){window.open("https://www.controlyconfianza.cl","_blank","noopener,noreferrer");}
+function contactar(){window.open("https://wa.me/56984600273?text=Hola%2C%20me%20interesa%20contratar%20un%20plan%20de%20Control%20%26%20Confianza.","_blank","noopener,noreferrer");cerrarModal();}
 // CUENTA Y PLAN PREMIUM
 const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
 var CYC_PREMIUM=false;
@@ -1248,14 +1248,14 @@ function compartirUbicacion(){
   function enviar(lat,lng){
     var mapsUrl="https://maps.google.com/?q="+lat+","+lng;
     var msg=encodeURIComponent("Necesito ayuda, estoy en "+nombre+". Mi ubicacion exacta: "+mapsUrl);
-    window.open("https://wa.me/?text="+msg,"_blank");
+    window.open("https://wa.me/?text="+msg,"_blank","noopener,noreferrer");
   }
   if(userLat&&userLng){enviar(userLat,userLng);}
   else if(navigator.geolocation){
     toast("Obteniendo ubicacion...");
     navigator.geolocation.getCurrentPosition(function(p){enviar(p.coords.latitude,p.coords.longitude);},function(){
       var d=DB[comKey];
-      if(d){var msg=encodeURIComponent("Necesito ayuda, estoy en "+nombre+". Busca en: https://maps.google.com/?q="+d.lat+","+d.lng);window.open("https://wa.me/?text="+msg,"_blank");}
+      if(d){var msg=encodeURIComponent("Necesito ayuda, estoy en "+nombre+". Busca en: https://maps.google.com/?q="+d.lat+","+d.lng);window.open("https://wa.me/?text="+msg,"_blank","noopener,noreferrer");}
       else{toast("Activa el GPS para compartir tu ubicacion exacta.");}
     },{timeout:5000});
   } else {toast("GPS no disponible en este dispositivo.");}

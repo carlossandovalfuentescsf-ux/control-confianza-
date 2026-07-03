@@ -28,8 +28,16 @@ self.addEventListener('notificationclick', e => {
   );
 });
 
-// Red primero: si hay internet carga la versión nueva, si no usa caché
+// Red primero: si hay internet carga la versión nueva, si no usa caché.
+// Solo se cachean peticiones GET del propio sitio — nunca llamadas a APIs externas
+// (Nominatim, tiles, Worker de IA), que pueden llevar coordenadas GPS u otros datos sensibles en la URL.
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+  const cacheable = e.request.method === 'GET' && url.origin === self.location.origin;
+  if (!cacheable) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
   e.respondWith(
     fetch(e.request)
       .then(response => {
