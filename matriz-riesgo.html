@@ -6,132 +6,135 @@
 <title>Diagnóstico de Seguridad Empresarial — Control & Confianza</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a2e;min-height:100vh;}
-.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;padding:20px;text-align:center;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh;}
+.header{background:#1a1a1a;border-bottom:2px solid #d4a017;color:#f0e8d0;padding:20px;text-align:center;}
 .header img{height:44px;margin-bottom:8px;}
 .header h1{font-size:1.1rem;font-weight:700;line-height:1.3;}
-.header p{font-size:0.78rem;opacity:0.7;margin-top:4px;}
-.progress-wrap{background:#16213e;padding:12px 20px;}
-.progress-bar-bg{background:rgba(255,255,255,0.15);border-radius:99px;height:6px;}
-.progress-bar-fill{background:#e94560;border-radius:99px;height:6px;transition:width 0.4s ease;}
-.progress-label{color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:6px;}
+.header p{font-size:0.78rem;color:#888;margin-top:4px;}
+.progress-wrap{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:12px 20px;}
+.progress-bar-bg{background:rgba(255,255,255,0.08);border-radius:99px;height:6px;}
+.progress-bar-fill{background:#d4a017;border-radius:99px;height:6px;transition:width 0.4s ease;}
+.progress-label{color:#888;font-size:0.72rem;margin-top:6px;}
 .progress-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
 .ptag{font-size:0.65rem;padding:2px 8px;border-radius:99px;font-weight:700;}
-.ptag.active{background:#e94560;color:#fff;}
-.ptag.done{background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);}
-.ptag.pending{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);}
+.ptag.active{background:#d4a017;color:#111;}
+.ptag.done{background:rgba(255,255,255,0.12);color:#aaa;}
+.ptag.pending{background:rgba(255,255,255,0.05);color:#555;}
 .container{max-width:640px;margin:0 auto;padding:20px 16px 100px;}
 .step{display:none;}
 .step.active{display:block;}
-.step-card{background:#fff;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.08);}
+.step-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:24px;margin-bottom:16px;}
 
 /* Use case cards */
 .uc-grid{display:flex;flex-direction:column;gap:12px;}
-.uc-card{background:#fff;border-radius:14px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;border:2px solid transparent;box-shadow:0 2px 10px rgba(0,0,0,0.07);transition:all 0.2s;}
-.uc-card:hover{border-color:#e94560;transform:translateY(-1px);}
+.uc-card{background:#1a1a1a;border-radius:14px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;border:2px solid #2a2a2a;transition:all 0.2s;}
+.uc-card:hover{border-color:#d4a017;transform:translateY(-1px);}
 .uc-icon{font-size:1.8rem;min-width:44px;text-align:center;}
 .uc-text{}
-.uc-title{font-size:0.95rem;font-weight:800;color:#1a1a2e;margin-bottom:3px;}
-.uc-desc{font-size:0.78rem;color:#666;line-height:1.4;}
+.uc-title{font-size:0.95rem;font-weight:800;color:#f0e8d0;margin-bottom:3px;}
+.uc-desc{font-size:0.78rem;color:#888;line-height:1.4;}
 .uc-badge{display:inline-block;font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:99px;margin-top:5px;}
-.uc-card.legal .uc-badge{background:#fff0f3;color:#e94560;}
-.uc-card.evento .uc-badge{background:#fef3c7;color:#b45309;}
-.uc-card.sucursal .uc-badge{background:#f0fdf4;color:#15803d;}
-.uc-card.anual .uc-badge{background:#eff6ff;color:#1d4ed8;}
+.uc-card.legal .uc-badge{background:rgba(212,160,23,.15);color:#d4a017;}
+.uc-card.evento .uc-badge{background:rgba(245,158,11,.15);color:#f59e0b;}
+.uc-card.sucursal .uc-badge{background:rgba(34,197,94,.15);color:#4ade80;}
+.uc-card.anual .uc-badge{background:rgba(59,130,246,.15);color:#60a5fa;}
 
 /* Source badges */
 .source-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:0.68rem;font-weight:700;margin-bottom:10px;}
-.source-badge.propio{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
-.source-badge.publico{background:#f0fdf4;color:#15803d;border:1px solid #86efac;}
-.source-badge.percep{background:#faf5ff;color:#7c3aed;border:1px solid #ddd6fe;}
-.source-badge.reservado{background:#fff1f2;color:#be123c;border:1px solid #fecdd3;}
+.source-badge.propio{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.35);}
+.source-badge.publico{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.35);}
+.source-badge.percep{background:rgba(124,58,237,.12);color:#a78bfa;border:1px solid rgba(124,58,237,.35);}
+.source-badge.reservado{background:rgba(190,18,60,.12);color:#fb7185;border:1px solid rgba(190,18,60,.35);}
 
-.step-num{font-size:0.7rem;font-weight:700;color:#e94560;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
-.step-num.percep{color:#7c3aed;}
-.step-title{font-size:1.05rem;font-weight:700;color:#1a1a2e;margin-bottom:6px;line-height:1.3;}
-.step-sub{font-size:0.82rem;color:#666;margin-bottom:18px;line-height:1.5;}
-.step-law{font-size:0.7rem;color:#767676;font-style:italic;margin-top:12px;padding-top:10px;border-top:1px solid #f0f0f0;}
+.step-num{font-size:0.7rem;font-weight:700;color:#d4a017;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.step-num.percep{color:#a78bfa;}
+.step-title{font-size:1.05rem;font-weight:700;color:#f0e8d0;margin-bottom:6px;line-height:1.3;}
+.step-sub{font-size:0.82rem;color:#888;margin-bottom:18px;line-height:1.5;}
+.step-law{font-size:0.7rem;color:#888;font-style:italic;margin-top:12px;padding-top:10px;border-top:1px solid #2a2a2a;}
 
 .opts{display:flex;flex-direction:column;gap:10px;}
-.opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid #e8e8e8;border-radius:10px;cursor:pointer;transition:all 0.2s;user-select:none;}
-.opt:hover{border-color:#e94560;background:#fff5f7;}
-.opt.selected{border-color:#e94560;background:#fff0f3;}
-.opt.percep:hover{border-color:#7c3aed;background:#faf5ff;}
-.opt.percep.selected{border-color:#7c3aed;background:#f5eeff;}
-.opt.reservado:hover{border-color:#be123c;background:#fff1f2;}
-.opt.reservado.selected{border-color:#be123c;background:#fff1f2;}
-.opt input{display:none;}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid #2a2a2a;border-radius:10px;cursor:pointer;transition:all 0.2s;user-select:none;background:#1a1a1a;}
+.opt:hover{border-color:#d4a017;background:rgba(212,160,23,.08);}
+.opt.selected{border-color:#d4a017;background:rgba(212,160,23,.12);}
+.opt.percep:hover{border-color:#7c3aed;background:rgba(124,58,237,.08);}
+.opt.percep.selected{border-color:#7c3aed;background:rgba(124,58,237,.14);}
+.opt.reservado:hover{border-color:#be123c;background:rgba(190,18,60,.08);}
+.opt.reservado.selected{border-color:#be123c;background:rgba(190,18,60,.14);}
+.opt input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;margin:0;}
+.opt:focus-within{outline:2px solid #d4a017;outline-offset:2px;}
+.opt.percep:focus-within{outline-color:#7c3aed;}
+.opt.reservado:focus-within{outline-color:#be123c;}
 .opt-icon{font-size:1.1rem;min-width:26px;text-align:center;}
 .opt-text{flex:1;}
-.opt-label{font-size:0.88rem;font-weight:600;color:#1a1a2e;}
+.opt-label{font-size:0.88rem;font-weight:600;color:#f0e8d0;}
 .opt-hint{font-size:0.74rem;color:#888;margin-top:2px;}
-.opt-check{width:18px;height:18px;border-radius:50%;border:2px solid #ddd;transition:all 0.2s;flex-shrink:0;}
-.opt.selected .opt-check{background:#e94560;border-color:#e94560;}
+.opt-check{width:18px;height:18px;border-radius:50%;border:2px solid #444;transition:all 0.2s;flex-shrink:0;}
+.opt.selected .opt-check{background:#d4a017;border-color:#d4a017;}
 .opt.percep.selected .opt-check{background:#7c3aed;border-color:#7c3aed;}
 .opt.reservado.selected .opt-check{background:#be123c;border-color:#be123c;}
 .opt.checkbox .opt-check{border-radius:4px;}
 
 .sel-wrap{position:relative;}
-select{width:100%;padding:13px 14px;border:2px solid #e8e8e8;border-radius:10px;font-size:0.9rem;color:#1a1a2e;background:#fff;appearance:none;cursor:pointer;}
-select:focus{outline:none;border-color:#15803d;}
+select{width:100%;padding:13px 14px;border:2px solid #2a2a2a;border-radius:10px;font-size:0.9rem;color:#f0e8d0;background:#1a1a1a;appearance:none;cursor:pointer;}
+select:focus{outline:none;border-color:#d4a017;}
 .sel-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:#888;}
 
-.commune-auto{background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:14px;margin-top:14px;display:none;}
-.commune-auto h4{font-size:0.78rem;font-weight:700;color:#15803d;margin-bottom:10px;}
-.commune-auto-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #dcfce7;font-size:0.8rem;}
+.commune-auto{background:rgba(34,197,94,.08);border:2px solid rgba(34,197,94,.35);border-radius:10px;padding:14px;margin-top:14px;display:none;}
+.commune-auto h4{font-size:0.78rem;font-weight:700;color:#4ade80;margin-bottom:10px;}
+.commune-auto-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(34,197,94,.15);font-size:0.8rem;}
 .commune-auto-row:last-child{border-bottom:none;}
-.commune-auto-label{color:#444;}
-.commune-auto-val{font-weight:700;color:#15803d;}
+.commune-auto-label{color:#aaa;}
+.commune-auto-val{font-weight:700;color:#4ade80;}
 
-.reservado-note{background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:14px;margin-bottom:16px;font-size:0.8rem;color:#9f1239;line-height:1.5;}
-.reservado-note strong{display:block;margin-bottom:4px;font-size:0.82rem;}
+.reservado-note{background:rgba(190,18,60,.1);border:1px solid rgba(190,18,60,.35);border-radius:10px;padding:14px;margin-bottom:16px;font-size:0.8rem;color:#fca5a5;line-height:1.5;}
+.reservado-note strong{display:block;margin-bottom:4px;font-size:0.82rem;color:#fb7185;}
 
-.legend{background:#fff;border-radius:12px;padding:16px;display:flex;flex-wrap:wrap;gap:8px;}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#555;}
+.legend{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:16px;display:flex;flex-wrap:wrap;gap:8px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#aaa;}
 
-.btn-row{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:14px 20px;display:flex;gap:10px;box-shadow:0 -2px 12px rgba(0,0,0,0.08);}
+.btn-row{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;border-top:1px solid #2a2a2a;padding:14px 20px;display:flex;gap:10px;}
 .btn{flex:1;padding:14px;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
-.btn-back{background:#f0f2f5;color:#666;}
-.btn-next{background:#e94560;color:#fff;}
-.btn-next.percep{background:#7c3aed;}
+.btn-back{background:#222;color:#888;}
+.btn-next{background:#d4a017;color:#111;}
+.btn-next.percep{background:#7c3aed;color:#fff;}
 
-.result-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.1);}
+.result-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:24px;}
 .result-dual{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
 .result-box{border-radius:12px;padding:16px;text-align:center;}
-.result-box.oficial{background:#fff5f7;border:2px solid #ffd6de;}
-.result-box.percep{background:#f5eeff;border:2px solid #ddd6fe;}
+.result-box.oficial{background:rgba(212,160,23,.08);border:2px solid rgba(212,160,23,.3);}
+.result-box.percep{background:rgba(124,58,237,.1);border:2px solid rgba(124,58,237,.3);}
 .result-box-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
-.result-box.oficial .result-box-label{color:#e94560;}
-.result-box.percep .result-box-label{color:#7c3aed;}
+.result-box.oficial .result-box-label{color:#d4a017;}
+.result-box.percep .result-box-label{color:#a78bfa;}
 .result-score-sm{font-size:2.4rem;font-weight:900;line-height:1;}
 .result-nivel-sm{font-size:0.8rem;font-weight:700;margin-top:4px;}
-.rh{color:#e94560;}.rm{color:#f39c12;}.rl{color:#16a34a;}.rp{color:#7c3aed;}
-.result-insight{border-radius:12px;padding:14px;margin-bottom:14px;font-size:0.84rem;line-height:1.6;}
-.result-insight.gap-warn{background:#fef3c7;border-left:4px solid #f59e0b;}
-.result-insight.gap-ok{background:#f0fdf4;border-left:4px solid #22c55e;}
-.result-insight.gap-alert{background:#fef2f2;border-left:4px solid #ef4444;}
-.result-insight.gap-blue{background:#eff6ff;border-left:4px solid #3b82f6;}
+.rh{color:#e94560;}.rm{color:#f39c12;}.rl{color:#4ade80;}.rp{color:#a78bfa;}
+.result-insight{border-radius:12px;padding:14px;margin-bottom:14px;font-size:0.84rem;line-height:1.6;background:#1a1a1a;}
+.result-insight.gap-warn{background:rgba(245,158,11,.1);border-left:4px solid #f59e0b;}
+.result-insight.gap-ok{background:rgba(34,197,94,.1);border-left:4px solid #22c55e;}
+.result-insight.gap-alert{background:rgba(239,68,68,.1);border-left:4px solid #ef4444;}
+.result-insight.gap-blue{background:rgba(59,130,246,.1);border-left:4px solid #3b82f6;}
 .result-oblig{border-radius:10px;padding:13px;margin-bottom:14px;font-size:0.84rem;font-weight:600;line-height:1.5;}
-.result-oblig.high{background:#ffeef2;color:#be123c;}
-.result-oblig.med{background:#fef9e7;color:#b45309;}
-.result-oblig.low{background:#f0fdf4;color:#15803d;}
-.result-breakdown{background:#f8f9fa;border-radius:12px;padding:16px;margin-top:14px;}
+.result-oblig.high{background:rgba(190,18,60,.14);color:#fb7185;}
+.result-oblig.med{background:rgba(245,158,11,.14);color:#fbbf24;}
+.result-oblig.low{background:rgba(34,197,94,.14);color:#4ade80;}
+.result-breakdown{background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:16px;margin-top:14px;}
 .result-breakdown h3{font-size:0.76rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
-.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #eee;font-size:0.79rem;}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2a2a2a;font-size:0.79rem;}
 .breakdown-row:last-child{border-bottom:none;}
-.btn-cta{display:block;width:100%;padding:15px;background:#1a1a2e;color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:12px;text-align:center;text-decoration:none;}
+.btn-cta{display:block;width:100%;padding:15px;background:#1a1a1a;border:1px solid #2a2a2a;color:#f0e8d0;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:12px;text-align:center;text-decoration:none;}
 .btn-cta span{display:block;font-size:0.73rem;font-weight:400;opacity:0.7;margin-top:2px;}
 
 /* Recom cards for events/sucursal/anual */
 .recom-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
-.recom-card{border-radius:10px;padding:14px;}
-.recom-card.red{background:#fef2f2;border-left:4px solid #ef4444;}
-.recom-card.orange{background:#fef3c7;border-left:4px solid #f59e0b;}
-.recom-card.green{background:#f0fdf4;border-left:4px solid #22c55e;}
-.recom-card.blue{background:#eff6ff;border-left:4px solid #3b82f6;}
-.recom-card-title{font-size:0.8rem;font-weight:700;margin-bottom:4px;}
-.recom-card-body{font-size:0.78rem;color:#444;line-height:1.5;}
-.staff-box{background:#1a1a2e;color:#fff;border-radius:12px;padding:18px;text-align:center;margin-bottom:14px;}
+.recom-card{border-radius:10px;padding:14px;background:#1a1a1a;}
+.recom-card.red{background:rgba(239,68,68,.1);border-left:4px solid #ef4444;}
+.recom-card.orange{background:rgba(245,158,11,.1);border-left:4px solid #f59e0b;}
+.recom-card.green{background:rgba(34,197,94,.1);border-left:4px solid #22c55e;}
+.recom-card.blue{background:rgba(59,130,246,.1);border-left:4px solid #3b82f6;}
+.recom-card-title{font-size:0.8rem;font-weight:700;margin-bottom:4px;color:#f0e8d0;}
+.recom-card-body{font-size:0.78rem;color:#aaa;line-height:1.5;}
+.staff-box{background:#1a1a1a;border:1px solid #2a2a2a;color:#f0e8d0;border-radius:12px;padding:18px;text-align:center;margin-bottom:14px;}
 .staff-num{font-size:2.8rem;font-weight:900;color:#d4a017;line-height:1;}
 .staff-label{font-size:0.78rem;opacity:0.7;margin-top:4px;}
 .staff-detail{font-size:0.82rem;margin-top:10px;opacity:0.85;line-height:1.5;}
@@ -143,19 +146,19 @@ select:focus{outline:none;border-color:#15803d;}
 .intro-banner h2{font-size:1rem;font-weight:700;margin-bottom:6px;}
 .intro-banner p{font-size:0.8rem;opacity:0.9;line-height:1.5;}
 .intro-steps{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-.intro-step{display:flex;align-items:center;gap:12px;background:#fff;padding:12px;border-radius:10px;}
+.intro-step{display:flex;align-items:center;gap:12px;background:#1a1a1a;border:1px solid #2a2a2a;padding:12px;border-radius:10px;}
 .intro-step-num{width:28px;height:28px;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0;}
-.intro-step-text{font-size:0.82rem;color:#444;line-height:1.4;}
+.intro-step-text{font-size:0.82rem;color:#ccc;line-height:1.4;}
 .percep-banner{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-radius:12px;padding:16px;margin-bottom:14px;}
 .percep-banner h3{font-size:0.95rem;font-weight:700;margin-bottom:4px;}
 .percep-banner p{font-size:0.78rem;opacity:0.9;line-height:1.4;}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 20px;border-radius:8px;font-size:0.84rem;z-index:999;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid #d4a017;color:#f0e8d0;padding:10px 20px;border-radius:8px;font-size:0.84rem;z-index:999;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
 .toast.show{opacity:1;}
 .mode-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:0.7rem;font-weight:700;margin-bottom:6px;}
-.mode-chip.legal{background:#fff0f3;color:#e94560;}
-.mode-chip.evento{background:#fef3c7;color:#b45309;}
-.mode-chip.sucursal{background:#f0fdf4;color:#15803d;}
-.mode-chip.anual{background:#eff6ff;color:#1d4ed8;}
+.mode-chip.legal{background:rgba(212,160,23,.15);color:#d4a017;}
+.mode-chip.evento{background:rgba(245,158,11,.15);color:#f59e0b;}
+.mode-chip.sucursal{background:rgba(34,197,94,.15);color:#4ade80;}
+.mode-chip.anual{background:rgba(59,130,246,.15);color:#60a5fa;}
 </style>
 </head>
 <body>
@@ -181,15 +184,15 @@ select:focus{outline:none;border-color:#15803d;}
 
 <!-- SELECTOR DE USO -->
 <div class="step active" id="step-usecase">
-  <div style="font-size:1rem;font-weight:800;color:#1a1a2e;margin-bottom:6px;">¿Para qué necesitas el diagnóstico?</div>
-  <div style="font-size:0.82rem;color:#666;margin-bottom:16px;line-height:1.5;">Elige el escenario que mejor describe tu situación. El sistema adaptará las preguntas y el resultado a tu caso.</div>
+  <div style="font-size:1rem;font-weight:800;color:#f0e8d0;margin-bottom:6px;">¿Para qué necesitas el diagnóstico?</div>
+  <div style="font-size:0.82rem;color:#888;margin-bottom:16px;line-height:1.5;">Elige el escenario que mejor describe tu situación. El sistema adaptará las preguntas y el resultado a tu caso.</div>
   <div class="uc-grid">
     <div class="uc-card legal" onclick="selectUseCase('legal')">
       <div class="uc-icon">🏢</div>
       <div class="uc-text">
         <div class="uc-title">Cumplimiento Ley 21.659</div>
         <div class="uc-desc">Determina si tu empresa está obligada a contratar seguridad privada según la normativa vigente.</div>
-        <span class="uc-badge" style="background:#fff0f3;color:#e94560;">Uso más común</span>
+        <span class="uc-badge">Uso más común</span>
       </div>
     </div>
     <div class="uc-card evento" onclick="selectUseCase('evento')">
@@ -197,7 +200,7 @@ select:focus{outline:none;border-color:#15803d;}
       <div class="uc-text">
         <div class="uc-title">Planificación de evento</div>
         <div class="uc-desc">Calcula cuántos guardias y qué tipo de seguridad necesita tu evento antes de contratarlo.</div>
-        <span class="uc-badge" style="background:#fef3c7;color:#b45309;">Conciertos · Ferias · Corporativos</span>
+        <span class="uc-badge">Conciertos · Ferias · Corporativos</span>
       </div>
     </div>
     <div class="uc-card sucursal" onclick="selectUseCase('sucursal')">
@@ -205,7 +208,7 @@ select:focus{outline:none;border-color:#15803d;}
       <div class="uc-text">
         <div class="uc-title">Nueva sucursal o local</div>
         <div class="uc-desc">Evalúa el perfil de riesgo de una ubicación antes de abrir o arrendar un nuevo local.</div>
-        <span class="uc-badge" style="background:#f0fdf4;color:#15803d;">Due diligence de seguridad</span>
+        <span class="uc-badge">Due diligence de seguridad</span>
       </div>
     </div>
     <div class="uc-card anual" onclick="selectUseCase('anual')">
@@ -213,7 +216,7 @@ select:focus{outline:none;border-color:#15803d;}
       <div class="uc-text">
         <div class="uc-title">Revisión anual del plan</div>
         <div class="uc-desc">Verifica si tu plan de seguridad actual sigue siendo adecuado para el perfil de riesgo de hoy.</div>
-        <span class="uc-badge" style="background:#eff6ff;color:#1d4ed8;">Actualización periódica</span>
+        <span class="uc-badge">Actualización periódica</span>
       </div>
     </div>
   </div>
@@ -226,12 +229,12 @@ select:focus{outline:none;border-color:#15803d;}
     <p id="introDesc"></p>
   </div>
   <div class="intro-steps">
-    <div class="intro-step"><div class="intro-step-num" style="background:#e94560;" id="introN1">10</div><div class="intro-step-text" id="introT1"><strong>Preguntas de evaluación.</strong> Score según Ley 21.659. Cada pregunta indica claramente de dónde viene el dato.</div></div>
+    <div class="intro-step"><div class="intro-step-num" style="background:#d4a017;color:#111;" id="introN1">10</div><div class="intro-step-text" id="introT1"><strong>Preguntas de evaluación.</strong> Score según Ley 21.659. Cada pregunta indica claramente de dónde viene el dato.</div></div>
     <div class="intro-step"><div class="intro-step-num" style="background:#7c3aed;">4</div><div class="intro-step-text"><strong>Preguntas de percepción.</strong> Cómo ves y sientes la seguridad de tu entorno.</div></div>
-    <div class="intro-step"><div class="intro-step-num" style="background:#1a1a2e;">✓</div><div class="intro-step-text" id="introT3"><strong>Resultado personalizado</strong> según tu caso y recomendaciones concretas.</div></div>
+    <div class="intro-step"><div class="intro-step-num" style="background:#444;">✓</div><div class="intro-step-text" id="introT3"><strong>Resultado personalizado</strong> según tu caso y recomendaciones concretas.</div></div>
   </div>
   <div class="step-card">
-    <div style="font-size:0.8rem;font-weight:700;color:#444;margin-bottom:10px;">Tipos de dato en esta evaluación:</div>
+    <div style="font-size:0.8rem;font-weight:700;color:#ccc;margin-bottom:10px;">Tipos de dato en esta evaluación:</div>
     <div class="legend">
       <div class="legend-item"><span class="source-badge propio">🔵 Dato propio</span> Lo conoces de tu empresa</div>
       <div class="legend-item"><span class="source-badge publico">🟢 Dato público</span> Se carga automáticamente</div>
@@ -300,10 +303,10 @@ select:focus{outline:none;border-color:#15803d;}
     <div class="step-title" id="q2Title">¿Tu empresa cumple funciones críticas?</div>
     <div class="step-sub">Marca todas las que apliquen. Los valores se suman.</div>
     <div class="opts" id="q2">
-      <label class="opt checkbox" onclick="toggleCheck(this,'q2')"><span class="opt-icon">🏥</span><span class="opt-text"><span class="opt-label">Servicio esencial</span><span class="opt-hint">Salud, transporte, servicios básicos cuya interrupción afecta a la población</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
-      <label class="opt checkbox" onclick="toggleCheck(this,'q2')"><span class="opt-icon">🔒</span><span class="opt-text"><span class="opt-label">No sustituible</span><span class="opt-hint">Única entidad en el territorio que presta este servicio</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
-      <label class="opt checkbox" onclick="toggleCheck(this,'q2')"><span class="opt-icon">⚡</span><span class="opt-text"><span class="opt-label">Sector estratégico</span><span class="opt-hint">Área fundamental para el desarrollo o seguridad del país</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
-      <label class="opt checkbox" id="q2-ninguno" onclick="toggleNinguno('q2','q2-ninguno')"><span class="opt-icon">➖</span><span class="opt-text"><span class="opt-label">Ninguna de las anteriores</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt checkbox"><span class="opt-icon">🏥</span><span class="opt-text"><span class="opt-label">Servicio esencial</span><span class="opt-hint">Salud, transporte, servicios básicos cuya interrupción afecta a la población</span></span><span class="opt-check"></span><input type="checkbox" value="4" class="opt-input" onchange="toggleCheck(this.parentElement,'q2')"></label>
+      <label class="opt checkbox"><span class="opt-icon">🔒</span><span class="opt-text"><span class="opt-label">No sustituible</span><span class="opt-hint">Única entidad en el territorio que presta este servicio</span></span><span class="opt-check"></span><input type="checkbox" value="3" class="opt-input" onchange="toggleCheck(this.parentElement,'q2')"></label>
+      <label class="opt checkbox"><span class="opt-icon">⚡</span><span class="opt-text"><span class="opt-label">Sector estratégico</span><span class="opt-hint">Área fundamental para el desarrollo o seguridad del país</span></span><span class="opt-check"></span><input type="checkbox" value="3" class="opt-input" onchange="toggleCheck(this.parentElement,'q2')"></label>
+      <label class="opt checkbox" id="q2-ninguno"><span class="opt-icon">➖</span><span class="opt-text"><span class="opt-label">Ninguna de las anteriores</span></span><span class="opt-check"></span><input type="checkbox" value="1" class="opt-input" onchange="toggleNinguno('q2','q2-ninguno')"></label>
     </div>
     <div class="step-law">Fuente: Tabla "Criticidad de las funciones" — Res. 1.820, Art. 5 N°2 · Ponderación: 0.112</div>
   </div>
@@ -317,10 +320,10 @@ select:focus{outline:none;border-color:#15803d;}
     <div class="step-title" id="q3Title">¿Con qué frecuencia han ocurrido delitos en los últimos 12 meses?</div>
     <div class="step-sub" id="q3Sub">Considera robos, asaltos, hurtos, vandalismo u otros ilícitos.</div>
     <div class="opts" id="q3">
-      <label class="opt" onclick="selectOpt(this,'q3')"><span class="opt-icon">🔴</span><span class="opt-text"><span class="opt-label">Muy frecuentes</span><span class="opt-hint">Varias veces al mes</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
-      <label class="opt" onclick="selectOpt(this,'q3')"><span class="opt-icon">🟠</span><span class="opt-text"><span class="opt-label">Algo frecuentes</span><span class="opt-hint">Varias ocasiones en el año</span></span><span class="opt-check"></span><input type="hidden" value="6"></label>
-      <label class="opt" onclick="selectOpt(this,'q3')"><span class="opt-icon">🟡</span><span class="opt-text"><span class="opt-label">Poco frecuentes</span><span class="opt-hint">Uno o dos casos aislados</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
-      <label class="opt" onclick="selectOpt(this,'q3')"><span class="opt-icon">🟢</span><span class="opt-text"><span class="opt-label">No han ocurrido</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt"><span class="opt-icon">🔴</span><span class="opt-text"><span class="opt-label">Muy frecuentes</span><span class="opt-hint">Varias veces al mes</span></span><span class="opt-check"></span><input type="radio" value="10" class="opt-input" name="q3" onchange="selectOpt(this.parentElement,'q3')"></label>
+      <label class="opt"><span class="opt-icon">🟠</span><span class="opt-text"><span class="opt-label">Algo frecuentes</span><span class="opt-hint">Varias ocasiones en el año</span></span><span class="opt-check"></span><input type="radio" value="6" class="opt-input" name="q3" onchange="selectOpt(this.parentElement,'q3')"></label>
+      <label class="opt"><span class="opt-icon">🟡</span><span class="opt-text"><span class="opt-label">Poco frecuentes</span><span class="opt-hint">Uno o dos casos aislados</span></span><span class="opt-check"></span><input type="radio" value="4" class="opt-input" name="q3" onchange="selectOpt(this.parentElement,'q3')"></label>
+      <label class="opt"><span class="opt-icon">🟢</span><span class="opt-text"><span class="opt-label">No han ocurrido</span></span><span class="opt-check"></span><input type="radio" value="1" class="opt-input" name="q3" onchange="selectOpt(this.parentElement,'q3')"></label>
     </div>
     <div class="step-law">Fuente: Tabla "Victimización por delitos" — Res. 1.820, Art. 5 N°3 · Ponderación: 0.056</div>
   </div>
@@ -334,11 +337,11 @@ select:focus{outline:none;border-color:#15803d;}
     <div class="step-title" id="q4Title">¿Cuánto efectivo maneja en promedio diario?</div>
     <div class="step-sub" id="q4Sub">Monto promedio en caja durante un día normal de operación.</div>
     <div class="opts" id="q4">
-      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">💰</span><span class="opt-text"><span class="opt-label">$15.000.000 o más</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
-      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">💵</span><span class="opt-text"><span class="opt-label">Entre $10.000.000 y $14.999.999</span></span><span class="opt-check"></span><input type="hidden" value="6"></label>
-      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">💴</span><span class="opt-text"><span class="opt-label">Entre $5.000.000 y $9.999.999</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
-      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">💶</span><span class="opt-text"><span class="opt-label">Entre $2.000.000 y $4.999.999</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
-      <label class="opt" onclick="selectOpt(this,'q4')"><span class="opt-icon">🪙</span><span class="opt-text"><span class="opt-label">Menos de $2.000.000</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt"><span class="opt-icon">💰</span><span class="opt-text"><span class="opt-label">$15.000.000 o más</span></span><span class="opt-check"></span><input type="radio" value="10" class="opt-input" name="q4" onchange="selectOpt(this.parentElement,'q4')"></label>
+      <label class="opt"><span class="opt-icon">💵</span><span class="opt-text"><span class="opt-label">Entre $10.000.000 y $14.999.999</span></span><span class="opt-check"></span><input type="radio" value="6" class="opt-input" name="q4" onchange="selectOpt(this.parentElement,'q4')"></label>
+      <label class="opt"><span class="opt-icon">💴</span><span class="opt-text"><span class="opt-label">Entre $5.000.000 y $9.999.999</span></span><span class="opt-check"></span><input type="radio" value="4" class="opt-input" name="q4" onchange="selectOpt(this.parentElement,'q4')"></label>
+      <label class="opt"><span class="opt-icon">💶</span><span class="opt-text"><span class="opt-label">Entre $2.000.000 y $4.999.999</span></span><span class="opt-check"></span><input type="radio" value="2" class="opt-input" name="q4" onchange="selectOpt(this.parentElement,'q4')"></label>
+      <label class="opt"><span class="opt-icon">🪙</span><span class="opt-text"><span class="opt-label">Menos de $2.000.000</span></span><span class="opt-check"></span><input type="radio" value="1" class="opt-input" name="q4" onchange="selectOpt(this.parentElement,'q4')"></label>
     </div>
     <div class="step-law">Fuente: Tabla "Mantención de efectivo según tramos" — Res. 1.820, Art. 5 N°4 · Ponderación: 0.063</div>
   </div>
@@ -352,10 +355,10 @@ select:focus{outline:none;border-color:#15803d;}
     <div class="step-title">¿Qué características tienen los bienes o productos que maneja?</div>
     <div class="step-sub">Marca todas las que apliquen.</div>
     <div class="opts" id="q5">
-      <label class="opt checkbox" onclick="toggleCheck(this,'q5')"><span class="opt-icon">⚠️</span><span class="opt-text"><span class="opt-label">Peligrosos</span><span class="opt-hint">Armas, explosivos, precursores químicos</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
-      <label class="opt checkbox" onclick="toggleCheck(this,'q5')"><span class="opt-icon">💎</span><span class="opt-text"><span class="opt-label">Alto valor comercial</span><span class="opt-hint">Artículos de alta gama, medicamentos controlados, tecnología valiosa</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
-      <label class="opt checkbox" onclick="toggleCheck(this,'q5')"><span class="opt-icon">📦</span><span class="opt-text"><span class="opt-label">Fáciles de transportar</span><span class="opt-hint">Objetos pequeños y fácilmente sustraíbles</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
-      <label class="opt checkbox" id="q5-ninguno" onclick="toggleNinguno('q5','q5-ninguno')"><span class="opt-icon">➖</span><span class="opt-text"><span class="opt-label">Ninguna de las anteriores</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt checkbox"><span class="opt-icon">⚠️</span><span class="opt-text"><span class="opt-label">Peligrosos</span><span class="opt-hint">Armas, explosivos, precursores químicos</span></span><span class="opt-check"></span><input type="checkbox" value="4" class="opt-input" onchange="toggleCheck(this.parentElement,'q5')"></label>
+      <label class="opt checkbox"><span class="opt-icon">💎</span><span class="opt-text"><span class="opt-label">Alto valor comercial</span><span class="opt-hint">Artículos de alta gama, medicamentos controlados, tecnología valiosa</span></span><span class="opt-check"></span><input type="checkbox" value="3" class="opt-input" onchange="toggleCheck(this.parentElement,'q5')"></label>
+      <label class="opt checkbox"><span class="opt-icon">📦</span><span class="opt-text"><span class="opt-label">Fáciles de transportar</span><span class="opt-hint">Objetos pequeños y fácilmente sustraíbles</span></span><span class="opt-check"></span><input type="checkbox" value="3" class="opt-input" onchange="toggleCheck(this.parentElement,'q5')"></label>
+      <label class="opt checkbox" id="q5-ninguno"><span class="opt-icon">➖</span><span class="opt-text"><span class="opt-label">Ninguna de las anteriores</span></span><span class="opt-check"></span><input type="checkbox" value="1" class="opt-input" onchange="toggleNinguno('q5','q5-ninguno')"></label>
     </div>
     <div class="step-law">Fuente: Tabla "Cualidades atractivas" — Res. 1.820, Art. 5 N°5 · Ponderación: 0.147</div>
   </div>
@@ -369,10 +372,10 @@ select:focus{outline:none;border-color:#15803d;}
     <div class="step-title" id="q6Title">¿En qué horarios funciona?</div>
     <div class="step-sub">Marca todos los que apliquen.</div>
     <div class="opts" id="q6">
-      <label class="opt checkbox" onclick="toggleCheck(this,'q6')"><span class="opt-icon">🌙</span><span class="opt-text"><span class="opt-label">Horario nocturno</span><span class="opt-hint">Entre las 20:00 y las 08:00 hrs.</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
-      <label class="opt checkbox" onclick="toggleCheck(this,'q6')"><span class="opt-icon">☀️</span><span class="opt-text"><span class="opt-label">Horario diurno</span><span class="opt-hint">Entre las 08:00 y las 20:00 hrs.</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
-      <label class="opt checkbox" onclick="toggleCheck(this,'q6')"><span class="opt-icon">📅</span><span class="opt-text"><span class="opt-label">Días hábiles</span><span class="opt-hint">Lunes a viernes</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
-      <label class="opt checkbox" onclick="toggleCheck(this,'q6')"><span class="opt-icon">🎉</span><span class="opt-text"><span class="opt-label">Días inhábiles</span><span class="opt-hint">Sábados, domingos o feriados</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
+      <label class="opt checkbox"><span class="opt-icon">🌙</span><span class="opt-text"><span class="opt-label">Horario nocturno</span><span class="opt-hint">Entre las 20:00 y las 08:00 hrs.</span></span><span class="opt-check"></span><input type="checkbox" value="4" class="opt-input" onchange="toggleCheck(this.parentElement,'q6')"></label>
+      <label class="opt checkbox"><span class="opt-icon">☀️</span><span class="opt-text"><span class="opt-label">Horario diurno</span><span class="opt-hint">Entre las 08:00 y las 20:00 hrs.</span></span><span class="opt-check"></span><input type="checkbox" value="2" class="opt-input" onchange="toggleCheck(this.parentElement,'q6')"></label>
+      <label class="opt checkbox"><span class="opt-icon">📅</span><span class="opt-text"><span class="opt-label">Días hábiles</span><span class="opt-hint">Lunes a viernes</span></span><span class="opt-check"></span><input type="checkbox" value="1" class="opt-input" onchange="toggleCheck(this.parentElement,'q6')"></label>
+      <label class="opt checkbox"><span class="opt-icon">🎉</span><span class="opt-text"><span class="opt-label">Días inhábiles</span><span class="opt-hint">Sábados, domingos o feriados</span></span><span class="opt-check"></span><input type="checkbox" value="3" class="opt-input" onchange="toggleCheck(this.parentElement,'q6')"></label>
     </div>
     <div class="step-law">Fuente: Tabla "Horario de funcionamiento" — Res. 1.820, Art. 5 N°6 · Ponderación: 0.084</div>
   </div>
@@ -386,11 +389,11 @@ select:focus{outline:none;border-color:#15803d;}
     <div class="step-title" id="q7Title">¿Con qué frecuencia alcanza su aforo máximo?</div>
     <div class="step-sub" id="q7Sub"></div>
     <div class="opts" id="q7">
-      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">🔴</span><span class="opt-text"><span class="opt-label" id="q7L1">Permanentemente</span><span class="opt-hint" id="q7H1">Casi siempre a capacidad máxima</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
-      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">🟠</span><span class="opt-text"><span class="opt-label" id="q7L2">Frecuentemente</span><span class="opt-hint" id="q7H2">Varias veces a la semana</span></span><span class="opt-check"></span><input type="hidden" value="7"></label>
-      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">🟡</span><span class="opt-text"><span class="opt-label" id="q7L3">Algunas veces</span><span class="opt-hint" id="q7H3">Ocasionalmente, fechas especiales</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
-      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">🟢</span><span class="opt-text"><span class="opt-label" id="q7L4">Pocas veces</span><span class="opt-hint" id="q7H4">Raramente alcanza el aforo máximo</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
-      <label class="opt" onclick="selectOpt(this,'q7')"><span class="opt-icon">⚪</span><span class="opt-text"><span class="opt-label" id="q7L5">Nunca / No aplica</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt"><span class="opt-icon">🔴</span><span class="opt-text"><span class="opt-label" id="q7L1">Permanentemente</span><span class="opt-hint" id="q7H1">Casi siempre a capacidad máxima</span></span><span class="opt-check"></span><input type="radio" value="10" class="opt-input" name="q7" onchange="selectOpt(this.parentElement,'q7')"></label>
+      <label class="opt"><span class="opt-icon">🟠</span><span class="opt-text"><span class="opt-label" id="q7L2">Frecuentemente</span><span class="opt-hint" id="q7H2">Varias veces a la semana</span></span><span class="opt-check"></span><input type="radio" value="7" class="opt-input" name="q7" onchange="selectOpt(this.parentElement,'q7')"></label>
+      <label class="opt"><span class="opt-icon">🟡</span><span class="opt-text"><span class="opt-label" id="q7L3">Algunas veces</span><span class="opt-hint" id="q7H3">Ocasionalmente, fechas especiales</span></span><span class="opt-check"></span><input type="radio" value="5" class="opt-input" name="q7" onchange="selectOpt(this.parentElement,'q7')"></label>
+      <label class="opt"><span class="opt-icon">🟢</span><span class="opt-text"><span class="opt-label" id="q7L4">Pocas veces</span><span class="opt-hint" id="q7H4">Raramente alcanza el aforo máximo</span></span><span class="opt-check"></span><input type="radio" value="4" class="opt-input" name="q7" onchange="selectOpt(this.parentElement,'q7')"></label>
+      <label class="opt"><span class="opt-icon">⚪</span><span class="opt-text"><span class="opt-label" id="q7L5">Nunca / No aplica</span></span><span class="opt-check"></span><input type="radio" value="1" class="opt-input" name="q7" onchange="selectOpt(this.parentElement,'q7')"></label>
     </div>
     <div class="step-law" id="q7Law">Fuente: Tabla "Frecuencia aforo máximo" — Res. 1.820, Art. 5 N°7 · Ponderación: 0.063</div>
   </div>
@@ -403,9 +406,9 @@ select:focus{outline:none;border-color:#15803d;}
     <span class="source-badge propio">🔵 Dato propio de tu empresa</span>
     <div class="step-title" id="q8Title">¿Cómo es el público que ingresa?</div>
     <div class="opts" id="q8">
-      <label class="opt" onclick="selectOpt(this,'q8')"><span class="opt-icon">🚶</span><span class="opt-text"><span class="opt-label">Público dinámico</span><span class="opt-hint">Personas que ingresan sin restricciones (tiendas, eventos abiertos)</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
-      <label class="opt" onclick="selectOpt(this,'q8')"><span class="opt-icon">🪪</span><span class="opt-text"><span class="opt-label">Público regulado</span><span class="opt-hint">Se solicita identificación, ticket o cita previa</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
-      <label class="opt" onclick="selectOpt(this,'q8')"><span class="opt-icon">🏢</span><span class="opt-text"><span class="opt-label">Público estático</span><span class="opt-hint">Solo trabajadores o clientes muy específicos</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt"><span class="opt-icon">🚶</span><span class="opt-text"><span class="opt-label">Público dinámico</span><span class="opt-hint">Personas que ingresan sin restricciones (tiendas, eventos abiertos)</span></span><span class="opt-check"></span><input type="radio" value="10" class="opt-input" name="q8" onchange="selectOpt(this.parentElement,'q8')"></label>
+      <label class="opt"><span class="opt-icon">🪪</span><span class="opt-text"><span class="opt-label">Público regulado</span><span class="opt-hint">Se solicita identificación, ticket o cita previa</span></span><span class="opt-check"></span><input type="radio" value="5" class="opt-input" name="q8" onchange="selectOpt(this.parentElement,'q8')"></label>
+      <label class="opt"><span class="opt-icon">🏢</span><span class="opt-text"><span class="opt-label">Público estático</span><span class="opt-hint">Solo trabajadores o clientes muy específicos</span></span><span class="opt-check"></span><input type="radio" value="1" class="opt-input" name="q8" onchange="selectOpt(this.parentElement,'q8')"></label>
     </div>
     <div class="step-law">Fuente: Tabla "Público en la entidad" — Res. 1.820, Art. 5 N°8 · Ponderación: 0.063</div>
   </div>
@@ -423,7 +426,7 @@ select:focus{outline:none;border-color:#15803d;}
         <option value="">— Selecciona la comuna —</option>
         <optgroup label="Región Metropolitana — Santiago">
           <option value="cerrillos">Cerrillos</option><option value="cerro_navia">Cerro Navia</option>
-          <option value="conchal">Conchalí</option><option value="el_bosque">El Bosque</option>
+          <option value="conchali">Conchalí</option><option value="el_bosque">El Bosque</option>
           <option value="estacion_central">Estación Central</option><option value="huechuraba">Huechuraba</option>
           <option value="independencia">Independencia</option><option value="la_cisterna">La Cisterna</option>
           <option value="la_florida">La Florida</option><option value="la_granja">La Granja</option>
@@ -431,7 +434,7 @@ select:focus{outline:none;border-color:#15803d;}
           <option value="las_condes">Las Condes</option><option value="lo_barnechea">Lo Barnechea</option>
           <option value="lo_espejo">Lo Espejo</option><option value="lo_prado">Lo Prado</option>
           <option value="macul">Macul</option><option value="maipu">Maipú</option>
-          <option value="nunoa">Ñuñoa</option><option value="pac">Pedro Aguirre Cerda</option>
+          <option value="nunoa">Ñuñoa</option><option value="pedro_aguirre_cerda">Pedro Aguirre Cerda</option>
           <option value="penalolen">Peñalolén</option><option value="providencia">Providencia</option>
           <option value="pudahuel">Pudahuel</option><option value="puente_alto">Puente Alto</option>
           <option value="quilicura">Quilicura</option><option value="quinta_normal">Quinta Normal</option>
@@ -478,10 +481,10 @@ select:focus{outline:none;border-color:#15803d;}
     <div class="step-title">¿Qué vías de escape hay cerca?</div>
     <div class="step-sub">Vías que facilitan la huida de un delincuente tras cometer un delito. Marca todas las que apliquen.</div>
     <div class="opts" id="q12">
-      <label class="opt checkbox" onclick="toggleCheck(this,'q12')"><span class="opt-icon">🛣️</span><span class="opt-text"><span class="opt-label">Autopista o acceso rápido</span><span class="opt-hint">A menos de 500m</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
-      <label class="opt checkbox" onclick="toggleCheck(this,'q12')"><span class="opt-icon">🚗</span><span class="opt-text"><span class="opt-label">Avenida principal</span><span class="opt-hint">Avenida de alto flujo que permite desplazamiento rápido</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
-      <label class="opt checkbox" onclick="toggleCheck(this,'q12')"><span class="opt-icon">⚠️</span><span class="opt-text"><span class="opt-label">Zona de alta complejidad cercana</span><span class="opt-hint">Sector reconocido por alta actividad delictiva</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
-      <label class="opt checkbox" id="q12-ninguno" onclick="toggleNinguno('q12','q12-ninguno')"><span class="opt-icon">➖</span><span class="opt-text"><span class="opt-label">Ninguna de las anteriores</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt checkbox"><span class="opt-icon">🛣️</span><span class="opt-text"><span class="opt-label">Autopista o acceso rápido</span><span class="opt-hint">A menos de 500m</span></span><span class="opt-check"></span><input type="checkbox" value="5" class="opt-input" onchange="toggleCheck(this.parentElement,'q12')"></label>
+      <label class="opt checkbox"><span class="opt-icon">🚗</span><span class="opt-text"><span class="opt-label">Avenida principal</span><span class="opt-hint">Avenida de alto flujo que permite desplazamiento rápido</span></span><span class="opt-check"></span><input type="checkbox" value="3" class="opt-input" onchange="toggleCheck(this.parentElement,'q12')"></label>
+      <label class="opt checkbox"><span class="opt-icon">⚠️</span><span class="opt-text"><span class="opt-label">Zona de alta complejidad cercana</span><span class="opt-hint">Sector reconocido por alta actividad delictiva</span></span><span class="opt-check"></span><input type="checkbox" value="2" class="opt-input" onchange="toggleCheck(this.parentElement,'q12')"></label>
+      <label class="opt checkbox" id="q12-ninguno"><span class="opt-icon">➖</span><span class="opt-text"><span class="opt-label">Ninguna de las anteriores</span></span><span class="opt-check"></span><input type="checkbox" value="1" class="opt-input" onchange="toggleNinguno('q12','q12-ninguno')"></label>
     </div>
     <div class="step-law">Fuente: Tabla "Proximidad a rutas de escape" — Res. 1.820, Art. 5 N°12 · Ponderación: 0.060</div>
   </div>
@@ -494,8 +497,8 @@ select:focus{outline:none;border-color:#15803d;}
     <p>Ahora 4 preguntas de percepción. Miden cómo ves y sientes la seguridad de tu entorno — un dato que ninguna estadística captura.</p>
   </div>
   <div class="step-card">
-    <div style="font-size:0.82rem;color:#444;font-weight:700;margin-bottom:10px;">¿Por qué preguntar sobre percepción?</div>
-    <div style="font-size:0.8rem;color:#666;line-height:1.6;">La brecha entre el riesgo oficial y la percepción real revela información que ninguna estadística captura. Muchas empresas tienen riesgo oficial bajo pero sus dueños se sienten inseguros — y ese sentimiento merece una respuesta profesional.</div>
+    <div style="font-size:0.82rem;color:#ccc;font-weight:700;margin-bottom:10px;">¿Por qué preguntar sobre percepción?</div>
+    <div style="font-size:0.8rem;color:#888;line-height:1.6;">La brecha entre el riesgo oficial y la percepción real revela información que ninguna estadística captura. Muchas empresas tienen riesgo oficial bajo pero sus dueños se sienten inseguros — y ese sentimiento merece una respuesta profesional.</div>
   </div>
 </div>
 
@@ -507,11 +510,11 @@ select:focus{outline:none;border-color:#15803d;}
     <div class="step-title" id="qp1Title">¿Qué tan seguro/a te sientes en el entorno?</div>
     <div class="step-sub">Habla de tu sensación real del día a día.</div>
     <div class="opts" id="qp1">
-      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">😰</span><span class="opt-text"><span class="opt-label">Muy inseguro/a</span><span class="opt-hint">Siento que hay riesgo real todos los días</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">😟</span><span class="opt-text"><span class="opt-label">Bastante inseguro/a</span><span class="opt-hint">Me preocupa la seguridad con frecuencia</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">😐</span><span class="opt-text"><span class="opt-label">Ni seguro ni inseguro</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">🙂</span><span class="opt-text"><span class="opt-label">Bastante seguro/a</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp1')"><span class="opt-icon">😊</span><span class="opt-text"><span class="opt-label">Muy seguro/a</span><span class="opt-hint">No me preocupa la seguridad del entorno</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt percep"><span class="opt-icon">😰</span><span class="opt-text"><span class="opt-label">Muy inseguro/a</span><span class="opt-hint">Siento que hay riesgo real todos los días</span></span><span class="opt-check"></span><input type="radio" value="5" class="opt-input" name="qp1" onchange="selectOpt(this.parentElement,'qp1')"></label>
+      <label class="opt percep"><span class="opt-icon">😟</span><span class="opt-text"><span class="opt-label">Bastante inseguro/a</span><span class="opt-hint">Me preocupa la seguridad con frecuencia</span></span><span class="opt-check"></span><input type="radio" value="4" class="opt-input" name="qp1" onchange="selectOpt(this.parentElement,'qp1')"></label>
+      <label class="opt percep"><span class="opt-icon">😐</span><span class="opt-text"><span class="opt-label">Ni seguro ni inseguro</span></span><span class="opt-check"></span><input type="radio" value="3" class="opt-input" name="qp1" onchange="selectOpt(this.parentElement,'qp1')"></label>
+      <label class="opt percep"><span class="opt-icon">🙂</span><span class="opt-text"><span class="opt-label">Bastante seguro/a</span></span><span class="opt-check"></span><input type="radio" value="2" class="opt-input" name="qp1" onchange="selectOpt(this.parentElement,'qp1')"></label>
+      <label class="opt percep"><span class="opt-icon">😊</span><span class="opt-text"><span class="opt-label">Muy seguro/a</span><span class="opt-hint">No me preocupa la seguridad del entorno</span></span><span class="opt-check"></span><input type="radio" value="1" class="opt-input" name="qp1" onchange="selectOpt(this.parentElement,'qp1')"></label>
     </div>
   </div>
 </div>
@@ -527,12 +530,12 @@ select:focus{outline:none;border-color:#15803d;}
       El Índice de Cobertura de Demanda Policial es un indicador interno de Carabineros, no disponible como dato público. Tu percepción es el mejor proxy disponible.
     </div>
     <div class="opts" id="qp2">
-      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Muy alta — respuesta inmediata</span><span class="opt-hint">Carabineros frecuentes, llegan en minutos</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
-      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Alta cobertura</span><span class="opt-hint">Buena presencia en el sector</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
-      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Cobertura media-alta</span></span><span class="opt-check"></span><input type="hidden" value="6"></label>
-      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Cobertura media-baja</span></span><span class="opt-check"></span><input type="hidden" value="7"></label>
-      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Baja — demoran en llegar</span></span><span class="opt-check"></span><input type="hidden" value="8"></label>
-      <label class="opt reservado" onclick="selectOpt(this,'qp2')"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Muy baja — escasa presencia</span></span><span class="opt-check"></span><input type="hidden" value="10"></label>
+      <label class="opt reservado"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Muy alta — respuesta inmediata</span><span class="opt-hint">Carabineros frecuentes, llegan en minutos</span></span><span class="opt-check"></span><input type="radio" value="1" class="opt-input" name="qp2" onchange="selectOpt(this.parentElement,'qp2')"></label>
+      <label class="opt reservado"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Alta cobertura</span><span class="opt-hint">Buena presencia en el sector</span></span><span class="opt-check"></span><input type="radio" value="3" class="opt-input" name="qp2" onchange="selectOpt(this.parentElement,'qp2')"></label>
+      <label class="opt reservado"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Cobertura media-alta</span></span><span class="opt-check"></span><input type="radio" value="6" class="opt-input" name="qp2" onchange="selectOpt(this.parentElement,'qp2')"></label>
+      <label class="opt reservado"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Cobertura media-baja</span></span><span class="opt-check"></span><input type="radio" value="7" class="opt-input" name="qp2" onchange="selectOpt(this.parentElement,'qp2')"></label>
+      <label class="opt reservado"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Baja — demoran en llegar</span></span><span class="opt-check"></span><input type="radio" value="8" class="opt-input" name="qp2" onchange="selectOpt(this.parentElement,'qp2')"></label>
+      <label class="opt reservado"><span class="opt-icon">🚔</span><span class="opt-text"><span class="opt-label">Muy baja — escasa presencia</span></span><span class="opt-check"></span><input type="radio" value="10" class="opt-input" name="qp2" onchange="selectOpt(this.parentElement,'qp2')"></label>
     </div>
   </div>
 </div>
@@ -545,10 +548,10 @@ select:focus{outline:none;border-color:#15803d;}
     <div class="step-title" id="qp3Title">¿Has tomado medidas de seguridad por cuenta propia en el último año?</div>
     <div class="step-sub">Cámaras, rejas, alarmas, guardia privado, cambios de rutina.</div>
     <div class="opts" id="qp3">
-      <label class="opt percep" onclick="selectOpt(this,'qp3')"><span class="opt-icon">🔐</span><span class="opt-text"><span class="opt-label">Sí, varias medidas importantes</span><span class="opt-hint">He invertido significativamente en seguridad</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp3')"><span class="opt-icon">🔒</span><span class="opt-text"><span class="opt-label">Sí, algunas medidas básicas</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp3')"><span class="opt-icon">🤔</span><span class="opt-text"><span class="opt-label">Lo he pensado pero no he actuado</span></span><span class="opt-check"></span><input type="hidden" value="2"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp3')"><span class="opt-icon">😌</span><span class="opt-text"><span class="opt-label">No, no he sentido necesidad</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt percep"><span class="opt-icon">🔐</span><span class="opt-text"><span class="opt-label">Sí, varias medidas importantes</span><span class="opt-hint">He invertido significativamente en seguridad</span></span><span class="opt-check"></span><input type="radio" value="5" class="opt-input" name="qp3" onchange="selectOpt(this.parentElement,'qp3')"></label>
+      <label class="opt percep"><span class="opt-icon">🔒</span><span class="opt-text"><span class="opt-label">Sí, algunas medidas básicas</span></span><span class="opt-check"></span><input type="radio" value="3" class="opt-input" name="qp3" onchange="selectOpt(this.parentElement,'qp3')"></label>
+      <label class="opt percep"><span class="opt-icon">🤔</span><span class="opt-text"><span class="opt-label">Lo he pensado pero no he actuado</span></span><span class="opt-check"></span><input type="radio" value="2" class="opt-input" name="qp3" onchange="selectOpt(this.parentElement,'qp3')"></label>
+      <label class="opt percep"><span class="opt-icon">😌</span><span class="opt-text"><span class="opt-label">No, no he sentido necesidad</span></span><span class="opt-check"></span><input type="radio" value="1" class="opt-input" name="qp3" onchange="selectOpt(this.parentElement,'qp3')"></label>
     </div>
   </div>
 </div>
@@ -560,10 +563,10 @@ select:focus{outline:none;border-color:#15803d;}
     <span class="source-badge percep">🟣 Tu experiencia con el sistema</span>
     <div class="step-title" id="qp4Title">¿Ha habido denuncias a Carabineros o PDI en el último año?</div>
     <div class="opts" id="qp4">
-      <label class="opt percep" onclick="selectOpt(this,'qp4')"><span class="opt-icon">📋</span><span class="opt-text"><span class="opt-label">Sí, más de una vez</span></span><span class="opt-check"></span><input type="hidden" value="5"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp4')"><span class="opt-icon">📝</span><span class="opt-text"><span class="opt-label">Sí, una vez</span></span><span class="opt-check"></span><input type="hidden" value="3"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp4')"><span class="opt-icon">😶</span><span class="opt-text"><span class="opt-label">No, aunque ocurrieron hechos</span><span class="opt-hint">Hubo incidentes pero no se denunció</span></span><span class="opt-check"></span><input type="hidden" value="4"></label>
-      <label class="opt percep" onclick="selectOpt(this,'qp4')"><span class="opt-icon">✅</span><span class="opt-text"><span class="opt-label">No, porque no fue necesario</span></span><span class="opt-check"></span><input type="hidden" value="1"></label>
+      <label class="opt percep"><span class="opt-icon">📋</span><span class="opt-text"><span class="opt-label">Sí, más de una vez</span></span><span class="opt-check"></span><input type="radio" value="5" class="opt-input" name="qp4" onchange="selectOpt(this.parentElement,'qp4')"></label>
+      <label class="opt percep"><span class="opt-icon">📝</span><span class="opt-text"><span class="opt-label">Sí, una vez</span></span><span class="opt-check"></span><input type="radio" value="3" class="opt-input" name="qp4" onchange="selectOpt(this.parentElement,'qp4')"></label>
+      <label class="opt percep"><span class="opt-icon">😶</span><span class="opt-text"><span class="opt-label">No, aunque ocurrieron hechos</span><span class="opt-hint">Hubo incidentes pero no se denunció</span></span><span class="opt-check"></span><input type="radio" value="4" class="opt-input" name="qp4" onchange="selectOpt(this.parentElement,'qp4')"></label>
+      <label class="opt percep"><span class="opt-icon">✅</span><span class="opt-text"><span class="opt-label">No, porque no fue necesario</span></span><span class="opt-check"></span><input type="radio" value="1" class="opt-input" name="qp4" onchange="selectOpt(this.parentElement,'qp4')"></label>
     </div>
   </div>
 </div>
@@ -579,6 +582,7 @@ select:focus{outline:none;border-color:#15803d;}
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="config.js"></script>
 <script>
 // CUENTA Y PLAN PREMIUM (misma sesión que seguridad-chile.html, comparten dominio)
 var API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
@@ -598,11 +602,11 @@ window.addEventListener('load',cycVerificarPremium);
 var COMUNAS={
   la_pintana:[8,'10','Baja (decil 4)','Urgente 1'],lo_espejo:[8,'10','Baja (decil 4)','Urgente 1'],
   el_bosque:[7,'10','Media-baja (decil 5)','Urgente 1'],cerro_navia:[8,'10','Baja (decil 4)','Urgente 1'],
-  la_granja:[7,'10','Media-baja (decil 5)','Urgente 1'],pac:[8,'10','Baja (decil 4)','Urgente 1'],
+  la_granja:[7,'10','Media-baja (decil 5)','Urgente 1'],pedro_aguirre_cerda:[8,'10','Baja (decil 4)','Urgente 1'],
   lo_prado:[8,'10','Baja (decil 4)','Urgente 1'],san_ramon:[8,'10','Baja (decil 4)','Urgente 1'],
   renca:[7,'8','Media-baja (decil 5)','Urgente 2'],pudahuel:[6,'8','Media (decil 6)','Urgente 2'],
   quinta_normal:[7,'8','Media-baja (decil 5)','Urgente 2'],quilicura:[6,'8','Media (decil 6)','Urgente 2'],
-  conchal:[7,'8','Media-baja (decil 5)','Urgente 2'],recoleta:[5,'8','Media (decil 6)','Urgente 2'],
+  conchali:[7,'8','Media-baja (decil 5)','Urgente 2'],recoleta:[5,'8','Media (decil 6)','Urgente 2'],
   estacion_central:[7,'8','Media-baja (decil 5)','Urgente 2'],san_joaquin:[7,'8','Media-baja (decil 5)','Urgente 2'],
   huechuraba:[6,'8','Media (decil 6)','Urgente 2'],
   santiago:[4,'6','Alta (decil 8)','Urgente 3'],san_bernardo:[6,'6','Media (decil 6)','Urgente 3'],
@@ -772,15 +776,16 @@ function selectOpt(el,group){
 
 function toggleCheck(el,group){
   var ning=document.getElementById(group+'-ninguno');
-  if(ning&&ning!==el)ning.classList.remove('selected');
-  el.classList.toggle('selected');
+  if(ning&&ning!==el){ning.classList.remove('selected');var ni=ning.querySelector('input');if(ni)ni.checked=false;}
+  el.classList.toggle('selected',el.querySelector('input').checked);
   computeCheck(group);
 }
 
 function toggleNinguno(group,nId){
   var ning=document.getElementById(nId);
+  var ningInput=ning.querySelector('input');
   var was=ning.classList.contains('selected');
-  document.getElementById(group).querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');});
+  document.getElementById(group).querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');var inp=o.querySelector('input');if(inp&&inp!==ningInput)inp.checked=false;});
   if(!was)ning.classList.add('selected');
   computeCheck(group);
 }
@@ -925,10 +930,10 @@ function showResult(){
     {legal:'⚖️ Ley 21.659',evento:'🎪 Planificación evento',sucursal:'🏪 Nueva sucursal',anual:'📅 Revisión anual'}[useCase]+'</span>';
   var libre='',detalle='';
   var ctaMap={
-    legal:'<a href="https://wa.me/56984600273?text=Hice%20el%20diagn%C3%B3stico%20Ley%2021.659%20y%20quiero%20asesor%C3%ADa%20de%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#e94560;">Solicitar asesoría Ley 21.659<span>Control & Confianza — Asesores acreditados OS.10</span></a>',
-    evento:'<a href="https://wa.me/56984600273?text=Hice%20el%20diagn%C3%B3stico%20de%20seguridad%20para%20mi%20evento%20y%20quiero%20cotizar%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#f59e0b;color:#111;">Cotizar seguridad para mi evento<span>Control & Confianza — Coordinamos guardias, protocolos y logística</span></a>',
-    sucursal:'<a href="https://wa.me/56984600273?text=Hice%20el%20diagn%C3%B3stico%20de%20nueva%20sucursal%20y%20quiero%20un%20diagn%C3%B3stico%20in%20situ%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#16a34a;">Solicitar diagnóstico in situ<span>Control & Confianza — Evaluamos la ubicación antes de que firmes</span></a>',
-    anual:'<a href="https://wa.me/56984600273?text=Hice%20la%20revisi%C3%B3n%20anual%20de%20seguridad%20y%20quiero%20actualizar%20mi%20plan%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#3b82f6;">Actualizar mi plan de seguridad<span>Control & Confianza — Revisión anual con asesor acreditado OS.10</span></a>'
+    legal:'<a href="https://wa.me/'+CYC_CONFIG.whatsapp+'?text=Hice%20el%20diagn%C3%B3stico%20Ley%2021.659%20y%20quiero%20asesor%C3%ADa%20de%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#e94560;">Solicitar asesoría Ley 21.659<span>Control & Confianza — Asesores acreditados OS.10</span></a>',
+    evento:'<a href="https://wa.me/'+CYC_CONFIG.whatsapp+'?text=Hice%20el%20diagn%C3%B3stico%20de%20seguridad%20para%20mi%20evento%20y%20quiero%20cotizar%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#f59e0b;color:#111;">Cotizar seguridad para mi evento<span>Control & Confianza — Coordinamos guardias, protocolos y logística</span></a>',
+    sucursal:'<a href="https://wa.me/'+CYC_CONFIG.whatsapp+'?text=Hice%20el%20diagn%C3%B3stico%20de%20nueva%20sucursal%20y%20quiero%20un%20diagn%C3%B3stico%20in%20situ%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#16a34a;">Solicitar diagnóstico in situ<span>Control & Confianza — Evaluamos la ubicación antes de que firmes</span></a>',
+    anual:'<a href="https://wa.me/'+CYC_CONFIG.whatsapp+'?text=Hice%20la%20revisi%C3%B3n%20anual%20de%20seguridad%20y%20quiero%20actualizar%20mi%20plan%20con%20Control%20%26%20Confianza" class="btn-cta" target="_blank" style="background:#3b82f6;">Actualizar mi plan de seguridad<span>Control & Confianza — Revisión anual con asesor acreditado OS.10</span></a>'
   };
 
   if(useCase==='legal'){
@@ -968,7 +973,7 @@ function showResult(){
       '<div style="text-align:center;padding:20px 0 10px;">' +
         '<div style="font-size:3rem;">'+sem.icon+'</div>'+
         '<div style="font-size:1.3rem;font-weight:900;margin:8px 0 4px;">'+sem.label+'</div>'+
-        '<div style="font-size:0.82rem;color:#666;">Score: '+of.toFixed(1)+'/10 · Percepción: '+pe.toFixed(1)+'/5</div>'+
+        '<div style="font-size:0.82rem;color:#888;">Score: '+of.toFixed(1)+'/10 · Percepción: '+pe.toFixed(1)+'/5</div>'+
       '</div>';
     // Empresa: desglose de la evaluación + medidas concretas antes de abrir/firmar
     detalle=
@@ -1004,10 +1009,10 @@ function showResult(){
   var html='<div class="result-card">'+modeChip+libre+
     '<div id="result-detalle">'+detalle+'</div>'+
     ctaMap[useCase]+
-    '<div style="background:#f8f9fa;border-radius:10px;padding:12px;margin-top:10px;font-size:0.74rem;color:#666;line-height:1.5;">'+
+    '<div style="background:#161616;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-top:10px;font-size:0.74rem;color:#888;line-height:1.5;">'+
       '⚖️ Resultado orientativo — Res. 1.820/2025. La clasificación definitiva bajo Ley 21.659 la determina la Subsecretaría de Prevención del Delito.'+
     '</div>'+
-    '<button class="btn-cta" style="background:#f0f2f5;color:#444;border:none;margin-top:10px;" onclick="reiniciar()">← Hacer otro diagnóstico</button>'+
+    '<button class="btn-cta" style="background:#222;color:#888;border:none;margin-top:10px;" onclick="reiniciar()">← Hacer otro diagnóstico</button>'+
   '</div>';
 
   document.getElementById('resultContent').innerHTML=html;
@@ -1026,21 +1031,21 @@ function cycAplicarBloqueoResultado(){
   card.appendChild(inner);
   var overlay=document.createElement('div');
   overlay.className='cyc-overlay';
-  overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,.92);border-radius:12px;padding:14px;text-align:center';
+  overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(17,17,17,.92);border-radius:12px;padding:14px;text-align:center';
   var logueado=!!localStorage.getItem('cyc_token');
   if(logueado){
-    overlay.innerHTML='<div style="font-size:0.82rem;color:#1a1a2e;font-weight:800">Desglose completo — Plan Empresa</div>'+
-      '<div style="font-size:0.72rem;color:#666;max-width:220px">Índice de percepción, análisis de brecha y recomendaciones detalladas, sin límite de usos.</div>'+
-      '<button onclick="cycPagarEmpresaMatriz()" style="background:#1a1a2e;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:0.78rem;font-weight:800;cursor:pointer;margin-top:4px">Ver Plan Empresa — $49.990</button>';
+    overlay.innerHTML='<div style="font-size:0.82rem;color:#ccc;font-weight:800">Desglose completo — Plan Empresa</div>'+
+      '<div style="font-size:0.72rem;color:#888;max-width:220px">Índice de percepción, análisis de brecha y recomendaciones detalladas, sin límite de usos.</div>'+
+      '<button onclick="cycPagarEmpresaMatriz()" style="background:#d4a017;color:#111;border:none;padding:9px 18px;border-radius:8px;font-size:0.78rem;font-weight:800;cursor:pointer;margin-top:4px">Ver Plan Empresa — $'+CYC_CONFIG.precioEmpresa+'</button>';
   } else {
-    overlay.innerHTML='<div style="font-size:0.82rem;color:#1a1a2e;font-weight:800">Desglose completo — Plan Empresa $49.990</div>'+
-      '<input id="mrEmail" type="email" placeholder="Email" style="width:100%;max-width:220px;box-sizing:border-box;margin-top:6px;padding:7px;border-radius:6px;border:1px solid #ddd;font-size:0.78rem">'+
-      '<input id="mrPassword" type="password" placeholder="Contraseña (mín. 8)" style="width:100%;max-width:220px;box-sizing:border-box;margin-top:5px;padding:7px;border-radius:6px;border:1px solid #ddd;font-size:0.78rem">'+
+    overlay.innerHTML='<div style="font-size:0.82rem;color:#ccc;font-weight:800">Desglose completo — Plan Empresa $'+CYC_CONFIG.precioEmpresa+'</div>'+
+      '<input id="mrEmail" type="email" placeholder="Email" style="width:100%;max-width:220px;box-sizing:border-box;margin-top:6px;padding:7px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;font-size:0.78rem">'+
+      '<input id="mrPassword" type="password" placeholder="Contraseña (mín. 8)" style="width:100%;max-width:220px;box-sizing:border-box;margin-top:5px;padding:7px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;font-size:0.78rem">'+
       '<div style="display:flex;gap:6px;margin-top:6px;width:100%;max-width:220px">'+
-        '<button onclick="cycAuthYPagarMatriz(\'login\')" style="flex:1;background:#f0f2f5;color:#1a1a2e;border:none;padding:7px;border-radius:6px;font-size:0.7rem;font-weight:700;cursor:pointer">Ya tengo cuenta</button>'+
-        '<button onclick="cycAuthYPagarMatriz(\'registro\')" style="flex:1;background:#1a1a2e;color:#fff;border:none;padding:7px;border-radius:6px;font-size:0.7rem;font-weight:700;cursor:pointer">Crear cuenta y pagar</button>'+
+        '<button onclick="cycAuthYPagarMatriz(\'login\')" style="flex:1;background:#333;color:#fff;border:none;padding:9px;border-radius:6px;font-size:0.82rem;font-weight:700;cursor:pointer">Ya tengo cuenta</button>'+
+        '<button onclick="cycAuthYPagarMatriz(\'registro\')" style="flex:1;background:#d4a017;color:#111;border:none;padding:9px;border-radius:6px;font-size:0.82rem;font-weight:700;cursor:pointer">Crear cuenta y pagar</button>'+
       '</div>'+
-      '<div id="mrAuthMsg" style="font-size:0.68rem;color:#e94560;margin-top:4px"></div>';
+      '<div id="mrAuthMsg" style="font-size:0.68rem;color:#e74c3c;margin-top:4px"></div>';
   }
   card.appendChild(overlay);
 }
@@ -1070,7 +1075,7 @@ async function cycAuthYPagarMatriz(modo){
 
 function reiniciar(){
   current=0;useCase=null;answers={};
-  document.querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');});
+  document.querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');var inp=o.querySelector('input');if(inp)inp.checked=false;});
   var q1=document.getElementById('q1');if(q1)q1.value='';
   var q1ev=document.getElementById('q1ev');if(q1ev)q1ev.value='';
   document.getElementById('q_comuna').value='';

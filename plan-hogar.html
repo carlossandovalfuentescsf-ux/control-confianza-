@@ -176,7 +176,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="intro-card">
     <span class="intro-badge">🏠 Diagnóstico del Hogar</span>
     <div class="intro-title">¿Qué tan seguro es tu hogar?</div>
-    <div class="intro-desc">Responde 42 preguntas en 7 áreas clave. Al final recibirás un informe con tus vulnerabilidades y recomendaciones concretas.</div>
+    <div class="intro-desc">Responde 44 preguntas en 7 áreas clave. Al final recibirás un informe con tus vulnerabilidades y recomendaciones concretas.</div>
     <div class="intro-steps">
       <div class="intro-step"><div class="intro-step-n">1</div><div class="intro-step-t"><strong>Perímetro, iluminación y accesos</strong> — muros, rejas y entradas</div></div>
       <div class="intro-step"><div class="intro-step-n">2</div><div class="intro-step-t"><strong>Puertas, ventanas y sistema de alarma</strong> — barreras físicas y electrónicas</div></div>
@@ -209,6 +209,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="config.js"></script>
 <script>
 var SECCIONES = [
   {
@@ -517,11 +518,11 @@ function showResult(){
       '<div style="font-size:0.95rem;font-weight:800;color:#f0e8d0;margin-bottom:6px;">Desbloquea tus recomendaciones</div>' +
       '<div style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:14px;">Con el <strong style="color:#d4a017;">Plan Personal</strong> recibes el listado completo de vulnerabilidades detectadas, las acciones concretas por prioridad y el informe en PDF.</div>' +
       '<div style="background:#1a1200;border:1px solid #d4a017;border-radius:10px;padding:12px 16px;margin-bottom:14px;">' +
-        '<div style="font-size:1.1rem;font-weight:900;color:#d4a017;">$4.990<span style="font-size:0.7rem;font-weight:400;color:#888;">/mes</span></div>' +
+        '<div style="font-size:1.1rem;font-weight:900;color:#d4a017;">$'+CYC_CONFIG.precioPersonal+'<span style="font-size:0.7rem;font-weight:400;color:#888;">/mes</span></div>' +
         '<div style="font-size:0.7rem;color:#888;margin-top:3px;">Plan Personal — Control & Confianza</div>' +
         '<div style="font-size:0.72rem;color:#aaa;margin-top:6px;line-height:1.5;">✓ Informe completo con todas las vulnerabilidades<br>✓ Recomendaciones priorizadas en PDF<br>✓ 1 consulta anual con asesor acreditado<br>✓ Boletín mensual de seguridad preventiva</div>' +
       '</div>' +
-      '<a href="https://wa.me/56984600273?text='+msgWa+'" class="btn-wa" style="margin-bottom:0;" target="_blank">💬 Activar Plan Personal por WhatsApp</a>' +
+      '<a href="https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+msgWa+'" class="btn-wa" style="margin-bottom:0;" target="_blank">💬 Activar Plan Personal por WhatsApp</a>' +
     '</div>' +
   '</div>';
 
