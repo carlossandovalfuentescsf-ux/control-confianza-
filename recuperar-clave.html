@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recuperar contraseña – Control y Confianza</title>
+<meta name="description" content="Recupera el acceso a tu cuenta de Control y Confianza.">
+<meta name="robots" content="noindex">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;color:#f0e8d0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:16px 24px;display:flex;align-items:center;gap:12px}
+header img{width:44px;height:44px;object-fit:contain;border-radius:8px}
+header .hn{font-size:17px;font-weight:800;color:#f0e8d0}
+header .hs{font-size:11px;color:#d4a017;font-weight:700;letter-spacing:2px}
+main{max-width:420px;margin:0 auto;padding:48px 20px 60px}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:28px 24px}
+.card h1{font-size:20px;font-weight:900;margin-bottom:10px}
+.card p{font-size:13px;color:#aaa;line-height:1.7;margin-bottom:18px}
+label{display:block;font-size:12px;font-weight:700;color:#ccc;margin-bottom:5px}
+input{width:100%;box-sizing:border-box;margin-bottom:14px;padding:11px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:14px}
+input:focus{outline:2px solid #d4a017;border-color:#d4a017}
+button{width:100%;background:#d4a017;color:#111;border:none;padding:13px;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer}
+button:hover{background:#e8b520}
+button:disabled{background:#555;color:#999;cursor:default}
+.msg{margin-top:14px;font-size:13px;line-height:1.6;display:none;border-radius:8px;padding:12px}
+.msg.ok{display:block;background:#15301a;border:1px solid #2e7d32;color:#a5d6a7}
+.msg.err{display:block;background:#301515;border:1px solid #7d2e2e;color:#ef9a9a}
+.volver{display:block;text-align:center;margin-top:22px;font-size:13px;color:#d4a017;text-decoration:none}
+.ayuda{text-align:center;margin-top:10px;font-size:12px;color:#888}
+.ayuda a{color:#d4a017;text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="icon-192.png" alt="Logo Control y Confianza">
+  <div>
+    <div class="hn">Control &amp; Confianza</div>
+    <div class="hs">SEGURIDAD PRIVADA</div>
+  </div>
+</header>
+
+<main>
+  <!-- Vista 1: pedir el enlace -->
+  <div class="card" id="vistaPedir" style="display:none">
+    <h1>¿Olvidaste tu contraseña?</h1>
+    <p>Escribe el email con que creaste tu cuenta y te enviaremos un enlace para crear una contraseña nueva. El enlace dura 1 hora.</p>
+    <label for="email">Email de tu cuenta</label>
+    <input id="email" type="email" placeholder="tucorreo@ejemplo.cl" autocomplete="email">
+    <button id="btnPedir" onclick="pedirEnlace()">Enviarme el enlace</button>
+    <div class="msg" id="msgPedir" role="status"></div>
+  </div>
+
+  <!-- Vista 2: crear la clave nueva (cuando viene ?token= en el enlace del correo) -->
+  <div class="card" id="vistaCambiar" style="display:none">
+    <h1>Crea tu contraseña nueva</h1>
+    <p>Elige una contraseña de mínimo 8 caracteres. Al guardarla, cerraremos las sesiones abiertas por seguridad.</p>
+    <label for="pass1">Contraseña nueva</label>
+    <input id="pass1" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+    <label for="pass2">Repite la contraseña</label>
+    <input id="pass2" type="password" placeholder="Escríbela de nuevo" autocomplete="new-password">
+    <button id="btnCambiar" onclick="cambiarClave()">Guardar contraseña nueva</button>
+    <div class="msg" id="msgCambiar" role="status"></div>
+  </div>
+
+  <a class="volver" href="seguridad-chile.html">← Volver a la app</a>
+  <div class="ayuda">¿Problemas? Escríbenos por <a id="linkWsp" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a></div>
+</main>
+
+<script src="config.js"></script>
+<script>
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+const token=new URLSearchParams(location.search).get('token');
+document.getElementById(token?'vistaCambiar':'vistaPedir').style.display='block';
+document.getElementById('linkWsp').href='https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+encodeURIComponent('Hola, necesito ayuda para recuperar mi contraseña');
+
+function mostrarMsg(id,texto,tipo){
+  const el=document.getElementById(id);
+  el.textContent=texto;
+  el.className='msg '+tipo;
+}
+
+async function pedirEnlace(){
+  const email=document.getElementById('email').value.trim();
+  if(!email||email.indexOf('@')<0){mostrarMsg('msgPedir','Escribe un email válido.','err');return;}
+  const btn=document.getElementById('btnPedir');
+  btn.disabled=true;btn.textContent='Enviando...';
+  try{
+    const res=await fetch(API_URL+'/auth/recuperar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})});
+    const data=await res.json();
+    if(data.ok){mostrarMsg('msgPedir',data.mensaje,'ok');btn.textContent='Enlace enviado';}
+    else{mostrarMsg('msgPedir',data.error||'No pudimos procesar la solicitud. Intenta de nuevo.','err');btn.disabled=false;btn.textContent='Enviarme el enlace';}
+  }catch(e){
+    mostrarMsg('msgPedir','Sin conexión. Revisa tu internet e intenta de nuevo.','err');
+    btn.disabled=false;btn.textContent='Enviarme el enlace';
+  }
+}
+
+async function cambiarClave(){
+  const p1=document.getElementById('pass1').value;
+  const p2=document.getElementById('pass2').value;
+  if(p1.length<8){mostrarMsg('msgCambiar','La contraseña debe tener mínimo 8 caracteres.','err');return;}
+  if(p1!==p2){mostrarMsg('msgCambiar','Las contraseñas no coinciden.','err');return;}
+  const btn=document.getElementById('btnCambiar');
+  btn.disabled=true;btn.textContent='Guardando...';
+  try{
+    const res=await fetch(API_URL+'/auth/restablecer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,password:p1})});
+    const data=await res.json();
+    if(data.ok){
+      mostrarMsg('msgCambiar',data.mensaje+' Te llevamos a la app...','ok');
+      btn.textContent='Contraseña guardada ✓';
+      setTimeout(function(){location.href='seguridad-chile.html';},2500);
+    }else{
+      mostrarMsg('msgCambiar',data.error||'No pudimos cambiar la contraseña. Pide un enlace nuevo.','err');
+      btn.disabled=false;btn.textContent='Guardar contraseña nueva';
+    }
+  }catch(e){
+    mostrarMsg('msgCambiar','Sin conexión. Revisa tu internet e intenta de nuevo.','err');
+    btn.disabled=false;btn.textContent='Guardar contraseña nueva';
+  }
+}
+</script>
+</body>
+</html>
