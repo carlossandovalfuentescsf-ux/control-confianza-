@@ -110,7 +110,22 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
 .seg-btn{width:100%;text-align:left;background:#1a1a1a;border:2px solid rgba(212,160,23,.3);color:#eee;padding:14px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px;line-height:1.4}
 .seg-btn b{display:block;font-size:15px;margin-bottom:3px}
 .seg-btn:hover{border-color:#d4a017;background:rgba(212,160,23,.1)}
-</style>
+.print-header-geo{display:none}
+@media print{
+  body{background:#fff!important;color:#111!important}
+  .header,.pasos,.cta,.seg-overlay{display:none!important}
+  .seccion{display:none!important}
+  #paso3{display:block!important}
+  .print-header-geo{display:block!important;text-align:center;padding:12px 0;border-bottom:2px solid #d4a017;margin-bottom:14px}
+  .print-header-geo img{height:52px;margin-bottom:6px}
+  .print-header-geo .pt{font-size:1.05rem;font-weight:800;color:#111}
+  .print-header-geo .ps{font-size:0.75rem;color:#666;margin-top:4px}
+  .analisis-hero,.card{background:#fff!important;border:1px solid #ccc!important;border-radius:4px!important}
+  #paso3 h2,#paso3 h3{color:#111!important}
+  #paso3 p,#paso3 li,#paso3 span,#paso3 div{color:#333}
+  #mapa3{height:340px!important}
+  .mapa-final-wrap{border:1px solid #ccc}
+}</style>
 </head>
 <body>
 
@@ -254,6 +269,11 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
 
 <!-- ====== PASO 3: ANÁLISIS ====== -->
 <div class="seccion" id="paso3">
+  <div class="print-header-geo">
+    <img src="icon-192.png" alt="Control y Confianza">
+    <div class="pt">Análisis de Seguridad del Predio — Control & Confianza</div>
+    <div class="ps">Asesor acreditado OS.10 · app.controlyconfianza.cl · <span id="printFechaGeo"></span></div>
+  </div>
   <div class="analisis-hero">
     <h2>Análisis de Seguridad del Predio</h2>
     <p class="dir" id="dir-result">—</p>
@@ -283,6 +303,7 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
     <h3 id="cta-titulo">📄 Obtén tu Directiva de Funcionamiento OS.10</h3>
     <p id="cta-desc">Este plano y análisis es entregado a Carlos Sandoval — asesor acreditado OS.10 Carabineros de Chile — para preparar tu Directiva oficial y cumplir con la ley.</p>
     <a id="btn-wa" class="btn-wa" href="#" target="_blank">💬 Solicitar Directiva por WhatsApp</a>
+    <button class="btn-outline" onclick="document.getElementById('printFechaGeo').textContent=new Date().toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});window.print()">📄 Descargar informe en PDF</button>
     <button class="btn-outline" onclick="reiniciar()">← Analizar otro predio</button>
   </div>
 </div>

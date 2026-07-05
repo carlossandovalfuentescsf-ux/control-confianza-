@@ -1,12 +1,17 @@
-const CACHE = 'cyc-v20260703';
+const CACHE = 'cyc-v20260705';
+// Rutas relativas: funcionan tanto en app.controlyconfianza.cl (raíz)
+// como en la URL antigua de github.io (subcarpeta /control-confianza-/).
 const URLS = [
-  '/control-confianza-/',
-  '/control-confianza-/index.html',
-  '/control-confianza-/seguridad-chile.html',
-  '/control-confianza-/matriz-riesgo.html',
-  '/control-confianza-/plan-hogar.html',
-  '/control-confianza-/georef-predio.html',
-  '/control-confianza-/icon-192.png'
+  './',
+  './index.html',
+  './seguridad-chile.html',
+  './matriz-riesgo.html',
+  './plan-hogar.html',
+  './georef-predio.html',
+  './recuperar-clave.html',
+  './terminos.html',
+  './config.js',
+  './icon-192.png'
 ];
 
 // Al instalar, guardar en caché

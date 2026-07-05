@@ -196,8 +196,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- RESULTADO -->
 <div class="step" id="step-result">
   <div class="print-header">
+    <img src="icon-192.png" alt="Control y Confianza" style="height:52px;margin-bottom:6px">
     <div class="print-title">Plan de Seguridad del Hogar — Control & Confianza</div>
-    <div class="print-sub">Informe generado localmente · Asesor acreditado OS.10 · www.controlyconfianza.cl</div>
+    <div class="print-sub">Informe generado localmente · Asesor acreditado OS.10 · app.controlyconfianza.cl · <span id="printFecha"></span></div>
   </div>
   <div id="resultContent"></div>
 </div>
@@ -528,9 +529,11 @@ function showResult(){
   '</div>';
 
   html += '<div class="disclaimer">⚖️ Diagnóstico orientativo generado localmente en tu dispositivo. Ningún dato fue transmitido a servidores externos. No constituye un informe de seguridad certificado.</div>' +
+  '<button class="btn-print" onclick="window.print()">📄 Descargar informe en PDF</button>' +
   '<button class="btn-reiniciar" onclick="reiniciar()">← Hacer nuevo diagnóstico</button>';
 
   document.getElementById('resultContent').innerHTML = html;
+  document.getElementById('printFecha').textContent = new Date().toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
 }
 
 function reiniciar(){
