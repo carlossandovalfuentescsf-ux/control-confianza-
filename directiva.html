@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Directiva de Funcionamiento OS.10 — Control & Confianza</title>
+<meta name="description" content="Genera el borrador de tu Directiva de Funcionamiento OS.10 con análisis de riesgo. Visación por asesor acreditado.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh}
+.header{background:#1a1a1a;border-bottom:2px solid #d4a017;color:#f0e8d0;padding:20px;text-align:center;position:relative}
+.header img{height:44px;margin-bottom:8px}
+.header h1{font-size:1.05rem;font-weight:800;line-height:1.3}
+.header p{font-size:0.75rem;color:#888;margin-top:4px}
+.volver{position:absolute;left:12px;top:12px;display:inline-flex;align-items:center;gap:5px;font-size:0.72rem;color:rgba(255,255,255,0.5);text-decoration:none;border:1px solid rgba(255,255,255,0.2);padding:4px 10px;border-radius:99px}
+.prog{background:#1a1a1a;border-bottom:1px solid #222;padding:10px 20px;display:none}
+.prog-bg{background:#222;border-radius:99px;height:6px}
+.prog-fill{background:#d4a017;border-radius:99px;height:6px;transition:width .4s}
+.prog-label{color:#888;font-size:0.72rem;margin-top:6px}
+main{max-width:640px;margin:0 auto;padding:16px 14px 110px}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:12px}
+.card h2{font-size:1rem;font-weight:800;color:#d4a017;margin-bottom:4px}
+.card h3{font-size:0.88rem;font-weight:800;color:#f0e8d0;margin:14px 0 6px}
+.card p{font-size:0.8rem;color:#999;line-height:1.55;margin-bottom:8px}
+.aviso{background:#1a1200;border:1px solid #3a2e00;border-radius:10px;padding:12px;font-size:0.76rem;color:#d4a017;line-height:1.5;margin:10px 0}
+label{display:block;font-size:0.74rem;font-weight:700;color:#ccc;margin:10px 0 4px}
+input[type=text],input[type=email],input[type=tel],input[type=time],input[type=number],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:0.85rem;font-family:inherit}
+textarea{min-height:74px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#d4a017}
+.fila{display:flex;gap:8px}
+.fila>div{flex:1}
+.chk{display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#ccc;padding:7px 0;cursor:pointer}
+.chk input{width:auto;accent-color:#d4a017}
+.btn{border:none;border-radius:10px;font-size:0.9rem;font-weight:800;cursor:pointer;padding:13px 18px}
+.btn-oro{background:#d4a017;color:#111}
+.btn-gris{background:#1a1a1a;color:#999;border:1px solid #2a2a2a}
+.btn-borde{background:transparent;color:#d4a017;border:1px solid #d4a017}
+.btn-full{display:block;width:100%;text-align:center;margin-top:10px;text-decoration:none}
+.nav-row{position:fixed;bottom:0;left:0;right:0;background:#111;padding:12px 16px;display:none;gap:10px;border-top:1px solid #222;max-width:640px;margin:0 auto}
+.nav-row .btn{flex:1}
+.paso{display:none}
+.paso.activo{display:block}
+.mini-add{background:#111;border:1px dashed #444;color:#d4a017;border-radius:8px;padding:8px;width:100%;font-size:0.78rem;cursor:pointer;margin-top:6px}
+.item-lista{background:#111;border:1px solid #222;border-radius:10px;padding:10px;margin-top:8px;position:relative}
+.item-x{position:absolute;top:6px;right:8px;background:none;border:none;color:#e74c3c;font-size:0.9rem;cursor:pointer}
+.plano-ok{background:#0f2410;border:1px solid #2e7d32;border-radius:10px;padding:12px;font-size:0.8rem;color:#a5d6a7;line-height:1.6}
+.plano-no{background:#241a0f;border:1px solid #7d5e2e;border-radius:10px;padding:12px;font-size:0.8rem;color:#e8c98a;line-height:1.6}
+.folio-badge{display:inline-block;background:#1a1200;border:1px solid #d4a017;color:#d4a017;font-weight:800;font-size:0.8rem;padding:4px 12px;border-radius:99px;margin:6px 0}
+.exp-item{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.exp-item .ei-t{font-size:0.84rem;font-weight:700;color:#f0e8d0}
+.exp-item .ei-s{font-size:0.7rem;color:#888;margin-top:2px}
+.msg{margin-top:10px;font-size:0.78rem;line-height:1.5;display:none;border-radius:8px;padding:10px}
+.msg.ok{display:block;background:#15301a;border:1px solid #2e7d32;color:#a5d6a7}
+.msg.err{display:block;background:#301515;border:1px solid #7d2e2e;color:#ef9a9a}
+.rev-sec{border-bottom:1px solid #222;padding:10px 0}
+.rev-sec .rs-t{font-size:0.72rem;font-weight:800;color:#d4a017;text-transform:uppercase;letter-spacing:.5px}
+.rev-sec .rs-c{font-size:0.8rem;color:#ccc;line-height:1.55;margin-top:3px;white-space:pre-line}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="seguridad-chile.html?volver=1" class="volver">← Volver a la App</a>
+  <img src="icon-192.png" alt="Logo">
+  <h1>Directiva de Funcionamiento OS.10</h1>
+  <p>Control & Confianza — Asesores acreditados OS.10</p>
+</header>
+
+<div class="prog" id="prog">
+  <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-label" id="progLabel"></div>
+</div>
+
+<main>
+
+<!-- ===== INTRO ===== -->
+<section id="vIntro">
+  <div class="card">
+    <h2>📄 Genera el borrador de tu Directiva de Funcionamiento</h2>
+    <p>Toda entidad que contrata guardias de seguridad en Chile debe contar con una <strong>Directiva de Funcionamiento</strong> aprobada (D.L. 3.607 y normativa OS.10 de Carabineros). Este asistente construye el borrador completo con el formato oficial, usando el plano de tu predio y el análisis de riesgo de tu comuna.</p>
+    <p>Al finalizar, un <strong>asesor de seguridad acreditado OS.10</strong> revisa, corrige y visa tu Directiva para su presentación — ese servicio se cotiza por WhatsApp según la envergadura de tu instalación.</p>
+    <div class="aviso">⚖️ El documento que genera esta herramienta es un <strong>BORRADOR</strong> y no tiene validez ante la autoridad hasta ser revisado y visado por un asesor acreditado.</div>
+    <button class="btn btn-oro btn-full" onclick="comenzar()">Comenzar mi Directiva →</button>
+    <button class="btn btn-borde btn-full" onclick="verMisExpedientes()">📂 Mis expedientes</button>
+    <div class="msg" id="msgIntro"></div>
+  </div>
+  <div class="card" id="authBox" style="display:none">
+    <h2>Exclusivo Plan Empresa</h2>
+    <p>El generador de Directivas es parte del <strong>Plan Empresa ($<span id="precioEmp"></span>/30 días)</strong>. Inicia sesión o crea tu cuenta para continuar.</p>
+    <label for="aEmail">Email</label>
+    <input id="aEmail" type="email" placeholder="Email" autocomplete="email">
+    <label for="aPass">Contraseña</label>
+    <input id="aPass" type="password" placeholder="Contraseña (mín. 8)" autocomplete="current-password">
+    <div class="fila" style="margin-top:10px">
+      <button class="btn btn-gris" style="flex:1" onclick="autenticar('login')">Ya tengo cuenta</button>
+      <button class="btn btn-oro" style="flex:1" onclick="autenticar('registro')">Crear cuenta</button>
+    </div>
+    <button class="btn btn-oro btn-full" id="btnPagarEmp" style="display:none" onclick="pagarEmpresa()">Pagar Plan Empresa y desbloquear</button>
+    <a href="recuperar-clave.html" style="display:inline-block;margin-top:8px;font-size:0.72rem;color:#d4a017">¿Olvidaste tu contraseña?</a>
+    <div style="font-size:0.66rem;color:#888;margin-top:4px">Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017">Términos y Condiciones</a></div>
+    <div class="msg" id="msgAuth"></div>
+  </div>
+</section>
+
+<!-- ===== MIS EXPEDIENTES ===== -->
+<section id="vLista" style="display:none">
+  <div class="card">
+    <h2>📂 Mis expedientes</h2>
+    <p>Retoma un expediente guardado o crea uno nuevo.</p>
+    <div id="listaExp"></div>
+    <button class="btn btn-oro btn-full" onclick="nuevoExpediente()">+ Nueva Directiva</button>
+    <button class="btn btn-gris btn-full" onclick="irIntro()">← Volver</button>
+    <div class="msg" id="msgLista"></div>
+  </div>
+</section>
+
+<!-- ===== WIZARD ===== -->
+<section id="vWizard" style="display:none">
+
+  <div class="paso" data-p="1">
+    <div class="card">
+      <h2>I. Antecedentes del empleador</h2>
+      <p>La entidad o persona que contrata el servicio de guardias.</p>
+      <label>Nombre o razón social *</label><input type="text" id="f_emp_nombre" placeholder="Ej: Comercial Los Andes SpA">
+      <div class="fila">
+        <div><label>RUT *</label><input type="text" id="f_emp_rut" placeholder="76.123.456-7"></div>
+        <div><label>Teléfono *</label><input type="tel" id="f_emp_tel" placeholder="+56 9 ..."></div>
+      </div>
+      <label>Giro *</label><input type="text" id="f_emp_giro" placeholder="Ej: Comercio minorista">
+      <label>Domicilio legal *</label><input type="text" id="f_emp_dom" placeholder="Calle, número, comuna">
+      <label>Email de contacto</label><input type="email" id="f_emp_email" placeholder="contacto@empresa.cl">
+    </div>
+  </div>
+
+  <div class="paso" data-p="2">
+    <div class="card">
+      <h2>II. Lugar de desarrollo del servicio</h2>
+      <label>Dirección de la instalación *</label><input type="text" id="f_lug_dir" placeholder="Donde se prestará el servicio de guardias">
+      <label>Comuna *</label><select id="f_lug_comuna"><option value="">— Selecciona la comuna —</option></select>
+      <label>Nombre de la instalación / entidad</label><input type="text" id="f_lug_entidad" placeholder="Ej: Sucursal Centro, Bodega Norte">
+      <h3>Croquis del predio (exigido por el formato OS.10)</h3>
+      <div id="planoEstado"></div>
+      <label>Facciones del servicio (qué cubre el servicio de guardias)</label>
+      <textarea id="f_lug_facciones" placeholder="Ej: Control de acceso principal, rondas perimetrales, vigilancia de bodega y estacionamientos"></textarea>
+    </div>
+  </div>
+
+  <div class="paso" data-p="3">
+    <div class="card">
+      <h2>III. Horarios de funcionamiento</h2>
+      <p>Horarios en que opera la instalación.</p>
+      <div id="listaHorarios"></div>
+      <button class="mini-add" onclick="agregarHorario()">+ Agregar franja horaria</button>
+    </div>
+    <div class="card">
+      <h2>IV. Personal del servicio</h2>
+      <div class="fila">
+        <div><label>Total de guardias *</label><input type="number" id="f_per_total" min="1" placeholder="Ej: 4"></div>
+        <div><label>Horas por turno</label><input type="number" id="f_per_horas" min="1" max="12" placeholder="Ej: 8"></div>
+      </div>
+      <h3>Turnos</h3>
+      <div id="listaTurnos"></div>
+      <button class="mini-add" onclick="agregarTurno()">+ Agregar turno</button>
+    </div>
+  </div>
+
+  <div class="paso" data-p="4">
+    <div class="card">
+      <h2>V. Objetivos y tareas</h2>
+      <label>Objetivo del servicio</label>
+      <textarea id="f_obj_objetivo"></textarea>
+      <label>Tareas asignadas al personal</label>
+      <textarea id="f_obj_tareas" placeholder="Ej: Guardia 1 (acceso principal): control de ingreso y registro de visitas..."></textarea>
+    </div>
+    <div class="card">
+      <h2>VI. Tenida autorizada</h2>
+      <div id="chkTenida"></div>
+      <label>Otro (opcional)</label><input type="text" id="f_ten_otro" placeholder="Detalle adicional de la tenida">
+    </div>
+    <div class="card">
+      <h2>VII. Implementos autorizados</h2>
+      <p style="font-size:0.72rem">Los guardias de seguridad no portan armas (D.S. 1.773).</p>
+      <div id="chkImplementos"></div>
+      <label>Otro (opcional)</label><input type="text" id="f_imp_otro" placeholder="Otro implemento">
+    </div>
+  </div>
+
+  <div class="paso" data-p="5">
+    <div class="card">
+      <h2>VIII. Sistema de alarma y comunicación</h2>
+      <label>Empresa que provee el servicio de alarmas (si existe)</label><input type="text" id="f_com_alarma" placeholder="Ej: ADT, Prosegur — o 'No aplica'">
+      <div class="fila">
+        <div><label>N° Resolución Subtel</label><input type="text" id="f_com_subtel" placeholder="Si usan radios"></div>
+        <div><label>Credenciales de operación</label><input type="text" id="f_com_cred" placeholder="Si aplica"></div>
+      </div>
+      <h3>Medios de comunicación del personal</h3>
+      <div id="chkMedios"></div>
+    </div>
+    <div class="card">
+      <h2>IX. Capacitación del personal</h2>
+      <label>Al momento del ingreso</label>
+      <textarea id="f_cap_ingreso"></textarea>
+      <label>Capacitación periódica</label>
+      <textarea id="f_cap_periodica"></textarea>
+    </div>
+  </div>
+
+  <div class="paso" data-p="6">
+    <div class="card">
+      <h2>Anexo — Información para decisiones policiales</h2>
+      <p>Teléfonos y accesos que Carabineros necesita en una emergencia.</p>
+      <div class="fila">
+        <div><label>Mesa central</label><input type="tel" id="f_ax_mesa"></div>
+        <div><label>Portería</label><input type="tel" id="f_ax_porteria"></div>
+      </div>
+      <div class="fila">
+        <div><label>Gerente / Agente</label><input type="tel" id="f_ax_gerente"></div>
+        <div><label>Jefe de Seguridad</label><input type="tel" id="f_ax_jefeseg"></div>
+      </div>
+      <label>Central de alarma conectada</label><input type="text" id="f_ax_central">
+      <h3>Cuartel de Carabineros más cercano</h3>
+      <div class="fila">
+        <div><label>Teléfono comisaría</label><input type="tel" id="f_ax_cuartel_tel" placeholder="Se completa al elegir comuna"></div>
+        <div><label>Dirección del cuartel</label><input type="text" id="f_ax_cuartel_dir"></div>
+      </div>
+      <h3>Puntos de ingreso — público general</h3>
+      <div id="listaIngPublico"></div>
+      <button class="mini-add" onclick="agregarIngreso('publico')">+ Agregar acceso de público</button>
+      <h3>Puntos de ingreso — empleados y servicios</h3>
+      <div id="listaIngEmpleados"></div>
+      <button class="mini-add" onclick="agregarIngreso('empleados')">+ Agregar acceso de empleados</button>
+      <label>Armamento autorizado</label>
+      <input type="text" id="f_ax_armamento">
+    </div>
+  </div>
+
+  <div class="paso" data-p="7">
+    <div class="card">
+      <h2>Revisión del expediente</h2>
+      <div id="folioZona"></div>
+      <div id="revision"></div>
+      <div class="aviso">⚖️ Este expediente genera un <strong>BORRADOR</strong>. La Directiva definitiva requiere revisión y visación de un asesor acreditado OS.10 — el siguiente paso tras guardar.</div>
+      <button class="btn btn-oro btn-full" onclick="guardarServidor()">💾 Guardar expediente</button>
+      <div class="msg" id="msgGuardar"></div>
+      <p style="font-size:0.72rem;margin-top:10px">Próximamente en este flujo: descarga del borrador en PDF con marca de agua y solicitud de visación en línea.</p>
+    </div>
+  </div>
+
+</section>
+</main>
+
+<div class="nav-row" id="navRow">
+  <button class="btn btn-gris" id="btnAtras" onclick="navegar(-1)">← Atrás</button>
+  <button class="btn btn-oro" id="btnSig" onclick="navegar(1)">Siguiente →</button>
+</div>
+
+<script src="config.js"></script>
+<script src="cuadrante.js"></script>
+<script>
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+const TOTAL_PASOS=7;
+const NOMBRES_PASOS=['','I. Empleador','II. Lugar y croquis','III-IV. Horarios y personal','V-VII. Tareas, tenida e implementos','VIII-IX. Comunicación y capacitación','Anexo policial','Revisión y guardado'];
+let paso=1;
+let exp=expedienteVacio();
+
+function expedienteVacio(){
+  return {
+    folio:null,
+    empleador:{nombre:'',rut:'',tel:'',giro:'',dom:'',email:''},
+    lugar:{dir:'',comuna:'',entidad:'',facciones:'',plano:null},
+    horarios:[{dias:'Lunes a viernes',desde:'08:00',hasta:'20:00'}],
+    personal:{total:'',horas:'8',turnos:[{nombre:'Turno día',desde:'08:00',hasta:'20:00',guardias:''}]},
+    objetivos:{
+      objetivo:'Proteger la integridad física de las personas, las instalaciones y los bienes de la entidad, mediante labores preventivas de vigilancia y control, dando cumplimiento al D.L. 3.607 y a la normativa OS.10 de Carabineros de Chile.',
+      tareas:''
+    },
+    tenida:{items:['Pantalón y camisa institucional','Chaqueta o parka con la palabra "SEGURIDAD"','Credencial visible con nombre y fotografía'],otro:''},
+    implementos:{items:['Radio de comunicación portátil','Linterna','Libro de novedades','Teléfono celular'],otro:''},
+    comunicacion:{alarma:'',subtel:'',cred:'',medios:['Radio portátil','Teléfono celular'],otro:''},
+    capacitacion:{
+      ingreso:'Inducción sobre funciones del puesto, protocolos de emergencia, uso de medios de comunicación y trato con público, previa al inicio del servicio.',
+      periodica:'Reforzamiento semestral de protocolos de emergencia y curso de guardia de seguridad OS.10 vigente.'
+    },
+    anexo:{mesa:'',porteria:'',gerente:'',jefeseg:'',central:'',cuartelTel:'',cuartelDir:'',ingPublico:[{dir:'',apertura:'',cierre:''}],ingEmpleados:[],armamento:'Sin armamento — servicio de guardias de seguridad (no portan armas conforme al D.S. 1.773)'}
+  };
+}
+
+const OPC_TENIDA=['Pantalón y camisa institucional','Chaqueta o parka con la palabra "SEGURIDAD"','Credencial visible con nombre y fotografía','Calzado institucional','Gorro institucional','Chaleco reflectante'];
+const OPC_IMPLEMENTOS=['Radio de comunicación portátil','Linterna','Libro de novedades','Teléfono celular','Chaleco reflectante','Botiquín de primeros auxilios','Cinturón de servicio'];
+const OPC_MEDIOS=['Radio portátil','Teléfono celular','Citófono interno','Central de monitoreo'];
+
+// ---------- Autenticación y gate Plan Empresa ----------
+function tok(){return localStorage.getItem('cyc_token')||'';}
+function msg(id,t,tipo){var e=document.getElementById(id);e.textContent=t;e.className='msg '+tipo;}
+async function estadoPlan(){
+  if(!tok())return {sesion:false,plan:null};
+  try{
+    const r=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+tok()}});
+    if(!r.ok)return {sesion:false,plan:null};
+    const d=await r.json();
+    return {sesion:true,plan:d.plan||null};
+  }catch(e){return {sesion:false,plan:null,offline:true};}
+}
+async function exigirEmpresa(){
+  const e=await estadoPlan();
+  if(e.offline){msg('msgIntro','Sin conexión — revisa tu internet e intenta de nuevo.','err');return false;}
+  if(e.sesion&&e.plan==='empresa')return true;
+  document.getElementById('authBox').style.display='block';
+  document.getElementById('btnPagarEmp').style.display=e.sesion?'block':'none';
+  if(e.sesion)msg('msgAuth','Tu cuenta no tiene el Plan Empresa activo. Págalo para desbloquear el generador.','err');
+  document.getElementById('authBox').scrollIntoView({behavior:'smooth'});
+  return false;
+}
+async function autenticar(modo){
+  const email=document.getElementById('aEmail').value.trim();
+  const pass=document.getElementById('aPass').value;
+  if(!email||pass.length<8){msg('msgAuth','Email y contraseña de mínimo 8 caracteres.','err');return;}
+  try{
+    const r=await fetch(API_URL+'/auth/'+modo,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pass})});
+    const d=await r.json();
+    if(!r.ok){msg('msgAuth',d.error||'No se pudo iniciar sesión.','err');return;}
+    localStorage.setItem('cyc_token',d.token);
+    const e=await estadoPlan();
+    if(e.plan==='empresa'){document.getElementById('authBox').style.display='none';comenzar();}
+    else{document.getElementById('btnPagarEmp').style.display='block';msg('msgAuth','Sesión iniciada. Falta activar el Plan Empresa.','ok');}
+  }catch(err){msg('msgAuth','Sin conexión. Intenta de nuevo.','err');}
+}
+async function pagarEmpresa(){
+  try{
+    const r=await fetch(API_URL+'/pago/iniciar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok()},body:JSON.stringify({plan:'empresa'})});
+    const d=await r.json();
+    if(d.url){location.href=d.url;}else{msg('msgAuth',d.error||'No se pudo iniciar el pago.','err');}
+  }catch(e){msg('msgAuth','Sin conexión. Intenta de nuevo.','err');}
+}
+
+// ---------- Navegación ----------
+async function comenzar(){
+  if(!(await exigirEmpresa()))return;
+  cargarBorradorLocal();
+  document.getElementById('vIntro').style.display='none';
+  document.getElementById('vLista').style.display='none';
+  document.getElementById('vWizard').style.display='block';
+  document.getElementById('navRow').style.display='flex';
+  document.getElementById('prog').style.display='block';
+  irPaso(paso);
+}
+function irIntro(){
+  document.getElementById('vIntro').style.display='block';
+  document.getElementById('vLista').style.display='none';
+  document.getElementById('vWizard').style.display='none';
+  document.getElementById('navRow').style.display='none';
+  document.getElementById('prog').style.display='none';
+}
+function irPaso(n){
+  paso=Math.min(Math.max(n,1),TOTAL_PASOS);
+  document.querySelectorAll('.paso').forEach(p=>p.classList.remove('activo'));
+  document.querySelector('.paso[data-p="'+paso+'"]').classList.add('activo');
+  document.getElementById('progFill').style.width=Math.round(paso/TOTAL_PASOS*100)+'%';
+  document.getElementById('progLabel').textContent='Paso '+paso+' de '+TOTAL_PASOS+' — '+NOMBRES_PASOS[paso];
+  document.getElementById('btnAtras').style.visibility=paso===1?'hidden':'visible';
+  document.getElementById('btnSig').style.display=paso===TOTAL_PASOS?'none':'block';
+  if(paso===2)pintarPlano();
+  if(paso===7)pintarRevision();
+  window.scrollTo(0,0);
+}
+function navegar(dir){
+  if(dir>0){
+    leerFormulario();
+    if(!validarPaso(paso))return;
+    guardarBorradorLocal();
+  }
+  irPaso(paso+dir);
+}
+function validarPaso(p){
+  if(p===1){
+    if(!exp.empleador.nombre||!exp.empleador.rut||!exp.empleador.giro||!exp.empleador.dom||!exp.empleador.tel){alert('Completa los campos obligatorios (*) del empleador.');return false;}
+    if(!validarRut(exp.empleador.rut)){alert('El RUT no es válido. Revísalo (ej: 76.123.456-7).');return false;}
+  }
+  if(p===2&&(!exp.lugar.dir||!exp.lugar.comuna)){alert('Indica la dirección y comuna de la instalación.');return false;}
+  if(p===3&&(!exp.personal.total||Number(exp.personal.total)<1)){alert('Indica cuántos guardias tendrá el servicio.');return false;}
+  return true;
+}
+function validarRut(r){
+  r=r.replace(/\./g,'').replace(/-/g,'').toUpperCase();
+  if(r.length<8)return false;
+  const cuerpo=r.slice(0,-1),dv=r.slice(-1);
+  if(!/^\d+$/.test(cuerpo))return false;
+  let suma=0,m=2;
+  for(let i=cuerpo.length-1;i>=0;i--){suma+=Number(cuerpo[i])*m;m=m===7?2:m+1;}
+  const res=11-(suma%11);
+  const dvCalc=res===11?'0':res===10?'K':String(res);
+  return dv===dvCalc;
+}
+
+// ---------- Formulario <-> estado ----------
+function v(id){return document.getElementById(id).value.trim();}
+function sv(id,val){document.getElementById(id).value=val||'';}
+function leerFormulario(){
+  exp.empleador={nombre:v('f_emp_nombre'),rut:v('f_emp_rut'),tel:v('f_emp_tel'),giro:v('f_emp_giro'),dom:v('f_emp_dom'),email:v('f_emp_email')};
+  exp.lugar.dir=v('f_lug_dir');exp.lugar.comuna=document.getElementById('f_lug_comuna').value;exp.lugar.entidad=v('f_lug_entidad');exp.lugar.facciones=v('f_lug_facciones');
+  exp.horarios=[...document.querySelectorAll('#listaHorarios .item-lista')].map(el=>({dias:el.querySelector('.h-dias').value,desde:el.querySelector('.h-desde').value,hasta:el.querySelector('.h-hasta').value}));
+  exp.personal.total=v('f_per_total');exp.personal.horas=v('f_per_horas');
+  exp.personal.turnos=[...document.querySelectorAll('#listaTurnos .item-lista')].map(el=>({nombre:el.querySelector('.t-nom').value,desde:el.querySelector('.t-desde').value,hasta:el.querySelector('.t-hasta').value,guardias:el.querySelector('.t-g').value}));
+  exp.objetivos={objetivo:v('f_obj_objetivo'),tareas:v('f_obj_tareas')};
+  exp.tenida={items:[...document.querySelectorAll('#chkTenida input:checked')].map(c=>c.value),otro:v('f_ten_otro')};
+  exp.implementos={items:[...document.querySelectorAll('#chkImplementos input:checked')].map(c=>c.value),otro:v('f_imp_otro')};
+  exp.comunicacion={alarma:v('f_com_alarma'),subtel:v('f_com_subtel'),cred:v('f_com_cred'),medios:[...document.querySelectorAll('#chkMedios input:checked')].map(c=>c.value),otro:''};
+  exp.capacitacion={ingreso:v('f_cap_ingreso'),periodica:v('f_cap_periodica')};
+  exp.anexo.mesa=v('f_ax_mesa');exp.anexo.porteria=v('f_ax_porteria');exp.anexo.gerente=v('f_ax_gerente');exp.anexo.jefeseg=v('f_ax_jefeseg');exp.anexo.central=v('f_ax_central');
+  exp.anexo.cuartelTel=v('f_ax_cuartel_tel');exp.anexo.cuartelDir=v('f_ax_cuartel_dir');exp.anexo.armamento=v('f_ax_armamento');
+  exp.anexo.ingPublico=[...document.querySelectorAll('#listaIngPublico .item-lista')].map(el=>({dir:el.querySelector('.i-dir').value,apertura:el.querySelector('.i-a').value,cierre:el.querySelector('.i-c').value}));
+  exp.anexo.ingEmpleados=[...document.querySelectorAll('#listaIngEmpleados .item-lista')].map(el=>({dir:el.querySelector('.i-dir').value,apertura:el.querySelector('.i-a').value,cierre:el.querySelector('.i-c').value}));
+}
+function volcarFormulario(){
+  sv('f_emp_nombre',exp.empleador.nombre);sv('f_emp_rut',exp.empleador.rut);sv('f_emp_tel',exp.empleador.tel);sv('f_emp_giro',exp.empleador.giro);sv('f_emp_dom',exp.empleador.dom);sv('f_emp_email',exp.empleador.email);
+  sv('f_lug_dir',exp.lugar.dir);document.getElementById('f_lug_comuna').value=exp.lugar.comuna||'';sv('f_lug_entidad',exp.lugar.entidad);sv('f_lug_facciones',exp.lugar.facciones);
+  pintarHorarios();pintarTurnos();
+  sv('f_per_total',exp.personal.total);sv('f_per_horas',exp.personal.horas);
+  sv('f_obj_objetivo',exp.objetivos.objetivo);sv('f_obj_tareas',exp.objetivos.tareas);
+  pintarChecks('chkTenida',OPC_TENIDA,exp.tenida.items);sv('f_ten_otro',exp.tenida.otro);
+  pintarChecks('chkImplementos',OPC_IMPLEMENTOS,exp.implementos.items);sv('f_imp_otro',exp.implementos.otro);
+  sv('f_com_alarma',exp.comunicacion.alarma);sv('f_com_subtel',exp.comunicacion.subtel);sv('f_com_cred',exp.comunicacion.cred);
+  pintarChecks('chkMedios',OPC_MEDIOS,exp.comunicacion.medios);
+  sv('f_cap_ingreso',exp.capacitacion.ingreso);sv('f_cap_periodica',exp.capacitacion.periodica);
+  sv('f_ax_mesa',exp.anexo.mesa);sv('f_ax_porteria',exp.anexo.porteria);sv('f_ax_gerente',exp.anexo.gerente);sv('f_ax_jefeseg',exp.anexo.jefeseg);sv('f_ax_central',exp.anexo.central);
+  sv('f_ax_cuartel_tel',exp.anexo.cuartelTel);sv('f_ax_cuartel_dir',exp.anexo.cuartelDir);sv('f_ax_armamento',exp.anexo.armamento);
+  pintarIngresos('publico');pintarIngresos('empleados');
+}
+
+// ---------- Listas dinámicas ----------
+function pintarHorarios(){
+  document.getElementById('listaHorarios').innerHTML=exp.horarios.map((h,i)=>
+    '<div class="item-lista"><button class="item-x" onclick="quitar(\'horarios\','+i+')">✕</button>'+
+    '<label>Días</label><input type="text" class="h-dias" value="'+esc(h.dias)+'" placeholder="Ej: Lunes a viernes">'+
+    '<div class="fila"><div><label>Desde</label><input type="time" class="h-desde" value="'+esc(h.desde)+'"></div>'+
+    '<div><label>Hasta</label><input type="time" class="h-hasta" value="'+esc(h.hasta)+'"></div></div></div>').join('');
+}
+function pintarTurnos(){
+  document.getElementById('listaTurnos').innerHTML=exp.personal.turnos.map((t,i)=>
+    '<div class="item-lista"><button class="item-x" onclick="quitar(\'turnos\','+i+')">✕</button>'+
+    '<div class="fila"><div><label>Nombre del turno</label><input type="text" class="t-nom" value="'+esc(t.nombre)+'" placeholder="Ej: Turno noche"></div>'+
+    '<div><label>Guardias</label><input type="number" class="t-g" min="1" value="'+esc(t.guardias)+'"></div></div>'+
+    '<div class="fila"><div><label>Desde</label><input type="time" class="t-desde" value="'+esc(t.desde)+'"></div>'+
+    '<div><label>Hasta</label><input type="time" class="t-hasta" value="'+esc(t.hasta)+'"></div></div></div>').join('');
+}
+function pintarIngresos(tipo){
+  const lista=tipo==='publico'?exp.anexo.ingPublico:exp.anexo.ingEmpleados;
+  const cont=document.getElementById(tipo==='publico'?'listaIngPublico':'listaIngEmpleados');
+  cont.innerHTML=lista.map((x,i)=>
+    '<div class="item-lista"><button class="item-x" onclick="quitarIngreso(\''+tipo+'\','+i+')">✕</button>'+
+    '<label>Calle y número</label><input type="text" class="i-dir" value="'+esc(x.dir)+'">'+
+    '<div class="fila"><div><label>'+(tipo==='publico'?'Apertura':'Ingreso')+'</label><input type="time" class="i-a" value="'+esc(x.apertura)+'"></div>'+
+    '<div><label>'+(tipo==='publico'?'Cierre':'Salida')+'</label><input type="time" class="i-c" value="'+esc(x.cierre)+'"></div></div></div>').join('');
+}
+function agregarHorario(){leerFormulario();exp.horarios.push({dias:'',desde:'',hasta:''});pintarHorarios();}
+function agregarTurno(){leerFormulario();exp.personal.turnos.push({nombre:'',desde:'',hasta:'',guardias:''});pintarTurnos();}
+function agregarIngreso(tipo){leerFormulario();(tipo==='publico'?exp.anexo.ingPublico:exp.anexo.ingEmpleados).push({dir:'',apertura:'',cierre:''});pintarIngresos(tipo);}
+function quitar(que,i){leerFormulario();if(que==='horarios')exp.horarios.splice(i,1);else exp.personal.turnos.splice(i,1);pintarHorarios();pintarTurnos();}
+function quitarIngreso(tipo,i){leerFormulario();(tipo==='publico'?exp.anexo.ingPublico:exp.anexo.ingEmpleados).splice(i,1);pintarIngresos(tipo);}
+function pintarChecks(id,opciones,marcadas){
+  document.getElementById(id).innerHTML=opciones.map(o=>
+    '<label class="chk"><input type="checkbox" value="'+esc(o)+'"'+(marcadas.indexOf(o)>=0?' checked':'')+'> '+esc(o)+'</label>').join('');
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+
+// ---------- Plano de Mi Predio ----------
+function pintarPlano(){
+  const cont=document.getElementById('planoEstado');
+  let plano=exp.lugar.plano;
+  if(!plano){
+    try{plano=JSON.parse(localStorage.getItem('georef_expediente'));}catch(e){plano=null;}
+  }
+  if(plano&&plano.perimetro&&plano.perimetro.length>=3){
+    exp.lugar.plano=plano;
+    if(!v('f_lug_dir')&&plano.dir)sv('f_lug_dir',plano.dir.split(',').slice(0,2).join(','));
+    const nSis=(plano.sistemas||[]).length;
+    cont.innerHTML='<div class="plano-ok">✅ <strong>Plano importado desde Mi Predio</strong><br>'+
+      esc(plano.dir||'Predio georeferenciado')+'<br>'+
+      plano.perimetro.length+' vértices de perímetro · '+nSis+' sistemas ubicados · '+esc(plano.riesgo||'')+
+      '<br><a href="georef-predio.html" style="color:#d4a017">Volver a editar el plano →</a></div>';
+  }else{
+    cont.innerHTML='<div class="plano-no">✏️ Aún no hay un plano del predio. Dibújalo en <strong>Mi Predio</strong> (dirección → perímetro → sistemas → análisis) y vuelve aquí: se importará solo.<br><a href="georef-predio.html" class="btn btn-borde btn-full" style="margin-top:8px">🗺️ Dibujar el plano ahora</a></div>';
+  }
+}
+
+// ---------- Prefill comisaría por comuna ----------
+function alCambiarComuna(){
+  const k=document.getElementById('f_lug_comuna').value;
+  if(k&&typeof CUADRANTE!=='undefined'&&CUADRANTE[k]&&!v('f_ax_cuartel_tel')){
+    sv('f_ax_cuartel_tel',CUADRANTE[k]);
+  }
+}
+
+// ---------- Revisión ----------
+function pintarRevision(){
+  leerFormulario();
+  const e=exp;
+  const fz=document.getElementById('folioZona');
+  fz.innerHTML=e.folio?'<span class="folio-badge">Folio: '+esc(e.folio)+'</span>':'<p style="font-size:0.74rem">Al guardar se asignará un folio único a tu expediente.</p>';
+  const secs=[
+    ['I. Empleador',e.empleador.nombre+' · RUT '+e.empleador.rut+'\n'+e.empleador.giro+'\n'+e.empleador.dom+' · '+e.empleador.tel],
+    ['II. Lugar del servicio',e.lugar.dir+(e.lugar.comuna&&typeof CYC_COMUNAS!=='undefined'&&CYC_COMUNAS[e.lugar.comuna]?' — '+CYC_COMUNAS[e.lugar.comuna]:'')+(e.lugar.entidad?'\n'+e.lugar.entidad:'')+'\nCroquis: '+(e.lugar.plano?'importado de Mi Predio ('+e.lugar.plano.perimetro.length+' vértices, '+(e.lugar.plano.sistemas||[]).length+' sistemas)':'PENDIENTE')+(e.lugar.facciones?'\nFacciones: '+e.lugar.facciones:'')],
+    ['III. Horarios',e.horarios.map(h=>h.dias+' de '+h.desde+' a '+h.hasta).join('\n')],
+    ['IV. Personal',e.personal.total+' guardias · turnos de '+e.personal.horas+' hrs\n'+e.personal.turnos.map(t=>t.nombre+' ('+t.desde+'–'+t.hasta+'): '+t.guardias+' guardia(s)').join('\n')],
+    ['V. Objetivos y tareas',e.objetivos.objetivo+(e.objetivos.tareas?'\nTareas: '+e.objetivos.tareas:'')],
+    ['VI. Tenida',e.tenida.items.join(', ')+(e.tenida.otro?', '+e.tenida.otro:'')],
+    ['VII. Implementos',e.implementos.items.join(', ')+(e.implementos.otro?', '+e.implementos.otro:'')],
+    ['VIII. Alarma y comunicación',(e.comunicacion.alarma?'Alarmas: '+e.comunicacion.alarma+'\n':'')+'Medios: '+e.comunicacion.medios.join(', ')],
+    ['IX. Capacitación','Ingreso: '+e.capacitacion.ingreso+'\nPeriódica: '+e.capacitacion.periodica],
+    ['Anexo policial','Cuartel Carabineros: '+(e.anexo.cuartelTel||'—')+(e.anexo.cuartelDir?' ('+e.anexo.cuartelDir+')':'')+'\nAccesos público: '+e.anexo.ingPublico.filter(x=>x.dir).length+' · Accesos empleados: '+e.anexo.ingEmpleados.filter(x=>x.dir).length+'\n'+e.anexo.armamento]
+  ];
+  document.getElementById('revision').innerHTML=secs.map(s=>'<div class="rev-sec"><div class="rs-t">'+esc(s[0])+'</div><div class="rs-c">'+esc(s[1])+'</div></div>').join('');
+}
+
+// ---------- Persistencia ----------
+function guardarBorradorLocal(){try{localStorage.setItem('directiva_borrador',JSON.stringify(exp));}catch(e){}}
+function cargarBorradorLocal(){
+  try{
+    const b=JSON.parse(localStorage.getItem('directiva_borrador'));
+    if(b&&b.empleador){exp=Object.assign(expedienteVacio(),b);}
+  }catch(e){}
+  volcarFormulario();
+}
+async function guardarServidor(){
+  leerFormulario();guardarBorradorLocal();
+  const titulo=(exp.empleador.nombre||'Directiva')+(exp.lugar.dir?' — '+exp.lugar.dir.split(',')[0]:'');
+  try{
+    const r=await fetch(API_URL+'/directiva/guardar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok()},body:JSON.stringify({folio:exp.folio,tipo:'fija',titulo:titulo,datos:exp})});
+    const d=await r.json();
+    if(!r.ok){msg('msgGuardar',d.error||'No se pudo guardar. Intenta de nuevo.','err');return;}
+    exp.folio=d.folio;guardarBorradorLocal();
+    document.getElementById('folioZona').innerHTML='<span class="folio-badge">Folio: '+esc(d.folio)+'</span>';
+    msg('msgGuardar','✅ Expediente guardado con folio '+d.folio+'. Puedes retomarlo cuando quieras desde "Mis expedientes".','ok');
+  }catch(e){msg('msgGuardar','Sin conexión — tu avance quedó guardado en este dispositivo. Reintenta cuando vuelva internet.','err');}
+}
+async function verMisExpedientes(){
+  if(!(await exigirEmpresa()))return;
+  try{
+    const r=await fetch(API_URL+'/directiva/mias',{headers:{'Authorization':'Bearer '+tok()}});
+    const d=await r.json();
+    if(!r.ok){msg('msgIntro',d.error||'No se pudo cargar la lista.','err');return;}
+    const lista=document.getElementById('listaExp');
+    lista.innerHTML=(d.expedientes||[]).length?d.expedientes.map(x=>
+      '<div class="exp-item"><div><div class="ei-t">'+esc(x.titulo||x.folio)+'</div>'+
+      '<div class="ei-s">'+esc(x.folio)+' · '+esc(x.estado)+' · actualizado '+esc((x.updated_at||'').slice(0,10))+'</div></div>'+
+      '<button class="btn btn-borde" style="padding:8px 12px;font-size:0.74rem" onclick="retomar(\''+esc(x.folio)+'\')">Retomar</button></div>').join('')
+      :'<p>No tienes expedientes todavía.</p>';
+    document.getElementById('vIntro').style.display='none';
+    document.getElementById('vLista').style.display='block';
+  }catch(e){msg('msgIntro','Sin conexión. Intenta de nuevo.','err');}
+}
+async function retomar(folio){
+  try{
+    const r=await fetch(API_URL+'/directiva/una?folio='+encodeURIComponent(folio),{headers:{'Authorization':'Bearer '+tok()}});
+    const d=await r.json();
+    if(!r.ok){msg('msgLista',d.error||'No se pudo abrir el expediente.','err');return;}
+    exp=Object.assign(expedienteVacio(),d.datos);exp.folio=d.folio;
+    guardarBorradorLocal();volcarFormulario();
+    document.getElementById('vLista').style.display='none';
+    document.getElementById('vWizard').style.display='block';
+    document.getElementById('navRow').style.display='flex';
+    document.getElementById('prog').style.display='block';
+    irPaso(1);
+  }catch(e){msg('msgLista','Sin conexión. Intenta de nuevo.','err');}
+}
+function nuevoExpediente(){
+  exp=expedienteVacio();
+  localStorage.removeItem('directiva_borrador');
+  volcarFormulario();
+  document.getElementById('vLista').style.display='none';
+  document.getElementById('vWizard').style.display='block';
+  document.getElementById('navRow').style.display='flex';
+  document.getElementById('prog').style.display='block';
+  irPaso(1);
+}
+
+// ---------- Inicio ----------
+(function(){
+  document.getElementById('precioEmp').textContent=CYC_CONFIG.precioEmpresa;
+  const sel=document.getElementById('f_lug_comuna');
+  if(typeof CYC_COMUNAS!=='undefined'){
+    Object.keys(CYC_COMUNAS).map(k=>[k,CYC_COMUNAS[k]]).sort((a,b)=>a[1].localeCompare(b[1]))
+      .forEach(par=>{const o=document.createElement('option');o.value=par[0];o.textContent=par[1];sel.appendChild(o);});
+  }
+  sel.addEventListener('change',alCambiarComuna);
+  volcarFormulario();
+})();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+</script>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

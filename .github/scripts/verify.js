@@ -7,7 +7,7 @@ const os = require('os');
 const { execSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..', '..');
-const HTML_FILES = ['index.html', 'seguridad-chile.html', 'matriz-riesgo.html', 'plan-hogar.html', 'georef-predio.html'];
+const HTML_FILES = ['index.html', 'seguridad-chile.html', 'matriz-riesgo.html', 'plan-hogar.html', 'georef-predio.html', 'directiva.html', 'recuperar-clave.html', 'terminos.html'];
 
 const errores = [];
 

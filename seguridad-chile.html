@@ -619,6 +619,7 @@ select:disabled{opacity:0.4}
 <div class="diag-banner" id="diagBanner"></div>
 <div class="toast" id="toast"></div>
 <script src="config.js"></script>
+<script src="cuadrante.js"></script>
 <script>
 document.querySelectorAll('[data-price="personal"]').forEach(function(el){el.textContent=CYC_CONFIG.precioPersonal;});
 document.querySelectorAll('[data-price="empresa"]').forEach(function(el){el.textContent=CYC_CONFIG.precioEmpresa;});
@@ -640,29 +641,7 @@ var REGS={
 "XI":["coihaique:Coyhaique","aysen_c:Aysen"],
 "XII":["punta_arenas:Punta Arenas","puerto_natales:Puerto Natales"]
 };
-var CUADRANTE={
-santiago:"229223700",providencia:"229222690",las_condes:"229222750",nunoa:"229222720",vitacura:"229222750",
-maipu:"229224440",la_pintana:"229223425",san_miguel:"229222960",la_florida:"229223175",san_bernardo:"229223014",
-puente_alto:"229223260",estacion_central:"229224220",cerro_navia:"229224600",lo_prado:"229224570",
-pedro_aguirre_cerda:"229223160",el_bosque:"229223130",lo_espejo:"229223425",
-talagante:"229224310",colina:"229226410",lampa:"229226420",melipilla:"229224380",
-antofagasta:"552755112",calama:"552755228",taltal:"552755087",tocopilla:"552755174",
-iquique:"572557040",alto_hospicio:"572557156",pozo_almonte:"572557116",
-la_serena:"512223362",coquimbo:"512321387",ovalle:"512651130",illapel:"512651120",
-valparaiso:"323132119",vina_del_mar:"323132266",concon:"323132570",quilpue:"323132330",quillota:"342234050",san_antonio:"352535038",
-rancagua:"722972150",san_fernando:"722972180",curico:"752330080",santa_cruz:"722972195",pichilemu:"722972200",
-talca:"712571142",linares:"732390050",cauquenes:"732390070",
-concepcion:"412141095",talcahuano:"412141300",coronel:"412141126",lota:"412141161",
-san_pedro_de_la_paz:"412141500",chiguayante:"412141570",penco:"412141318",tome:"412141278",
-los_angeles:"432260040",chillan:"422842098",bulnes:"422842116",san_carlos:"422842110",
-temuco:"452466120",padre_las_casas:"452445154",villarrica:"452466240",pucón:"452466250",loncoche:"452466260",pitrufquen:"452466228",angol:"452466080",
-valdivia:"632563085",la_union:"632563150",rio_bueno:"632563160",
-osorno:"642664032",purranque:"642664089",puerto_varas:"652765100",puerto_montt:"652765158",calbuco:"652765227",
-castro:"652765260",ancud:"652765270",
-punta_arenas:"612205700",puerto_natales:"612205750",
-copiapo:"522552099",caldera:"522552080",vallenar:"512651090",
-coihaique:"672212735",aysen_c:"672212740"
-};
+
 var SEG={santiago:"1406",providencia:"1414",las_condes:"1402",nunoa:"1445",maipu:"1418",la_pintana:"1441",san_miguel:"1456",la_florida:"1416",recoleta:"1440",huechuraba:"1417",la_granja:"1446",macul:"1444",la_reina:"1419",conchali:"1425",lo_barnechea:"1405",lampa:"1421",melipilla:"1452",talagante:"1413"};
 var NV={c:{hex:"#e53935",r:229,g:57,b:53,lbl:"Critico",cls:"nc"},a:{hex:"#f57c00",r:245,g:124,b:0,lbl:"Alto",cls:"na"},m:{hex:"#f9a825",r:249,g:168,b:37,lbl:"Medio",cls:"nm"},b:{hex:"#66bb6a",r:102,g:187,b:106,lbl:"Bajo",cls:"nb"}};
 var DB={

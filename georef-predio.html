@@ -304,6 +304,7 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
     <h3 id="cta-titulo">📄 Obtén tu Directiva de Funcionamiento OS.10</h3>
     <p id="cta-desc">Este plano y análisis es entregado a Carlos Sandoval — asesor acreditado OS.10 Carabineros de Chile — para preparar tu Directiva oficial y cumplir con la ley.</p>
     <a id="btn-wa" class="btn-wa" href="#" target="_blank">💬 Solicitar Directiva por WhatsApp</a>
+    <a href="directiva.html" class="btn-outline" style="display:block;text-align:center;text-decoration:none;margin-bottom:8px">📄 Generar borrador de Directiva OS.10 (Plan Empresa)</a>
     <button class="btn-outline" onclick="document.getElementById('printFechaGeo').textContent=new Date().toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});window.print()">📄 Descargar informe en PDF</button>
     <button class="btn-outline" onclick="reiniciar()">← Analizar otro predio</button>
   </div>
@@ -676,6 +677,18 @@ function analizarPredio(){
   document.getElementById('badge-riesgo').textContent=nivelTxt;
   document.getElementById('badge-riesgo').className='riesgo-badge '+nivelCls;
   document.getElementById('dir-result').textContent=dirTexto.split(',').slice(0,2).join(',');
+
+  // Guarda el expediente del plano para que el generador de Directivas lo importe (directiva.html)
+  try{
+    localStorage.setItem('georef_expediente',JSON.stringify({
+      dir:dirTexto, lat:latC, lng:lngC,
+      perimetro:puntosPoly.map(p=>({lat:p[0],lng:p[1]})),
+      cerrado:perimeroCerrado,
+      sistemas:sistemas.map(s=>({tipo:s.tipo,lat:s.lat,lng:s.lng})),
+      conteos:cnts, riesgo:nivelTxt,
+      fecha:new Date().toISOString()
+    }));
+  }catch(e){}
 
   // Resumen sistemas
   const sisRes=document.getElementById('sis-resumen');
