@@ -278,7 +278,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
       <button class="btn btn-oro btn-full" onclick="guardarServidor()">💾 Guardar expediente</button>
       <button class="btn btn-borde btn-full" onclick="generarPDF()">📄 Descargar borrador en PDF (con marca de agua)</button>
       <div class="msg" id="msgGuardar"></div>
-      <p style="font-size:0.72rem;margin-top:10px">El borrador lleva tu folio y la marca de agua "BORRADOR". El siguiente paso — solicitar la visación del asesor acreditado — se habilita pronto en este mismo flujo.</p>
+    </div>
+    <div class="card" style="border-color:#25D366">
+      <h2 style="color:#25D366">✅ Solicitar visación del asesor acreditado</h2>
+      <p>Cuando tu borrador esté listo, envíalo a nuestro asesor acreditado OS.10. Revisará el documento, corregirá lo necesario y te cotizará la <strong>visación y firma profesional</strong> según la envergadura de tu instalación — el paso que le da validez legal ante la autoridad.</p>
+      <button class="btn btn-oro btn-full" style="background:#25D366;color:#fff" onclick="solicitarVisacion()">📋 Enviar a visación profesional</button>
+      <div class="msg" id="msgVisacion"></div>
     </div>
   </div>
 
@@ -574,6 +579,11 @@ async function guardarServidor(){
     msg('msgGuardar','✅ Expediente guardado con folio '+d.folio+'. Puedes retomarlo cuando quieras desde "Mis expedientes".','ok');
   }catch(e){msg('msgGuardar','Sin conexión — tu avance quedó guardado en este dispositivo. Reintenta cuando vuelva internet.','err');}
 }
+function badgeEstado(e){
+  const m={borrador:['Borrador','#888','#222'],visacion_solicitada:['En visación','#111','#d4a017'],visada:['Visada ✓','#fff','#2e7d32']};
+  const b=m[e]||m.borrador;
+  return '<span style="font-size:0.6rem;font-weight:800;padding:2px 8px;border-radius:99px;color:'+b[1]+';background:'+b[2]+';vertical-align:middle">'+b[0]+'</span>';
+}
 async function verMisExpedientes(){
   if(!(await exigirEmpresa()))return;
   try{
@@ -582,8 +592,8 @@ async function verMisExpedientes(){
     if(!r.ok){msg('msgIntro',d.error||'No se pudo cargar la lista.','err');return;}
     const lista=document.getElementById('listaExp');
     lista.innerHTML=(d.expedientes||[]).length?d.expedientes.map(x=>
-      '<div class="exp-item"><div><div class="ei-t">'+esc(x.titulo||x.folio)+'</div>'+
-      '<div class="ei-s">'+esc(x.folio)+' · '+esc(x.estado)+' · actualizado '+esc((x.updated_at||'').slice(0,10))+'</div></div>'+
+      '<div class="exp-item"><div><div class="ei-t">'+esc(x.titulo||x.folio)+' '+badgeEstado(x.estado)+'</div>'+
+      '<div class="ei-s">'+esc(x.folio)+' · actualizado '+esc((x.updated_at||'').slice(0,10))+'</div></div>'+
       '<button class="btn btn-borde" style="padding:8px 12px;font-size:0.74rem" onclick="retomar(\''+esc(x.folio)+'\')">Retomar</button></div>').join('')
       :'<p>No tienes expedientes todavía.</p>';
     document.getElementById('vIntro').style.display='none';
@@ -707,6 +717,23 @@ function croquisSVG(plano,w,h,oscuro){
 function leyendaCroquis(plano){
   const tipos={};(plano.sistemas||[]).forEach(x=>{tipos[x.tipo]=(tipos[x.tipo]||0)+1;});
   return Object.keys(tipos).map(t=>(SIS_DIR[t]||'')+' '+(SIS_NOM[t]||t)+' ('+tipos[t]+')').join(' · ');
+}
+
+// ---------- Solicitud de visación ----------
+async function solicitarVisacion(){
+  leerFormulario();
+  if(!exp.folio){msg('msgVisacion','Primero guarda el expediente (botón de arriba) para poder enviarlo a visación.','err');return;}
+  if(!validarPaso(1)){msg('msgVisacion','Completa los datos del empleador antes de solicitar la visación.','err');return;}
+  await guardarServidor();
+  try{
+    const r=await fetch(API_URL+'/directiva/solicitar-visacion',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok()},body:JSON.stringify({folio:exp.folio})});
+    const d=await r.json();
+    if(!r.ok){msg('msgVisacion',d.error||'No se pudo enviar la solicitud. Intenta de nuevo.','err');return;}
+    exp.estado='visacion_solicitada';
+    const wa='https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+encodeURIComponent('Hola, solicité la visación de mi Directiva folio '+exp.folio);
+    msg('msgVisacion',(d.mensaje||'Solicitud enviada.')+' Revisa tu correo. Para agilizar, escríbenos por WhatsApp.','ok');
+    document.getElementById('msgVisacion').innerHTML+='<br><a href="'+wa+'" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:8px;background:#25D366;color:#fff;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:800;font-size:0.8rem">💬 Escribir por WhatsApp</a>';
+  }catch(e){msg('msgVisacion','Sin conexión. Tu expediente quedó guardado; reintenta cuando vuelva internet.','err');}
 }
 
 // ---------- Borrador PDF con marca de agua ----------
