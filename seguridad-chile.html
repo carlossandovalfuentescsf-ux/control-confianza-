@@ -1147,7 +1147,7 @@ function abrirModal(){document.getElementById("modal").className="mbg open";}
 function cerrarModal(){document.getElementById("modal").className="mbg";}
 function abrirPeligro(){document.getElementById("mpeligro").classList.add("open");}
 function cerrarPeligro(){document.getElementById("mpeligro").classList.remove("open");}
-(function(){setTimeout(function(){var s=document.getElementById("splash");if(s){s.classList.add("oculto");setTimeout(function(){s.style.display="none";},700);}},2000);})();
+(function(){var s=document.getElementById("splash");if(!s)return;if(new URLSearchParams(location.search).has("volver")){s.style.display="none";return;}setTimeout(function(){s.classList.add("oculto");setTimeout(function(){s.style.display="none";},700);},2000);})();
 function irWeb(){window.open("https://www.controlyconfianza.cl","_blank","noopener,noreferrer");}
 function contactar(){window.open("https://wa.me/"+CYC_CONFIG.whatsapp+"?text=Hola%2C%20me%20interesa%20contratar%20un%20plan%20de%20Control%20%26%20Confianza.","_blank","noopener,noreferrer");cerrarModal();}
 // CUENTA Y PLAN PREMIUM
