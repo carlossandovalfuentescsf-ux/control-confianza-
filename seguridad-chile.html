@@ -288,6 +288,7 @@ select:disabled{opacity:0.4}
   </div>
 </header>
 
+<main>
 <div class="pagina" id="pInicio">
   <button onclick="abrirPeligro()" style="width:100%;background:#c0392b;color:#fff;border:none;padding:14px;border-radius:12px;font-size:16px;font-weight:900;cursor:pointer;margin-bottom:14px;letter-spacing:.5px">&#9888; Estoy en peligro</button>
   <div class="titulo">Conoce el riesgo<br><em>antes de llegar</em></div>
@@ -540,6 +541,7 @@ select:disabled{opacity:0.4}
     <a class="wlink" href="https://www.controlyconfianza.cl" target="_blank">www.controlyconfianza.cl</a>
   </div>
 </div>
+</main>
 
 <div class="mbg" id="modal" onclick="if(event.target===this){cerrarModal()}">
   <div class="mbox">
@@ -763,7 +765,120 @@ function togglePanel(id){var p=document.getElementById(id);p.style.display=p.sty
 function usarGPS(){if(!navigator.geolocation){mostrarErrGPS("Tu dispositivo no soporta geolocalizacion.");return;}var btn=document.getElementById("btnGPS");btn.textContent="Buscando...";btn.disabled=true;navigator.geolocation.getCurrentPosition(function(pos){btn.textContent="Usar mi ubicacion actual";btn.disabled=false;var la=pos.coords.latitude,lo=pos.coords.longitude;userLat=la;userLng=lo;userCalle=null;var mejor="santiago",md=999,ms=0;for(var k in DB){var d=DB[k];var di=dKm(la,lo,d.lat,d.lng);if(di<md){md=di;mejor=k;}}var d2=DB[mejor];if(d2&&d2.sects){var mds=999;for(var i=0;i<d2.sects.length;i++){var s=d2.sects[i];if(s.lat&&s.lng){var ds=dKm(la,lo,s.lat,s.lng);if(ds<mds){mds=ds;ms=i;}}}}mostrar(mejor,d2?d2.n:mejor,ms);toast("Ubicado en "+(d2?d2.n:mejor));fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat="+la+"&lon="+lo+"&addressdetails=1&accept-language=es",{headers:{"User-Agent":"ControlYConfianza/1.0"}}).then(function(r){return r.json();}).then(function(data){var addr=data.address||{};var calle=addr.road||addr.pedestrian||addr.footway||addr.cycleway||"";var numero=addr.house_number?""+addr.house_number:"";var barrio=addr.suburb||addr.neighbourhood||addr.quarter||"";var txt=calle?(calle+(numero?" "+numero:"")+(barrio?", "+barrio:"")):"";userCalle=txt||null;mostrarCalleEnResultado(txt);}).catch(function(){});},function(err){btn.textContent="Usar mi ubicacion actual";btn.disabled=false;var msg="No se pudo obtener ubicacion.";if(err.code===1){msg="Permiso denegado. Ve a Configuracion del iPhone, busca Safari o la app, y activa Ubicacion.";}else if(err.code===2){msg="GPS no disponible. Activa la ubicacion en Configuracion del iPhone.";}else if(err.code===3){msg="Tiempo agotado. Asegurate de tener el GPS activado e intentalo de nuevo.";}mostrarErrGPS(msg);});}
 function mostrarCalleEnResultado(calle){if(!calle)return;var el=document.getElementById("mInfoCalle");if(el){el.textContent="Tu ubicacion: "+calle;el.style.display="block";}}
 function mostrarErrGPS(msg){var d=document.getElementById("gpsErr");if(d){d.style.display="block";d.textContent=msg;}}
-function mostrar(key,nombre,sIni){comKey=key;var d=DB[key]||getDf(nombre||key);var c=NV[d.niv];document.getElementById("pInicio").style.display="none";document.getElementById("res").style.display="block";document.getElementById("rNom").textContent=d.n;var rn=document.getElementById("rNivel");rn.textContent=c.lbl;rn.className="rnivel "+c.cls;gmUrl=(userLat&&userLng)?"https://www.google.com/maps/@"+userLat+","+userLng+",17z":"https://www.google.com/maps/@"+d.lat+","+d.lng+",15z";document.getElementById("linkGM").href=gmUrl;document.getElementById("mNom").textContent=d.n;document.getElementById("mTxt").textContent=(d.sects[0]?d.sects[0].t:95)+" casos/100K";var mn=document.getElementById("mNivel2");mn.textContent=c.lbl;mn.style.cssText="background:rgba("+c.r+","+c.g+","+c.b+",.25);border:1px solid rgba("+c.r+","+c.g+","+c.b+",.7);color:white;position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:8px;font-size:11px;font-weight:700";pintarMapa(d,c);secIdx=sIni||0;pintarSects(d,secIdx);var bH="";for(var i=0;i<d.barras.length;i++){var b=d.barras[i];bH+="<div class='barra'><div class='blbl'><span>"+b.n+"</span><span style='color:#888'>"+b.v+"%</span></div><div class='btrack'><div class='bfill' style='width:"+b.v+"%;background:"+b.c+"'></div></div></div>";}document.getElementById("iBarras").innerHTML=bH;var dH="";for(var i=0;i<d.delitos.length;i++){var x=d.delitos[i];dH+="<div class='dcard'><div class='dico'>"+x.i+"</div><div class='dnom'>"+x.n+"</div><div class='dnum'>"+x.num+"</div><div class='dtr "+x.cls+"'>"+x.t+"</div></div>";}document.getElementById("iDelitos").innerHTML=dH;var hH="";for(var i=0;i<d.horarios.length;i++){var h=d.horarios[i];hH+="<div class='hitem "+h.c+"'><div><div class='hhora'>"+h.h+"</div><div class='hniv'>"+h.l+"</div><div class='hdesc'>"+h.d+"</div></div></div>";}document.getElementById("iHorarios").innerHTML=hH;var rH="";for(var i=0;i<d.recs.length;i++){var r=d.recs[i];rH+="<div class='ritem'><div class='rtxt'><strong>"+r.t+"</strong>"+r.d+"</div></div>";}document.getElementById("iRecs").innerHTML=rH;var il=d.ilum;var tokH="";for(var i=0;i<il.ok.length;i++)tokH+="<span class='tok'>"+il.ok[i]+"</span>";var malH="";for(var i=0;i<il.mal.length;i++)malH+="<span class='tmal'>"+il.mal[i]+"</span>";document.getElementById("iIlum").innerHTML="<div class='stit'><span>Iluminacion nocturna</span></div><div class='inota'>"+il.nota+"</div><div style='font-size:10px;color:#a5d6a7;font-weight:700;margin-bottom:4px'>Bien iluminadas</div><div class='itags'>"+tokH+"</div><div style='font-size:10px;color:#ef9a9a;font-weight:700;margin-top:6px;margin-bottom:4px'>Con deficit de luz</div><div class='itags'>"+malH+"</div>";var seg=SEG[key]||null;var munTel=null;var segLocal=null;for(var i=0;i<d.recs.length;i++){var rt=d.recs[i];if(rt.t&&rt.t.toLowerCase().indexOf("contacto")>=0){var mm=rt.d.match(/Municipio:\s*(\+56[\d\s]+?)(?:\s*\|)/);if(mm)munTel=mm[1].replace(/\s/g,"");var sm=rt.d.match(/Seg\.\s*Ciudadana:\s*(\d+)/);if(sm)segLocal=sm[1];}}var cuadranteTel=CUADRANTE[key]||null;var cH="<div class='stit'><span>Contactos de emergencia</span></div><div class='cbox'>";cH+="<div class='citem cp'><div><div class='cnom'>Carabineros de Chile</div><div class='cfono'>133</div><div class='chorario'>24 horas - siempre disponible</div></div><a class='cbtn r' href='tel:133'>Llamar</a></div>";if(cuadranteTel){cH+="<div class='citem cp'><div><div class='cnom'>Comisaria local</div><div class='cfono'>"+cuadranteTel+"</div><div class='chorario'>Número directo de la comisaria</div></div><a class='cbtn r' href='tel:"+cuadranteTel+"'>Llamar</a></div>";}if(seg){cH+="<div class='citem cs'><div><div class='cnom'>Seguridad Municipal</div><div class='cfono'>"+seg+"</div><div class='chorario'>Funcionarios municipales</div></div><a class='cbtn' href='tel:"+seg+"'>Llamar</a></div>";}if(segLocal){cH+="<div class='citem cs'><div><div class='cnom'>Seguridad Ciudadana</div><div class='cfono'>"+segLocal+"</div><div class='chorario'>Numero local de seguridad</div></div><a class='cbtn' href='tel:"+segLocal+"'>Llamar</a></div>";}if(munTel){cH+="<div class='citem ct'><div><div class='cnom'>Municipalidad</div><div class='cfono'>"+munTel+"</div><div class='chorario'>Contacto municipal directo</div></div><a class='cbtn' href='tel:"+munTel+"'>Llamar</a></div>";}cH+="<div class='citem ct'><div><div class='cnom'>PDI - Investigaciones</div><div class='cfono'>134</div><div class='chorario'>24 horas</div></div><a class='cbtn' href='tel:134'>Llamar</a></div>";cH+="<div class='citem ct'><div><div class='cnom'>Denuncia Segura</div><div class='cfono'>1455</div><div class='chorario'>Gratis y anonimo</div></div><a class='cbtn' href='tel:1455'>Llamar</a></div>";cH+="<div class='citem ct'><div><div class='cnom'>SAMU - Urgencias medicas</div><div class='cfono'>131</div><div class='chorario'>24 horas</div></div><a class='cbtn' href='tel:131'>Llamar</a></div>";cH+="</div>";document.getElementById("iContactos").innerHTML=cH;document.getElementById("iConsejo").innerHTML="";var nd=document.getElementById("notaDatos");if(nd){if(!DB[key]){nd.style.display="block";nd.textContent="Aun no tenemos datos especificos de "+(nombre||key)+". Mostramos una guia general valida para toda Chile. Los numeros de emergencia siempre funcionan.";}else{nd.style.display="none";}}actualizarReloj();mostrarPredictor(key,d.n);window.scrollTo(0,0);ajustarAsistenteFAB();}
+// mostrar() orquesta el panel de resultados de una comuna; cada render* pinta una seccion.
+function renderEncabezado(d,c){
+  document.getElementById("pInicio").style.display="none";
+  document.getElementById("res").style.display="block";
+  document.getElementById("rNom").textContent=d.n;
+  var rn=document.getElementById("rNivel");
+  rn.textContent=c.lbl;
+  rn.className="rnivel "+c.cls;
+  gmUrl=(userLat&&userLng)?"https://www.google.com/maps/@"+userLat+","+userLng+",17z":"https://www.google.com/maps/@"+d.lat+","+d.lng+",15z";
+  document.getElementById("linkGM").href=gmUrl;
+  document.getElementById("mNom").textContent=d.n;
+  document.getElementById("mTxt").textContent=(d.sects[0]?d.sects[0].t:95)+" casos/100K";
+  var mn=document.getElementById("mNivel2");
+  mn.textContent=c.lbl;
+  mn.style.cssText="background:rgba("+c.r+","+c.g+","+c.b+",.25);border:1px solid rgba("+c.r+","+c.g+","+c.b+",.7);color:white;position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:8px;font-size:11px;font-weight:700";
+}
+function renderBarras(d){
+  var bH="";
+  for(var i=0;i<d.barras.length;i++){
+    var b=d.barras[i];
+    bH+="<div class='barra'><div class='blbl'><span>"+b.n+"</span><span style='color:#888'>"+b.v+"%</span></div><div class='btrack'><div class='bfill' style='width:"+b.v+"%;background:"+b.c+"'></div></div></div>";
+  }
+  document.getElementById("iBarras").innerHTML=bH;
+}
+function renderDelitos(d){
+  var dH="";
+  for(var i=0;i<d.delitos.length;i++){
+    var x=d.delitos[i];
+    dH+="<div class='dcard'><div class='dico'>"+x.i+"</div><div class='dnom'>"+x.n+"</div><div class='dnum'>"+x.num+"</div><div class='dtr "+x.cls+"'>"+x.t+"</div></div>";
+  }
+  document.getElementById("iDelitos").innerHTML=dH;
+}
+function renderHorarios(d){
+  var hH="";
+  for(var i=0;i<d.horarios.length;i++){
+    var h=d.horarios[i];
+    hH+="<div class='hitem "+h.c+"'><div><div class='hhora'>"+h.h+"</div><div class='hniv'>"+h.l+"</div><div class='hdesc'>"+h.d+"</div></div></div>";
+  }
+  document.getElementById("iHorarios").innerHTML=hH;
+}
+function renderRecs(d){
+  var rH="";
+  for(var i=0;i<d.recs.length;i++){
+    var r=d.recs[i];
+    rH+="<div class='ritem'><div class='rtxt'><strong>"+r.t+"</strong>"+r.d+"</div></div>";
+  }
+  document.getElementById("iRecs").innerHTML=rH;
+}
+function renderIluminacion(d){
+  var il=d.ilum;
+  var tokH="";
+  for(var i=0;i<il.ok.length;i++)tokH+="<span class='tok'>"+il.ok[i]+"</span>";
+  var malH="";
+  for(var i=0;i<il.mal.length;i++)malH+="<span class='tmal'>"+il.mal[i]+"</span>";
+  document.getElementById("iIlum").innerHTML="<div class='stit'><span>Iluminacion nocturna</span></div><div class='inota'>"+il.nota+"</div><div style='font-size:10px;color:#a5d6a7;font-weight:700;margin-bottom:4px'>Bien iluminadas</div><div class='itags'>"+tokH+"</div><div style='font-size:10px;color:#ef9a9a;font-weight:700;margin-top:6px;margin-bottom:4px'>Con deficit de luz</div><div class='itags'>"+malH+"</div>";
+}
+function renderContactos(key,d){
+  var seg=SEG[key]||null;
+  var munTel=null;
+  var segLocal=null;
+  for(var i=0;i<d.recs.length;i++){
+    var rt=d.recs[i];
+    if(rt.t&&rt.t.toLowerCase().indexOf("contacto")>=0){
+      var mm=rt.d.match(/Municipio:\s*(\+56[\d\s]+?)(?:\s*\|)/);
+      if(mm)munTel=mm[1].replace(/\s/g,"");
+      var sm=rt.d.match(/Seg\.\s*Ciudadana:\s*(\d+)/);
+      if(sm)segLocal=sm[1];
+    }
+  }
+  var cuadranteTel=CUADRANTE[key]||null;
+  var cH="<div class='stit'><span>Contactos de emergencia</span></div><div class='cbox'>";
+  cH+="<div class='citem cp'><div><div class='cnom'>Carabineros de Chile</div><div class='cfono'>133</div><div class='chorario'>24 horas - siempre disponible</div></div><a class='cbtn r' href='tel:133'>Llamar</a></div>";
+  if(cuadranteTel){cH+="<div class='citem cp'><div><div class='cnom'>Comisaria local</div><div class='cfono'>"+cuadranteTel+"</div><div class='chorario'>Número directo de la comisaria</div></div><a class='cbtn r' href='tel:"+cuadranteTel+"'>Llamar</a></div>";}
+  if(seg){cH+="<div class='citem cs'><div><div class='cnom'>Seguridad Municipal</div><div class='cfono'>"+seg+"</div><div class='chorario'>Funcionarios municipales</div></div><a class='cbtn' href='tel:"+seg+"'>Llamar</a></div>";}
+  if(segLocal){cH+="<div class='citem cs'><div><div class='cnom'>Seguridad Ciudadana</div><div class='cfono'>"+segLocal+"</div><div class='chorario'>Numero local de seguridad</div></div><a class='cbtn' href='tel:"+segLocal+"'>Llamar</a></div>";}
+  if(munTel){cH+="<div class='citem ct'><div><div class='cnom'>Municipalidad</div><div class='cfono'>"+munTel+"</div><div class='chorario'>Contacto municipal directo</div></div><a class='cbtn' href='tel:"+munTel+"'>Llamar</a></div>";}
+  cH+="<div class='citem ct'><div><div class='cnom'>PDI - Investigaciones</div><div class='cfono'>134</div><div class='chorario'>24 horas</div></div><a class='cbtn' href='tel:134'>Llamar</a></div>";
+  cH+="<div class='citem ct'><div><div class='cnom'>Denuncia Segura</div><div class='cfono'>1455</div><div class='chorario'>Gratis y anonimo</div></div><a class='cbtn' href='tel:1455'>Llamar</a></div>";
+  cH+="<div class='citem ct'><div><div class='cnom'>SAMU - Urgencias medicas</div><div class='cfono'>131</div><div class='chorario'>24 horas</div></div><a class='cbtn' href='tel:131'>Llamar</a></div>";
+  cH+="</div>";
+  document.getElementById("iContactos").innerHTML=cH;
+}
+function renderNotaDatos(key,nombre){
+  var nd=document.getElementById("notaDatos");
+  if(nd){
+    if(!DB[key]){
+      nd.style.display="block";
+      nd.textContent="Aun no tenemos datos especificos de "+(nombre||key)+". Mostramos una guia general valida para toda Chile. Los numeros de emergencia siempre funcionan.";
+    }else{
+      nd.style.display="none";
+    }
+  }
+}
+function mostrar(key,nombre,sIni){
+  comKey=key;
+  var d=DB[key]||getDf(nombre||key);
+  var c=NV[d.niv];
+  renderEncabezado(d,c);
+  pintarMapa(d,c);
+  secIdx=sIni||0;
+  pintarSects(d,secIdx);
+  renderBarras(d);
+  renderDelitos(d);
+  renderHorarios(d);
+  renderRecs(d);
+  renderIluminacion(d);
+  renderContactos(key,d);
+  document.getElementById("iConsejo").innerHTML="";
+  renderNotaDatos(key,nombre);
+  actualizarReloj();
+  mostrarPredictor(key,d.n);
+  window.scrollTo(0,0);
+  ajustarAsistenteFAB();
+}
 function ajustarAsistenteFAB(){var fab=document.getElementById("btnAsistente"),pills=document.getElementById("sectBtns");if(!fab||!pills||!pills.children.length)return;fab.style.bottom="22px";var f=fab.getBoundingClientRect(),p=pills.getBoundingClientRect();var solapan=!(f.right<p.left||f.left>p.right||f.bottom<p.top||f.top>p.bottom);if(solapan)fab.style.bottom=(22+(f.bottom-p.top)+14)+"px";}
 window.addEventListener("resize",ajustarAsistenteFAB);
 function pintarSects(d,ini){var cont=document.getElementById("sectBtns");cont.innerHTML="";for(var i=0;i<d.sects.length;i++){var btn=document.createElement("button");btn.textContent=d.sects[i].n;btn.className="sbt";btn.setAttribute("data-i",i);(function(idx){btn.onclick=function(){selSect(d,idx);};})(i);cont.appendChild(btn);}selSect(d,ini||0);}
