@@ -55,6 +55,32 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
 .rev-sec{border-bottom:1px solid #222;padding:10px 0}
 .rev-sec .rs-t{font-size:0.72rem;font-weight:800;color:#d4a017;text-transform:uppercase;letter-spacing:.5px}
 .rev-sec .rs-c{font-size:0.8rem;color:#ccc;line-height:1.55;margin-top:3px;white-space:pre-line}
+.sug-box{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-top:10px}
+.sug-box li{font-size:0.78rem;color:#ccc;line-height:1.6;margin-left:16px}
+.croquis-wrap{background:#0d0d0d;border:1px solid #333;border-radius:8px;margin-top:8px;padding:4px;text-align:center}
+#docPrint{display:none}
+#marcaAgua{display:none}
+@media print{
+  body{background:#fff!important;color:#111!important}
+  .header,.prog,main,.nav-row{display:none!important}
+  #docPrint{display:block!important;color:#111;font-family:Georgia,'Times New Roman',serif;font-size:12px;line-height:1.55;padding:0 8px}
+  #docPrint .d-portada{text-align:center;border-bottom:3px double #333;padding-bottom:14px;margin-bottom:16px}
+  #docPrint .d-portada img{height:56px}
+  #docPrint .d-form{font-size:10px;letter-spacing:2px;color:#555;text-transform:uppercase}
+  #docPrint h1{font-size:17px;margin:8px 0 2px}
+  #docPrint .d-sub{font-size:11px;color:#444}
+  #docPrint .d-folio{margin-top:8px;font-size:12px;font-weight:bold;border:1.5px solid #333;display:inline-block;padding:3px 14px;border-radius:4px}
+  #docPrint .d-sec{margin-bottom:12px;page-break-inside:avoid}
+  #docPrint .d-tit{font-size:12.5px;font-weight:bold;border-bottom:1px solid #999;padding-bottom:2px;margin-bottom:5px;text-transform:uppercase}
+  #docPrint .d-cont{white-space:pre-line}
+  #docPrint table{width:100%;border-collapse:collapse;font-size:11px;margin:4px 0}
+  #docPrint th,#docPrint td{border:1px solid #999;padding:4px 6px;text-align:left;color:#111}
+  #docPrint th{background:#eee}
+  #docPrint .d-firma{margin-top:44px;text-align:center;page-break-inside:avoid}
+  #docPrint .d-firma .linea{border-top:1px solid #333;width:260px;margin:0 auto;padding-top:4px;font-size:11px}
+  #docPrint .d-pie{margin-top:18px;font-size:9.5px;color:#555;border-top:1px solid #ccc;padding-top:6px;text-align:center}
+  #marcaAgua{display:block!important;position:fixed;top:42%;left:-5%;right:-5%;text-align:center;transform:rotate(-24deg);font-size:32px;font-weight:900;letter-spacing:2px;color:rgba(192,57,43,.16);z-index:999}
+}
 </style>
 </head>
 <body>
@@ -147,6 +173,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
   </div>
 
   <div class="paso" data-p="3">
+    <div class="card" style="border-color:#d4a017">
+      <h2>⚡ Sugerencia inteligente de dotación</h2>
+      <p>Calcula cuántos guardias, en qué turnos y con qué facciones, según los accesos y puntos ciegos de tu plano y el riesgo real de tu comuna. Todo queda editable.</p>
+      <button class="btn btn-borde btn-full" onclick="sugerir()">⚡ Calcular sugerencia para mi instalación</button>
+      <div id="sugResultado"></div>
+    </div>
     <div class="card">
       <h2>III. Horarios de funcionamiento</h2>
       <p>Horarios en que opera la instalación.</p>
@@ -244,13 +276,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
       <div id="revision"></div>
       <div class="aviso">⚖️ Este expediente genera un <strong>BORRADOR</strong>. La Directiva definitiva requiere revisión y visación de un asesor acreditado OS.10 — el siguiente paso tras guardar.</div>
       <button class="btn btn-oro btn-full" onclick="guardarServidor()">💾 Guardar expediente</button>
+      <button class="btn btn-borde btn-full" onclick="generarPDF()">📄 Descargar borrador en PDF (con marca de agua)</button>
       <div class="msg" id="msgGuardar"></div>
-      <p style="font-size:0.72rem;margin-top:10px">Próximamente en este flujo: descarga del borrador en PDF con marca de agua y solicitud de visación en línea.</p>
+      <p style="font-size:0.72rem;margin-top:10px">El borrador lleva tu folio y la marca de agua "BORRADOR". El siguiente paso — solicitar la visación del asesor acreditado — se habilita pronto en este mismo flujo.</p>
     </div>
   </div>
 
 </section>
 </main>
+
+<div id="marcaAgua">BORRADOR — SIN VALIDEZ SIN VISACIÓN<br>DE ASESOR ACREDITADO</div>
+<div id="docPrint"></div>
 
 <div class="nav-row" id="navRow">
   <button class="btn btn-gris" id="btnAtras" onclick="navegar(-1)">← Atrás</button>
@@ -480,7 +516,9 @@ function pintarPlano(){
     cont.innerHTML='<div class="plano-ok">✅ <strong>Plano importado desde Mi Predio</strong><br>'+
       esc(plano.dir||'Predio georeferenciado')+'<br>'+
       plano.perimetro.length+' vértices de perímetro · '+nSis+' sistemas ubicados · '+esc(plano.riesgo||'')+
-      '<br><a href="georef-predio.html" style="color:#d4a017">Volver a editar el plano →</a></div>';
+      '<br><a href="georef-predio.html" style="color:#d4a017">Volver a editar el plano →</a></div>'+
+      '<div class="croquis-wrap">'+croquisSVG(plano,300,200,true)+
+      '<div style="font-size:0.66rem;color:#888;padding:2px 0 4px">'+esc(leyendaCroquis(plano))+'</div></div>';
   }else{
     cont.innerHTML='<div class="plano-no">✏️ Aún no hay un plano del predio. Dibújalo en <strong>Mi Predio</strong> (dirección → perímetro → sistemas → análisis) y vuelve aquí: se importará solo.<br><a href="georef-predio.html" class="btn btn-borde btn-full" style="margin-top:8px">🗺️ Dibujar el plano ahora</a></div>';
   }
@@ -575,6 +613,164 @@ function nuevoExpediente(){
   document.getElementById('navRow').style.display='flex';
   document.getElementById('prog').style.display='block';
   irPaso(1);
+}
+
+// ---------- Motor de sugerencias ----------
+const SIS_DIR={camara:'📷',guardia:'💂',alarma:'🚨',acceso:'🔒',ilum:'💡',ciego:'👁',entrada:'🚪',bodega:'📦'};
+const SIS_NOM={camara:'Cámara',guardia:'Puesto guardia',alarma:'Alarma',acceso:'Control de acceso',ilum:'Iluminación',ciego:'Punto ciego',entrada:'Entrada',bodega:'Bodega'};
+let sugerenciaActual=null;
+
+function sugerir(){
+  leerFormulario();
+  const plano=exp.lugar.plano;
+  const cont=document.getElementById('sugResultado');
+  if(!plano||!plano.perimetro||plano.perimetro.length<3){
+    cont.innerHTML='<div class="sug-box">✏️ Para calcular la sugerencia necesito el <strong>plano del predio</strong> (paso II): dibújalo en Mi Predio y vuelve.</div>';return;
+  }
+  if(!exp.lugar.comuna){
+    cont.innerHTML='<div class="sug-box">Selecciona primero la <strong>comuna</strong> en el paso II.</div>';return;
+  }
+  const r=(typeof CYC_RIESGO!=='undefined'&&CYC_RIESGO[exp.lugar.comuna])||null;
+  const cnt={camara:0,guardia:0,alarma:0,acceso:0,ilum:0,ciego:0,entrada:0,bodega:0};
+  (plano.sistemas||[]).forEach(s=>{if(cnt[s.tipo]!=null)cnt[s.tipo]++;});
+  const razones=[];
+  const entradas=Math.max(cnt.entrada,1);
+  let puestos=entradas;
+  razones.push(entradas+' acceso(s) en el plano → '+entradas+' puesto(s) fijo(s) de control de acceso');
+  const ronda=(cnt.ciego>0||cnt.bodega>0||plano.perimetro.length>=5);
+  if(ronda){
+    puestos++;
+    const motivos=[];
+    if(cnt.ciego>0)motivos.push(cnt.ciego+' punto(s) ciego(s)');
+    if(cnt.bodega>0)motivos.push(cnt.bodega+' bodega(s)');
+    if(!motivos.length)motivos.push('perímetro amplio');
+    razones.push(motivos.join(' + ')+' → 1 rondín perimetral adicional');
+  }
+  const nivel=r?r.niv:null;
+  const nivelTxt={c:'CRÍTICO',a:'ALTO',m:'MEDIO',b:'BAJO'}[nivel]||'sin datos';
+  const nocturnoRef=(nivel==='c'||nivel==='a');
+  const turnos=[
+    {nombre:'Turno día',desde:'08:00',hasta:'20:00',guardias:String(puestos)},
+    {nombre:nocturnoRef?'Turno noche (reforzado)':'Turno noche',desde:'20:00',hasta:'08:00',guardias:String(nocturnoRef?puestos+1:puestos)}
+  ];
+  if(nocturnoRef)razones.push('Riesgo '+nivelTxt+' en la comuna'+(r&&r.peak&&r.peak.length?' (franjas críticas: '+r.peak.join(', ')+')':'')+' → +1 guardia en el turno de noche');
+  else razones.push('Riesgo '+nivelTxt+' en la comuna → dotación estándar en ambos turnos');
+  if(cnt.ciego>cnt.camara)razones.push((cnt.ciego-cnt.camara)+' punto(s) ciego(s) sin cámara → se recomienda agregar cámaras en esas posiciones');
+  if(r&&r.ilum!=null&&r.ilum<50)razones.push('Iluminación pública baja en la comuna ('+r.ilum+'/100) → reforzar iluminación propia y linternas en las rondas');
+  const total=turnos.reduce((a,t)=>a+Number(t.guardias),0);
+  const facc=[];
+  for(let i=1;i<=entradas;i++)facc.push('Facción '+i+' — Control de acceso '+(i===1?'principal':'N° '+i)+': registro y control de ingreso/salida de personas y vehículos.');
+  if(ronda)facc.push('Facción '+(entradas+1)+' — Ronda perimetral: recorridos programados'+(cnt.bodega>0?', verificación de bodegas':'')+(cnt.ciego>0?', cobertura de puntos ciegos':'')+', con reporte por radio al término de cada ronda.');
+  sugerenciaActual={turnos:turnos,total:total,facciones:facc.join('\n'),tareas:facc.join('\n')};
+  cont.innerHTML='<div class="sug-box"><strong style="color:#d4a017;font-size:0.82rem">Sugerencia calculada:</strong>'+
+    '<ul style="margin-top:6px">'+razones.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+
+    '<p style="font-size:0.8rem;margin-top:8px"><strong>Dotación propuesta: '+total+' guardias</strong> — '+turnos.map(t=>esc(t.nombre)+': '+t.guardias).join(' · ')+'</p>'+
+    '<button class="btn btn-oro btn-full" onclick="aplicarSugerencia()">✔ Aplicar sugerencia (todo editable después)</button></div>';
+}
+function aplicarSugerencia(){
+  if(!sugerenciaActual)return;
+  exp.personal.turnos=sugerenciaActual.turnos;
+  exp.personal.total=String(sugerenciaActual.total);
+  if(!exp.lugar.facciones)exp.lugar.facciones=sugerenciaActual.facciones;
+  if(!exp.objetivos.tareas)exp.objetivos.tareas=sugerenciaActual.tareas;
+  sv('f_per_total',exp.personal.total);
+  pintarTurnos();
+  sv('f_lug_facciones',exp.lugar.facciones);
+  sv('f_obj_tareas',exp.objetivos.tareas);
+  guardarBorradorLocal();
+  document.getElementById('sugResultado').innerHTML='<div class="sug-box" style="border-color:#2e7d32"><span style="color:#a5d6a7">✅ Sugerencia aplicada a la dotación, los turnos, las facciones (II) y las tareas (V). Ajusta lo que necesites.</span></div>';
+}
+
+// ---------- Croquis SVG del predio ----------
+function croquisSVG(plano,w,h,oscuro){
+  const pts=plano.perimetro||[];
+  if(pts.length<3)return '';
+  const todos=pts.concat((plano.sistemas||[]).map(s=>({lat:s.lat,lng:s.lng})));
+  let minLat=Infinity,maxLat=-Infinity,minLng=Infinity,maxLng=-Infinity;
+  todos.forEach(p=>{if(p.lat<minLat)minLat=p.lat;if(p.lat>maxLat)maxLat=p.lat;if(p.lng<minLng)minLng=p.lng;if(p.lng>maxLng)maxLng=p.lng;});
+  const dLat=(maxLat-minLat)||1e-5,dLng=(maxLng-minLng)||1e-5,pad=0.14;
+  minLat-=dLat*pad;maxLat+=dLat*pad;minLng-=dLng*pad;maxLng+=dLng*pad;
+  const X=lng=>((lng-minLng)/(maxLng-minLng))*w;
+  const Y=lat=>h-((lat-minLat)/(maxLat-minLat))*h;
+  const col=oscuro?'#d4a017':'#333';
+  const poly=pts.map(p=>X(p.lng).toFixed(1)+','+Y(p.lat).toFixed(1)).join(' ');
+  let s='<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Croquis del predio">';
+  s+='<polygon points="'+poly+'" fill="rgba(212,160,23,0.14)" stroke="'+col+'" stroke-width="2"/>';
+  (plano.sistemas||[]).forEach(si=>{
+    s+='<text x="'+X(si.lng).toFixed(1)+'" y="'+(Y(si.lat)+5).toFixed(1)+'" font-size="15" text-anchor="middle">'+(SIS_DIR[si.tipo]||'📍')+'</text>';
+  });
+  s+='<text x="'+(w-16)+'" y="16" font-size="11" font-weight="bold" fill="'+col+'" text-anchor="middle">N</text>';
+  s+='<polygon points="'+(w-20)+',30 '+(w-12)+',30 '+(w-16)+',20" fill="'+col+'"/>';
+  s+='</svg>';
+  return s;
+}
+function leyendaCroquis(plano){
+  const tipos={};(plano.sistemas||[]).forEach(x=>{tipos[x.tipo]=(tipos[x.tipo]||0)+1;});
+  return Object.keys(tipos).map(t=>(SIS_DIR[t]||'')+' '+(SIS_NOM[t]||t)+' ('+tipos[t]+')').join(' · ');
+}
+
+// ---------- Borrador PDF con marca de agua ----------
+function generarPDF(){
+  leerFormulario();
+  if(!exp.folio){msg('msgGuardar','Primero guarda el expediente: el folio asignado va impreso en el borrador.','err');return;}
+  construirDoc();
+  window.print();
+}
+function docSec(t,c){return '<div class="d-sec"><div class="d-tit">'+t+'</div><div class="d-cont">'+c+'</div></div>';}
+function construirDoc(){
+  const e=exp;
+  const comunaN=(typeof CYC_COMUNAS!=='undefined'&&CYC_COMUNAS[e.lugar.comuna])||e.lugar.comuna||'';
+  const fecha=new Date().toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
+  let html='<div class="d-portada"><img src="icon-192.png" alt="Control y Confianza"><div class="d-form">Formulario N° 01 — Borrador para revisión</div>'+
+    '<h1>DIRECTIVA DE FUNCIONAMIENTO</h1><div class="d-sub">Para implementar servicios con guardias de seguridad — Arts. 51 a 55, Ley 21.659 · Arts. 90 a 93, Decreto 209 (2025)</div>'+
+    '<div class="d-sub" style="margin-top:4px">'+esc(e.empleador.nombre)+' · '+esc(e.lugar.dir)+(comunaN?', '+esc(comunaN):'')+'</div>'+
+    '<div class="d-folio">Folio '+esc(e.folio)+' · '+fecha+'</div></div>';
+  html+=docSec('I. Antecedentes del empleador',
+    '<table><tr><th>Nombre / Razón social</th><td>'+esc(e.empleador.nombre)+'</td></tr>'+
+    '<tr><th>RUT</th><td>'+esc(e.empleador.rut)+'</td></tr>'+
+    '<tr><th>Giro</th><td>'+esc(e.empleador.giro)+'</td></tr>'+
+    '<tr><th>Domicilio</th><td>'+esc(e.empleador.dom)+'</td></tr>'+
+    '<tr><th>Teléfono</th><td>'+esc(e.empleador.tel)+'</td></tr>'+
+    (e.empleador.email?'<tr><th>Email</th><td>'+esc(e.empleador.email)+'</td></tr>':'')+'</table>');
+  let croquis='';
+  if(e.lugar.plano&&e.lugar.plano.perimetro&&e.lugar.plano.perimetro.length>=3){
+    croquis='<div style="text-align:center;margin-top:6px">'+croquisSVG(e.lugar.plano,470,320,false)+
+      '<div style="font-size:10px;color:#444">'+esc(leyendaCroquis(e.lugar.plano))+' — Croquis referencial georeferenciado</div></div>';
+  }
+  html+=docSec('II. Lugar de desarrollo del servicio',
+    'Lugar específico: '+esc(e.lugar.dir)+(comunaN?', comuna de '+esc(comunaN):'')+
+    (e.lugar.entidad?'\nEntidad / Instalación: '+esc(e.lugar.entidad):'')+
+    (e.lugar.facciones?'\nFacciones del servicio:\n'+esc(e.lugar.facciones):'')+croquis);
+  html+=docSec('III. Horarios de funcionamiento',e.horarios.map(x=>esc(x.dias)+' de '+esc(x.desde)+' a '+esc(x.hasta)+' hrs.').join('\n'));
+  html+=docSec('IV. Personal','Cantidad total de personas en servicio: '+esc(e.personal.total)+'\nDuración de cada turno: '+esc(e.personal.horas)+' horas\n'+
+    e.personal.turnos.map(t=>esc(t.nombre)+' ('+esc(t.desde)+' a '+esc(t.hasta)+' hrs.): '+esc(t.guardias)+' guardia(s)').join('\n'));
+  html+=docSec('V. Objetivos y tareas a cumplir','Objetivo del servicio: '+esc(e.objetivos.objetivo)+(e.objetivos.tareas?'\n\nTareas asignadas según facción:\n'+esc(e.objetivos.tareas):''));
+  html+=docSec('VI. Descripción de la tenida autorizada (Art. 90, Decreto 209)',esc(e.tenida.items.join('; '))+(e.tenida.otro?'; '+esc(e.tenida.otro):'')+
+    '\nLa tenida no se asemeja a los uniformes de las Fuerzas de Orden y Seguridad Pública ni de las FF.AA.');
+  html+=docSec('VII. Implementos de seguridad',esc(e.implementos.items.join('; '))+(e.implementos.otro?'; '+esc(e.implementos.otro):'')+
+    '\nNota: prohibido el empleo de armas de fuego o implementos no autorizados mediante resolución de la AA.FF. OS-10 respectiva.');
+  html+=docSec('VIII. Sistema de alarmas y comunicación',
+    (e.comunicacion.alarma?'Empresa de alarmas: '+esc(e.comunicacion.alarma)+'\n':'')+
+    (e.comunicacion.subtel?'Resolución Subtel: '+esc(e.comunicacion.subtel)+'\n':'')+
+    (e.comunicacion.cred?'Credenciales de operación: '+esc(e.comunicacion.cred)+'\n':'')+
+    'Medios de comunicación del personal: '+esc(e.comunicacion.medios.join(', ')));
+  html+=docSec('IX. Capacitación, formación y perfeccionamiento','Al ingreso: '+esc(e.capacitacion.ingreso)+'\nDurante el servicio: '+esc(e.capacitacion.periodica));
+  const ax=e.anexo;
+  let telTable='<table><tr><th>Contacto</th><th>Teléfono</th></tr>'+
+    (ax.mesa?'<tr><td>Mesa central</td><td>'+esc(ax.mesa)+'</td></tr>':'')+
+    (ax.gerente?'<tr><td>Gerente / Agente</td><td>'+esc(ax.gerente)+'</td></tr>':'')+
+    (ax.jefeseg?'<tr><td>Jefe de Seguridad</td><td>'+esc(ax.jefeseg)+'</td></tr>':'')+
+    (ax.porteria?'<tr><td>Portería</td><td>'+esc(ax.porteria)+'</td></tr>':'')+
+    (ax.central?'<tr><td>Central de alarma</td><td>'+esc(ax.central)+'</td></tr>':'')+
+    '<tr><td>Cuartel de Carabineros más cercano'+(ax.cuartelDir?' — '+esc(ax.cuartelDir):'')+'</td><td>'+esc(ax.cuartelTel||'—')+'</td></tr></table>';
+  let ing='';
+  const ip=ax.ingPublico.filter(x=>x.dir),ie=ax.ingEmpleados.filter(x=>x.dir);
+  if(ip.length)ing+='\nIngresos de público general:\n'+ip.map(x=>'• '+esc(x.dir)+' ('+esc(x.apertura)+' a '+esc(x.cierre)+')').join('\n');
+  if(ie.length)ing+='\nIngresos de empleados y servicios:\n'+ie.map(x=>'• '+esc(x.dir)+' ('+esc(x.apertura)+' a '+esc(x.cierre)+')').join('\n');
+  html+=docSec('Anexo — Información para decisiones policiales',telTable+ing+'\nArmamento: '+esc(ax.armamento));
+  html+='<div class="d-firma"><div class="linea">FIRMA DEL PETICIONARIO<br>'+esc(e.empleador.nombre)+' · RUT '+esc(e.empleador.rut)+'</div></div>';
+  html+='<div class="d-pie">DOCUMENTO BORRADOR generado con el asistente de Control y Confianza CSF SpA — app.controlyconfianza.cl. No tiene validez ante la autoridad hasta ser revisado y visado por un asesor de seguridad acreditado. Folio '+esc(e.folio)+' · '+fecha+'</div>';
+  document.getElementById('docPrint').innerHTML=html;
 }
 
 // ---------- Inicio ----------
