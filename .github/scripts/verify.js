@@ -90,14 +90,25 @@ function extraerObjetoJS(html, declaracion) {
   }
 }
 
+// Sectores que legítimamente comparten nombre con otra comuna (verificado con datos reales).
+const SECTORES_OK = new Set(['iquique:alto hospicio']);
+
 function verificarComunasDB(html) {
   const db = extraerObjetoJS(html, 'var DB=');
   if (!db) return;
+  const nombreAComuna = {};
+  Object.keys(db).forEach((k) => { if (db[k].n) nombreAComuna[db[k].n.toLowerCase()] = k; });
   Object.keys(db).forEach((key) => {
     const c = db[key];
     if (typeof c.lat !== 'number' || typeof c.lng !== 'number') {
       errores.push(`seguridad-chile.html: comuna "${key}" (${c.n || '?'}) no tiene lat/lng numéricos completos — el mapa fallará si alguien la selecciona`);
     }
+    (c.sects || []).forEach((s) => {
+      const sn = (s.n || '').toLowerCase();
+      if (nombreAComuna[sn] && nombreAComuna[sn] !== key && !SECTORES_OK.has(key + ':' + sn)) {
+        errores.push(`seguridad-chile.html: comuna "${c.n}" tiene un sector llamado "${s.n}", que es el nombre de otra comuna (${nombreAComuna[sn]}) — probable error de datos copiados. Si es correcto, agrégalo a SECTORES_OK.`);
+      }
+    });
   });
 }
 
