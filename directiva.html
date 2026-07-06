@@ -24,7 +24,7 @@ main{max-width:640px;margin:0 auto;padding:16px 14px 110px}
 .card p{font-size:0.8rem;color:#999;line-height:1.55;margin-bottom:8px}
 .aviso{background:#1a1200;border:1px solid #3a2e00;border-radius:10px;padding:12px;font-size:0.76rem;color:#d4a017;line-height:1.5;margin:10px 0}
 label{display:block;font-size:0.74rem;font-weight:700;color:#ccc;margin:10px 0 4px}
-input[type=text],input[type=email],input[type=tel],input[type=time],input[type=number],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:0.85rem;font-family:inherit}
+input[type=text],input[type=email],input[type=password],input[type=tel],input[type=time],input[type=number],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:0.85rem;font-family:inherit}
 textarea{min-height:74px;resize:vertical;line-height:1.5}
 input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#d4a017}
 .fila{display:flex;gap:8px}
@@ -117,7 +117,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
     <label for="aEmail">Email</label>
     <input id="aEmail" type="email" placeholder="Email" autocomplete="email">
     <label for="aPass">Contraseña</label>
-    <input id="aPass" type="password" placeholder="Contraseña (mín. 8)" autocomplete="current-password">
+    <div style="position:relative"><input id="aPass" type="password" placeholder="Contraseña (mín. 8)" autocomplete="current-password" style="padding-right:34px"><button type="button" tabindex="-1" aria-label="Mostrar contraseña" onclick="cycToggleOjo(this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;padding:0;line-height:1">👁</button></div>
     <div class="fila" style="margin-top:10px">
       <button class="btn btn-gris" style="flex:1" onclick="autenticar('login')">Ya tengo cuenta</button>
       <button class="btn btn-oro" style="flex:1" onclick="autenticar('registro')">Crear cuenta</button>
