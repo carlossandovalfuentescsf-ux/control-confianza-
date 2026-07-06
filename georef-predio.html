@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Georeferenciación de Predio — Control & Confianza</title>
+<title>Mi Cobertura — Control & Confianza</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <style>
@@ -143,7 +143,7 @@ body{background:#111;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100
   <a href="seguridad-chile.html?volver=1" class="btn-volver">← Volver</a>
   <div style="width:34px;height:34px;background:#d4a017;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">🗺️</div>
   <div class="header-title">
-    <h1>Georeferenciación de Predio</h1>
+    <h1>Mi Cobertura</h1>
     <p id="headerSub">Planificación de Seguridad — Plan Empresa</p>
   </div>
 </header>
@@ -368,7 +368,7 @@ window.addEventListener('load',()=>{
   if(previo){SEGMENTO=previo;document.getElementById('segOverlay').style.display='none';aplicarCopySegmento();}
 });
 
-function cycBloquearCardHogar(id){
+function cycBloquearCardHogar(id,conFormulario){
   const card=document.getElementById(id);
   if(!card||card.querySelector('.cyc-overlay'))return;
   card.style.position='relative';
@@ -381,7 +381,11 @@ function cycBloquearCardHogar(id){
   overlay.className='cyc-overlay';
   overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(17,17,17,.92);border-radius:12px;padding:14px;text-align:center';
   const logueado=!!localStorage.getItem('cyc_token');
-  if(logueado){
+  if(!conFormulario){
+    overlay.innerHTML='<div style="font-size:22px">🔒</div>'+
+      '<div style="font-size:12px;color:#ccc;font-weight:700">Incluido en el Plan Personal</div>'+
+      '<div style="font-size:11px;color:#888;max-width:220px">Se desbloquea junto con el informe completo.</div>';
+  } else if(logueado){
     overlay.innerHTML='<div style="font-size:12px;color:#ccc;font-weight:700">Informe completo — Plan Personal</div>'+
       '<div style="font-size:11px;color:#888;max-width:220px">Pago único de $'+CYC_CONFIG.precioPersonal+'. Incluye vulnerabilidades detalladas y recomendaciones para tu casa.</div>'+
       '<button onclick="cycPagarPersonalGeoref()" style="background:#d4a017;color:#111;border:none;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;margin-top:4px">Pagar $'+CYC_CONFIG.precioPersonal+' y desbloquear</button>';
@@ -425,9 +429,9 @@ async function cycAuthYPagarGeoref(modo){
 function cycAplicarBloqueoPredio(){
   if(SEGMENTO==='empresa')return;
   if(CYC_PLAN==='personal'||CYC_PLAN==='empresa')return;
-  cycBloquearCardHogar('card-alertas');
+  cycBloquearCardHogar('card-alertas',true);
   const recsCard=document.getElementById('recs-lista').closest('.card');
-  if(recsCard){if(!recsCard.id)recsCard.id='card-recs';cycBloquearCardHogar(recsCard.id);}
+  if(recsCard){if(!recsCard.id)recsCard.id='card-recs';cycBloquearCardHogar(recsCard.id,false);}
 }
 window.addEventListener('load',cycVerificarPremium);
 let map1=null, map2=null, map3=null;
@@ -761,7 +765,7 @@ function analizarPredio(){
   const cierre=SEGMENTO==='hogar'
     ?'Me gustaría cotizar mejoras de seguridad para mi casa.'
     :'Me gustaría solicitar mi Directiva de Funcionamiento OS.10.';
-  const msg=encodeURIComponent(`Hola Carlos, usé la herramienta de Georeferenciación de Predio.\n\n📍 Predio: ${dirTexto.split(',').slice(0,2).join(',')}\n${nivelTxt}\n🔧 Sistemas planificados: ${resumen}\n\n${cierre}`);
+  const msg=encodeURIComponent(`Hola Carlos, usé la herramienta Mi Cobertura.\n\n📍 Predio: ${dirTexto.split(',').slice(0,2).join(',')}\n${nivelTxt}\n🔧 Sistemas planificados: ${resumen}\n\n${cierre}`);
   const btnWa=document.getElementById('btn-wa');
   btnWa.href=`https://wa.me/${CYC_CONFIG.whatsapp}?text=${msg}`;
   btnWa.textContent=SEGMENTO==='hogar'?'💬 Cotizar seguridad por WhatsApp':'💬 Solicitar Directiva por WhatsApp';

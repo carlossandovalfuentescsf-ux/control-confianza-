@@ -507,7 +507,7 @@ function pintarChecks(id,opciones,marcadas){
 }
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
 
-// ---------- Plano de Mi Predio ----------
+// ---------- Plano de Mi Cobertura ----------
 function pintarPlano(){
   const cont=document.getElementById('planoEstado');
   let plano=exp.lugar.plano;
@@ -518,14 +518,14 @@ function pintarPlano(){
     exp.lugar.plano=plano;
     if(!v('f_lug_dir')&&plano.dir)sv('f_lug_dir',plano.dir.split(',').slice(0,2).join(','));
     const nSis=(plano.sistemas||[]).length;
-    cont.innerHTML='<div class="plano-ok">✅ <strong>Plano importado desde Mi Predio</strong><br>'+
+    cont.innerHTML='<div class="plano-ok">✅ <strong>Plano importado desde Mi Cobertura</strong><br>'+
       esc(plano.dir||'Predio georeferenciado')+'<br>'+
       plano.perimetro.length+' vértices de perímetro · '+nSis+' sistemas ubicados · '+esc(plano.riesgo||'')+
       '<br><a href="georef-predio.html" style="color:#d4a017">Volver a editar el plano →</a></div>'+
       '<div class="croquis-wrap">'+croquisSVG(plano,300,200,true)+
       '<div style="font-size:0.66rem;color:#888;padding:2px 0 4px">'+esc(leyendaCroquis(plano))+'</div></div>';
   }else{
-    cont.innerHTML='<div class="plano-no">✏️ Aún no hay un plano del predio. Dibújalo en <strong>Mi Predio</strong> (dirección → perímetro → sistemas → análisis) y vuelve aquí: se importará solo.<br><a href="georef-predio.html" class="btn btn-borde btn-full" style="margin-top:8px">🗺️ Dibujar el plano ahora</a></div>';
+    cont.innerHTML='<div class="plano-no">✏️ Aún no hay un plano del predio. Dibújalo en <strong>Mi Cobertura</strong> (dirección → perímetro → sistemas → análisis) y vuelve aquí: se importará solo.<br><a href="georef-predio.html" class="btn btn-borde btn-full" style="margin-top:8px">🗺️ Dibujar el plano ahora</a></div>';
   }
 }
 
@@ -545,7 +545,7 @@ function pintarRevision(){
   fz.innerHTML=e.folio?'<span class="folio-badge">Folio: '+esc(e.folio)+'</span>':'<p style="font-size:0.74rem">Al guardar se asignará un folio único a tu expediente.</p>';
   const secs=[
     ['I. Empleador',e.empleador.nombre+' · RUT '+e.empleador.rut+'\n'+e.empleador.giro+'\n'+e.empleador.dom+' · '+e.empleador.tel],
-    ['II. Lugar del servicio',e.lugar.dir+(e.lugar.comuna&&typeof CYC_COMUNAS!=='undefined'&&CYC_COMUNAS[e.lugar.comuna]?' — '+CYC_COMUNAS[e.lugar.comuna]:'')+(e.lugar.entidad?'\n'+e.lugar.entidad:'')+'\nCroquis: '+(e.lugar.plano?'importado de Mi Predio ('+e.lugar.plano.perimetro.length+' vértices, '+(e.lugar.plano.sistemas||[]).length+' sistemas)':'PENDIENTE')+(e.lugar.facciones?'\nFacciones: '+e.lugar.facciones:'')],
+    ['II. Lugar del servicio',e.lugar.dir+(e.lugar.comuna&&typeof CYC_COMUNAS!=='undefined'&&CYC_COMUNAS[e.lugar.comuna]?' — '+CYC_COMUNAS[e.lugar.comuna]:'')+(e.lugar.entidad?'\n'+e.lugar.entidad:'')+'\nCroquis: '+(e.lugar.plano?'importado de Mi Cobertura ('+e.lugar.plano.perimetro.length+' vértices, '+(e.lugar.plano.sistemas||[]).length+' sistemas)':'PENDIENTE')+(e.lugar.facciones?'\nFacciones: '+e.lugar.facciones:'')],
     ['III. Horarios',e.horarios.map(h=>h.dias+' de '+h.desde+' a '+h.hasta).join('\n')],
     ['IV. Personal',e.personal.total+' guardias · turnos de '+e.personal.horas+' hrs\n'+e.personal.turnos.map(t=>t.nombre+' ('+t.desde+'–'+t.hasta+'): '+t.guardias+' guardia(s)').join('\n')],
     ['V. Objetivos y tareas',e.objetivos.objetivo+(e.objetivos.tareas?'\nTareas: '+e.objetivos.tareas:'')],
@@ -635,7 +635,7 @@ function sugerir(){
   const plano=exp.lugar.plano;
   const cont=document.getElementById('sugResultado');
   if(!plano||!plano.perimetro||plano.perimetro.length<3){
-    cont.innerHTML='<div class="sug-box">✏️ Para calcular la sugerencia necesito el <strong>plano del predio</strong> (paso II): dibújalo en Mi Predio y vuelve.</div>';return;
+    cont.innerHTML='<div class="sug-box">✏️ Para calcular la sugerencia necesito el <strong>plano del predio</strong> (paso II): dibújalo en Mi Cobertura y vuelve.</div>';return;
   }
   if(!exp.lugar.comuna){
     cont.innerHTML='<div class="sug-box">Selecciona primero la <strong>comuna</strong> en el paso II.</div>';return;
