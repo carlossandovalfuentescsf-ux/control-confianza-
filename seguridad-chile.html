@@ -154,6 +154,13 @@ select:disabled{opacity:0.4}
 .pprc{font-size:12px;color:#888}
 .pprc strong{font-size:15px;color:#f0e8d0}
 .pft{font-size:12px;color:#888;line-height:1.8}
+.pinfo-btn{width:100%;margin-top:8px;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.3);color:#d4a017;padding:8px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;text-align:center}
+.pinfo{display:none;margin-top:8px;border-top:1px dashed #333;padding-top:8px}
+.pinfo.open{display:block}
+.pinfo .ph{display:flex;gap:8px;align-items:flex-start;margin-bottom:9px}
+.pinfo .ph-ic{font-size:16px;flex-shrink:0;line-height:1.3}
+.pinfo .ph-nom{font-size:12px;font-weight:800;color:#f0e8d0;display:block}
+.pinfo .ph-desc{font-size:11px;color:#999;line-height:1.5}
 .btnc{width:100%;background:#c0392b;color:white;border:none;padding:12px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:9px;margin-top:6px}
 .btnclose{width:100%;background:none;border:1px solid #333;color:#888;padding:10px;border-radius:9px;font-size:13px;cursor:pointer;margin-top:3px}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;border:1px solid #d4a017;color:#f0e8d0;padding:10px 18px;border-radius:11px;font-size:13px;z-index:300;transition:transform .35s;pointer-events:none}
@@ -564,6 +571,15 @@ select:disabled{opacity:0.4}
         ✓ Diagnostico de riesgo empresarial<br>
         🏠 Plan Hogar — puntaje general (sin detalle)
       </div>
+      <button class="pinfo-btn" onclick="togglePinfo(this)">ⓘ ¿Qué hace cada herramienta? ▾</button>
+      <div class="pinfo">
+        <div class="ph"><span class="ph-ic">🗺️</span><span><span class="ph-nom">Mapa de riesgo por sector</span><span class="ph-desc">Consulta el nivel de peligro de cada sector de tu comuna antes de llegar.</span></span></div>
+        <div class="ph"><span class="ph-ic">⏱️</span><span><span class="ph-nom">Horarios de riesgo</span><span class="ph-desc">Te muestra a qué horas del día el riesgo es mayor en cada zona.</span></span></div>
+        <div class="ph"><span class="ph-ic">📞</span><span><span class="ph-nom">Números de emergencia</span><span class="ph-desc">El teléfono directo de la comisaría de cada comuna, más 133/131/SAMU.</span></span></div>
+        <div class="ph"><span class="ph-ic">🔔</span><span><span class="ph-nom">Alertas por GPS</span><span class="ph-desc">Te avisa cuando entras a una zona catalogada como peligrosa.</span></span></div>
+        <div class="ph"><span class="ph-ic">🛡️</span><span><span class="ph-nom">Protocolos de emergencia</span><span class="ph-desc">Qué hacer paso a paso ante robos, asaltos y otras situaciones.</span></span></div>
+        <div class="ph"><span class="ph-ic">🏠</span><span><span class="ph-nom">Plan Hogar (general)</span><span class="ph-desc">Diagnóstico rápido de tu casa con una nota general de seguridad.</span></span></div>
+      </div>
     </div>
     <div class="plan star">
       <div class="ptop"><div class="pnom">Personal ⭐</div><div class="pprc"><strong>$<span data-price="personal"></span></strong>/mes</div></div>
@@ -576,6 +592,13 @@ select:disabled{opacity:0.4}
         📄 Informe PDF descargable<br>
         🔔 Boletin mensual de seguridad preventiva<br>
         💬 1 consulta anual con asesor acreditado OS.10
+      </div>
+      <button class="pinfo-btn" onclick="togglePinfo(this)">ⓘ ¿Qué hace cada herramienta? ▾</button>
+      <div class="pinfo">
+        <div class="ph"><span class="ph-ic">📊</span><span><span class="ph-nom">Índice de riesgo</span><span class="ph-desc">El nivel general de riesgo (Alto / Medio / Bajo) del sector donde estás.</span></span></div>
+        <div class="ph"><span class="ph-ic">🏠</span><span><span class="ph-nom">Plan Hogar completo</span><span class="ph-desc">Diagnóstico detallado de tu casa: vulnerabilidades y recomendaciones por prioridad, con informe PDF descargable.</span></span></div>
+        <div class="ph"><span class="ph-ic">🔔</span><span><span class="ph-nom">Boletín mensual de seguridad</span><span class="ph-desc">Consejos de prevención en tu correo cada mes.</span></span></div>
+        <div class="ph"><span class="ph-ic">💬</span><span><span class="ph-nom">Consulta con asesor OS.10</span><span class="ph-desc">Una consulta al año con un asesor de seguridad acreditado.</span></span></div>
       </div>
     </div>
     <div class="plan">
@@ -595,6 +618,15 @@ select:disabled{opacity:0.4}
         <span style="color:#888;">Se elabora en etapas: levantamiento · borrador · documento final firmado (4 meses)</span><br>
         <a href="directiva.html" style="display:inline-block;margin-top:8px;background:#d4a017;color:#111;padding:8px 14px;border-radius:8px;font-weight:800;text-decoration:none;font-size:12px;">📄 Usar el generador de Directivas →</a>
         </span>
+      </div>
+      <button class="pinfo-btn" onclick="togglePinfo(this)">ⓘ ¿Qué hace cada herramienta? ▾</button>
+      <div class="pinfo">
+        <div class="ph"><span class="ph-ic">📊</span><span><span class="ph-nom">Índice de riesgo detallado</span><span class="ph-desc">El desglose completo por sector de tu comuna, no solo el nivel general.</span></span></div>
+        <div class="ph"><span class="ph-ic">🧮</span><span><span class="ph-nom">Riesgo Empresa (Calculadora OS.10)</span><span class="ph-desc">Calcula si tu empresa está obligada por ley a contratar guardias, y cuántos, según la Ley 21.659.</span></span></div>
+        <div class="ph"><span class="ph-ic">🗺️</span><span><span class="ph-nom">Mi Cobertura</span><span class="ph-desc">Dibuja el plano de tu propiedad con cámaras, guardias y accesos, y detecta los puntos vulnerables.</span></span></div>
+        <div class="ph"><span class="ph-ic">📄</span><span><span class="ph-nom">Generador de Directiva OS.10</span><span class="ph-desc">Arma el borrador de tu Directiva de Funcionamiento con análisis de riesgo, listo para la visación del asesor.</span></span></div>
+        <div class="ph"><span class="ph-ic">💬</span><span><span class="ph-nom">2 consultas al mes</span><span class="ph-desc">Con un asesor de seguridad acreditado OS.10.</span></span></div>
+        <div class="ph"><span class="ph-ic">🏅</span><span><span class="ph-nom">Respaldo y acompañamiento</span><span class="ph-desc">Carta de empresa asesorada y apoyo ante una fiscalización de OS.10.</span></span></div>
       </div>
     </div>
     <div id="cycCuenta" style="background:#1a1a1a;border-radius:10px;padding:12px;margin:12px 0;font-size:12px;color:#ccc">
@@ -1246,6 +1278,7 @@ function irGM(){window.open(gmUrl,"_blank","noopener,noreferrer");}
 function volver(){document.getElementById("res").style.display="none";document.getElementById("pInicio").style.display="flex";userLat=null;userLng=null;userCalle=null;var el=document.getElementById("mInfoCalle");if(el){el.style.display="none";el.textContent="";}}
 function abrirModal(){document.getElementById("modal").className="mbg open";}
 function cerrarModal(){document.getElementById("modal").className="mbg";}
+function togglePinfo(btn){var bloque=btn.nextElementSibling;var abierto=bloque.classList.toggle("open");btn.innerHTML=abierto?"ⓘ ¿Qué hace cada herramienta? ▴":"ⓘ ¿Qué hace cada herramienta? ▾";}
 function abrirPeligro(){document.getElementById("mpeligro").classList.add("open");}
 function cerrarPeligro(){document.getElementById("mpeligro").classList.remove("open");}
 (function(){var s=document.getElementById("splash");if(!s)return;if(new URLSearchParams(location.search).has("volver")){s.style.display="none";return;}setTimeout(function(){s.classList.add("oculto");setTimeout(function(){s.style.display="none";},700);},2000);})();
