@@ -109,6 +109,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
     <div class="aviso">⚖️ El documento que genera esta herramienta es un <strong>BORRADOR</strong> y no tiene validez ante la autoridad hasta ser revisado y visado por un asesor acreditado.</div>
     <button class="btn btn-oro btn-full" onclick="comenzar()">Comenzar mi Directiva →</button>
     <button class="btn btn-borde btn-full" onclick="verMisExpedientes()">📂 Mis expedientes</button>
+    <p style="font-size:0.72rem;margin-top:10px">¿Tu servicio es para un concierto, festival o feria? <a href="directiva-eventos.html" style="color:#d4a017">Usa el generador de eventos masivos →</a></p>
     <div class="msg" id="msgIntro"></div>
   </div>
   <div class="card" id="authBox" style="display:none">
@@ -591,7 +592,8 @@ async function verMisExpedientes(){
     const d=await r.json();
     if(!r.ok){msg('msgIntro',d.error||'No se pudo cargar la lista.','err');return;}
     const lista=document.getElementById('listaExp');
-    lista.innerHTML=(d.expedientes||[]).length?d.expedientes.map(x=>
+    const fijas=(d.expedientes||[]).filter(x=>!x.tipo||x.tipo==='fija');
+    lista.innerHTML=fijas.length?fijas.map(x=>
       '<div class="exp-item"><div><div class="ei-t">'+esc(x.titulo||x.folio)+' '+badgeEstado(x.estado)+'</div>'+
       '<div class="ei-s">'+esc(x.folio)+' · actualizado '+esc((x.updated_at||'').slice(0,10))+'</div></div>'+
       '<button class="btn btn-borde" style="padding:8px 12px;font-size:0.74rem" onclick="retomar(\''+esc(x.folio)+'\')">Retomar</button></div>').join('')

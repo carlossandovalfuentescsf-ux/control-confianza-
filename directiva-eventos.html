@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Directiva de Funcionamiento para Eventos Masivos — Control & Confianza</title>
+<meta name="description" content="Genera el borrador de tu Directiva de Funcionamiento para eventos masivos (conciertos, festivales, ferias) según el formato oficial. Visación por asesor acreditado.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh}
+.header{background:#1a1a1a;border-bottom:2px solid #d4a017;color:#f0e8d0;padding:20px;text-align:center;position:relative}
+.header img{height:44px;margin-bottom:8px}
+.header h1{font-size:1.05rem;font-weight:800;line-height:1.3}
+.header p{font-size:0.75rem;color:#888;margin-top:4px}
+.volver{position:absolute;left:12px;top:12px;display:inline-flex;align-items:center;gap:5px;font-size:0.72rem;color:rgba(255,255,255,0.5);text-decoration:none;border:1px solid rgba(255,255,255,0.2);padding:4px 10px;border-radius:99px}
+.prog{background:#1a1a1a;border-bottom:1px solid #222;padding:10px 20px;display:none}
+.prog-bg{background:#222;border-radius:99px;height:6px}
+.prog-fill{background:#d4a017;border-radius:99px;height:6px;transition:width .4s}
+.prog-label{color:#888;font-size:0.72rem;margin-top:6px}
+main{max-width:640px;margin:0 auto;padding:16px 14px 110px}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:12px}
+.card h2{font-size:1rem;font-weight:800;color:#d4a017;margin-bottom:4px}
+.card h3{font-size:0.88rem;font-weight:800;color:#f0e8d0;margin:14px 0 6px}
+.card p{font-size:0.8rem;color:#999;line-height:1.55;margin-bottom:8px}
+.aviso{background:#1a1200;border:1px solid #3a2e00;border-radius:10px;padding:12px;font-size:0.76rem;color:#d4a017;line-height:1.5;margin:10px 0}
+label{display:block;font-size:0.74rem;font-weight:700;color:#ccc;margin:10px 0 4px}
+input[type=text],input[type=email],input[type=password],input[type=tel],input[type=time],input[type=number],input[type=date],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:0.85rem;font-family:inherit}
+textarea{min-height:74px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#d4a017}
+.fila{display:flex;gap:8px}
+.fila>div{flex:1}
+.chk{display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#ccc;padding:7px 0;cursor:pointer}
+.chk input{width:auto;accent-color:#d4a017}
+.btn{border:none;border-radius:10px;font-size:0.9rem;font-weight:800;cursor:pointer;padding:13px 18px}
+.btn-oro{background:#d4a017;color:#111}
+.btn-gris{background:#1a1a1a;color:#999;border:1px solid #2a2a2a}
+.btn-borde{background:transparent;color:#d4a017;border:1px solid #d4a017}
+.btn-full{display:block;width:100%;text-align:center;margin-top:10px;text-decoration:none}
+.nav-row{position:fixed;bottom:0;left:0;right:0;background:#111;padding:12px 16px;display:none;gap:10px;border-top:1px solid #222;max-width:640px;margin:0 auto}
+.nav-row .btn{flex:1}
+.paso{display:none}
+.paso.activo{display:block}
+.mini-add{background:#111;border:1px dashed #444;color:#d4a017;border-radius:8px;padding:8px;width:100%;font-size:0.78rem;cursor:pointer;margin-top:6px}
+.item-lista{background:#111;border:1px solid #222;border-radius:10px;padding:10px;margin-top:8px;position:relative}
+.item-x{position:absolute;top:6px;right:8px;background:none;border:none;color:#e74c3c;font-size:0.9rem;cursor:pointer}
+.plano-ok{background:#0f2410;border:1px solid #2e7d32;border-radius:10px;padding:12px;font-size:0.8rem;color:#a5d6a7;line-height:1.6}
+.plano-no{background:#241a0f;border:1px solid #7d5e2e;border-radius:10px;padding:12px;font-size:0.8rem;color:#e8c98a;line-height:1.6}
+.folio-badge{display:inline-block;background:#1a1200;border:1px solid #d4a017;color:#d4a017;font-weight:800;font-size:0.8rem;padding:4px 12px;border-radius:99px;margin:6px 0}
+.exp-item{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.exp-item .ei-t{font-size:0.84rem;font-weight:700;color:#f0e8d0}
+.exp-item .ei-s{font-size:0.7rem;color:#888;margin-top:2px}
+.msg{margin-top:10px;font-size:0.78rem;line-height:1.5;display:none;border-radius:8px;padding:10px}
+.msg.ok{display:block;background:#15301a;border:1px solid #2e7d32;color:#a5d6a7}
+.msg.err{display:block;background:#301515;border:1px solid #7d2e2e;color:#ef9a9a}
+.rev-sec{border-bottom:1px solid #222;padding:10px 0}
+.rev-sec .rs-t{font-size:0.72rem;font-weight:800;color:#d4a017;text-transform:uppercase;letter-spacing:.5px}
+.rev-sec .rs-c{font-size:0.8rem;color:#ccc;line-height:1.55;margin-top:3px;white-space:pre-line}
+.sug-box{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-top:10px}
+.sug-box li{font-size:0.78rem;color:#ccc;line-height:1.6;margin-left:16px}
+.croquis-wrap{background:#0d0d0d;border:1px solid #333;border-radius:8px;margin-top:8px;padding:4px;text-align:center}
+#docPrint{display:none}
+#marcaAgua{display:none}
+@media print{
+  body{background:#fff!important;color:#111!important}
+  .header,.prog,main,.nav-row{display:none!important}
+  #docPrint{display:block!important;color:#111;font-family:Georgia,'Times New Roman',serif;font-size:12px;line-height:1.55;padding:0 8px}
+  #docPrint .d-portada{text-align:center;border-bottom:3px double #333;padding-bottom:14px;margin-bottom:16px}
+  #docPrint .d-portada img{height:56px}
+  #docPrint .d-form{font-size:10px;letter-spacing:2px;color:#555;text-transform:uppercase}
+  #docPrint h1{font-size:16px;margin:8px 0 2px}
+  #docPrint .d-sub{font-size:11px;color:#444}
+  #docPrint .d-folio{margin-top:8px;font-size:12px;font-weight:bold;border:1.5px solid #333;display:inline-block;padding:3px 14px;border-radius:4px}
+  #docPrint .d-sec{margin-bottom:12px;page-break-inside:avoid}
+  #docPrint .d-tit{font-size:12.5px;font-weight:bold;border-bottom:1px solid #999;padding-bottom:2px;margin-bottom:5px;text-transform:uppercase}
+  #docPrint .d-cont{white-space:pre-line}
+  #docPrint table{width:100%;border-collapse:collapse;font-size:11px;margin:4px 0}
+  #docPrint th,#docPrint td{border:1px solid #999;padding:4px 6px;text-align:left;color:#111}
+  #docPrint th{background:#eee}
+  #docPrint .d-firma{margin-top:44px;text-align:center;page-break-inside:avoid}
+  #docPrint .d-firma .linea{border-top:1px solid #333;width:260px;margin:0 auto;padding-top:4px;font-size:11px}
+  #docPrint .d-pie{margin-top:18px;font-size:9.5px;color:#555;border-top:1px solid #ccc;padding-top:6px;text-align:center}
+  #marcaAgua{display:block!important;position:fixed;top:42%;left:-5%;right:-5%;text-align:center;transform:rotate(-24deg);font-size:32px;font-weight:900;letter-spacing:2px;color:rgba(192,57,43,.16);z-index:999}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="seguridad-chile.html?volver=1" class="volver">← Volver a la App</a>
+  <img src="icon-192.png" alt="Logo">
+  <h1>Directiva de Funcionamiento — Eventos Masivos</h1>
+  <p>Control & Confianza — Asesores acreditados OS.10</p>
+</header>
+
+<div class="prog" id="prog">
+  <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-label" id="progLabel"></div>
+</div>
+
+<main>
+
+<!-- ===== INTRO ===== -->
+<section id="vIntro">
+  <div class="card">
+    <h2>🎪 Genera el borrador de tu Directiva para un evento masivo</h2>
+    <p>Todo espectáculo o evento de afluencia masiva (conciertos, festivales, ferias, encuentros deportivos) que contrate guardias de seguridad debe contar con una <strong>Directiva de Funcionamiento para eventos masivos</strong> aprobada por la autoridad, conforme a la <strong>Ley 21.659</strong> de Seguridad Privada y su reglamento de eventos masivos (Decreto 208, de 2025). Este asistente construye el borrador completo siguiendo el formato oficial usado por la autoridad fiscalizadora.</p>
+    <p style="font-size:0.74rem">📌 La Directiva del evento se presenta ante la autoridad <strong>antes de su realización</strong>, con la anticipación que exige la clasificación oficial del evento — tu asesor acreditado la confirma al visar. A diferencia de las instalaciones fijas, es válida <strong>para el evento específico</strong>.</p>
+    <p>Al finalizar, un <strong>asesor de seguridad acreditado OS.10</strong> revisa, corrige y visa tu Directiva para su presentación — ese servicio se cotiza por WhatsApp según la envergadura del evento.</p>
+    <div class="aviso">⚖️ El documento que genera esta herramienta es un <strong>BORRADOR</strong> y no tiene validez ante la autoridad hasta ser revisado y visado por un asesor acreditado. Los planos definitivos del recinto (Anexo 07) y los documentos acreditantes se completan durante la visación.</div>
+    <button class="btn btn-oro btn-full" onclick="comenzar()">Comenzar mi Directiva de evento →</button>
+    <button class="btn btn-borde btn-full" onclick="verMisExpedientes()">📂 Mis expedientes de eventos</button>
+    <p style="font-size:0.72rem;margin-top:10px">¿Tu servicio es para una instalación fija (empresa, edificio, local)? <a href="directiva.html" style="color:#d4a017">Usa el generador de instalaciones →</a></p>
+    <div class="msg" id="msgIntro"></div>
+  </div>
+  <div class="card" id="authBox" style="display:none">
+    <h2>Exclusivo Plan Empresa</h2>
+    <p>El generador de Directivas es parte del <strong>Plan Empresa ($<span id="precioEmp"></span>/30 días)</strong>. Inicia sesión o crea tu cuenta para continuar.</p>
+    <label for="aEmail">Email</label>
+    <input id="aEmail" type="email" placeholder="Email" autocomplete="email">
+    <label for="aPass">Contraseña</label>
+    <div style="position:relative"><input id="aPass" type="password" placeholder="Contraseña (mín. 8)" autocomplete="current-password" style="padding-right:34px"><button type="button" tabindex="-1" aria-label="Mostrar contraseña" onclick="cycToggleOjo(this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;padding:0;line-height:1">👁</button></div>
+    <div class="fila" style="margin-top:10px">
+      <button class="btn btn-gris" style="flex:1" onclick="autenticar('login')">Ya tengo cuenta</button>
+      <button class="btn btn-oro" style="flex:1" onclick="autenticar('registro')">Crear cuenta</button>
+    </div>
+    <button class="btn btn-oro btn-full" id="btnPagarEmp" style="display:none" onclick="pagarEmpresa()">Pagar Plan Empresa y desbloquear</button>
+    <a href="recuperar-clave.html" style="display:inline-block;margin-top:8px;font-size:0.72rem;color:#d4a017">¿Olvidaste tu contraseña?</a>
+    <div style="font-size:0.66rem;color:#888;margin-top:4px">Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017">Términos y Condiciones</a></div>
+    <div class="msg" id="msgAuth"></div>
+  </div>
+</section>
+
+<!-- ===== MIS EXPEDIENTES ===== -->
+<section id="vLista" style="display:none">
+  <div class="card">
+    <h2>📂 Mis expedientes de eventos</h2>
+    <p>Retoma un expediente guardado o crea uno nuevo.</p>
+    <div id="listaExp"></div>
+    <button class="btn btn-oro btn-full" onclick="nuevoExpediente()">+ Nueva Directiva de evento</button>
+    <button class="btn btn-gris btn-full" onclick="irIntro()">← Volver</button>
+    <div class="msg" id="msgLista"></div>
+  </div>
+</section>
+
+<!-- ===== WIZARD ===== -->
+<section id="vWizard" style="display:none">
+
+  <div class="paso" data-p="1">
+    <div class="card">
+      <h2>I. Empresas participantes</h2>
+      <p>El formato oficial identifica a todas las empresas del evento.</p>
+      <h3>Empresa productora *</h3>
+      <label>Razón social *</label><input type="text" id="f_pr_nombre" placeholder="Ej: Producciones del Valle SpA">
+      <div class="fila">
+        <div><label>RUT *</label><input type="text" id="f_pr_rut" placeholder="76.123.456-7"></div>
+        <div><label>Teléfono *</label><input type="tel" id="f_pr_tel" placeholder="+56 9 ..."></div>
+      </div>
+      <label>Giro *</label><input type="text" id="f_pr_giro" placeholder="Ej: Producción de espectáculos">
+      <label>Dirección</label><input type="text" id="f_pr_dom" placeholder="Calle, número, comuna">
+      <label>Email</label><input type="email" id="f_pr_email" placeholder="contacto@productora.cl">
+      <h3>Representante legal *</h3>
+      <label>Nombres y apellidos *</label><input type="text" id="f_rl_nombre">
+      <div class="fila">
+        <div><label>Teléfono</label><input type="tel" id="f_rl_tel"></div>
+        <div><label>Email</label><input type="email" id="f_rl_email"></div>
+      </div>
+      <h3>Quien solicita el espectáculo</h3>
+      <label class="chk"><input type="checkbox" id="f_so_misma" onchange="toggleMisma('so')"> Es la misma empresa productora</label>
+      <div id="boxSolicitante">
+        <label>Razón social / Nombre</label><input type="text" id="f_so_nombre">
+        <div class="fila">
+          <div><label>RUT</label><input type="text" id="f_so_rut"></div>
+          <div><label>Teléfono</label><input type="tel" id="f_so_tel"></div>
+        </div>
+        <label>Giro</label><input type="text" id="f_so_giro">
+      </div>
+      <p style="font-size:0.7rem">Los documentos que acreditan al solicitante se adjuntan durante la visación.</p>
+      <h3>Empresa de RR.HH. (la que aporta los guardias)</h3>
+      <label class="chk"><input type="checkbox" id="f_rh_misma" onchange="toggleMisma('rh')"> Es la misma empresa productora</label>
+      <div id="boxRrhh">
+        <label>Razón social</label><input type="text" id="f_rh_nombre">
+        <div class="fila">
+          <div><label>RUT</label><input type="text" id="f_rh_rut"></div>
+          <div><label>Teléfono</label><input type="tel" id="f_rh_tel"></div>
+        </div>
+        <label>Giro</label><input type="text" id="f_rh_giro">
+      </div>
+    </div>
+  </div>
+
+  <div class="paso" data-p="2">
+    <div class="card">
+      <h2>II. El evento y su recinto</h2>
+      <label>Nombre / motivo del espectáculo *</label><input type="text" id="f_ev_motivo" placeholder="Ej: Festival de Verano Limache 2027">
+      <label>Tipo de espectáculo *</label>
+      <select id="f_ev_tipo">
+        <option value="concierto">Concierto / festival musical</option>
+        <option value="deportivo">Evento deportivo (estadio)</option>
+        <option value="feria">Feria / carnaval / fiesta costumbrista</option>
+        <option value="otro">Otro evento masivo</option>
+      </select>
+      <div class="fila">
+        <div><label>Fecha de realización *</label><input type="date" id="f_ev_fecha"></div>
+        <div><label>Comuna *</label><select id="f_ev_comuna"><option value="">— Selecciona —</option></select></div>
+      </div>
+      <label>Recinto y dirección exacta *</label><input type="text" id="f_ev_dir" placeholder="Ej: Estadio Municipal, Av. Palmira Romano 500">
+      <label>Propietario del recinto</label><input type="text" id="f_ev_prop" placeholder="Ej: I. Municipalidad de ...">
+      <h3>Croquis del recinto</h3>
+      <div id="planoEstado"></div>
+      <h3>Entradas y aforo</h3>
+      <label>Total de entradas a disposición del público *</label><input type="number" id="f_af_total" min="1" placeholder="Ej: 5000">
+      <p style="font-size:0.7rem">El documento notarial con la cantidad total de entradas se adjunta en la visación.</p>
+      <h3>Desglose por sector</h3>
+      <div id="listaSectores"></div>
+      <button class="mini-add" onclick="agregarItem('sectores')">+ Agregar sector (tribuna, galería, pista, cancha, palco…)</button>
+      <div class="fila">
+        <div><label>Inicio de venta de entradas</label><input type="date" id="f_af_venta"></div>
+        <div><label>Dónde se venden</label><input type="text" id="f_af_locales" placeholder="Ej: PuntoTicket y boleterías"></div>
+      </div>
+      <h3>Horarios del evento (III)</h3>
+      <div class="fila">
+        <div><label>Apertura de puertas *</label><input type="time" id="f_ho_puertas"></div>
+        <div><label>Apertura de boleterías</label><input type="time" id="f_ho_boleterias"></div>
+      </div>
+      <div class="fila">
+        <div><label>Llegada de artistas</label><input type="time" id="f_ho_artistas"></div>
+        <div><label>Inicio del espectáculo *</label><input type="time" id="f_ho_inicio"></div>
+      </div>
+      <label>Término del espectáculo *</label><input type="time" id="f_ho_termino">
+    </div>
+  </div>
+
+  <div class="paso" data-p="3">
+    <div class="card">
+      <h2>II. Infraestructura del recinto</h2>
+      <h3>Accesos</h3>
+      <div class="fila">
+        <div><label>Puertas de acceso (cantidad) *</label><input type="number" id="f_in_puertas" min="1" placeholder="Ej: 4"></div>
+        <div><label>Puertas de emergencia (cantidad) *</label><input type="number" id="f_in_emerg" min="0" placeholder="Ej: 2"></div>
+      </div>
+      <label>Calles o avenidas de cada acceso</label><textarea id="f_in_puertasDet" placeholder="Ej: Puerta 1: Av. Palmira Romano / Puerta 2: calle Urmeneta..."></textarea>
+      <div class="fila">
+        <div><label>Boleterías (cantidad)</label><input type="number" id="f_in_boleterias" min="0"></div>
+        <div><label>Ubicación de boleterías</label><input type="text" id="f_in_boleteriasUbic"></div>
+      </div>
+      <label class="chk"><input type="checkbox" id="f_in_detector"> Habrá detectores de metales / paletas de cacheo</label>
+      <label>Ubicación de detectores o paletas</label><input type="text" id="f_in_paletasUbic" placeholder="Ej: en cada puerta de acceso">
+      <label>A qué sector corresponde cada tipo de entrada</label><textarea id="f_in_sectorTicket" placeholder="Ej: Ticket Pista → acceso puerta 1; Ticket Tribuna → puerta 3"></textarea>
+      <h3>Estacionamientos</h3>
+      <div id="listaEstac"></div>
+      <button class="mini-add" onclick="agregarItem('estac')">+ Agregar estacionamiento</button>
+      <h3>Servicios del público</h3>
+      <label>Baños: ubicación y cantidad por sexo, con sus medidas de seguridad</label><textarea id="f_in_banos" placeholder="Ej: 10 baños químicos damas sector norte, 10 varones sector sur; iluminados y con guardia cercano"></textarea>
+      <label>Primeros auxilios y ubicación de ambulancias</label><textarea id="f_in_auxilios" placeholder="Ej: posta central junto a boleterías; 2 ambulancias en acceso sur"></textarea>
+      <h3>Vías de escape</h3>
+      <label>Vías de salida y escape del público (con medidas de seguridad) *</label><textarea id="f_in_escape"></textarea>
+      <label>Vías de salida y escape del sector VIP</label><textarea id="f_in_escapeVip"></textarea>
+      <h3>Instalaciones del espectáculo</h3>
+      <label>Escenario: ubicación y medidas de seguridad</label><textarea id="f_in_escenario"></textarea>
+      <label>Camarines de artistas: ubicación y medidas</label><textarea id="f_in_camarines"></textarea>
+      <div class="fila">
+        <div><label>Torres de iluminación</label><input type="text" id="f_in_torres" placeholder="Ubicación y medidas"></div>
+        <div><label>Mesas de sonido</label><input type="text" id="f_in_sonido" placeholder="Ubicación y medidas"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="paso" data-p="4">
+    <div class="card" style="border-color:#d4a017">
+      <h2>⚡ Sugerencia inteligente de dotación</h2>
+      <p>Propone las facciones (puestos) y la cantidad de guardias según el aforo, los accesos, el riesgo de la comuna y el horario del evento. Todo queda editable.</p>
+      <label>Criterio base (asistentes por guardia)</label><input type="number" id="f_sug_ratio" min="20" max="300" value="100">
+      <div class="aviso" style="margin-top:8px">📐 Criterio referencial y editable. La dotación definitiva la valida el asesor acreditado conforme a la <strong>clasificación oficial de eventos masivos</strong> de la autoridad.</div>
+      <button class="btn btn-borde btn-full" onclick="sugerir()">⚡ Calcular dotación para mi evento</button>
+      <div id="sugResultado"></div>
+    </div>
+    <div class="card">
+      <h2>II.10 — Facciones y guardias por facción</h2>
+      <p>Dónde estará cada puesto de guardias y cuántos en cada uno.</p>
+      <div id="listaFacciones"></div>
+      <button class="mini-add" onclick="agregarItem('facciones')">+ Agregar facción</button>
+    </div>
+    <div class="card">
+      <h2>IV. Personal del servicio</h2>
+      <div class="fila">
+        <div><label>Guardias de seguridad *</label><input type="number" id="f_pe_guardias" min="1"></div>
+        <div><label>Supervisores</label><input type="number" id="f_pe_superv" min="0"></div>
+      </div>
+      <div class="fila">
+        <div><label>Jefes de grupo</label><input type="number" id="f_pe_jefesg" min="0"></div>
+        <div><label>Jefes de seguridad</label><input type="number" id="f_pe_jefeseg" min="0"></div>
+      </div>
+      <label>Controles</label><input type="number" id="f_pe_controles" min="0">
+      <h3>Turnos</h3>
+      <div id="listaTurnos"></div>
+      <button class="mini-add" onclick="agregarItem('turnos')">+ Agregar turno</button>
+      <label>Descripción de la credencial del personal de la productora</label><textarea id="f_pe_credencial" placeholder="Ej: credencial plastificada con foto, nombre y cargo, cinta color naranjo. El modelo se adjunta en la visación."></textarea>
+    </div>
+  </div>
+
+  <div class="paso" data-p="5">
+    <div class="card">
+      <h2>V. Objetivos y tareas</h2>
+      <label>Objetivo del servicio (causas y fines del espectáculo)</label>
+      <textarea id="f_ob_objetivo"></textarea>
+      <label>Personal de la productora que participará (cantidad y tareas)</label>
+      <textarea id="f_ob_prodPersonal" placeholder="Ej: 25 personas de producción: montaje, boletería, coordinación de artistas..."></textarea>
+      <label>Tareas del personal de seguridad por facción</label>
+      <textarea id="f_ob_tareas" placeholder="Se llena automáticamente al aplicar la sugerencia — o descríbelas tú"></textarea>
+    </div>
+    <div class="card">
+      <h2>VI. Tenida autorizada</h2>
+      <p style="font-size:0.72rem">La tenida no debe asemejarse a los uniformes de Carabineros, PDI ni FF.AA. Las fotografías del uniforme (guardias y productora) se adjuntan en la visación.</p>
+      <div id="chkTenida"></div>
+      <label>Tenida del personal de la productora</label><input type="text" id="f_te_productora" placeholder="Ej: polera negra con logo de la productora">
+      <label>Otro (opcional)</label><input type="text" id="f_te_otro">
+    </div>
+    <div class="card">
+      <h2>VII. Implementos del servicio</h2>
+      <p style="font-size:0.72rem">Prohibido el uso de armas de fuego o implementos no autorizados mediante resolución de la AA.FF. OS-10 (Ley 21.659).</p>
+      <div id="chkImplementos"></div>
+      <label>Otro (opcional)</label><input type="text" id="f_im_otro">
+    </div>
+    <div class="card">
+      <h2>VIII. Comunicaciones y seguros</h2>
+      <div class="fila">
+        <div><label>N° Resolución Subtel (si usan radios)</label><input type="text" id="f_co_subtel"></div>
+        <div><label>Total de equipos de radio</label><input type="number" id="f_co_equipos" min="0"></div>
+      </div>
+      <label>Credenciales de operación de los equipos</label><input type="text" id="f_co_cred">
+      <label>Medios de comunicación por facción</label><textarea id="f_co_medios" placeholder="Ej: radio portátil en cada facción, canal 1 accesos / canal 2 escenario; celular del supervisor"></textarea>
+      <label class="chk"><input type="checkbox" id="f_co_fuegos"> El evento considera fuegos artificiales</label>
+      <div class="aviso" id="avisoFuegos" style="display:none">🎆 Los fuegos artificiales requieren autorización de la Comandancia de Guarnición (se adjunta en la visación — Anexo 6).</div>
+      <label class="chk"><input type="checkbox" id="f_co_seguros"> Cuenta con seguros ante daños a terceros</label>
+      <label>Compañía y N° de póliza (si aplica)</label><input type="text" id="f_co_segurosDet">
+    </div>
+  </div>
+
+  <div class="paso" data-p="6">
+    <div class="card">
+      <h2>Coordinación y servicios de emergencia</h2>
+      <h3>Coordinador general y RR.PP. (II.18)</h3>
+      <label>Nombres y apellidos</label><input type="text" id="f_em_coordNom">
+      <div class="fila">
+        <div><label>Teléfono</label><input type="tel" id="f_em_coordTel"></div>
+        <div><label>Email</label><input type="email" id="f_em_coordEmail"></div>
+      </div>
+      <h3>Coordinador de servicios básicos — electricidad, agua, gas (II.19)</h3>
+      <label>Nombres y apellidos</label><input type="text" id="f_em_basicosNom">
+      <label>Teléfono</label><input type="tel" id="f_em_basicosTel">
+      <h3>Bomberos (II.20–21)</h3>
+      <div class="fila">
+        <div><label>Compañía</label><input type="text" id="f_em_bomberosCia" placeholder="Ej: 1ª Cía. de Limache"></div>
+        <div><label>Carros bomba</label><input type="number" id="f_em_bomberosCarros" min="0"></div>
+      </div>
+      <div class="fila">
+        <div><label>Voluntarios</label><input type="number" id="f_em_bomberosVol" min="0"></div>
+        <div><label>Ubicación en el recinto</label><input type="text" id="f_em_bomberosUbic"></div>
+      </div>
+      <p style="font-size:0.7rem">El documento de Bomberos que acredita su concurrencia se adjunta en la visación.</p>
+      <h3>Salud (II.22–23)</h3>
+      <label>Hospital o posta más cercana</label><input type="text" id="f_em_hospital">
+      <div class="fila">
+        <div><label>Distancia (km)</label><input type="number" id="f_em_hospKm" min="0" step="0.1"></div>
+        <div><label>Tiempo (minutos)</label><input type="number" id="f_em_hospMin" min="0"></div>
+      </div>
+      <label>Autorización sanitaria (SEREMI de Salud)</label>
+      <select id="f_em_sanitaria"><option value="">— Estado —</option><option>Obtenida</option><option>En trámite</option><option>Pendiente</option></select>
+      <h3>Grupos electrógenos (II.24–25)</h3>
+      <label class="chk"><input type="checkbox" id="f_el_usa" onchange="toggleElectro()"> Se utilizarán grupos electrógenos</label>
+      <div id="boxElectro" style="display:none">
+        <label>Empresa proveedora y representante</label><input type="text" id="f_el_empresa">
+        <label>Teléfono</label><input type="tel" id="f_el_tel">
+        <div id="listaEquipos"></div>
+        <button class="mini-add" onclick="agregarItem('equipos')">+ Agregar equipo (KVA)</button>
+        <label>Instalados en / sector que iluminan / medidas de seguridad</label><textarea id="f_el_detalle"></textarea>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Anexo — Información para decisiones policiales</h2>
+      <p>Teléfonos que Carabineros necesita durante el evento.</p>
+      <h3>Empresa productora</h3>
+      <div class="fila">
+        <div><label>Mesa central / oficina</label><input type="tel" id="f_ax_mesaProd"></div>
+        <div><label>Gerente general (celular)</label><input type="tel" id="f_ax_gerProd"></div>
+      </div>
+      <h3>Empresa de RR.HH.</h3>
+      <div class="fila">
+        <div><label>Mesa central / oficina</label><input type="tel" id="f_ax_mesaRrhh"></div>
+        <div><label>Gerente general (celular)</label><input type="tel" id="f_ax_gerRrhh"></div>
+      </div>
+      <h3>Cuartel de Carabineros más cercano</h3>
+      <div class="fila">
+        <div><label>Teléfono comisaría</label><input type="tel" id="f_ax_cuartelTel" placeholder="Se completa al elegir comuna"></div>
+        <div><label>Calle o avenida del cuartel</label><input type="text" id="f_ax_cuartelDir"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="paso" data-p="7">
+    <div class="card">
+      <h2>Revisión del expediente</h2>
+      <div id="folioZona"></div>
+      <div id="revision"></div>
+      <div class="aviso">⚖️ Este expediente genera un <strong>BORRADOR</strong>. La Directiva definitiva requiere revisión y visación de un asesor acreditado OS.10 — el siguiente paso tras guardar.</div>
+      <button class="btn btn-oro btn-full" onclick="guardarServidor()">💾 Guardar expediente</button>
+      <button class="btn btn-borde btn-full" onclick="generarPDF()">📄 Descargar borrador en PDF (con marca de agua)</button>
+      <div class="msg" id="msgGuardar"></div>
+    </div>
+    <div class="card" style="border-color:#25D366">
+      <h2 style="color:#25D366">✅ Solicitar visación del asesor acreditado</h2>
+      <p>Cuando tu borrador esté listo, envíalo a nuestro asesor acreditado OS.10. Revisará el documento, te pedirá los anexos (planos, documento notarial de entradas, certificado de Bomberos) y te cotizará la <strong>visación y firma profesional</strong> según la envergadura del evento.</p>
+      <button class="btn btn-oro btn-full" style="background:#25D366;color:#fff" onclick="solicitarVisacion()">📋 Enviar a visación profesional</button>
+      <div class="msg" id="msgVisacion"></div>
+    </div>
+  </div>
+
+</section>
+</main>
+
+<div id="marcaAgua">BORRADOR — SIN VALIDEZ SIN VISACIÓN<br>DE ASESOR ACREDITADO</div>
+<div id="docPrint"></div>
+
+<div class="nav-row" id="navRow">
+  <button class="btn btn-gris" id="btnAtras" onclick="navegar(-1)">← Atrás</button>
+  <button class="btn btn-oro" id="btnSig" onclick="navegar(1)">Siguiente →</button>
+</div>
+
+<script src="config.js"></script>
+<script src="cuadrante.js"></script>
+<script>
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+const TOTAL_PASOS=7;
+const NOMBRES_PASOS=['','I. Empresas participantes','II-III. Evento, aforo y horarios','II. Infraestructura del recinto','II.10 y IV. Dotación y facciones','V-VIII. Tareas, tenida y comunicaciones','Emergencias y anexo policial','Revisión y guardado'];
+const LS_KEY='directiva_evento_borrador';
+let paso=1;
+let exp=expedienteVacio();
+
+function expedienteVacio(){
+  return {
+    folio:null,
+    // empleador/lugar/personal comparten nombres con el generador de instalaciones
+    // para que el expediente se lea igual en el panel y el correo de visación.
+    empleador:{nombre:'',rut:'',tel:'',giro:'',dom:'',email:''}, // = productora
+    lugar:{dir:'',comuna:'',entidad:'',plano:null},              // dir = recinto
+    personal:{total:'',turnos:[{nombre:'Turno evento',desde:'',hasta:'',guardias:''}],superv:'',jefesg:'',jefeseg:'1',controles:'',credencial:''},
+    evento:{
+      motivo:'',tipoEvento:'concierto',fecha:'',propietario:'',
+      repLegal:{nombre:'',tel:'',email:''},
+      solicitante:{misma:false,nombre:'',rut:'',tel:'',giro:''},
+      rrhh:{misma:false,nombre:'',rut:'',tel:'',giro:''},
+      aforo:{total:'',sectores:[{nombre:'Pista / cancha',cant:''}],venta:'',locales:''},
+      horarios:{puertas:'',boleterias:'',artistas:'',inicio:'',termino:''},
+      infra:{puertas:'',emerg:'',puertasDet:'',boleterias:'',boleteriasUbic:'',detector:false,paletasUbic:'',sectorTicket:'',estac:[],banos:'',auxilios:'',escape:'',escapeVip:'',escenario:'',camarines:'',torres:'',sonido:''},
+      facciones:[],
+      com:{subtel:'',equipos:'',cred:'',medios:'',fuegos:false,seguros:false,segurosDet:''},
+      emerg:{coordNom:'',coordTel:'',coordEmail:'',basicosNom:'',basicosTel:'',bomberosCia:'',bomberosCarros:'',bomberosVol:'',bomberosUbic:'',hospital:'',hospKm:'',hospMin:'',sanitaria:'',electro:{usa:false,empresa:'',tel:'',equipos:[],detalle:''}},
+      anexo:{mesaProd:'',gerProd:'',mesaRrhh:'',gerRrhh:'',cuartelTel:'',cuartelDir:''}
+    },
+    objetivos:{
+      objetivo:'Resguardar la integridad física de los asistentes, artistas y trabajadores del espectáculo, así como las instalaciones del recinto, mediante labores preventivas de control de acceso, vigilancia y orientación del público, dando cumplimiento a la Ley 21.659 de Seguridad Privada y su reglamento de eventos masivos, en coordinación permanente con Carabineros de Chile y los servicios de emergencia.',
+      prodPersonal:'',tareas:''
+    },
+    tenida:{items:['Chaqueta o polera con la palabra "SEGURIDAD"','Credencial visible con nombre y fotografía','Chaleco reflectante'],productora:'',otro:''},
+    implementos:{items:['Chaleco anticorte','Radio de comunicación portátil','Linterna','Brazalete identificatorio','Teléfono celular'],otro:''}
+  };
+}
+
+const OPC_TENIDA=['Chaqueta o polera con la palabra "SEGURIDAD"','Credencial visible con nombre y fotografía','Chaleco reflectante','Pantalón institucional','Gorro institucional'];
+const OPC_IMPLEMENTOS=['Chaleco anticorte','Radio de comunicación portátil','Linterna','Brazalete identificatorio','Teléfono celular','Paleta detectora de metales','Botiquín de primeros auxilios','Cinturón de servicio'];
+
+// ---------- Autenticación y gate Plan Empresa ----------
+function tok(){return localStorage.getItem('cyc_token')||'';}
+function msg(id,t,tipo){var e=document.getElementById(id);e.textContent=t;e.className='msg '+tipo;}
+async function estadoPlan(){
+  if(!tok())return {sesion:false,plan:null};
+  try{
+    const r=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+tok()}});
+    if(!r.ok)return {sesion:false,plan:null};
+    const d=await r.json();
+    return {sesion:true,plan:d.plan||null};
+  }catch(e){return {sesion:false,plan:null,offline:true};}
+}
+async function exigirEmpresa(){
+  const e=await estadoPlan();
+  if(e.offline){msg('msgIntro','Sin conexión — revisa tu internet e intenta de nuevo.','err');return false;}
+  if(e.sesion&&e.plan==='empresa')return true;
+  document.getElementById('authBox').style.display='block';
+  document.getElementById('btnPagarEmp').style.display=e.sesion?'block':'none';
+  if(e.sesion)msg('msgAuth','Tu cuenta no tiene el Plan Empresa activo. Págalo para desbloquear el generador.','err');
+  document.getElementById('authBox').scrollIntoView({behavior:'smooth'});
+  return false;
+}
+async function autenticar(modo){
+  const email=document.getElementById('aEmail').value.trim();
+  const pass=document.getElementById('aPass').value;
+  if(!email||pass.length<8){msg('msgAuth','Email y contraseña de mínimo 8 caracteres.','err');return;}
+  try{
+    const r=await fetch(API_URL+'/auth/'+modo,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pass})});
+    const d=await r.json();
+    if(!r.ok){msg('msgAuth',d.error||'No se pudo iniciar sesión.','err');return;}
+    localStorage.setItem('cyc_token',d.token);
+    const e=await estadoPlan();
+    if(e.plan==='empresa'){document.getElementById('authBox').style.display='none';comenzar();}
+    else{document.getElementById('btnPagarEmp').style.display='block';msg('msgAuth','Sesión iniciada. Falta activar el Plan Empresa.','ok');}
+  }catch(err){msg('msgAuth','Sin conexión. Intenta de nuevo.','err');}
+}
+async function pagarEmpresa(){
+  try{
+    const r=await fetch(API_URL+'/pago/iniciar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok()},body:JSON.stringify({plan:'empresa'})});
+    const d=await r.json();
+    if(d.url){location.href=d.url;}else{msg('msgAuth',d.error||'No se pudo iniciar el pago.','err');}
+  }catch(e){msg('msgAuth','Sin conexión. Intenta de nuevo.','err');}
+}
+
+// ---------- Navegación ----------
+async function comenzar(){
+  if(!(await exigirEmpresa()))return;
+  cargarBorradorLocal();
+  document.getElementById('vIntro').style.display='none';
+  document.getElementById('vLista').style.display='none';
+  document.getElementById('vWizard').style.display='block';
+  document.getElementById('navRow').style.display='flex';
+  document.getElementById('prog').style.display='block';
+  irPaso(paso);
+}
+function irIntro(){
+  document.getElementById('vIntro').style.display='block';
+  document.getElementById('vLista').style.display='none';
+  document.getElementById('vWizard').style.display='none';
+  document.getElementById('navRow').style.display='none';
+  document.getElementById('prog').style.display='none';
+}
+function irPaso(n){
+  paso=Math.min(Math.max(n,1),TOTAL_PASOS);
+  document.querySelectorAll('.paso').forEach(p=>p.classList.remove('activo'));
+  document.querySelector('.paso[data-p="'+paso+'"]').classList.add('activo');
+  document.getElementById('progFill').style.width=Math.round(paso/TOTAL_PASOS*100)+'%';
+  document.getElementById('progLabel').textContent='Paso '+paso+' de '+TOTAL_PASOS+' — '+NOMBRES_PASOS[paso];
+  document.getElementById('btnAtras').style.visibility=paso===1?'hidden':'visible';
+  document.getElementById('btnSig').style.display=paso===TOTAL_PASOS?'none':'block';
+  if(paso===2)pintarPlano();
+  if(paso===7)pintarRevision();
+  window.scrollTo(0,0);
+}
+function navegar(dir){
+  if(dir>0){
+    leerFormulario();
+    if(!validarPaso(paso))return;
+    guardarBorradorLocal();
+  }
+  irPaso(paso+dir);
+}
+function validarPaso(p){
+  const ev=exp.evento;
+  if(p===1){
+    if(!exp.empleador.nombre||!exp.empleador.rut||!exp.empleador.giro||!exp.empleador.tel){alert('Completa los campos obligatorios (*) de la empresa productora.');return false;}
+    if(!validarRut(exp.empleador.rut)){alert('El RUT de la productora no es válido. Revísalo (ej: 76.123.456-7).');return false;}
+    if(!ev.repLegal.nombre){alert('Indica el nombre del representante legal.');return false;}
+  }
+  if(p===2){
+    if(!ev.motivo||!ev.fecha||!exp.lugar.dir||!exp.lugar.comuna){alert('Completa el motivo, la fecha, el recinto y la comuna del evento.');return false;}
+    if(!ev.aforo.total||Number(ev.aforo.total)<1){alert('Indica el total de entradas del evento.');return false;}
+    if(Number(ev.aforo.total)>200000&&!confirm('Indicaste '+Number(ev.aforo.total).toLocaleString('es-CL')+' entradas. ¿Es correcta la cifra?'))return false;
+    if(!ev.horarios.inicio||!ev.horarios.termino||!ev.horarios.puertas){alert('Completa los horarios: apertura de puertas, inicio y término.');return false;}
+  }
+  if(p===3){
+    if(!ev.infra.puertas||Number(ev.infra.puertas)<1){alert('Indica cuántas puertas de acceso tiene el recinto.');return false;}
+    if(!ev.infra.escape){alert('Describe las vías de salida y escape del público — es exigencia del formato oficial.');return false;}
+  }
+  if(p===4){
+    const total=Number(exp.personal.total)||0;
+    if(total<1){alert('Indica la cantidad de guardias de seguridad.');return false;}
+    if(!ev.facciones.filter(f=>f.nombre).length){alert('Agrega al menos una facción (usa la sugerencia si quieres partir rápido).');return false;}
+  }
+  return true;
+}
+function validarRut(r){
+  r=r.replace(/\./g,'').replace(/-/g,'').toUpperCase();
+  if(r.length<8)return false;
+  const cuerpo=r.slice(0,-1),dv=r.slice(-1);
+  if(!/^\d+$/.test(cuerpo))return false;
+  let suma=0,m=2;
+  for(let i=cuerpo.length-1;i>=0;i--){suma+=Number(cuerpo[i])*m;m=m===7?2:m+1;}
+  const res=11-(suma%11);
+  const dvCalc=res===11?'0':res===10?'K':String(res);
+  return dv===dvCalc;
+}
+
+// ---------- Formulario <-> estado ----------
+function v(id){return document.getElementById(id).value.trim();}
+function sv(id,val){document.getElementById(id).value=val||'';}
+function ch(id){return document.getElementById(id).checked;}
+function sch(id,val){document.getElementById(id).checked=!!val;}
+function leerFormulario(){
+  const ev=exp.evento;
+  exp.empleador={nombre:v('f_pr_nombre'),rut:v('f_pr_rut'),tel:v('f_pr_tel'),giro:v('f_pr_giro'),dom:v('f_pr_dom'),email:v('f_pr_email')};
+  ev.repLegal={nombre:v('f_rl_nombre'),tel:v('f_rl_tel'),email:v('f_rl_email')};
+  ev.solicitante={misma:ch('f_so_misma'),nombre:v('f_so_nombre'),rut:v('f_so_rut'),tel:v('f_so_tel'),giro:v('f_so_giro')};
+  ev.rrhh={misma:ch('f_rh_misma'),nombre:v('f_rh_nombre'),rut:v('f_rh_rut'),tel:v('f_rh_tel'),giro:v('f_rh_giro')};
+  ev.motivo=v('f_ev_motivo');ev.tipoEvento=document.getElementById('f_ev_tipo').value;ev.fecha=v('f_ev_fecha');ev.propietario=v('f_ev_prop');
+  exp.lugar.dir=v('f_ev_dir');exp.lugar.comuna=document.getElementById('f_ev_comuna').value;exp.lugar.entidad=ev.motivo;
+  ev.aforo.total=v('f_af_total');ev.aforo.venta=v('f_af_venta');ev.aforo.locales=v('f_af_locales');
+  ev.aforo.sectores=[...document.querySelectorAll('#listaSectores .item-lista')].map(el=>({nombre:el.querySelector('.s-nom').value,cant:el.querySelector('.s-cant').value}));
+  ev.horarios={puertas:v('f_ho_puertas'),boleterias:v('f_ho_boleterias'),artistas:v('f_ho_artistas'),inicio:v('f_ho_inicio'),termino:v('f_ho_termino')};
+  ev.infra.puertas=v('f_in_puertas');ev.infra.emerg=v('f_in_emerg');ev.infra.puertasDet=v('f_in_puertasDet');
+  ev.infra.boleterias=v('f_in_boleterias');ev.infra.boleteriasUbic=v('f_in_boleteriasUbic');
+  ev.infra.detector=ch('f_in_detector');ev.infra.paletasUbic=v('f_in_paletasUbic');ev.infra.sectorTicket=v('f_in_sectorTicket');
+  ev.infra.estac=[...document.querySelectorAll('#listaEstac .item-lista')].map(el=>({ubic:el.querySelector('.e-ubic').value,cap:el.querySelector('.e-cap').value}));
+  ev.infra.banos=v('f_in_banos');ev.infra.auxilios=v('f_in_auxilios');ev.infra.escape=v('f_in_escape');ev.infra.escapeVip=v('f_in_escapeVip');
+  ev.infra.escenario=v('f_in_escenario');ev.infra.camarines=v('f_in_camarines');ev.infra.torres=v('f_in_torres');ev.infra.sonido=v('f_in_sonido');
+  ev.facciones=[...document.querySelectorAll('#listaFacciones .item-lista')].map(el=>({nombre:el.querySelector('.fa-nom').value,guardias:el.querySelector('.fa-g').value}));
+  exp.personal.total=v('f_pe_guardias');exp.personal.superv=v('f_pe_superv');exp.personal.jefesg=v('f_pe_jefesg');exp.personal.jefeseg=v('f_pe_jefeseg');exp.personal.controles=v('f_pe_controles');exp.personal.credencial=v('f_pe_credencial');
+  exp.personal.turnos=[...document.querySelectorAll('#listaTurnos .item-lista')].map(el=>({nombre:el.querySelector('.t-nom').value,desde:el.querySelector('.t-desde').value,hasta:el.querySelector('.t-hasta').value,guardias:el.querySelector('.t-g').value}));
+  exp.objetivos={objetivo:v('f_ob_objetivo'),prodPersonal:v('f_ob_prodPersonal'),tareas:v('f_ob_tareas')};
+  exp.tenida={items:[...document.querySelectorAll('#chkTenida input:checked')].map(c=>c.value),productora:v('f_te_productora'),otro:v('f_te_otro')};
+  exp.implementos={items:[...document.querySelectorAll('#chkImplementos input:checked')].map(c=>c.value),otro:v('f_im_otro')};
+  ev.com={subtel:v('f_co_subtel'),equipos:v('f_co_equipos'),cred:v('f_co_cred'),medios:v('f_co_medios'),fuegos:ch('f_co_fuegos'),seguros:ch('f_co_seguros'),segurosDet:v('f_co_segurosDet')};
+  ev.emerg.coordNom=v('f_em_coordNom');ev.emerg.coordTel=v('f_em_coordTel');ev.emerg.coordEmail=v('f_em_coordEmail');
+  ev.emerg.basicosNom=v('f_em_basicosNom');ev.emerg.basicosTel=v('f_em_basicosTel');
+  ev.emerg.bomberosCia=v('f_em_bomberosCia');ev.emerg.bomberosCarros=v('f_em_bomberosCarros');ev.emerg.bomberosVol=v('f_em_bomberosVol');ev.emerg.bomberosUbic=v('f_em_bomberosUbic');
+  ev.emerg.hospital=v('f_em_hospital');ev.emerg.hospKm=v('f_em_hospKm');ev.emerg.hospMin=v('f_em_hospMin');ev.emerg.sanitaria=document.getElementById('f_em_sanitaria').value;
+  ev.emerg.electro.usa=ch('f_el_usa');ev.emerg.electro.empresa=v('f_el_empresa');ev.emerg.electro.tel=v('f_el_tel');ev.emerg.electro.detalle=v('f_el_detalle');
+  ev.emerg.electro.equipos=[...document.querySelectorAll('#listaEquipos .item-lista')].map(el=>({kva:el.querySelector('.q-kva').value,operador:el.querySelector('.q-op').checked}));
+  ev.anexo={mesaProd:v('f_ax_mesaProd'),gerProd:v('f_ax_gerProd'),mesaRrhh:v('f_ax_mesaRrhh'),gerRrhh:v('f_ax_gerRrhh'),cuartelTel:v('f_ax_cuartelTel'),cuartelDir:v('f_ax_cuartelDir')};
+}
+function volcarFormulario(){
+  const ev=exp.evento;
+  sv('f_pr_nombre',exp.empleador.nombre);sv('f_pr_rut',exp.empleador.rut);sv('f_pr_tel',exp.empleador.tel);sv('f_pr_giro',exp.empleador.giro);sv('f_pr_dom',exp.empleador.dom);sv('f_pr_email',exp.empleador.email);
+  sv('f_rl_nombre',ev.repLegal.nombre);sv('f_rl_tel',ev.repLegal.tel);sv('f_rl_email',ev.repLegal.email);
+  sch('f_so_misma',ev.solicitante.misma);sv('f_so_nombre',ev.solicitante.nombre);sv('f_so_rut',ev.solicitante.rut);sv('f_so_tel',ev.solicitante.tel);sv('f_so_giro',ev.solicitante.giro);toggleMisma('so');
+  sch('f_rh_misma',ev.rrhh.misma);sv('f_rh_nombre',ev.rrhh.nombre);sv('f_rh_rut',ev.rrhh.rut);sv('f_rh_tel',ev.rrhh.tel);sv('f_rh_giro',ev.rrhh.giro);toggleMisma('rh');
+  sv('f_ev_motivo',ev.motivo);document.getElementById('f_ev_tipo').value=ev.tipoEvento||'concierto';sv('f_ev_fecha',ev.fecha);sv('f_ev_prop',ev.propietario);
+  sv('f_ev_dir',exp.lugar.dir);document.getElementById('f_ev_comuna').value=exp.lugar.comuna||'';
+  sv('f_af_total',ev.aforo.total);sv('f_af_venta',ev.aforo.venta);sv('f_af_locales',ev.aforo.locales);
+  sv('f_ho_puertas',ev.horarios.puertas);sv('f_ho_boleterias',ev.horarios.boleterias);sv('f_ho_artistas',ev.horarios.artistas);sv('f_ho_inicio',ev.horarios.inicio);sv('f_ho_termino',ev.horarios.termino);
+  sv('f_in_puertas',ev.infra.puertas);sv('f_in_emerg',ev.infra.emerg);sv('f_in_puertasDet',ev.infra.puertasDet);
+  sv('f_in_boleterias',ev.infra.boleterias);sv('f_in_boleteriasUbic',ev.infra.boleteriasUbic);
+  sch('f_in_detector',ev.infra.detector);sv('f_in_paletasUbic',ev.infra.paletasUbic);sv('f_in_sectorTicket',ev.infra.sectorTicket);
+  sv('f_in_banos',ev.infra.banos);sv('f_in_auxilios',ev.infra.auxilios);sv('f_in_escape',ev.infra.escape);sv('f_in_escapeVip',ev.infra.escapeVip);
+  sv('f_in_escenario',ev.infra.escenario);sv('f_in_camarines',ev.infra.camarines);sv('f_in_torres',ev.infra.torres);sv('f_in_sonido',ev.infra.sonido);
+  sv('f_pe_guardias',exp.personal.total);sv('f_pe_superv',exp.personal.superv);sv('f_pe_jefesg',exp.personal.jefesg);sv('f_pe_jefeseg',exp.personal.jefeseg);sv('f_pe_controles',exp.personal.controles);sv('f_pe_credencial',exp.personal.credencial);
+  sv('f_ob_objetivo',exp.objetivos.objetivo);sv('f_ob_prodPersonal',exp.objetivos.prodPersonal);sv('f_ob_tareas',exp.objetivos.tareas);
+  pintarChecks('chkTenida',OPC_TENIDA,exp.tenida.items);sv('f_te_productora',exp.tenida.productora);sv('f_te_otro',exp.tenida.otro);
+  pintarChecks('chkImplementos',OPC_IMPLEMENTOS,exp.implementos.items);sv('f_im_otro',exp.implementos.otro);
+  sv('f_co_subtel',ev.com.subtel);sv('f_co_equipos',ev.com.equipos);sv('f_co_cred',ev.com.cred);sv('f_co_medios',ev.com.medios);
+  sch('f_co_fuegos',ev.com.fuegos);document.getElementById('avisoFuegos').style.display=ev.com.fuegos?'block':'none';
+  sch('f_co_seguros',ev.com.seguros);sv('f_co_segurosDet',ev.com.segurosDet);
+  sv('f_em_coordNom',ev.emerg.coordNom);sv('f_em_coordTel',ev.emerg.coordTel);sv('f_em_coordEmail',ev.emerg.coordEmail);
+  sv('f_em_basicosNom',ev.emerg.basicosNom);sv('f_em_basicosTel',ev.emerg.basicosTel);
+  sv('f_em_bomberosCia',ev.emerg.bomberosCia);sv('f_em_bomberosCarros',ev.emerg.bomberosCarros);sv('f_em_bomberosVol',ev.emerg.bomberosVol);sv('f_em_bomberosUbic',ev.emerg.bomberosUbic);
+  sv('f_em_hospital',ev.emerg.hospital);sv('f_em_hospKm',ev.emerg.hospKm);sv('f_em_hospMin',ev.emerg.hospMin);document.getElementById('f_em_sanitaria').value=ev.emerg.sanitaria||'';
+  sch('f_el_usa',ev.emerg.electro.usa);sv('f_el_empresa',ev.emerg.electro.empresa);sv('f_el_tel',ev.emerg.electro.tel);sv('f_el_detalle',ev.emerg.electro.detalle);toggleElectro();
+  sv('f_ax_mesaProd',ev.anexo.mesaProd);sv('f_ax_gerProd',ev.anexo.gerProd);sv('f_ax_mesaRrhh',ev.anexo.mesaRrhh);sv('f_ax_gerRrhh',ev.anexo.gerRrhh);
+  sv('f_ax_cuartelTel',ev.anexo.cuartelTel);sv('f_ax_cuartelDir',ev.anexo.cuartelDir);
+  pintarLista('sectores');pintarLista('estac');pintarLista('facciones');pintarLista('turnos');pintarLista('equipos');
+}
+function toggleMisma(cual){
+  const on=ch('f_'+(cual==='so'?'so':'rh')+'_misma');
+  document.getElementById(cual==='so'?'boxSolicitante':'boxRrhh').style.display=on?'none':'block';
+}
+function toggleElectro(){
+  document.getElementById('boxElectro').style.display=ch('f_el_usa')?'block':'none';
+}
+
+// ---------- Listas dinámicas (un solo motor) ----------
+const LISTAS={
+  sectores:{cont:'listaSectores',get:()=>exp.evento.aforo.sectores,item:(x,i)=>'<div class="fila"><div><label>Sector</label><input type="text" class="s-nom" value="'+esc(x.nombre)+'" placeholder="Ej: Tribuna"></div><div><label>Entradas</label><input type="number" class="s-cant" min="0" value="'+esc(x.cant)+'"></div></div>'},
+  estac:{cont:'listaEstac',get:()=>exp.evento.infra.estac,item:(x,i)=>'<div class="fila"><div><label>Ubicación</label><input type="text" class="e-ubic" value="'+esc(x.ubic)+'" placeholder="Ej: costado norte"></div><div><label>Capacidad (vehículos)</label><input type="number" class="e-cap" min="0" value="'+esc(x.cap)+'"></div></div>'},
+  facciones:{cont:'listaFacciones',get:()=>exp.evento.facciones,item:(x,i)=>'<div class="fila"><div><label>Facción '+(i+1)+'</label><input type="text" class="fa-nom" value="'+esc(x.nombre)+'" placeholder="Ej: Control acceso puerta 1"></div><div><label>Guardias</label><input type="number" class="fa-g" min="1" value="'+esc(x.guardias)+'"></div></div>'},
+  turnos:{cont:'listaTurnos',get:()=>exp.personal.turnos,item:(x,i)=>'<div class="fila"><div><label>Nombre del turno</label><input type="text" class="t-nom" value="'+esc(x.nombre)+'"></div><div><label>Guardias</label><input type="number" class="t-g" min="1" value="'+esc(x.guardias)+'"></div></div><div class="fila"><div><label>Desde</label><input type="time" class="t-desde" value="'+esc(x.desde)+'"></div><div><label>Hasta</label><input type="time" class="t-hasta" value="'+esc(x.hasta)+'"></div></div>'},
+  equipos:{cont:'listaEquipos',get:()=>exp.evento.emerg.electro.equipos,item:(x,i)=>'<div class="fila"><div><label>Potencia (KVA)</label><input type="number" class="q-kva" min="0" value="'+esc(x.kva)+'"></div><div><label class="chk" style="margin-top:26px"><input type="checkbox" class="q-op"'+(x.operador?' checked':'')+'> Con operador</label></div></div>'}
+};
+function pintarLista(que){
+  const L=LISTAS[que];
+  document.getElementById(L.cont).innerHTML=L.get().map((x,i)=>
+    '<div class="item-lista"><button class="item-x" onclick="quitarItem(\''+que+'\','+i+')">✕</button>'+L.item(x,i)+'</div>').join('');
+}
+function agregarItem(que){
+  leerFormulario();
+  const vacio={sectores:{nombre:'',cant:''},estac:{ubic:'',cap:''},facciones:{nombre:'',guardias:''},turnos:{nombre:'',desde:'',hasta:'',guardias:''},equipos:{kva:'',operador:false}}[que];
+  LISTAS[que].get().push(vacio);
+  pintarLista(que);
+}
+function quitarItem(que,i){leerFormulario();LISTAS[que].get().splice(i,1);pintarLista(que);}
+function pintarChecks(id,opciones,marcadas){
+  document.getElementById(id).innerHTML=opciones.map(o=>
+    '<label class="chk"><input type="checkbox" value="'+esc(o)+'"'+(marcadas.indexOf(o)>=0?' checked':'')+'> '+esc(o)+'</label>').join('');
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+
+// ---------- Plano del recinto (importado de Mi Cobertura) ----------
+function pintarPlano(){
+  const cont=document.getElementById('planoEstado');
+  let plano=exp.lugar.plano;
+  if(!plano){
+    try{plano=JSON.parse(localStorage.getItem('georef_expediente'));}catch(e){plano=null;}
+  }
+  if(plano&&plano.perimetro&&plano.perimetro.length>=3){
+    exp.lugar.plano=plano;
+    if(!v('f_ev_dir')&&plano.dir)sv('f_ev_dir',plano.dir.split(',').slice(0,2).join(','));
+    const nSis=(plano.sistemas||[]).length;
+    cont.innerHTML='<div class="plano-ok">✅ <strong>Croquis del recinto importado desde Mi Cobertura</strong><br>'+
+      esc(plano.dir||'Recinto georeferenciado')+'<br>'+
+      plano.perimetro.length+' vértices de perímetro · '+nSis+' puntos marcados</div>'+
+      '<div class="croquis-wrap">'+croquisSVG(plano,300,200,true)+
+      '<div style="font-size:0.66rem;color:#888;padding:2px 0 4px">'+esc(leyendaCroquis(plano))+'</div></div>'+
+      '<p style="font-size:0.7rem;margin-top:6px">Este croquis es referencial. Los 2 planos generales del recinto con toda la señalización (Anexo 07) se preparan con el asesor durante la visación.</p>';
+  }else{
+    cont.innerHTML='<div class="plano-no">✏️ Puedes dibujar el perímetro del recinto en <strong>Mi Cobertura</strong> (dirección → perímetro → puntos) y volver aquí: se importará solo como croquis referencial. Los planos oficiales del Anexo 07 se preparan en la visación.<br><a href="georef-predio.html" class="btn btn-borde btn-full" style="margin-top:8px">🗺️ Dibujar el recinto ahora</a></div>';
+  }
+}
+
+// ---------- Prefill comisaría por comuna ----------
+function alCambiarComuna(){
+  const k=document.getElementById('f_ev_comuna').value;
+  if(k&&typeof CUADRANTE!=='undefined'&&CUADRANTE[k]&&!v('f_ax_cuartelTel')){
+    sv('f_ax_cuartelTel',CUADRANTE[k]);
+  }
+}
+
+// ---------- Motor de sugerencias para eventos ----------
+const SIS_DIR={camara:'📷',guardia:'💂',alarma:'🚨',acceso:'🔒',ilum:'💡',ciego:'👁',entrada:'🚪',bodega:'📦'};
+const SIS_NOM={camara:'Cámara',guardia:'Puesto guardia',alarma:'Alarma',acceso:'Control de acceso',ilum:'Iluminación',ciego:'Punto ciego',entrada:'Entrada',bodega:'Bodega'};
+let sugerenciaActual=null;
+
+function escalaEvento(aforo){
+  // Escala operativa interna de C&C para dimensionar el servicio.
+  // La clasificación oficial del evento la determina la autoridad (REX de clasificación); el asesor la confirma al visar.
+  if(aforo>50000)return {k:4,label:'Mega evento (más de 50.000 asistentes)',sector:8000};
+  if(aforo>20000)return {k:3,label:'Alta convocatoria (20.001 – 50.000)',sector:6000};
+  if(aforo>5000)return {k:2,label:'Gran evento (5.001 – 20.000)',sector:5000};
+  return {k:1,label:'Evento masivo estándar (hasta 5.000)',sector:5000};
+}
+function sugerir(){
+  leerFormulario();
+  const ev=exp.evento;
+  const cont=document.getElementById('sugResultado');
+  const aforo=Number(ev.aforo.total)||0;
+  if(aforo<1){cont.innerHTML='<div class="sug-box">Indica primero el <strong>total de entradas</strong> (paso 2).</div>';return;}
+  if(!exp.lugar.comuna){cont.innerHTML='<div class="sug-box">Selecciona primero la <strong>comuna</strong> del evento (paso 2).</div>';return;}
+  const ratio=Math.max(20,Math.min(300,Number(v('f_sug_ratio'))||100));
+  const puertas=Math.max(1,Number(ev.infra.puertas)||1);
+  const boleterias=Number(ev.infra.boleterias)||0;
+  const deportivo=ev.tipoEvento==='deportivo';
+  const esc_=escalaEvento(aforo);
+  const r=(typeof CYC_RIESGO!=='undefined'&&CYC_RIESGO[exp.lugar.comuna])||null;
+  const nivel=r?r.niv:null;
+  const nivelTxt={c:'CRÍTICO',a:'ALTO',m:'MEDIO',b:'BAJO'}[nivel]||'sin datos';
+  const nocturno=(ev.horarios.termino||'')>='21:00'||(ev.horarios.termino||'')<'06:00';
+  const razones=[];
+  razones.push('Escala: '+esc_.label);
+  let base=Math.ceil(aforo/ratio);
+  razones.push('Aforo de '+aforo.toLocaleString('es-CL')+' asistentes ÷ '+ratio+' por guardia → base de '+base.toLocaleString('es-CL')+' guardias');
+  if(nivel==='c'||nivel==='a'){base=Math.ceil(base*1.1);razones.push('Riesgo '+nivelTxt+' en la comuna → dotación reforzada +10%');}
+  if(nocturno){base=Math.ceil(base*1.05);razones.push('Término nocturno del evento → +5% para la desconcentración');}
+  // Reparto por facciones según tipo de espectáculo y escala
+  const facc=[];
+  const pesoAccesos=deportivo?0.32:0.35;
+  const accesos=Math.max(puertas*2,Math.round(base*pesoAccesos));
+  for(let i=1;i<=puertas;i++)facc.push({nombre:'Control y cacheo — puerta '+i,guardias:String(Math.max(2,Math.round(accesos/puertas)))});
+  if(deportivo){
+    // Estadio: tribunas sectorizadas + anillo interior de cancha, sin foso/backstage de concierto
+    const tribunas=Math.max(2,Math.ceil(aforo/esc_.sector));
+    const gTribunas=Math.max(2,Math.round(base*0.3));
+    for(let i=1;i<=tribunas;i++)facc.push({nombre:'Tribuna — sector '+i,guardias:String(Math.max(2,Math.round(gTribunas/tribunas)))});
+    facc.push({nombre:'Anillo interior de cancha',guardias:String(Math.max(4,Math.round(base*0.08)))});
+    facc.push({nombre:'Control de barras / hinchadas',guardias:String(Math.max(2,Math.round(base*0.06)))});
+    razones.push(tribunas+' sectores de tribuna (~'+esc_.sector.toLocaleString('es-CL')+' asistentes por sector) + anillo de cancha + control de barras');
+  }else{
+    const escenario=Math.max(2,Math.round(base*0.15));
+    facc.push({nombre:'Contención escenario / foso',guardias:String(escenario)});
+    const backstage=Math.max(1,Math.round(base*0.08));
+    facc.push({nombre:'Backstage y camarines',guardias:String(backstage)});
+    // Patrullaje sectorizado: 1 sector por cada ~N asistentes según escala
+    const sectores=Math.max(1,Math.ceil(aforo/esc_.sector));
+    const gPatrulla=Math.max(2,Math.round(base*0.18));
+    if(sectores>1){
+      for(let i=1;i<=sectores;i++)facc.push({nombre:'Patrullaje interior — sector '+i,guardias:String(Math.max(2,Math.round(gPatrulla/sectores)))});
+      razones.push('Patrullaje sectorizado: '+sectores+' sectores (~'+esc_.sector.toLocaleString('es-CL')+' asistentes por sector)');
+    }else{
+      facc.push({nombre:'Patrullaje interior',guardias:String(gPatrulla)});
+    }
+  }
+  const escape=Math.max(1,Math.round(base*0.1));
+  facc.push({nombre:'Vías de escape y puertas de emergencia',guardias:String(escape)});
+  if(esc_.k>=3){
+    facc.push({nombre:'Anillo exterior / perímetro del recinto',guardias:String(Math.max(4,Math.round(base*0.08)))});
+    facc.push({nombre:'Desconcentración y vía pública inmediata',guardias:String(Math.max(4,Math.round(base*0.06)))});
+    razones.push('Alta convocatoria → anillo exterior de seguridad y facción de desconcentración');
+  }
+  if(boleterias>0)facc.push({nombre:'Boleterías',guardias:String(Math.max(1,boleterias))});
+  if((ev.infra.estac||[]).filter(x=>x.ubic).length)facc.push({nombre:'Estacionamientos',guardias:String(Math.max(2,Math.round(base*0.06)))});
+  const total=facc.reduce((a,f)=>a+Number(f.guardias),0);
+  const superv=Math.max(1,Math.ceil(total/10));
+  const jefesg=total>15?Math.ceil(total/20):0;
+  const jefeseg=Math.max(1,Math.ceil(total/500));
+  razones.push('Reparto en '+facc.length+' facciones → '+total.toLocaleString('es-CL')+' guardias');
+  razones.push(superv+' supervisor(es) (1 por cada 10)'+(jefesg?' · '+jefesg+' jefe(s) de grupo (1 por cada 20)':'')+' · '+jefeseg+' jefe(s) de seguridad');
+  if(r&&r.peak&&r.peak.length)razones.push('Franjas de mayor riesgo en la comuna: '+r.peak.join(', ')+' — refuerza la desconcentración si coincide con el término');
+  const desde=ev.horarios.puertas||'',hasta=ev.horarios.termino||'';
+  sugerenciaActual={
+    facciones:facc,total:total,superv:String(superv),jefesg:String(jefesg||''),jefeseg:String(jefeseg),
+    turnos:[{nombre:'Turno único del evento',desde:desde,hasta:hasta,guardias:String(total)}],
+    tareas:facc.map((f,i)=>'Facción '+(i+1)+' — '+f.nombre+' ('+f.guardias+' guardia'+(Number(f.guardias)>1?'s':'')+'): '+tareaTipo(f.nombre)).join('\n')
+  };
+  const avisoGrande=esc_.k>=3?'<div class="aviso" style="margin-top:8px">🏟️ <strong>'+esc(esc_.label)+':</strong> a esta escala la autoridad exige coordinación reforzada — mando conjunto con Carabineros, puesto de mando, plan de evacuación sectorizado y mayor anticipación en la presentación. Tu asesor acreditado lo incorpora y confirma la clasificación oficial al visar.</div>':'';
+  cont.innerHTML='<div class="sug-box"><strong style="color:#d4a017;font-size:0.82rem">Sugerencia calculada:</strong>'+
+    '<ul style="margin-top:6px">'+razones.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+
+    '<p style="font-size:0.8rem;margin-top:8px"><strong>Dotación propuesta: '+total.toLocaleString('es-CL')+' guardias</strong> en '+facc.length+' facciones + '+superv+' supervisor(es)</p>'+avisoGrande+
+    '<button class="btn btn-oro btn-full" onclick="aplicarSugerencia()">✔ Aplicar sugerencia (todo editable después)</button></div>';
+}
+function tareaTipo(nombre){
+  if(nombre.indexOf('cacheo')>=0)return 'control de tickets, cacheo preventivo y detección de elementos prohibidos al ingreso.';
+  if(nombre.indexOf('escenario')>=0)return 'contención del público frente al escenario, control del foso y auxilio a asistentes.';
+  if(nombre.indexOf('Backstage')>=0)return 'control de acceso exclusivo de personal acreditado a camarines y zona técnica.';
+  if(nombre.indexOf('Tribuna')>=0)return 'control del sector asignado, prevención de desórdenes y avalanchas, y orientación del público.';
+  if(nombre.indexOf('cancha')>=0)return 'impedir el ingreso de público al terreno de juego y resguardar a los protagonistas.';
+  if(nombre.indexOf('barras')>=0)return 'control diferenciado de hinchadas, prevención de enfrentamientos y coordinación con Carabineros.';
+  if(nombre.indexOf('Patrullaje')>=0)return 'recorridos por el sector asignado, prevención de desórdenes y reporte por radio.';
+  if(nombre.indexOf('escape')>=0)return 'mantener despejadas las vías de evacuación y operarlas en emergencia.';
+  if(nombre.indexOf('Anillo exterior')>=0)return 'control perimetral externo, filtro previo de acceso y detección temprana de incidentes.';
+  if(nombre.indexOf('Desconcentración')>=0)return 'ordenar la salida masiva del público al término, en coordinación con Carabineros y tránsito.';
+  if(nombre.indexOf('Boleterías')>=0)return 'orden de filas y prevención de reventa y desórdenes.';
+  if(nombre.indexOf('Estacionamientos')>=0)return 'control vehicular, prevención de robos y orientación del público.';
+  return 'labores preventivas de vigilancia y orientación del público.';
+}
+function aplicarSugerencia(){
+  if(!sugerenciaActual)return;
+  exp.evento.facciones=sugerenciaActual.facciones;
+  exp.personal.total=String(sugerenciaActual.total);
+  exp.personal.superv=sugerenciaActual.superv;
+  exp.personal.jefesg=sugerenciaActual.jefesg;
+  exp.personal.jefeseg=sugerenciaActual.jefeseg||exp.personal.jefeseg||'1';
+  exp.personal.turnos=sugerenciaActual.turnos;
+  if(!exp.objetivos.tareas)exp.objetivos.tareas=sugerenciaActual.tareas;
+  pintarLista('facciones');pintarLista('turnos');
+  sv('f_pe_guardias',exp.personal.total);sv('f_pe_superv',exp.personal.superv);sv('f_pe_jefesg',exp.personal.jefesg);sv('f_pe_jefeseg',exp.personal.jefeseg);
+  sv('f_ob_tareas',exp.objetivos.tareas);
+  guardarBorradorLocal();
+  document.getElementById('sugResultado').innerHTML='<div class="sug-box" style="border-color:#2e7d32"><span style="color:#a5d6a7">✅ Sugerencia aplicada a las facciones, la dotación, los turnos y las tareas (V). Ajusta lo que necesites.</span></div>';
+}
+
+// ---------- Croquis SVG ----------
+function croquisSVG(plano,w,h,oscuro){
+  const pts=plano.perimetro||[];
+  if(pts.length<3)return '';
+  const todos=pts.concat((plano.sistemas||[]).map(s=>({lat:s.lat,lng:s.lng})));
+  let minLat=Infinity,maxLat=-Infinity,minLng=Infinity,maxLng=-Infinity;
+  todos.forEach(p=>{if(p.lat<minLat)minLat=p.lat;if(p.lat>maxLat)maxLat=p.lat;if(p.lng<minLng)minLng=p.lng;if(p.lng>maxLng)maxLng=p.lng;});
+  const dLat=(maxLat-minLat)||1e-5,dLng=(maxLng-minLng)||1e-5,pad=0.14;
+  minLat-=dLat*pad;maxLat+=dLat*pad;minLng-=dLng*pad;maxLng+=dLng*pad;
+  const X=lng=>((lng-minLng)/(maxLng-minLng))*w;
+  const Y=lat=>h-((lat-minLat)/(maxLat-minLat))*h;
+  const col=oscuro?'#d4a017':'#333';
+  const poly=pts.map(p=>X(p.lng).toFixed(1)+','+Y(p.lat).toFixed(1)).join(' ');
+  let s='<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Croquis del recinto">';
+  s+='<polygon points="'+poly+'" fill="rgba(212,160,23,0.14)" stroke="'+col+'" stroke-width="2"/>';
+  (plano.sistemas||[]).forEach(si=>{
+    s+='<text x="'+X(si.lng).toFixed(1)+'" y="'+(Y(si.lat)+5).toFixed(1)+'" font-size="15" text-anchor="middle">'+(SIS_DIR[si.tipo]||'📍')+'</text>';
+  });
+  s+='<text x="'+(w-16)+'" y="16" font-size="11" font-weight="bold" fill="'+col+'" text-anchor="middle">N</text>';
+  s+='<polygon points="'+(w-20)+',30 '+(w-12)+',30 '+(w-16)+',20" fill="'+col+'"/>';
+  s+='</svg>';
+  return s;
+}
+function leyendaCroquis(plano){
+  const tipos={};(plano.sistemas||[]).forEach(x=>{tipos[x.tipo]=(tipos[x.tipo]||0)+1;});
+  return Object.keys(tipos).map(t=>(SIS_DIR[t]||'')+' '+(SIS_NOM[t]||t)+' ('+tipos[t]+')').join(' · ');
+}
+
+// ---------- Revisión ----------
+function pintarRevision(){
+  leerFormulario();
+  const e=exp,ev=e.evento;
+  const fz=document.getElementById('folioZona');
+  fz.innerHTML=e.folio?'<span class="folio-badge">Folio: '+esc(e.folio)+'</span>':'<p style="font-size:0.74rem">Al guardar se asignará un folio único a tu expediente.</p>';
+  const comunaN=(typeof CYC_COMUNAS!=='undefined'&&CYC_COMUNAS[e.lugar.comuna])||e.lugar.comuna||'';
+  const tipoTxt={concierto:'Concierto / festival',deportivo:'Evento deportivo (estadio)',feria:'Feria / carnaval',otro:'Otro evento masivo'}[ev.tipoEvento]||'';
+  const escTxt=Number(ev.aforo.total)>0?escalaEvento(Number(ev.aforo.total)).label:'';
+  const secs=[
+    ['Evento',ev.motivo+(tipoTxt?'\n'+tipoTxt:'')+(escTxt?' — '+escTxt:'')+'\n'+(ev.fecha?'Fecha: '+ev.fecha+'\n':'')+e.lugar.dir+(comunaN?', '+comunaN:'')],
+    ['I. Empresas','Productora: '+e.empleador.nombre+' · RUT '+e.empleador.rut+'\nRep. legal: '+ev.repLegal.nombre+'\nSolicitante: '+(ev.solicitante.misma?'la misma productora':(ev.solicitante.nombre||'—'))+'\nRR.HH.: '+(ev.rrhh.misma?'la misma productora':(ev.rrhh.nombre||'—'))],
+    ['Aforo y entradas','Total: '+ev.aforo.total+' entradas'+(ev.aforo.sectores.filter(s=>s.nombre).length?'\n'+ev.aforo.sectores.filter(s=>s.nombre).map(s=>s.nombre+': '+(s.cant||'—')).join(' · '):'')+(ev.aforo.venta?'\nVenta desde: '+ev.aforo.venta:'')],
+    ['Horarios (III)','Puertas '+ev.horarios.puertas+' · Inicio '+ev.horarios.inicio+' · Término '+ev.horarios.termino],
+    ['Infraestructura (II)','Accesos: '+ev.infra.puertas+' puertas, '+(ev.infra.emerg||'0')+' de emergencia · Boleterías: '+(ev.infra.boleterias||'0')+'\nCroquis: '+(e.lugar.plano?'importado ('+e.lugar.plano.perimetro.length+' vértices)':'pendiente — se prepara en la visación')+'\nVías de escape: '+(ev.infra.escape?'descritas ✓':'PENDIENTE')],
+    ['Dotación (II.10 y IV)',e.personal.total+' guardias en '+ev.facciones.filter(f=>f.nombre).length+' facciones'+(e.personal.superv?' · '+e.personal.superv+' supervisores':'')+(e.personal.jefeseg?' · '+e.personal.jefeseg+' jefe(s) de seguridad':'')+'\n'+ev.facciones.filter(f=>f.nombre).map(f=>f.nombre+': '+f.guardias).join('\n')],
+    ['V. Objetivos',e.objetivos.objetivo.slice(0,180)+(e.objetivos.objetivo.length>180?'…':'')],
+    ['VI-VII. Tenida e implementos',e.tenida.items.join(', ')+(e.tenida.productora?'\nProductora: '+e.tenida.productora:'')+'\nImplementos: '+e.implementos.items.join(', ')],
+    ['VIII. Comunicaciones','Radios: '+(ev.com.equipos||'0')+' equipos'+(ev.com.subtel?' · Res. Subtel '+ev.com.subtel:'')+'\nFuegos artificiales: '+(ev.com.fuegos?'SÍ (requiere autorización — Anexo 6)':'no')+' · Seguros: '+(ev.com.seguros?'sí':'no')],
+    ['Emergencias','Bomberos: '+(ev.emerg.bomberosCia||'—')+' ('+(ev.emerg.bomberosCarros||'0')+' carros) · Hospital: '+(ev.emerg.hospital||'—')+(ev.emerg.hospKm?' a '+ev.emerg.hospKm+' km':'')+'\nSanitaria: '+(ev.emerg.sanitaria||'—')+' · Electrógenos: '+(ev.emerg.electro.usa?'sí':'no')],
+    ['Anexo policial','Cuartel Carabineros: '+(ev.anexo.cuartelTel||'—')+(ev.anexo.cuartelDir?' ('+ev.anexo.cuartelDir+')':'')+'\nProductora: '+(ev.anexo.gerProd||ev.anexo.mesaProd||'—')+' · RR.HH.: '+(ev.anexo.gerRrhh||ev.anexo.mesaRrhh||'—')]
+  ];
+  document.getElementById('revision').innerHTML=secs.map(s=>'<div class="rev-sec"><div class="rs-t">'+esc(s[0])+'</div><div class="rs-c">'+esc(s[1])+'</div></div>').join('');
+}
+
+// ---------- Persistencia ----------
+function guardarBorradorLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(exp));}catch(e){}}
+function cargarBorradorLocal(){
+  try{
+    const b=JSON.parse(localStorage.getItem(LS_KEY));
+    if(b&&b.evento){exp=fusionar(expedienteVacio(),b);}
+  }catch(e){}
+  volcarFormulario();
+}
+function fusionar(base,datos){
+  // mezcla superficial por sección para tolerar expedientes de versiones anteriores
+  const out=base;
+  Object.keys(datos||{}).forEach(k=>{
+    if(datos[k]&&typeof datos[k]==='object'&&!Array.isArray(datos[k])&&out[k]&&typeof out[k]==='object'){Object.assign(out[k],datos[k]);}
+    else out[k]=datos[k];
+  });
+  return out;
+}
+async function guardarServidor(){
+  leerFormulario();guardarBorradorLocal();
+  const titulo=(exp.evento.motivo||'Evento masivo')+(exp.evento.fecha?' — '+exp.evento.fecha:'');
+  try{
+    const r=await fetch(API_URL+'/directiva/guardar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok()},body:JSON.stringify({folio:exp.folio,tipo:'evento',titulo:titulo,datos:exp})});
+    const d=await r.json();
+    if(!r.ok){msg('msgGuardar',d.error||'No se pudo guardar. Intenta de nuevo.','err');return;}
+    exp.folio=d.folio;guardarBorradorLocal();
+    document.getElementById('folioZona').innerHTML='<span class="folio-badge">Folio: '+esc(d.folio)+'</span>';
+    msg('msgGuardar','✅ Expediente guardado con folio '+d.folio+'. Puedes retomarlo cuando quieras desde "Mis expedientes".','ok');
+  }catch(e){msg('msgGuardar','Sin conexión — tu avance quedó guardado en este dispositivo. Reintenta cuando vuelva internet.','err');}
+}
+function badgeEstado(e){
+  const m={borrador:['Borrador','#888','#222'],visacion_solicitada:['En visación','#111','#d4a017'],visada:['Visada ✓','#fff','#2e7d32']};
+  const b=m[e]||m.borrador;
+  return '<span style="font-size:0.6rem;font-weight:800;padding:2px 8px;border-radius:99px;color:'+b[1]+';background:'+b[2]+';vertical-align:middle">'+b[0]+'</span>';
+}
+async function verMisExpedientes(){
+  if(!(await exigirEmpresa()))return;
+  try{
+    const r=await fetch(API_URL+'/directiva/mias',{headers:{'Authorization':'Bearer '+tok()}});
+    const d=await r.json();
+    if(!r.ok){msg('msgIntro',d.error||'No se pudo cargar la lista.','err');return;}
+    const evs=(d.expedientes||[]).filter(x=>x.tipo==='evento');
+    const lista=document.getElementById('listaExp');
+    lista.innerHTML=evs.length?evs.map(x=>
+      '<div class="exp-item"><div><div class="ei-t">'+esc(x.titulo||x.folio)+' '+badgeEstado(x.estado)+'</div>'+
+      '<div class="ei-s">'+esc(x.folio)+' · actualizado '+esc((x.updated_at||'').slice(0,10))+'</div></div>'+
+      '<button class="btn btn-borde" style="padding:8px 12px;font-size:0.74rem" onclick="retomar(\''+esc(x.folio)+'\')">Retomar</button></div>').join('')
+      :'<p>No tienes expedientes de eventos todavía.</p>';
+    document.getElementById('vIntro').style.display='none';
+    document.getElementById('vLista').style.display='block';
+  }catch(e){msg('msgIntro','Sin conexión. Intenta de nuevo.','err');}
+}
+async function retomar(folio){
+  try{
+    const r=await fetch(API_URL+'/directiva/una?folio='+encodeURIComponent(folio),{headers:{'Authorization':'Bearer '+tok()}});
+    const d=await r.json();
+    if(!r.ok){msg('msgLista',d.error||'No se pudo abrir el expediente.','err');return;}
+    exp=fusionar(expedienteVacio(),d.datos);exp.folio=d.folio;
+    guardarBorradorLocal();volcarFormulario();
+    document.getElementById('vLista').style.display='none';
+    document.getElementById('vWizard').style.display='block';
+    document.getElementById('navRow').style.display='flex';
+    document.getElementById('prog').style.display='block';
+    irPaso(1);
+  }catch(e){msg('msgLista','Sin conexión. Intenta de nuevo.','err');}
+}
+function nuevoExpediente(){
+  exp=expedienteVacio();
+  localStorage.removeItem(LS_KEY);
+  volcarFormulario();
+  document.getElementById('vLista').style.display='none';
+  document.getElementById('vWizard').style.display='block';
+  document.getElementById('navRow').style.display='flex';
+  document.getElementById('prog').style.display='block';
+  irPaso(1);
+}
+
+// ---------- Solicitud de visación ----------
+async function solicitarVisacion(){
+  leerFormulario();
+  if(!exp.folio){msg('msgVisacion','Primero guarda el expediente (botón de arriba) para poder enviarlo a visación.','err');return;}
+  if(!validarPaso(1)){msg('msgVisacion','Completa los datos de la productora antes de solicitar la visación.','err');return;}
+  await guardarServidor();
+  try{
+    const r=await fetch(API_URL+'/directiva/solicitar-visacion',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok()},body:JSON.stringify({folio:exp.folio})});
+    const d=await r.json();
+    if(!r.ok){msg('msgVisacion',d.error||'No se pudo enviar la solicitud. Intenta de nuevo.','err');return;}
+    exp.estado='visacion_solicitada';
+    const wa='https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+encodeURIComponent('Hola, solicité la visación de mi Directiva de evento masivo folio '+exp.folio);
+    msg('msgVisacion',(d.mensaje||'Solicitud enviada.')+' Revisa tu correo. Para agilizar, escríbenos por WhatsApp.','ok');
+    document.getElementById('msgVisacion').innerHTML+='<br><a href="'+wa+'" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:8px;background:#25D366;color:#fff;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:800;font-size:0.8rem">💬 Escribir por WhatsApp</a>';
+  }catch(e){msg('msgVisacion','Sin conexión. Tu expediente quedó guardado; reintenta cuando vuelva internet.','err');}
+}
+
+// ---------- Borrador PDF con marca de agua ----------
+function generarPDF(){
+  leerFormulario();
+  if(!exp.folio){msg('msgGuardar','Primero guarda el expediente: el folio asignado va impreso en el borrador.','err');return;}
+  construirDoc();
+  window.print();
+}
+function docSec(t,c){return '<div class="d-sec"><div class="d-tit">'+t+'</div><div class="d-cont">'+c+'</div></div>';}
+function filaEmpresa(titulo,nom,rut,giro,tel){
+  return '<table><tr><th colspan="2">'+titulo+'</th></tr>'+
+    '<tr><th>Razón social</th><td>'+esc(nom||'—')+'</td></tr>'+
+    '<tr><th>RUT</th><td>'+esc(rut||'—')+'</td></tr>'+
+    (giro?'<tr><th>Giro</th><td>'+esc(giro)+'</td></tr>':'')+
+    (tel?'<tr><th>Teléfono</th><td>'+esc(tel)+'</td></tr>':'')+'</table>';
+}
+function construirDoc(){
+  const e=exp,ev=e.evento;
+  const comunaN=(typeof CYC_COMUNAS!=='undefined'&&CYC_COMUNAS[e.lugar.comuna])||e.lugar.comuna||'';
+  const fecha=new Date().toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
+  const dash=x=>esc(x||'—');
+  let html='<div class="d-portada"><img src="icon-192.png" alt="Control y Confianza"><div class="d-form">Borrador para revisión — Formato oficial de eventos masivos</div>'+
+    '<h1>DIRECTIVA DE FUNCIONAMIENTO PARA IMPLEMENTAR SERVICIO DE GUARDIAS DE SEGURIDAD EN EVENTOS MASIVOS</h1>'+
+    '<div class="d-sub">Ley 21.659 de Seguridad Privada · Reglamento de eventos masivos (Decreto 208, de 2025)</div>'+
+    '<div class="d-sub" style="margin-top:4px">'+esc(ev.motivo)+' · '+esc(e.lugar.dir)+(comunaN?', '+esc(comunaN):'')+(ev.fecha?' · '+esc(ev.fecha):'')+'</div>'+
+    (Number(ev.aforo.total)>0?'<div class="d-sub" style="margin-top:2px">'+esc({concierto:'Concierto / festival',deportivo:'Evento deportivo',feria:'Feria / carnaval',otro:'Evento masivo'}[ev.tipoEvento]||'')+' · '+esc(escalaEvento(Number(ev.aforo.total)).label)+' — escala operativa referencial; la clasificación oficial la determina la autoridad</div>':'')+
+    '<div class="d-folio">Folio '+esc(e.folio)+' · '+fecha+'</div></div>';
+  // I. Empresas participantes
+  html+=docSec('I. Identificación de las empresas participantes',
+    filaEmpresa('Empresa productora',e.empleador.nombre,e.empleador.rut,e.empleador.giro,e.empleador.tel)+
+    '<table><tr><th>Representante legal</th><td>'+dash(ev.repLegal.nombre)+(ev.repLegal.tel?' · '+esc(ev.repLegal.tel):'')+'</td></tr></table>'+
+    (ev.solicitante.misma?'<div>Quien solicita el espectáculo: la misma empresa productora.</div>':filaEmpresa('Quien solicita el espectáculo',ev.solicitante.nombre,ev.solicitante.rut,ev.solicitante.giro,ev.solicitante.tel))+
+    (ev.rrhh.misma?'<div>Empresa de RR.HH.: la misma empresa productora.</div>':filaEmpresa('Empresa de RR.HH.',ev.rrhh.nombre,ev.rrhh.rut,ev.rrhh.giro,ev.rrhh.tel))+
+    '\nLos documentos que acreditan al solicitante se adjuntan al expediente definitivo.');
+  // II. Lugar de desarrollo (numerales oficiales)
+  let croquis='';
+  if(e.lugar.plano&&e.lugar.plano.perimetro&&e.lugar.plano.perimetro.length>=3){
+    croquis='<div style="text-align:center;margin-top:6px">'+croquisSVG(e.lugar.plano,470,320,false)+
+      '<div style="font-size:10px;color:#444">'+esc(leyendaCroquis(e.lugar.plano))+' — Croquis referencial. Los planos generales con señalización completa (Anexo 07) acompañan el expediente definitivo.</div></div>';
+  }
+  const estacTxt=(ev.infra.estac||[]).filter(x=>x.ubic).map(x=>x.ubic+' ('+(x.cap||'—')+' vehículos)').join('; ');
+  const sectoresTxt=(ev.aforo.sectores||[]).filter(s=>s.nombre).map(s=>s.nombre+': '+(s.cant||'—')).join(' · ');
+  html+=docSec('II. Lugar de desarrollo del servicio',
+    '1. Lugar específico: '+dash(e.lugar.dir)+(comunaN?', comuna de '+esc(comunaN):'')+(ev.propietario?'. Propietario del recinto: '+esc(ev.propietario):'')+
+    '\n2. Planos generales del recinto: '+(e.lugar.plano?'croquis referencial incluido; planos definitivos con señalización en Anexo 07.':'se adjuntan en el expediente definitivo (Anexo 07).')+
+    '\n3. Estacionamientos: '+dash(estacTxt)+
+    '\n4. Puertas de acceso: '+dash(ev.infra.puertas)+' · Puertas de emergencia: '+dash(ev.infra.emerg)+(ev.infra.puertasDet?'\n   Detalle de accesos: '+esc(ev.infra.puertasDet):'')+
+    '\n   Boleterías: '+dash(ev.infra.boleterias)+(ev.infra.boleteriasUbic?' ('+esc(ev.infra.boleteriasUbic)+')':'')+
+    '\n   Detectores de metales / paletas: '+(ev.infra.detector?('SÍ'+(ev.infra.paletasUbic?' — '+esc(ev.infra.paletasUbic):'')):'no considera')+
+    '\n5. Correspondencia entradas–sectores: '+dash(ev.infra.sectorTicket)+
+    '\n6. Baños (ubicación, cantidad por sexo y medidas): '+dash(ev.infra.banos)+
+    '\n7. Primeros auxilios y ambulancias: '+dash(ev.infra.auxilios)+
+    '\n8. Vías de salida y escape del público: '+dash(ev.infra.escape)+
+    '\n9. Vías de salida y escape del sector VIP: '+dash(ev.infra.escapeVip)+
+    '\n11. Venta de entradas: '+(ev.aforo.venta?'desde '+esc(ev.aforo.venta):'—')+(ev.aforo.locales?' en '+esc(ev.aforo.locales):'')+
+    '\n12. Entradas a disposición del público: '+dash(ev.aforo.total)+(sectoresTxt?' — '+esc(sectoresTxt):'')+'. El documento notarial con la cantidad total acompaña el expediente definitivo.'+
+    '\n13. Camarines de artistas: '+dash(ev.infra.camarines)+
+    '\n15. Torres de iluminación: '+dash(ev.infra.torres)+
+    '\n16. Mesas de sonido: '+dash(ev.infra.sonido)+
+    '\n17. Escenario: '+dash(ev.infra.escenario)+
+    '\n18. Coordinación general y RR.PP.: '+dash(ev.emerg.coordNom)+(ev.emerg.coordTel?' · '+esc(ev.emerg.coordTel):'')+
+    '\n19. Coordinador de servicios básicos: '+dash(ev.emerg.basicosNom)+(ev.emerg.basicosTel?' · '+esc(ev.emerg.basicosTel):'')+
+    '\n20-21. Bomberos: '+dash(ev.emerg.bomberosCia)+(ev.emerg.bomberosCarros?' · '+esc(ev.emerg.bomberosCarros)+' carro(s)':'')+(ev.emerg.bomberosVol?' · '+esc(ev.emerg.bomberosVol)+' voluntario(s)':'')+(ev.emerg.bomberosUbic?' · ubicados en '+esc(ev.emerg.bomberosUbic):'')+'. Documento acreditante en el expediente definitivo.'+
+    '\n22. Hospital o posta más cercana: '+dash(ev.emerg.hospital)+(ev.emerg.hospKm?' a '+esc(ev.emerg.hospKm)+' km':'')+(ev.emerg.hospMin?' ('+esc(ev.emerg.hospMin)+' min)':'')+
+    '\n23. Autorización sanitaria (SEREMI de Salud): '+dash(ev.emerg.sanitaria)+
+    '\n24-25. Grupos electrógenos: '+(ev.emerg.electro.usa?('SÍ — '+dash(ev.emerg.electro.empresa)+(ev.emerg.electro.equipos.length?' · equipos: '+ev.emerg.electro.equipos.map(q=>q.kva+' KVA'+(q.operador?' con operador':' sin operador')).join(', '):'')+(ev.emerg.electro.detalle?'\n   '+esc(ev.emerg.electro.detalle):'')):'no considera')+
+    croquis);
+  // II.10 Facciones
+  const facc=(ev.facciones||[]).filter(f=>f.nombre);
+  html+=docSec('II.10 — Facciones y guardias por facción',
+    '<table><tr><th>N°</th><th>Facción en el lugar del servicio</th><th>Guardias</th></tr>'+
+    facc.map((f,i)=>'<tr><td>'+String(i+1).padStart(2,'0')+'</td><td>'+esc(f.nombre)+'</td><td>'+esc(f.guardias)+'</td></tr>').join('')+
+    '<tr><th colspan="2">Total</th><th>'+facc.reduce((a,f)=>a+(Number(f.guardias)||0),0)+'</th></tr></table>');
+  // III. Horarios
+  html+=docSec('III. Horarios del espectáculo',
+    'Apertura de puertas: '+dash(ev.horarios.puertas)+' hrs.\nApertura de boleterías: '+dash(ev.horarios.boleterias)+' hrs.\nLlegada de artistas: '+dash(ev.horarios.artistas)+' hrs.\nInicio del espectáculo: '+dash(ev.horarios.inicio)+' hrs.\nTérmino del espectáculo: '+dash(ev.horarios.termino)+' hrs.');
+  // IV. Personal
+  html+=docSec('IV. Personal',
+    '<table>'+
+    '<tr><th>Guardias de seguridad</th><td>'+dash(e.personal.total)+'</td></tr>'+
+    '<tr><th>Supervisores</th><td>'+dash(e.personal.superv)+'</td></tr>'+
+    '<tr><th>Jefes de grupo</th><td>'+dash(e.personal.jefesg)+'</td></tr>'+
+    '<tr><th>Jefes de seguridad</th><td>'+dash(e.personal.jefeseg)+'</td></tr>'+
+    '<tr><th>Controles</th><td>'+dash(e.personal.controles)+'</td></tr></table>'+
+    'Turnos: '+e.personal.turnos.map(t=>esc(t.nombre)+' ('+esc(t.desde)+' a '+esc(t.hasta)+' hrs.): '+esc(t.guardias)+' guardia(s)').join(' · ')+
+    (e.personal.credencial?'\nCredencial del personal de la productora: '+esc(e.personal.credencial)+' (modelo adjunto en el expediente definitivo).':''));
+  // V-VIII
+  html+=docSec('V. Objetivos y tareas a cumplir','Objetivo del servicio: '+esc(e.objetivos.objetivo)+
+    (e.objetivos.prodPersonal?'\n\nPersonal de la productora: '+esc(e.objetivos.prodPersonal):'')+
+    (e.objetivos.tareas?'\n\nTareas por facción:\n'+esc(e.objetivos.tareas):''));
+  html+=docSec('VI. Descripción de la tenida autorizada',esc(e.tenida.items.join('; '))+(e.tenida.otro?'; '+esc(e.tenida.otro):'')+
+    (e.tenida.productora?'\nTenida del personal de la productora: '+esc(e.tenida.productora):'')+
+    '\nLa tenida no se asemeja a los uniformes de las Fuerzas de Orden y Seguridad Pública ni de las FF.AA. Las fotografías (Anexo 4) acompañan el expediente definitivo.');
+  html+=docSec('VII. Implementos del servicio',esc(e.implementos.items.join('; '))+(e.implementos.otro?'; '+esc(e.implementos.otro):'')+
+    '\nNota: prohibido el empleo de armas de fuego o implementos no autorizados mediante resolución de la AA.FF. OS-10 respectiva.');
+  html+=docSec('VIII. Sistema de alarma y comunicación',
+    (ev.com.subtel?'Resolución exenta Subtel: '+esc(ev.com.subtel)+' · ':'')+'Equipos de radio: '+dash(ev.com.equipos)+
+    (ev.com.cred?'\nCredenciales de operación: '+esc(ev.com.cred):'')+
+    '\nMedios de comunicación por facción: '+dash(ev.com.medios)+
+    '\nFuegos artificiales: '+(ev.com.fuegos?'SÍ — requiere autorización de la Comandancia de Guarnición (Anexo 6, en el expediente definitivo)':'no considera')+
+    '\nSeguros ante daños a terceros: '+(ev.com.seguros?('SÍ'+(ev.com.segurosDet?' — '+esc(ev.com.segurosDet):'')):'no informa'));
+  // Anexo policial
+  html+=docSec('Anexo — Información para decisiones policiales',
+    '<table><tr><th>Contacto</th><th>Teléfono</th></tr>'+
+    (ev.anexo.mesaProd?'<tr><td>Mesa central productora</td><td>'+esc(ev.anexo.mesaProd)+'</td></tr>':'')+
+    (ev.anexo.gerProd?'<tr><td>Gerente general productora</td><td>'+esc(ev.anexo.gerProd)+'</td></tr>':'')+
+    (ev.anexo.mesaRrhh?'<tr><td>Mesa central RR.HH.</td><td>'+esc(ev.anexo.mesaRrhh)+'</td></tr>':'')+
+    (ev.anexo.gerRrhh?'<tr><td>Gerente general RR.HH.</td><td>'+esc(ev.anexo.gerRrhh)+'</td></tr>':'')+
+    '<tr><td>Cuartel de Carabineros más cercano'+(ev.anexo.cuartelDir?' — '+esc(ev.anexo.cuartelDir):'')+'</td><td>'+dash(ev.anexo.cuartelTel)+'</td></tr></table>');
+  html+='<div class="d-firma"><div class="linea">FIRMA DEL REPRESENTANTE LEGAL<br>'+esc(ev.repLegal.nombre||e.empleador.nombre)+' · '+esc(e.empleador.nombre)+' · RUT '+esc(e.empleador.rut)+'</div></div>';
+  html+='<div class="d-pie">DOCUMENTO BORRADOR generado con el asistente de Control y Confianza CSF SpA — app.controlyconfianza.cl. No tiene validez ante la autoridad hasta ser revisado y visado por un asesor de seguridad acreditado. Folio '+esc(e.folio)+' · '+fecha+'</div>';
+  document.getElementById('docPrint').innerHTML=html;
+}
+
+// ---------- Inicio ----------
+(function(){
+  document.getElementById('precioEmp').textContent=CYC_CONFIG.precioEmpresa;
+  const sel=document.getElementById('f_ev_comuna');
+  if(typeof CYC_COMUNAS!=='undefined'){
+    Object.keys(CYC_COMUNAS).map(k=>[k,CYC_COMUNAS[k]]).sort((a,b)=>a[1].localeCompare(b[1]))
+      .forEach(par=>{const o=document.createElement('option');o.value=par[0];o.textContent=par[1];sel.appendChild(o);});
+  }
+  sel.addEventListener('change',alCambiarComuna);
+  document.getElementById('f_co_fuegos').addEventListener('change',function(){document.getElementById('avisoFuegos').style.display=this.checked?'block':'none';});
+  volcarFormulario();
+})();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+</script>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
