@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traslado VIP — Transporte de Alta Seguridad | Control & Confianza</title>
+<meta name="description" content="Transporte ejecutivo de alta seguridad gestionado por asesores acreditados OS.10. Solicita tu cotización confidencial.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0c;color:#f0e8d0;min-height:100vh}
+.header{background:#0f0f12;border-bottom:2px solid #c8a558;color:#f0e8d0;padding:24px 20px;text-align:center;position:relative}
+.header h1{font-size:1.3rem;font-weight:800;font-family:Georgia,'Times New Roman',serif;letter-spacing:1px}
+.header p{font-size:0.78rem;color:#999;margin-top:6px}
+.volver{position:absolute;left:12px;top:16px;display:inline-flex;align-items:center;gap:5px;font-size:0.72rem;color:rgba(255,255,255,0.5);text-decoration:none;border:1px solid rgba(255,255,255,0.2);padding:4px 10px;border-radius:99px}
+main{max-width:640px;margin:0 auto;padding:16px 14px 60px}
+.card{background:#141417;border:1px solid #26262b;border-radius:14px;padding:20px;margin-bottom:14px}
+.card h2{font-size:1.1rem;font-weight:800;color:#c8a558;margin-bottom:10px;font-family:Georgia,'Times New Roman',serif}
+.card h3{font-size:0.88rem;font-weight:800;color:#f0e8d0;margin:14px 0 6px}
+.card p{font-size:0.85rem;color:#aaa;line-height:1.6;margin-bottom:8px}
+.aviso{background:#1a1608;border:1px solid #3a3018;border-radius:10px;padding:12px;font-size:0.76rem;color:#c8a558;line-height:1.5;margin:10px 0}
+label{display:block;font-size:0.74rem;font-weight:700;color:#ccc;margin:10px 0 4px}
+input[type=text],input[type=email],input[type=tel],input[type=time],input[type=date],input[type=number],textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#0a0a0c;color:#fff;font-size:0.85rem;font-family:inherit}
+textarea{min-height:70px;resize:vertical;line-height:1.5}
+input:focus,textarea:focus{outline:2px solid #c8a558;border-color:#c8a558}
+.fila{display:flex;gap:8px}
+.fila>div{flex:1}
+.btn{border:none;border-radius:10px;font-size:0.9rem;font-weight:800;cursor:pointer;padding:14px 18px}
+.btn-oro{background:#c8a558;color:#111}
+.btn-borde{background:transparent;color:#c8a558;border:1px solid #c8a558}
+.btn-full{display:block;width:100%;text-align:center;margin-top:10px;text-decoration:none}
+.nivel-card{display:block;background:#0a0a0c;border:1.5px solid #2a2a2e;border-radius:12px;padding:14px 16px;margin-top:10px;cursor:pointer}
+.nivel-card input{position:absolute;opacity:0;pointer-events:none}
+.nivel-card.sel{border-color:#c8a558;background:#1a1608}
+.nivel-card .nv-t{font-size:0.95rem;font-weight:800;color:#f0e8d0;display:flex;align-items:center;gap:10px}
+.nivel-card .nv-d{font-size:0.78rem;color:#999;margin-top:4px;line-height:1.5}
+.msg{margin-top:10px;font-size:0.78rem;line-height:1.5;display:none;border-radius:8px;padding:10px}
+.msg.ok{display:block;background:#15301a;border:1px solid #2e7d32;color:#a5d6a7}
+.msg.err{display:block;background:#301515;border:1px solid #7d2e2e;color:#ef9a9a}
+.ok-box{text-align:center}
+.ok-box .ico{font-size:44px;margin-bottom:10px}
+.agenda-row{background:#0a0a0c;border:1px solid #2a2a2e;border-radius:10px;padding:12px;margin-top:8px}
+.agenda-row .ar-t{font-size:0.85rem;font-weight:700;color:#f0e8d0}
+.agenda-row .ar-s{font-size:0.72rem;color:#999;margin-top:2px;line-height:1.5}
+.badge{display:inline-block;font-size:0.62rem;font-weight:800;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+.badge-solicitada{background:#3a3018;color:#c8a558}
+.badge-confirmada{background:#0f2410;color:#a5d6a7}
+.badge-cerrada{background:#222;color:#888}
+.ar-btns{display:flex;gap:6px;margin-top:8px}
+.ar-btns button{flex:1;font-size:0.68rem;padding:6px;border-radius:6px;border:1px solid #333;background:#141417;color:#ccc;cursor:pointer}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="seguridad-chile.html?volver=1" class="volver">← Volver a la App</a>
+  <h1>Traslado VIP</h1>
+  <p>Transporte de alta seguridad — Control & Confianza</p>
+</header>
+
+<main>
+
+<div class="card">
+  <h2>Transporte de alta seguridad, gestionado por especialistas</h2>
+  <p>Vehículo blindado y conductores profesionales para traslados ejecutivos, artistas y delegaciones. Cada servicio se planifica y supervisa por asesores de seguridad acreditados OS.10, con estricta confidencialidad. Cotización personalizada según ruta, fecha y nivel de protección — sujeto a disponibilidad.</p>
+</div>
+
+<div class="card" id="formCard">
+  <h2>Solicita tu cotización confidencial</h2>
+  <h3>Nivel de servicio</h3>
+  <label class="nivel-card" id="nc_ejecutivo" onclick="elegirNivel('ejecutivo')">
+    <input type="radio" name="nivel" value="ejecutivo">
+    <div class="nv-t">🚘 Traslado Ejecutivo</div>
+    <div class="nv-d">Vehículo blindado con conductor profesional. Punto a punto, puntualidad y discreción.</div>
+  </label>
+  <label class="nivel-card" id="nc_escolta" onclick="elegirNivel('escolta')">
+    <input type="radio" name="nivel" value="escolta">
+    <div class="nv-t">🛡️ Traslado + Escolta</div>
+    <div class="nv-d">Se suma un escolta de seguridad acreditado que acompaña el traslado y los puntos de origen y destino.</div>
+  </label>
+  <label class="nivel-card" id="nc_integral" onclick="elegirNivel('integral')">
+    <input type="radio" name="nivel" value="integral">
+    <div class="nv-t">👁️ Esquema Integral</div>
+    <div class="nv-d">Traslado con escolta más avanzada de ruta: reconocimiento previo del recorrido y coordinación de llegada.</div>
+  </label>
+
+  <h3>Tus datos</h3>
+  <label>Nombre completo *</label><input type="text" id="v_nombre" placeholder="Nombre y apellido">
+  <div class="fila">
+    <div><label>Teléfono / WhatsApp *</label><input type="tel" id="v_tel" placeholder="+56 9 ..."></div>
+    <div><label>Email *</label><input type="email" id="v_email" placeholder="tu@email.cl"></div>
+  </div>
+
+  <h3>Detalle del traslado</h3>
+  <div class="fila">
+    <div><label>Fecha *</label><input type="date" id="v_fecha"></div>
+    <div><label>Hora aproximada</label><input type="time" id="v_hora"></div>
+  </div>
+  <label>Origen *</label><input type="text" id="v_origen" placeholder="Ej: Aeropuerto SCL">
+  <label>Destino *</label><input type="text" id="v_destino" placeholder="Ej: Hotel W Santiago">
+  <label>Pasajeros</label><input type="number" id="v_pax" min="1" max="8" value="1">
+  <label>Notas</label><textarea id="v_notas" placeholder="Contexto adicional — puedes omitir datos sensibles; los coordinamos por canal seguro"></textarea>
+
+  <div class="aviso">⏱️ Respondemos en 24 horas · solicitudes con mínimo 72 horas de anticipación · sujeto a disponibilidad</div>
+  <button class="btn btn-oro btn-full" onclick="enviar()">Solicitar cotización confidencial</button>
+  <a href="#" id="btnWa" target="_blank" rel="noopener noreferrer" class="btn btn-borde btn-full">💬 Prefiero WhatsApp</a>
+  <p style="font-size:0.68rem;color:#777;margin-top:10px">Tus datos se usan solo para gestionar esta solicitud y se tratan como información confidencial.</p>
+  <div class="msg" id="msgForm"></div>
+</div>
+
+<div class="card ok-box" id="okCard" style="display:none">
+  <div class="ico">✅</div>
+  <h2>Solicitud enviada</h2>
+  <p>Te responderemos dentro de <strong>24 horas</strong> con disponibilidad y cotización personalizada. El servicio está sujeto a disponibilidad del vehículo.</p>
+  <a href="#" id="btnWaOk" target="_blank" rel="noopener noreferrer" class="btn btn-oro btn-full" style="background:#25D366;color:#fff">💬 Escribir por WhatsApp</a>
+</div>
+
+<div class="card" id="agendaCard" style="display:none">
+  <h2>📅 Agenda de solicitudes (equipo)</h2>
+  <button class="btn btn-borde btn-full" onclick="enviarFechasPropietario()">📤 Enviar fechas al propietario</button>
+  <div id="listaAgenda"></div>
+  <div class="msg" id="msgAgenda"></div>
+</div>
+
+</main>
+
+<script src="config.js"></script>
+<script>
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+function tok(){return localStorage.getItem('cyc_token')||'';}
+function v(id){return document.getElementById(id).value.trim();}
+function msg(id,t,tipo){var e=document.getElementById(id);e.textContent=t;e.className='msg '+tipo;}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+
+// ---------- Nivel de servicio ----------
+function elegirNivel(n){
+  document.querySelectorAll('.nivel-card').forEach(function(c){c.classList.remove('sel');});
+  document.getElementById('nc_'+n).classList.add('sel');
+  document.getElementById('nc_'+n).querySelector('input').checked=true;
+}
+
+// ---------- Envío del formulario ----------
+async function enviar(){
+  const nivelEl=document.querySelector('input[name=nivel]:checked');
+  const b={
+    nombre:v('v_nombre'),tel:v('v_tel'),email:v('v_email'),
+    nivel:nivelEl?nivelEl.value:'',
+    fecha:v('v_fecha'),hora:v('v_hora'),
+    origen:v('v_origen'),destino:v('v_destino'),
+    pasajeros:Number(v('v_pax'))||1,notas:v('v_notas')
+  };
+  if(!b.nombre||!b.tel||!b.email||!b.nivel||!b.fecha||!b.origen||!b.destino){
+    msg('msgForm','Completa los campos marcados con *. Elige también el nivel de servicio.','err');
+    return;
+  }
+  try{
+    const r=await fetch(API_URL+'/vip/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+    const d=await r.json();
+    if(!r.ok){msg('msgForm',d.error||'No se pudo enviar. Intenta de nuevo.','err');return;}
+    document.getElementById('formCard').style.display='none';
+    document.getElementById('okCard').style.display='block';
+    window.scrollTo(0,0);
+  }catch(e){msg('msgForm','Sin conexión. Intenta de nuevo o escríbenos por WhatsApp.','err');}
+}
+
+// ---------- Agenda admin ----------
+function badgeEstado(e){
+  const m={solicitada:'Solicitada',confirmada:'Confirmada',cerrada:'Cerrada'};
+  return '<span class="badge badge-'+e+'">'+(m[e]||e)+'</span>';
+}
+let agendaCache=[];
+let aliadoWa='';
+async function cargarAgenda(){
+  if(!tok())return;
+  try{
+    const r=await fetch(API_URL+'/vip/agenda',{headers:{'Authorization':'Bearer '+tok()}});
+    if(!r.ok)return; // 401/403: silencioso, no es admin
+    const d=await r.json();
+    agendaCache=d.solicitudes||[];
+    aliadoWa=d.aliadoWhatsapp||'';
+    document.getElementById('agendaCard').style.display='block';
+    pintarAgenda();
+  }catch(e){}
+}
+function pintarAgenda(){
+  const cont=document.getElementById('listaAgenda');
+  if(!agendaCache.length){cont.innerHTML='<p style="font-size:0.8rem;color:#888;margin-top:8px">No hay solicitudes registradas.</p>';return;}
+  const NIV={ejecutivo:'Ejecutivo',escolta:'Ejecutivo + Escolta',integral:'Esquema Integral'};
+  cont.innerHTML=agendaCache.map(function(s){
+    return '<div class="agenda-row">'+
+      '<div class="ar-t">'+esc(s.fecha)+(s.hora?' · '+esc(s.hora):'')+' — '+esc(s.nombre)+badgeEstado(s.estado)+'</div>'+
+      '<div class="ar-s">'+esc(NIV[s.nivel]||s.nivel)+' · '+esc(s.origen)+' → '+esc(s.destino)+' · '+esc(String(s.pasajeros||1))+' pax<br>'+
+      '<a href="https://wa.me/'+esc((s.tel||'').replace(/\D/g,''))+'" target="_blank" rel="noopener noreferrer" style="color:#c8a558">'+esc(s.tel)+'</a> · '+esc(s.email)+
+      (s.notas?'<br>'+esc(s.notas):'')+'</div>'+
+      '<div class="ar-btns">'+
+      '<button onclick="cambiarEstado('+s.id+',\'confirmada\')">Confirmada</button>'+
+      '<button onclick="cambiarEstado('+s.id+',\'cerrada\')">Cerrada</button>'+
+      '</div></div>';
+  }).join('');
+}
+async function cambiarEstado(id,estado){
+  try{
+    const r=await fetch(API_URL+'/vip/estado',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok()},body:JSON.stringify({id:id,estado:estado})});
+    if(!r.ok){msg('msgAgenda','No se pudo actualizar el estado.','err');return;}
+    await cargarAgenda();
+  }catch(e){msg('msgAgenda','Sin conexión.','err');}
+}
+function enviarFechasPropietario(){
+  const pendientes=agendaCache.filter(function(s){return s.estado==='solicitada';});
+  if(!pendientes.length){msg('msgAgenda','No hay solicitudes pendientes de coordinar.','err');return;}
+  const fechas=pendientes.map(function(s){return s.fecha+(s.hora?' '+s.hora:'');}).join(', ');
+  const texto='Hola, necesito disponibilidad del vehículo para: '+fechas;
+  window.open('https://wa.me/'+aliadoWa+'?text='+encodeURIComponent(texto),'_blank');
+}
+
+// ---------- Inicio ----------
+(function(){
+  const min=new Date(Date.now()+72*3600*1000);
+  document.getElementById('v_fecha').min=min.toISOString().slice(0,10);
+  const waTexto=encodeURIComponent('Hola, me interesa el servicio de Traslado VIP');
+  document.getElementById('btnWa').href='https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+waTexto;
+  document.getElementById('btnWaOk').href='https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+waTexto;
+  cargarAgenda();
+})();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+</script>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
