@@ -231,6 +231,21 @@ select:disabled{opacity:0.4}
 #ctlModal.open{display:flex}
 #ctlModal video{max-height:82vh;max-width:94vw;border-radius:14px;background:#000}
 #ctlModal .ctl-cerrar{margin-top:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:14px;font-weight:700;padding:10px 26px;border-radius:99px;cursor:pointer}
+#fbBtn{position:fixed;right:16px;bottom:16px;z-index:2500;background:#1a1a1a;border:1px solid #d4a017;color:#d4a017;font-size:12px;font-weight:700;padding:9px 14px;border-radius:99px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+#fbModal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px}
+#fbModal.open{display:flex}
+#fbBox{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:22px;width:100%;max-width:400px}
+#fbBox h3{color:#f0e8d0;font-size:16px;margin-bottom:4px}
+#fbBox .fb-sub{color:#888;font-size:12px;margin-bottom:16px;line-height:1.5}
+.fb-caras{display:flex;gap:10px;justify-content:center;margin-bottom:16px}
+.fb-cara{background:#111;border:2px solid #2a2a2a;border-radius:14px;font-size:28px;padding:10px 16px;cursor:pointer;flex:1;text-align:center}
+.fb-cara.sel{border-color:#d4a017;background:#241d0a}
+#fbBox textarea{width:100%;min-height:80px;background:#111;border:1px solid #2a2a2a;border-radius:10px;color:#f0e8d0;padding:10px;font-size:13px;font-family:inherit;resize:vertical;margin-bottom:6px}
+#fbBox .fb-priv{color:#777;font-size:10.5px;line-height:1.4;margin-bottom:14px}
+#fbBox .fb-enviar{width:100%;background:#d4a017;color:#111;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer}
+#fbBox .fb-enviar:disabled{opacity:.5}
+#fbBox .fb-cerrar{width:100%;background:transparent;color:#888;border:none;padding:10px;font-size:12px;cursor:pointer;margin-top:6px}
+#fbMsg{text-align:center;font-size:13px;color:#8bc34a;margin-top:10px;display:none}
 </style>
 </head>
 <body>
@@ -1493,6 +1508,74 @@ document.getElementById('ctlModal').addEventListener('click',function(e){if(e.ta
   obs.observe(res,{attributes:true,attributeFilter:['style']});
   if(res.style.display!=='block')ctlMostrarGreeter();
 })();
+</script>
+
+<!-- ===== Telemetría anónima + buzón de opinión (13-07-2026) ===== -->
+<button id="fbBtn" onclick="fbAbrir()">💬 Danos tu opinión</button>
+<div id="fbModal" role="dialog" aria-label="Buzón de opinión">
+  <div id="fbBox">
+    <h3>¿Cómo te fue con la app?</h3>
+    <div class="fb-sub">Tu opinión la leemos de verdad — nos ayuda a mejorar.</div>
+    <div class="fb-caras">
+      <div class="fb-cara" data-r="bien" onclick="fbElegir('bien')">😊</div>
+      <div class="fb-cara" data-r="regular" onclick="fbElegir('regular')">😐</div>
+      <div class="fb-cara" data-r="mal" onclick="fbElegir('mal')">😞</div>
+    </div>
+    <textarea id="fbTexto" placeholder="Cuéntanos qué pasó (opcional)"></textarea>
+    <div class="fb-priv">No incluyas tu nombre, teléfono ni datos de otras personas — esto es anónimo.</div>
+    <button class="fb-enviar" id="fbEnviarBtn" onclick="fbEnviar()">Enviar</button>
+    <button class="fb-cerrar" onclick="fbCerrar()">Cerrar</button>
+    <div id="fbMsg"></div>
+  </div>
+</div>
+<script>
+// Telemetría técnica anónima: solo herramienta/acción/éxito, nunca datos personales
+var CYC_API = (typeof API_URL !== 'undefined') ? API_URL : 'https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+function cycTelemetria(herramienta, accion, ok, detalle){
+  try{
+    fetch(CYC_API + '/telemetria', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({herramienta: herramienta, accion: accion, ok: ok !== false, detalle: detalle ? String(detalle).slice(0,300) : undefined})
+    }).catch(function(){});
+  }catch(e){}
+}
+window.addEventListener('error', function(e){
+  cycTelemetria('seguridad-chile', 'error_js', false, e && e.message ? e.message : 'error desconocido');
+});
+cycTelemetria('seguridad-chile', 'carga_pagina', true);
+
+// Buzón de opinión
+var fbReaccion = null;
+function fbAbrir(){ document.getElementById('fbModal').classList.add('open'); cycTelemetria('feedback', 'abrio_buzon', true); }
+function fbCerrar(){ document.getElementById('fbModal').classList.remove('open'); }
+document.getElementById('fbModal').addEventListener('click', function(e){ if(e.target===this) fbCerrar(); });
+function fbElegir(r){
+  fbReaccion = r;
+  document.querySelectorAll('.fb-cara').forEach(function(el){ el.classList.toggle('sel', el.dataset.r===r); });
+}
+function fbEnviar(){
+  var texto = document.getElementById('fbTexto').value.trim();
+  if(!fbReaccion && !texto){ return; }
+  var btn = document.getElementById('fbEnviarBtn');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  fetch(CYC_API + '/feedback', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({herramienta: 'seguridad-chile', reaccion: fbReaccion, comentario: texto || undefined})
+  }).then(function(r){ return r.json(); }).then(function(d){
+    var msg = document.getElementById('fbMsg');
+    msg.textContent = d.mensaje || '¡Gracias!';
+    msg.style.display = 'block';
+    setTimeout(fbCerrar, 1800);
+    btn.disabled = false; btn.textContent = 'Enviar';
+    document.getElementById('fbTexto').value = '';
+    fbReaccion = null;
+    document.querySelectorAll('.fb-cara').forEach(function(el){ el.classList.remove('sel'); });
+  }).catch(function(){
+    btn.disabled = false; btn.textContent = 'Enviar';
+  });
+}
 </script>
 </body>
 </html>
