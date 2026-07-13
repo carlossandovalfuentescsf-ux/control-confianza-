@@ -1286,7 +1286,13 @@ function cerrarModal(){document.getElementById("modal").className="mbg";}
 function togglePinfo(btn){var bloque=btn.nextElementSibling;var abierto=bloque.classList.toggle("open");btn.innerHTML=abierto?"ⓘ ¿Qué hace cada herramienta? ▴":"ⓘ ¿Qué hace cada herramienta? ▾";}
 function abrirPeligro(){document.getElementById("mpeligro").classList.add("open");}
 function cerrarPeligro(){document.getElementById("mpeligro").classList.remove("open");}
-(function(){var s=document.getElementById("splash");if(!s)return;if(new URLSearchParams(location.search).has("volver")){s.style.display="none";try{var ult=JSON.parse(localStorage.getItem('cyc_lastCom')||'null');if(ult&&ult.key){mostrar(ult.key,ult.nombre,0);}}catch(e){}return;}setTimeout(function(){s.classList.add("oculto");setTimeout(function(){s.style.display="none";},700);},2000);})();
+function restaurarUltimaComuna(){try{var ult=JSON.parse(localStorage.getItem('cyc_lastCom')||'null');if(ult&&ult.key){mostrar(ult.key,ult.nombre,0);}}catch(e){}}
+function esperarLeafletYRestaurar(intentos){
+  if(typeof L!=="undefined"){restaurarUltimaComuna();return;}
+  if(intentos>60){restaurarUltimaComuna();return;} // ~3s: si Leaflet no cargó, igual mostramos el resto de los datos
+  setTimeout(function(){esperarLeafletYRestaurar((intentos||0)+1);},50);
+}
+(function(){var s=document.getElementById("splash");if(!s)return;if(new URLSearchParams(location.search).has("volver")){s.style.display="none";esperarLeafletYRestaurar(0);return;}setTimeout(function(){s.classList.add("oculto");setTimeout(function(){s.style.display="none";},700);},2000);})();
 function irWeb(){window.open("https://www.controlyconfianza.cl","_blank","noopener,noreferrer");}
 function contactar(){window.open("https://wa.me/"+CYC_CONFIG.whatsapp+"?text=Hola%2C%20me%20interesa%20contratar%20un%20plan%20de%20Control%20%26%20Confianza.","_blank","noopener,noreferrer");cerrarModal();}
 // CUENTA Y PLAN PREMIUM
