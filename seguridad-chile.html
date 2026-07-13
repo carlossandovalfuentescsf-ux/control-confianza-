@@ -1576,6 +1576,18 @@ function fbEnviar(){
     btn.disabled = false; btn.textContent = 'Enviar';
   });
 }
+// Visible SOLO en la pantalla de inicio (región/comuna) — se oculta en resultados
+// y demás herramientas para no competir con el botón de Asistente IA ni la etiqueta de zona.
+(function(){
+  var fbBtn = document.getElementById('fbBtn');
+  var res = document.getElementById('res');
+  function fbAjustarVisibilidad(){
+    fbBtn.style.display = (res.style.display === 'block') ? 'none' : 'block';
+  }
+  var obsFb = new MutationObserver(fbAjustarVisibilidad);
+  obsFb.observe(res, {attributes:true, attributeFilter:['style']});
+  fbAjustarVisibilidad();
+})();
 </script>
 </body>
 </html>
