@@ -101,7 +101,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
 
 <!-- ===== INTRO ===== -->
 <section id="vIntro">
-  <div class="card">
+  <div class="card" id="vSelector">
     <h2>📄 ¿Para qué necesitas la Directiva de Funcionamiento?</h2>
     <p>Toda entidad que contrata guardias de seguridad en Chile debe contar con este documento legal aprobado. Elige la opción que corresponde a tu servicio — el asistente te guía paso a paso con el formato oficial.</p>
     <button class="btn btn-oro btn-full" style="text-align:left;display:flex;align-items:center;gap:12px;padding:16px" onclick="elegirTipo('fija')">
@@ -115,6 +115,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
     <button class="btn btn-borde btn-full" onclick="verMisExpedientes()">📂 Mis expedientes</button>
     <div class="aviso">⚖️ El documento que genera esta herramienta es un <strong>BORRADOR</strong>. Un <strong>asesor de seguridad acreditado OS.10</strong> lo revisa, corrige y visa antes de presentarlo — ese servicio se cotiza por WhatsApp.</div>
     <div class="msg" id="msgIntro"></div>
+  </div>
+  <div class="card" id="vInfoFija" style="display:none">
+    <h2>🏢 Genera el borrador de tu Directiva de Funcionamiento</h2>
+    <p>Toda entidad que contrata guardias de seguridad en Chile debe contar con una <strong>Directiva de Funcionamiento</strong> aprobada, conforme a los <strong>artículos 51 al 55 de la Ley 21.659</strong> de Seguridad Privada y los artículos 90 al 93 de su reglamento (Decreto 209, de 2025). Este asistente construye el borrador completo siguiendo el formato oficial (Formulario N° 01), usando el plano de tu predio y el análisis de riesgo de tu comuna.</p>
+    <p style="font-size:0.74rem">📌 La Directiva se presenta ante la autoridad con <strong>15 días hábiles de anticipación</strong> al inicio del servicio y tiene una <strong>vigencia de 3 años</strong> para instalaciones.</p>
+    <p>Al finalizar, un <strong>asesor de seguridad acreditado OS.10</strong> revisa, corrige y visa tu Directiva para su presentación — ese servicio se cotiza por WhatsApp según la envergadura de tu instalación.</p>
+    <div class="aviso">⚖️ El documento que genera esta herramienta es un <strong>BORRADOR</strong> y no tiene validez ante la autoridad hasta ser revisado y visado por un asesor acreditado.</div>
+    <button class="btn btn-oro btn-full" onclick="comenzar()">Comenzar mi Directiva →</button>
+    <button class="btn btn-borde btn-full" onclick="irIntro()">← Elegir otro tipo</button>
+    <div class="msg" id="msgInfoFija"></div>
   </div>
   <div class="card" id="authBox" style="display:none">
     <h2>Exclusivo Plan Empresa</h2>
@@ -385,7 +395,8 @@ async function pagarEmpresa(){
 // ---------- Selector de tipo ----------
 function elegirTipo(tipo){
   if(tipo==='evento'){location.href='directiva-eventos.html';return;}
-  comenzar();
+  document.getElementById('vSelector').style.display='none';
+  document.getElementById('vInfoFija').style.display='block';
 }
 
 // ---------- Navegación ----------
@@ -401,6 +412,8 @@ async function comenzar(){
 }
 function irIntro(){
   document.getElementById('vIntro').style.display='block';
+  document.getElementById('vSelector').style.display='block';
+  document.getElementById('vInfoFija').style.display='none';
   document.getElementById('vLista').style.display='none';
   document.getElementById('vWizard').style.display='none';
   document.getElementById('navRow').style.display='none';
