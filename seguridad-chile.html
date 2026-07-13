@@ -217,6 +217,20 @@ select:disabled{opacity:0.4}
 #chatInput{flex:1;background:#111;border:1px solid #333;color:#f0e8d0;border-radius:10px;padding:10px 12px;font-size:14px;resize:none;height:44px;font-family:inherit}
 #chatEnviar{background:#d4a017;color:#111;border:none;border-radius:10px;padding:10px 16px;font-weight:800;cursor:pointer;font-size:15px}
 #chatEnviar:disabled{opacity:.4;cursor:default}
+/* ===== Portero Controlcito ===== */
+#ctlGreeter{position:fixed;left:14px;bottom:18px;z-index:1500;cursor:pointer;background:none;border:none;padding:0;display:none;-webkit-tap-highlight-color:transparent}
+#ctlGreeter img{width:96px;display:block;filter:drop-shadow(0 8px 18px rgba(0,0,0,.55));animation:ctlVida 3.2s ease-in-out infinite,ctlSalto 7s ease-in-out infinite}
+#ctlGreeter .ctl-globo{position:absolute;bottom:100%;left:8px;margin-bottom:10px;background:#d4a017;color:#111;font-weight:900;font-size:13px;padding:8px 14px;border-radius:14px;white-space:nowrap;animation:ctlPulso 1.6s ease-in-out infinite;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+#ctlGreeter .ctl-globo:after{content:"";position:absolute;top:100%;left:22px;border:8px solid transparent;border-top-color:#d4a017}
+#ctlGreeter.visto img{width:72px;animation:ctlVida 3.2s ease-in-out infinite}
+#ctlGreeter.visto .ctl-globo{display:none}
+@keyframes ctlVida{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-7px) scaleY(1.02)}}
+@keyframes ctlSalto{0%,86%,100%{rotate:0deg}88%{rotate:-6deg}91%{translate:0 -14px;rotate:5deg}94%{translate:0 0;rotate:-3deg}97%{rotate:2deg}}
+@keyframes ctlPulso{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+#ctlModal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;flex-direction:column}
+#ctlModal.open{display:flex}
+#ctlModal video{max-height:82vh;max-width:94vw;border-radius:14px;background:#000}
+#ctlModal .ctl-cerrar{margin-top:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:14px;font-weight:700;padding:10px 26px;border-radius:99px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -1439,5 +1453,46 @@ function compartirUbicacion(){
 </div>
 
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
+<button id="ctlGreeter" onclick="ctlAbrirVideo()" aria-label="Ver video de presentación de la app">
+  <span class="ctl-globo">¡Tócame! 👆 Te muestro la app</span>
+  <img src="controlcito.png" alt="Controlcito">
+</button>
+<div id="ctlModal" role="dialog" aria-label="Video de presentación">
+  <video id="ctlVideo" controls playsinline preload="none"></video>
+  <button class="ctl-cerrar" onclick="ctlCerrarVideo()">✕ Cerrar</button>
+</div>
+<script>
+// ===== Portero Controlcito: presenta la app con el video =====
+function ctlEstado(){try{return localStorage.getItem('cyc_video_visto')||'';}catch(e){return '';}}
+function ctlMostrarGreeter(){
+  var g=document.getElementById('ctlGreeter');
+  if(ctlEstado())g.classList.add('visto');
+  g.style.display='block';
+}
+function ctlOcultarGreeter(){document.getElementById('ctlGreeter').style.display='none';}
+function ctlAbrirVideo(){
+  var v=document.getElementById('ctlVideo');
+  if(!v.src)v.src='videos/presentacion.mp4';
+  document.getElementById('ctlModal').classList.add('open');
+  v.play().catch(function(){});
+  try{localStorage.setItem('cyc_video_visto','1');}catch(e){}
+  document.getElementById('ctlGreeter').classList.add('visto');
+}
+function ctlCerrarVideo(){
+  var v=document.getElementById('ctlVideo');
+  v.pause();
+  document.getElementById('ctlModal').classList.remove('open');
+}
+document.getElementById('ctlModal').addEventListener('click',function(e){if(e.target===this)ctlCerrarVideo();});
+// visible solo en la pantalla de inicio (no sobre los resultados)
+(function(){
+  var res=document.getElementById('res');
+  var obs=new MutationObserver(function(){
+    if(res.style.display==='block')ctlOcultarGreeter();else ctlMostrarGreeter();
+  });
+  obs.observe(res,{attributes:true,attributeFilter:['style']});
+  if(res.style.display!=='block')ctlMostrarGreeter();
+})();
+</script>
 </body>
 </html>
