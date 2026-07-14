@@ -334,6 +334,7 @@ select:disabled{opacity:0.4}
   </div>
   <div style="display:flex;gap:6px;">
     <a href="tel:133" style="background:#c0392b;color:white;border:none;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;display:flex;align-items:center;">📞 133</a>
+    <button id="chipCuenta" onclick="abrirModal()" title="Mi cuenta" style="background:#1a1a1a;border:1px solid rgba(212,160,23,.6);color:#d4a017;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">👤</button>
     <button class="btnprem" onclick="abrirModal()" style="background:#d4a017;color:#111;">Planes</button>
   </div>
 </header>
@@ -694,6 +695,7 @@ select:disabled{opacity:0.4}
         Sesión iniciada: <strong id="cycEmailActual"></strong> —
         <span id="cycEstadoPlan"></span>
         <button onclick="cycLogout()" style="background:none;border:none;color:#d4a017;text-decoration:underline;cursor:pointer;font-size:12px;margin-left:6px">Cerrar sesión</button>
+        <div id="cycVerifAviso" style="display:none;margin-top:8px;font-size:11px;color:#e0a800;line-height:1.6">⚠️ Tu correo aún no está confirmado — es necesario para pagar planes. Revisa tu bandeja y spam, o <a href="#" onclick="cycReenviarVerif(event)" style="color:#d4a017;text-decoration:underline">reenvía el correo de confirmación</a>. <span id="cycVerifMsg" style="color:#7dc800"></span></div>
       </div>
       <div id="cycCuentaAnonimo">
         <div style="font-weight:800;margin-bottom:4px">¿Quieres contratar un plan de pago?</div>
@@ -1396,6 +1398,7 @@ function contactar(){window.open("https://wa.me/"+CYC_CONFIG.whatsapp+"?text=Hol
 const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
 var CYC_PREMIUM=false;
 var CYC_PLAN=null;
+var CYC_VERIFICADO=true;
 function cycToken(){return localStorage.getItem('cyc_token')||'';}
 function cycSetToken(t){localStorage.setItem('cyc_token',t);}
 function cycLogout(){localStorage.removeItem('cyc_token');CYC_PREMIUM=false;CYC_PLAN=null;cycActualizarUI();}
@@ -1408,6 +1411,7 @@ async function cycVerificarPremium(){
     var data=await res.json();
     CYC_PLAN=data.plan||null;
     CYC_PREMIUM=(CYC_PLAN==='empresa');
+    CYC_VERIFICADO=(data.verificado!==false);
     cycActualizarUI(data.email);
   }catch(e){}
 }
@@ -1422,6 +1426,15 @@ function cycActualizarUI(email){
   if(email)document.getElementById('cycEmailActual').textContent=email;
   var elEstado=document.getElementById('cycEstadoPlan');
   if(elEstado)elEstado.textContent=CYC_PLAN==='empresa'?'Plan Empresa activo ✓':(CYC_PLAN==='personal'?'Plan Personal activo ✓':'Sin plan pago activo');
+  var chip=document.getElementById('chipCuenta');
+  if(chip){
+    if(!logueado){chip.textContent='👤';chip.title='Mi cuenta — crear cuenta o iniciar sesión';}
+    else if(CYC_PLAN==='empresa'){chip.textContent='👤 🏢';chip.title='Mi cuenta — Plan Empresa activo';}
+    else if(CYC_PLAN==='personal'){chip.textContent='👤 ⭐';chip.title='Mi cuenta — Plan Personal activo';}
+    else{chip.textContent='👤 ✓';chip.title='Mi cuenta — sesión iniciada, sin plan pago';}
+  }
+  var av=document.getElementById('cycVerifAviso');
+  if(av)av.style.display=(logueado&&CYC_VERIFICADO===false)?'block':'none';
   if(btnPagarE)btnPagarE.style.display=(logueado&&CYC_PLAN!=='empresa')?'block':'none';
   if(btnPagarP)btnPagarP.style.display=(logueado&&!CYC_PLAN)?'block':'none';
 }
@@ -1436,7 +1449,18 @@ async function cycRegistro(){
     if(!res.ok){msg.textContent=data.error||'No se pudo crear la cuenta.';return;}
     cycSetToken(data.token);
     await cycVerificarPremium();
+    if(data.aviso)toast('📧 '+data.aviso);
   }catch(e){msg.textContent='Error de conexión.';}
+}
+async function cycReenviarVerif(ev){
+  if(ev)ev.preventDefault();
+  var out=document.getElementById('cycVerifMsg');
+  try{
+    var res=await fetch(API_URL+'/auth/reenviar-confirmacion',{method:'POST',headers:{'Authorization':'Bearer '+cycToken()}});
+    var data=await res.json();
+    if(out)out.textContent=data.mensaje||data.error||'';
+    if(data.ok)toast('📧 Correo de confirmación reenviado');
+  }catch(e){if(out)out.textContent='Error de conexión.';}
 }
 async function cycLogin(){
   var email=document.getElementById('cycEmail').value.trim();

@@ -342,6 +342,7 @@ function buildSection(sec){
 
 function setAnswer(qid, val){
   answers[qid] = val;
+  guardarAvance();
   // Actualizar UI del botón
   var card = document.getElementById('card-'+qid);
   if(!card) return;
@@ -371,10 +372,10 @@ function validate(){
 
 function goNext(){
   if(!validate()) return;
-  if(current < STEPS.length-1){ current++; render(); }
+  if(current < STEPS.length-1){ current++; render(); guardarAvance(); }
 }
 function goBack(){
-  if(current > 0){ current--; render(); }
+  if(current > 0){ current--; render(); guardarAvance(); }
 }
 
 function render(){
@@ -429,6 +430,27 @@ function updateProgress(){
   });
   document.getElementById('progSecs').innerHTML = tagsHtml;
 }
+
+/* ---- Guardado de avance: el cuestionario sobrevive recargas y cambios de app ---- */
+function guardarAvance(){
+  try{
+    if(Object.keys(answers).length===0)return;
+    localStorage.setItem('cyc_ph_avance',JSON.stringify({answers:answers,current:current,ts:Date.now()}));
+  }catch(e){}
+}
+function restaurarAvance(){
+  try{
+    var raw=localStorage.getItem('cyc_ph_avance');
+    if(!raw)return;
+    var d=JSON.parse(raw);
+    if(!d||!d.answers||!d.ts||Object.keys(d.answers).length===0){return;}
+    if(Date.now()-d.ts>7*24*3600*1000){localStorage.removeItem('cyc_ph_avance');return;}
+    answers=d.answers;
+    if(typeof d.current==='number'&&d.current>0&&d.current<STEPS.length)current=d.current;
+    setTimeout(function(){showToast('Retomamos tu diagnóstico donde quedó ✓');},800);
+  }catch(e){}
+}
+function borrarAvance(){try{localStorage.removeItem('cyc_ph_avance');}catch(e){}}
 
 /* ---- Cuenta y plan (mismo login y backend que el resto del ecosistema) ---- */
 const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
@@ -640,6 +662,7 @@ function showResult(){
 
 function reiniciar(){
   current=0; answers={};
+  borrarAvance();
   render();
 }
 
@@ -649,6 +672,7 @@ function showToast(msg){
   setTimeout(function(){t.classList.remove('show');},2200);
 }
 
+restaurarAvance();
 render();
 cycVerificarPlan();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
