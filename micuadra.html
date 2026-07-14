@@ -98,6 +98,17 @@ button:disabled{background:#555;color:#999;cursor:default}
 <script src="cuadrante.js"></script>
 <script>
 const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+// Fuente de captación (?f=ig-bio, ?f=fb-post, etc.): identifica QUÉ pieza/canal
+// trajo a cada inscrito. Se guarda para que un clic que llega hoy y se inscribe
+// mañana no pierda su origen. Sin ?f= queda 'directo'.
+var CYC_FUENTE=(function(){
+  try{
+    var f=new URLSearchParams(location.search).get('f');
+    if(f){f=f.toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40);
+      if(f){localStorage.setItem('mc_fuente',f);return f;}}
+    return localStorage.getItem('mc_fuente')||'directo';
+  }catch(e){return 'directo';}
+})();
 (function(){
   var sel=document.getElementById('comuna');
   if(typeof CYC_COMUNAS!=='undefined'){
@@ -113,7 +124,7 @@ async function anotarse(){
   var btn=document.getElementById('btn');
   btn.disabled=true;btn.textContent='Enviando...';
   try{
-    var r=await fetch(API_URL+'/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,comuna:comuna})});
+    var r=await fetch(API_URL+'/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,comuna:comuna,fuente:CYC_FUENTE})});
     var d=await r.json();
     if(d.ok){
       msg.textContent=d.mensaje||'¡Listo! Te avisaremos pronto.';msg.className='msg ok';

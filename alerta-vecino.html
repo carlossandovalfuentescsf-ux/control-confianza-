@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=micuadra.html">
 <link rel="canonical" href="micuadra.html">
 <title>MiCuadra — Control y Confianza</title>
 </head>
 <body>
 <p>Redirigiendo a <a href="micuadra.html">micuadra.html</a>...</p>
-<script>location.replace('micuadra.html');</script>
+<!-- location.replace conserva el ?f= de la fuente de captación (el meta refresh lo botaba) -->
+<script>location.replace('micuadra.html'+location.search);</script>
+<noscript><meta http-equiv="refresh" content="0; url=micuadra.html"></noscript>
 </body>
 </html>
