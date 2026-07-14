@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /recuperar-clave.html
+
+Sitemap: https://app.controlyconfianza.cl/sitemap.xml

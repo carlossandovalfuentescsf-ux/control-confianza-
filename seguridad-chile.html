@@ -343,8 +343,8 @@ select:disabled{opacity:0.4}
 <div class="pagina" id="pInicio">
   <button onclick="abrirPeligro()" style="width:100%;background:#c0392b;color:#fff;border:none;padding:14px;border-radius:12px;font-size:16px;font-weight:900;cursor:pointer;margin-bottom:14px;letter-spacing:.5px">&#9888; Estoy en peligro</button>
   <div class="titulo">Conoce el riesgo<br><em>antes de llegar</em></div>
-  <p class="subtit">Datos de delincuencia por sector. Gratis, sin limites, sin paywall.</p>
-  <p style="font-size:11px;color:#555;text-align:center;margin-top:-6px;margin-bottom:10px">Cifras actualizadas · Q1 2026 · Fuente: Subsecretaria de Prevencion del Delito</p>
+  <p class="subtit">Datos de delincuencia por sector — gratis y sin limites. Con herramientas premium opcionales.</p>
+  <p style="font-size:11px;color:#555;text-align:center;margin-top:-6px;margin-bottom:10px">Cifras actualizadas · <span data-datos="periodo">Q1 2026</span> · Fuente: Subsecretaria de Prevencion del Delito</p>
   <div class="caja">
     <span class="etiq">Region</span>
     <select id="selReg" onchange="loadComunas()" oninput="loadComunas()">
@@ -379,7 +379,7 @@ select:disabled{opacity:0.4}
     </div>
     <a href="#" onclick="var x=document.getElementById('alertasComo');x.style.display=x.style.display==='none'?'block':'none';return false" style="font-size:10.5px;color:#d4a017;text-decoration:underline">¿Cómo funcionan las alertas?</a>
     <div id="alertasComo" style="display:none;font-size:10.5px;color:#999;line-height:1.7;margin-top:6px;border-top:1px solid #2a2a2a;padding-top:6px">
-      · Te avisamos <strong>una vez por zona</strong> cuando entras a una comuna con riesgo alto o crítico.<br>
+      · Te avisamos <strong>una vez por zona</strong> cuando entras a un sector con riesgo alto o crítico (precisión ~1 km).<br>
       · Funcionan <strong>solo con la app abierta</strong> — una app web no puede vigilar tu ubicación en segundo plano.<br>
       · <strong>En iPhone:</strong> instala la app (Compartir → «Añadir a pantalla de inicio») para que lleguen las notificaciones.<br>
       · Tu ubicación se procesa solo en tu teléfono: no se envía ni se almacena en ningún servidor.
@@ -433,18 +433,18 @@ select:disabled{opacity:0.4}
   <div style="margin:18px 16px 0;background:#161616;border:1px solid #222;border-radius:14px;padding:16px">
     <div style="font-size:11px;font-weight:800;color:#d4a017;letter-spacing:1.5px;margin-bottom:10px">FUENTES Y METODOLOGIA</div>
     <div style="font-size:12px;color:#888;line-height:1.8">
-      <div style="margin-bottom:6px"><span style="color:#f0e8d0;font-weight:700">Periodo:</span> Enero–Marzo 2026 (Q1 2026)</div>
+      <div style="margin-bottom:6px"><span style="color:#f0e8d0;font-weight:700">Periodo:</span> <span data-datos="periodoLargo">Enero–Marzo 2026 (Q1 2026)</span></div>
       <div style="margin-bottom:6px"><span style="color:#f0e8d0;font-weight:700">Fuentes oficiales:</span></div>
       <div style="padding-left:10px;margin-bottom:4px">· Subsecretaria de Prevencion del Delito (Ministerio del Interior)</div>
       <div style="padding-left:10px;margin-bottom:4px">· CEAD – Centro de Estudios y Analisis del Delito (Carabineros de Chile)</div>
       <div style="padding-left:10px;margin-bottom:10px">· PDI – Policia de Investigaciones de Chile</div>
-      <div style="margin-bottom:6px"><span style="color:#f0e8d0;font-weight:700">Tendencias Q1 2026 vs Q1 2025:</span></div>
+      <div style="margin-bottom:6px"><span style="color:#f0e8d0;font-weight:700">Tendencias <span data-datos="tendencias">Q1 2026 vs Q1 2025</span>:</span></div>
       <div style="padding-left:10px;margin-bottom:3px;color:#a5d6a7">· Robos violentos: <strong style="color:#a5d6a7">-13%</strong> a nivel nacional</div>
       <div style="padding-left:10px;margin-bottom:3px;color:#a5d6a7">· Robo de vehiculos: <strong style="color:#a5d6a7">-18,3%</strong> a nivel nacional</div>
       <div style="padding-left:10px;margin-bottom:3px;color:#a5d6a7">· Homicidios: <strong style="color:#a5d6a7">-16,7%</strong> a nivel nacional</div>
       <div style="padding-left:10px;margin-bottom:3px;color:#ef9a9a">· Delitos con armas: <strong style="color:#ef9a9a">+15,7%</strong> a nivel nacional</div>
       <div style="padding-left:10px;margin-bottom:10px;color:#ef9a9a">· Delitos de drogas: <strong style="color:#ef9a9a">+10,8%</strong> a nivel nacional</div>
-      <div style="color:#555;font-size:11px">Los niveles de riesgo por sector se basan en datos historicos por comuna complementados con tendencias regionales oficiales. Actualizacion: junio 2026.</div>
+      <div style="color:#555;font-size:11px">Los niveles de riesgo por sector se basan en datos historicos por comuna complementados con tendencias regionales oficiales. Actualizacion: <span data-datos="actualizacion">junio 2026</span>.</div>
     </div>
   </div>
 
@@ -696,6 +696,7 @@ select:disabled{opacity:0.4}
         <span id="cycEstadoPlan"></span>
         <button onclick="cycLogout()" style="background:none;border:none;color:#d4a017;text-decoration:underline;cursor:pointer;font-size:12px;margin-left:6px">Cerrar sesión</button>
         <div id="cycVerifAviso" style="display:none;margin-top:8px;font-size:11px;color:#e0a800;line-height:1.6">⚠️ Tu correo aún no está confirmado — es necesario para pagar planes. Revisa tu bandeja y spam, o <a href="#" onclick="cycReenviarVerif(event)" style="color:#d4a017;text-decoration:underline">reenvía el correo de confirmación</a>. <span id="cycVerifMsg" style="color:#7dc800"></span></div>
+        <a id="cycConsultaCTA" href="#" target="_blank" rel="noopener noreferrer" style="display:none;margin-top:8px;background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.5);color:#25d366;text-align:center;padding:10px;border-radius:8px;font-size:12px;font-weight:800;text-decoration:none">💬 Usar mi consulta con el asesor OS.10</a>
       </div>
       <div id="cycCuentaAnonimo">
         <div style="font-weight:800;margin-bottom:4px">¿Quieres contratar un plan de pago?</div>
@@ -728,6 +729,7 @@ select:disabled{opacity:0.4}
 <script>
 document.querySelectorAll('[data-price="personal"]').forEach(function(el){el.textContent=CYC_CONFIG.precioPersonal;});
 document.querySelectorAll('[data-price="empresa"]').forEach(function(el){el.textContent=CYC_CONFIG.precioEmpresa;});
+document.querySelectorAll('[data-datos]').forEach(function(el){var m={periodo:CYC_CONFIG.datosPeriodo,periodoLargo:CYC_CONFIG.datosPeriodoLargo,tendencias:CYC_CONFIG.datosTendencias,actualizacion:CYC_CONFIG.datosActualizacion};var v=m[el.getAttribute('data-datos')];if(v)el.textContent=v;});
 document.querySelectorAll('a[data-wa-msg]').forEach(function(el){el.href='https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+el.getAttribute('data-wa-msg');el.removeAttribute('data-wa-msg');});
 var REGS={
 "I":["iquique:Iquique","alto_hospicio:Alto Hospicio","pozo_almonte:Pozo Almonte"],
@@ -1299,7 +1301,7 @@ function cycRenderAlertasEstado(){
     btn.style.display='none';return;
   }
   if(GEO.activo){
-    el.innerHTML='🔔 <strong style="color:#7dc800">Alertas de zona activas.</strong> Te avisamos al entrar a una comuna de riesgo alto o crítico (con la app abierta).';
+    el.innerHTML='🔔 <strong style="color:#7dc800">Alertas de zona activas.</strong> Te avisamos al entrar a un sector de riesgo alto o crítico (con la app abierta).';
     btn.textContent='Desactivar';btn.style.display='inline-block';return;
   }
   el.innerHTML='🔕 <strong style="color:#ddd">Alertas de zona desactivadas.</strong> Actívalas para recibir un aviso al entrar a una zona de riesgo.';
@@ -1319,38 +1321,71 @@ function cycToggleAlertas(){
   iniciarAlertas();
 }
 
-function chequearZona(lat,lng){
-  var mejor=null,minD=999;
-  for(var k in DB){
-    var d=DB[k];
-    var dist=dKm(lat,lng,d.lat,d.lng);
-    if(dist<minD){minD=dist;mejor={k:k,d:d,dist:dist};}
-  }
-  if(!mejor||mejor.dist>8){return;}
-  var k=mejor.k,d=mejor.d;
-  if(GEO.alertadas[k]){return;}
-  if(d.niv!=='c'&&d.niv!=='a'){return;}
-  GEO.alertadas[k]=true;
-  var nv=NV[d.niv];
-  var titulo='⚠ Zona '+nv.lbl+': '+d.n;
-  var cuerpo=d.niv==='c'
-    ?'Estás en una zona CRÍTICA. Extrema precaución. Llama al 133 si necesitas ayuda.'
-    :'Estás ingresando a una zona de ALTO riesgo. Mantén atención a tu entorno.';
+function notificarAlerta(key,titulo,cuerpo,toastTxt){
   navigator.serviceWorker.ready.then(function(sw){
     sw.showNotification(titulo,{
       body:cuerpo,
       icon:'icon-192.png',
       badge:'icon-192.png',
-      tag:'alerta-'+k,
+      tag:'alerta-'+key,
       vibrate:[200,100,200],
       data:{url:window.location.href}
     });
   }).catch(function(){
     if(Notification.permission==='granted'){
-      new Notification(titulo,{body:cuerpo,tag:'alerta-'+k});
+      new Notification(titulo,{body:cuerpo,tag:'alerta-'+key});
     }
   });
-  toast('⚠ '+d.n+' — zona '+nv.lbl.toLowerCase());
+  toast(toastTxt);
+}
+
+function chequearZona(lat,lng){
+  // 1) Precisión fina: sector de riesgo alto/crítico a ≤1,2 km del punto GPS
+  var mejorSect=null,minDs=999;
+  for(var k in DB){
+    var d=DB[k];
+    if(!d.sects)continue;
+    if(dKm(lat,lng,d.lat,d.lng)>15)continue; // descartar comunas lejanas (rendimiento)
+    for(var i=0;i<d.sects.length;i++){
+      var s=d.sects[i];
+      if(!s.lat||!s.lng)continue;
+      if(s.niv!=='c'&&s.niv!=='a')continue;
+      var ds=dKm(lat,lng,s.lat,s.lng);
+      if(ds<minDs){minDs=ds;mejorSect={k:k,d:d,s:s};}
+    }
+  }
+  if(mejorSect&&minDs<=1.2){
+    var skey='s:'+mejorSect.k+':'+mejorSect.s.n;
+    if(GEO.alertadas[skey])return;
+    GEO.alertadas[skey]=true;
+    var nvs=NV[mejorSect.s.niv];
+    notificarAlerta(skey,
+      '⚠ Sector '+nvs.lbl+': '+mejorSect.s.n,
+      mejorSect.s.niv==='c'
+        ?'Estás en '+mejorSect.s.n+' ('+mejorSect.d.n+'), sector CRÍTICO. Extrema precaución. Llama al 133 si necesitas ayuda.'
+        :'Estás entrando a '+mejorSect.s.n+' ('+mejorSect.d.n+'), sector de ALTO riesgo. Mantén atención a tu entorno.',
+      '⚠ '+mejorSect.s.n+' — sector '+nvs.lbl.toLowerCase());
+    return;
+  }
+  // 2) Respaldo grueso: comuna de nivel alto/crítico a ≤3 km de su centro
+  var mejor=null,minD=999;
+  for(var k2 in DB){
+    var d2=DB[k2];
+    var dist=dKm(lat,lng,d2.lat,d2.lng);
+    if(dist<minD){minD=dist;mejor={k:k2,d:d2,dist:dist};}
+  }
+  if(!mejor||mejor.dist>3){return;}
+  var k3=mejor.k,d3=mejor.d;
+  if(GEO.alertadas[k3]){return;}
+  if(d3.niv!=='c'&&d3.niv!=='a'){return;}
+  GEO.alertadas[k3]=true;
+  var nv=NV[d3.niv];
+  notificarAlerta(k3,
+    '⚠ Zona '+nv.lbl+': '+d3.n,
+    d3.niv==='c'
+      ?'Estás en una zona CRÍTICA. Extrema precaución. Llama al 133 si necesitas ayuda.'
+      :'Estás ingresando a una zona de ALTO riesgo. Mantén atención a tu entorno.',
+    '⚠ '+d3.n+' — zona '+nv.lbl.toLowerCase());
 }
 
 function aceptarPrivacidad(){
@@ -1435,6 +1470,18 @@ function cycActualizarUI(email){
   }
   var av=document.getElementById('cycVerifAviso');
   if(av)av.style.display=(logueado&&CYC_VERIFICADO===false)?'block':'none';
+  var cta=document.getElementById('cycConsultaCTA');
+  if(cta){
+    if(logueado&&CYC_PLAN){
+      var msgC=CYC_PLAN==='empresa'
+        ?'Hola, tengo el Plan Empresa ('+(email||'')+') y quiero usar una de mis consultas mensuales con el asesor.'
+        :'Hola, tengo el Plan Personal ('+(email||'')+') y quiero usar mi consulta anual con el asesor.';
+      cta.href='https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+encodeURIComponent(msgC);
+      cta.style.display='block';
+    } else {
+      cta.style.display='none';
+    }
+  }
   if(btnPagarE)btnPagarE.style.display=(logueado&&CYC_PLAN!=='empresa')?'block':'none';
   if(btnPagarP)btnPagarP.style.display=(logueado&&!CYC_PLAN)?'block':'none';
 }
@@ -1610,12 +1657,24 @@ function compartirUbicacion(){
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
 <button id="ctlGreeter" onclick="ctlAbrirVideo()" aria-label="Ver video de presentación de la app">
   <span class="ctl-globo">¡Soy tu Controlcito! 👆</span>
-  <img src="controlcito.png" alt="Controlcito">
+  <img src="controlcito-s.webp" alt="Controlcito" onerror="this.onerror=null;this.src='controlcito.png'">
 </button>
-<div id="ctlModal" role="dialog" aria-label="Video de presentación">
+<div id="ctlModal" role="dialog" aria-label="Videos de la app">
   <video id="ctlVideo" controls playsinline preload="none"></video>
+  <div id="ctlEps" style="display:flex;gap:6px;overflow-x:auto;padding:10px 4px;max-width:min(92vw,560px);-webkit-overflow-scrolling:touch">
+    <button class="ctl-ep" onclick="ctlVerEp(this,'videos/presentacion.mp4')">▶ Resumen</button>
+    <button class="ctl-ep" onclick="ctlVerEp(this,'videos/EPISODIO-1-mapa-riesgo-web.mp4')">1 · Mapa de riesgo</button>
+    <button class="ctl-ep" onclick="ctlVerEp(this,'videos/EPISODIO-2-sos-protocolos-web.mp4')">2 · SOS</button>
+    <button class="ctl-ep" onclick="ctlVerEp(this,'videos/EPISODIO-3-plan-hogar-web.mp4')">3 · Plan Hogar</button>
+    <button class="ctl-ep" onclick="ctlVerEp(this,'videos/EPISODIO-4-mi-cobertura-web.mp4')">4 · Mi Cobertura</button>
+    <button class="ctl-ep" onclick="ctlVerEp(this,'videos/EPISODIO-5-riesgo-empresa-web.mp4')">5 · Riesgo Empresa</button>
+    <button class="ctl-ep" onclick="ctlVerEp(this,'videos/EPISODIO-6-directiva-web.mp4')">6 · Directiva</button>
+    <button class="ctl-ep" onclick="ctlVerEp(this,'videos/EPISODIO-7-traslado-vip-web.mp4')">7 · Traslado VIP</button>
+    <button class="ctl-ep" onclick="ctlVerEp(this,'videos/EPISODIO-8-asistente-ia-web.mp4')">8 · Asistente IA</button>
+  </div>
   <button class="ctl-cerrar" onclick="ctlCerrarVideo()">✕ Cerrar</button>
 </div>
+<style>.ctl-ep{background:#1a1a1a;border:1px solid rgba(212,160,23,.5);color:#d4a017;padding:7px 11px;border-radius:16px;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;flex-shrink:0}.ctl-ep.activo{background:#d4a017;color:#111}</style>
 <script>
 // ===== Portero Controlcito: presenta la app con el video =====
 function ctlEstado(){try{return localStorage.getItem('cyc_video_visto')||'';}catch(e){return '';}}
@@ -1637,6 +1696,14 @@ function ctlCerrarVideo(){
   var v=document.getElementById('ctlVideo');
   v.pause();
   document.getElementById('ctlModal').classList.remove('open');
+}
+function ctlVerEp(btn,src){
+  var v=document.getElementById('ctlVideo');
+  v.src=src;
+  v.play().catch(function(){});
+  var chips=document.querySelectorAll('#ctlEps .ctl-ep');
+  for(var i=0;i<chips.length;i++){chips[i].classList.remove('activo');}
+  btn.classList.add('activo');
 }
 document.getElementById('ctlModal').addEventListener('click',function(e){if(e.target===this)ctlCerrarVideo();});
 // visible solo en la pantalla de inicio (no sobre los resultados)
