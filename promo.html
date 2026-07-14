@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Imagen Promocional – Control y Confianza</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.card{width:420px;background:linear-gradient(145deg,#1a1a1a 0%,#111 100%);border:1px solid #2a2a2a;border-radius:24px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.8)}
+.top{background:linear-gradient(135deg,#1e1a0e 0%,#2a2008 100%);padding:32px 28px 24px;display:flex;align-items:center;gap:16px;border-bottom:1px solid #2e2a18}
+.top img{width:72px;height:72px;object-fit:contain;border-radius:16px;box-shadow:0 4px 16px rgba(212,160,23,.3)}
+.top .txt .nombre{font-size:22px;font-weight:900;color:#f0e8d0;letter-spacing:.5px}
+.top .txt .sub{font-size:11px;color:#d4a017;font-weight:700;letter-spacing:3px;margin-top:2px}
+.top .txt .slogan{font-size:13px;color:#888;margin-top:6px;font-style:italic}
+.body{padding:24px 28px}
+.tagline{font-size:20px;font-weight:900;color:#f0e8d0;line-height:1.3;margin-bottom:6px}
+.tagline em{color:#d4a017;font-style:normal}
+.desc{font-size:13px;color:#888;line-height:1.6;margin-bottom:20px}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.fi{background:#161616;border:1px solid #222;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.fi .ico{font-size:20px;flex-shrink:0}
+.fi .ft{font-size:12px;font-weight:700;color:#d4d4d4}
+.divider{height:1px;background:#1e1e1e;margin-bottom:20px}
+.qr-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.qr-txt .label{font-size:11px;color:#666;font-weight:600;letter-spacing:1px;margin-bottom:4px}
+.qr-txt .url{font-size:12px;color:#d4a017;font-weight:700;word-break:break-all}
+.qr-txt .hint{font-size:11px;color:#555;margin-top:6px}
+.badges-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.badge{background:#161616;border:1px solid #222;border-radius:20px;padding:4px 12px;font-size:11px;color:#888}
+.badge strong{color:#d4a017}
+.bottom{background:#0e0e0e;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #1a1a1a}
+.bottom .copy{font-size:11px;color:#444}
+.bottom .copy strong{color:#666}
+.bottom .free{background:#d4a017;color:#111;font-size:11px;font-weight:900;padding:5px 14px;border-radius:20px}
+.hint-print{text-align:center;margin-top:20px;font-size:12px;color:#444}
+@media print{body{background:#fff}.hint-print{display:none}}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="top">
+    <img src="icon-192.png" alt="Logo">
+    <div class="txt">
+      <div class="nombre">Control &amp; Confianza</div>
+      <div class="sub">SEGURIDAD PRIVADA</div>
+      <div class="slogan">"Conoce el riesgo antes de llegar"</div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="tagline">Tu app de <em>seguridad ciudadana</em><br>para toda Chile</div>
+    <div class="desc">Consulta datos de delincuencia por sector, mapa de riesgo y contactos de emergencia de tu comuna. Gratis, sin publicidad.</div>
+
+    <div class="features">
+      <div class="fi"><div class="ico">🗺️</div><div class="ft">Mapa de riesgo</div></div>
+      <div class="fi"><div class="ico">🚨</div><div class="ft">Botón emergencia</div></div>
+      <div class="fi"><div class="ico">📞</div><div class="ft">Contactos locales</div></div>
+      <div class="fi"><div class="ico">📍</div><div class="ft">Comparte ubicación</div></div>
+      <div class="fi"><div class="ico">⏱️</div><div class="ft">Horarios de riesgo</div></div>
+      <div class="fi"><div class="ico">📱</div><div class="ft">Instala en celular</div></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="qr-row">
+      <div class="qr-txt">
+        <div class="label">ACCEDE GRATIS</div>
+        <div class="url">carlossandovalfuentescsf-ux.github.io/control-confianza-</div>
+        <div class="hint">Abre en Safari o Chrome · Sin descargas</div>
+        <div class="badges-row">
+          <div class="badge"><strong>82</strong> comunas</div>
+          <div class="badge"><strong>15</strong> regiones</div>
+          <div class="badge">100% <strong>gratis</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="copy"><strong>Control &amp; Confianza</strong> Seguridad Privada · Chile</div>
+    <div class="free">GRATIS</div>
+  </div>
+</div>
+
+<div class="hint-print">
+  Para guardar como imagen: captura de pantalla en tu celular, o en Mac usa Cmd+Shift+4
+</div>
+
+</body>
+</html>
