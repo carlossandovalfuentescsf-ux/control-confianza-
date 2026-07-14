@@ -357,6 +357,19 @@ select:disabled{opacity:0.4}
     <button class="btnir" onclick="analizar()">Analizar seguridad</button>
     <button id="fbBtn" onclick="fbAbrir()">💬 Danos tu opinión</button>
   </div>
+  <div id="alertasEstado" style="background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:11px 13px;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span id="alertasEstadoTxt" style="flex:1;min-width:180px;font-size:11.5px;color:#bbb;line-height:1.5"></span>
+      <button id="alertasEstadoBtn" onclick="cycToggleAlertas()" style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.5);color:#d4a017;padding:8px 12px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap"></button>
+    </div>
+    <a href="#" onclick="var x=document.getElementById('alertasComo');x.style.display=x.style.display==='none'?'block':'none';return false" style="font-size:10.5px;color:#d4a017;text-decoration:underline">¿Cómo funcionan las alertas?</a>
+    <div id="alertasComo" style="display:none;font-size:10.5px;color:#999;line-height:1.7;margin-top:6px;border-top:1px solid #2a2a2a;padding-top:6px">
+      · Te avisamos <strong>una vez por zona</strong> cuando entras a una comuna con riesgo alto o crítico.<br>
+      · Funcionan <strong>solo con la app abierta</strong> — una app web no puede vigilar tu ubicación en segundo plano.<br>
+      · <strong>En iPhone:</strong> instala la app (Compartir → «Añadir a pantalla de inicio») para que lleguen las notificaciones.<br>
+      · Tu ubicación se procesa solo en tu teléfono: no se envía ni se almacena en ningún servidor.
+    </div>
+  </div>
   <div class="fgrid">
     <div class="fcard">
       <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
@@ -570,7 +583,7 @@ select:disabled{opacity:0.4}
       <div class="prem-box">
         <div class="prem-tit">Potencia tu seguridad con un plan</div>
         <div class="prem-desc">Accede a herramientas exclusivas segun tus necesidades.</div>
-        <div class="pf">⭐ <strong>Personal $<span data-price="personal"></span>/mes</strong> — Plan Hogar completo + indice de riesgo</div>
+        <div class="pf">⭐ <strong>Personal $<span data-price="personal"></span> pago único</strong> — informe completo de tu hogar (Plan Hogar + Mi Cobertura)</div>
         <div class="pf">🏢 <strong>Empresa $<span data-price="empresa"></span>/mes</strong> — Indice de riesgo detallado + Directiva de Funcionamiento</div>
         <button class="btnpagar" onclick="abrirModal()">Ver planes y precios</button>
       </div>
@@ -618,7 +631,7 @@ select:disabled{opacity:0.4}
       <div class="ptop"><div class="pnom">Personal ⭐</div><div class="pprc"><strong>$<span data-price="personal"></span></strong> <span style="font-size:10px;color:#aaa">pago único</span></div></div>
       <div class="pft">
         ✓ Todo lo gratuito mas:<br>
-        📊 <strong>Indice de riesgo</strong> — nivel general (Alto / Medio / Bajo)<br>
+        🗺️ <strong>Mi Cobertura</strong> — informe completo de tu propiedad<br>
         🏠 <strong>Plan de Seguridad del Hogar completo</strong><br>
         📋 Vulnerabilidades detectadas en tu hogar<br>
         🎯 Recomendaciones por prioridad (critico / importante)<br>
@@ -628,7 +641,7 @@ select:disabled{opacity:0.4}
       </div>
       <button class="pinfo-btn" onclick="togglePinfo(this)">ⓘ ¿Qué hace cada herramienta? ▾</button>
       <div class="pinfo">
-        <div class="ph"><span class="ph-ic">📊</span><span><span class="ph-nom">Índice de riesgo</span><span class="ph-desc">El nivel general de riesgo (Alto / Medio / Bajo) del sector donde estás.</span></span></div>
+        <div class="ph"><span class="ph-ic">🗺️</span><span><span class="ph-nom">Mi Cobertura — informe completo</span><span class="ph-desc">Dibuja el plano de tu casa, ubica cámaras y accesos, y recibe el informe con vulnerabilidades y recomendaciones.</span></span></div>
         <div class="ph"><span class="ph-ic">🏠</span><span><span class="ph-nom">Plan Hogar completo</span><span class="ph-desc">Diagnóstico detallado de tu casa: vulnerabilidades y recomendaciones por prioridad, con informe PDF descargable.</span></span></div>
         <div class="ph"><span class="ph-ic">🔔</span><span><span class="ph-nom">Boletín mensual de seguridad</span><span class="ph-desc">Consejos de prevención en tu correo cada mes.</span></span></div>
         <div class="ph"><span class="ph-ic">💬</span><span><span class="ph-nom">Consulta con asesor OS.10</span><span class="ph-desc">Una consulta al año con un asesor de seguridad acreditado.</span></span></div>
@@ -688,6 +701,9 @@ select:disabled{opacity:0.4}
     <a class="wlink" href="https://www.controlyconfianza.cl" target="_blank">www.controlyconfianza.cl</a>
     <button class="btnclose" onclick="cerrarModal()">Cerrar</button>
   </div>
+</div>
+<div class="mbg" id="modalBienvenida" onclick="if(event.target===this){cycCerrarBienvenida()}">
+  <div class="mbox" id="mbContenido"></div>
 </div>
 <div class="diag-banner" id="diagBanner"></div>
 <div class="toast" id="toast"></div>
@@ -1241,15 +1257,50 @@ function mostrarPredictor(key,nombre){
 var GEO={watchId:null,alertadas:{},activo:false};
 
 function iniciarAlertas(){
-  if(!('Notification' in window)||!navigator.geolocation){return;}
+  if(!('Notification' in window)||!navigator.geolocation){cycRenderAlertasEstado();return;}
   Notification.requestPermission().then(function(p){
-    if(p!=='granted'){return;}
+    if(p!=='granted'){cycRenderAlertasEstado();return;}
     GEO.activo=true;
     GEO.watchId=navigator.geolocation.watchPosition(function(pos){
       chequearZona(pos.coords.latitude,pos.coords.longitude);
     },function(){},
     {enableHighAccuracy:true,maximumAge:30000,timeout:15000});
+    cycRenderAlertasEstado();
   });
+}
+
+// === ESTADO VISIBLE DE LAS ALERTAS (indicador + activar/desactivar) ===
+function cycRenderAlertasEstado(){
+  var el=document.getElementById('alertasEstadoTxt');
+  var btn=document.getElementById('alertasEstadoBtn');
+  if(!el||!btn)return;
+  if(!('Notification' in window)||!navigator.geolocation){
+    el.innerHTML='🔕 <strong style="color:#ddd">Alertas de zona no disponibles en este navegador.</strong> En iPhone: instala la app (Compartir → «Añadir a pantalla de inicio») y ábrela desde ahí.';
+    btn.style.display='none';return;
+  }
+  if(Notification.permission==='denied'){
+    el.innerHTML='🔕 <strong style="color:#ddd">Notificaciones bloqueadas por el navegador.</strong> Actívalas en la configuración del sitio para recibir alertas de zona.';
+    btn.style.display='none';return;
+  }
+  if(GEO.activo){
+    el.innerHTML='🔔 <strong style="color:#7dc800">Alertas de zona activas.</strong> Te avisamos al entrar a una comuna de riesgo alto o crítico (con la app abierta).';
+    btn.textContent='Desactivar';btn.style.display='inline-block';return;
+  }
+  el.innerHTML='🔕 <strong style="color:#ddd">Alertas de zona desactivadas.</strong> Actívalas para recibir un aviso al entrar a una zona de riesgo.';
+  btn.textContent='Activar alertas';btn.style.display='inline-block';
+}
+function cycToggleAlertas(){
+  if(GEO.activo){
+    if(GEO.watchId!==null){navigator.geolocation.clearWatch(GEO.watchId);GEO.watchId=null;}
+    GEO.activo=false;
+    localStorage.setItem('cyc_privacidad','rechazado');
+    toast('Alertas de zona desactivadas');
+    cycRenderAlertasEstado();
+    return;
+  }
+  localStorage.setItem('cyc_privacidad','aceptado');
+  toast('Activando alertas…');
+  iniciarAlertas();
 }
 
 function chequearZona(lat,lng){
@@ -1295,9 +1346,11 @@ function aceptarPrivacidad(){
 function rechazarPrivacidad(){
   localStorage.setItem('cyc_privacidad','rechazado');
   document.getElementById('privacyBg').classList.remove('open');
+  cycRenderAlertasEstado();
 }
 
 window.addEventListener('load',function(){
+  cycRenderAlertasEstado();
   setTimeout(function(){
     var consent=localStorage.getItem('cyc_privacidad');
     if(consent==='aceptado'){
@@ -1305,7 +1358,7 @@ window.addEventListener('load',function(){
     } else if(!consent){
       document.getElementById('privacyBg').classList.add('open');
     }
-    // si es 'rechazado' no hace nada
+    // si es 'rechazado' no hace nada (el usuario puede reactivar desde el indicador de alertas)
   },2500);
 });
 (function(){var selReg=document.getElementById("selReg");if(selReg){selReg.addEventListener('change',function(){loadComunas();});}setInterval(function(){var reg=document.getElementById("selReg").value;var com=document.getElementById("selCom");if(reg&&com.disabled){loadComunas();}},600);})();
@@ -1393,7 +1446,55 @@ async function cycIniciarPago(plan){
     msg.textContent=data.error||'El pago automático no está disponible todavía — usa el botón de WhatsApp mientras tanto.';
   }catch(e){msg.textContent='Error de conexión.';}
 }
-window.addEventListener('load',function(){cycVerificarPremium();});
+// === BIENVENIDA POST-PAGO (retorno desde Flow con ?pago=confirmado) ===
+function cycCerrarBienvenida(){document.getElementById('modalBienvenida').className='mbg';}
+function cycRenderBienvenida(){
+  var cont=document.getElementById('mbContenido');
+  if(!cont)return;
+  var linkStyle='display:block;background:rgba(212,160,23,.15);border:1px solid #d4a017;color:#d4a017;text-align:center;padding:12px;font-size:13px;font-weight:800;text-decoration:none;border-radius:10px;margin-bottom:8px';
+  var html;
+  if(CYC_PLAN==='personal'){
+    html='<h2>✅ ¡Pago confirmado!</h2>'+
+      '<div class="msub">Tu <strong style="color:#d4a017">Plan Personal</strong> ya está activo — pago único, acceso permanente.</div>'+
+      '<div style="font-size:13px;color:#ccc;margin:10px 0 12px;font-weight:800">Esto es lo que acabas de desbloquear:</div>'+
+      '<a href="georef-predio.html" style="'+linkStyle+'">🗺️ Mi Cobertura<span style="display:block;font-size:11px;color:#aaa;font-weight:400;margin-top:3px">Dibuja el plano de tu casa y obtén el informe completo: vulnerabilidades y recomendaciones.</span></a>'+
+      '<a href="plan-hogar.html" style="'+linkStyle+'">🏠 Plan Hogar completo<span style="display:block;font-size:11px;color:#aaa;font-weight:400;margin-top:3px">Haz el diagnóstico y recibe tus recomendaciones priorizadas con informe PDF.</span></a>'+
+      '<div style="font-size:11px;color:#888;line-height:1.6;margin:10px 0">Además: 1 consulta anual con asesor acreditado OS.10 y boletín mensual. Te enviamos un correo con el detalle de tu compra — revisa spam si no lo ves.</div>'+
+      '<button class="btnc" onclick="cycCerrarBienvenida()">Entendido, a explorar</button>';
+  } else if(CYC_PLAN==='empresa'){
+    html='<h2>✅ ¡Pago confirmado!</h2>'+
+      '<div class="msub">Tu <strong style="color:#d4a017">Plan Empresa</strong> ya está activo (30 días).</div>'+
+      '<div style="font-size:13px;color:#ccc;margin:10px 0 12px;font-weight:800">Esto es lo que acabas de desbloquear:</div>'+
+      '<a href="#" onclick="cycCerrarBienvenida();return false" style="'+linkStyle+'">📊 Índice de riesgo detallado<span style="display:block;font-size:11px;color:#aaa;font-weight:400;margin-top:3px">Score exacto y factores por comuna, aquí mismo en el mapa.</span></a>'+
+      '<a href="matriz-riesgo.html" style="'+linkStyle+'">🧮 Calculadora de riesgo OS.10<span style="display:block;font-size:11px;color:#aaa;font-weight:400;margin-top:3px">Análisis de brecha completo con recomendaciones.</span></a>'+
+      '<a href="directiva.html" style="'+linkStyle+'">📄 Directiva de Funcionamiento<span style="display:block;font-size:11px;color:#aaa;font-weight:400;margin-top:3px">Genera el borrador de tu Directiva y solicita la visación.</span></a>'+
+      '<div style="font-size:11px;color:#888;line-height:1.6;margin:10px 0">Además: 2 consultas al mes con asesor acreditado. Te enviamos un correo con el detalle de tu compra.</div>'+
+      '<button class="btnc" onclick="cycCerrarBienvenida()">Entendido, a explorar</button>';
+  } else {
+    html='<h2>⏳ Confirmando tu pago…</h2>'+
+      '<div class="msub">Flow nos está notificando tu pago — normalmente tarda unos segundos.</div>'+
+      '<button class="btnc" onclick="cycReintentarBienvenida()" style="margin-top:12px">Revisar de nuevo</button>'+
+      '<div style="font-size:11px;color:#888;line-height:1.6;margin-top:10px">Si después de un minuto sigue sin aparecer, escríbenos por <a href="https://wa.me/56984600273" style="color:#d4a017">WhatsApp</a> con tu comprobante — lo activamos al tiro.</div>'+
+      '<button class="btnclose" onclick="cycCerrarBienvenida()">Cerrar</button>';
+  }
+  cont.innerHTML=html;
+  document.getElementById('modalBienvenida').className='mbg open';
+}
+async function cycReintentarBienvenida(){await cycVerificarPremium();cycRenderBienvenida();}
+async function cycProcesarRetornoPago(){
+  var params=new URLSearchParams(location.search);
+  if(params.get('pago')!=='confirmado')return false;
+  params.delete('pago');
+  var q=params.toString();
+  history.replaceState(null,'',location.pathname+(q?'?'+q:''));
+  await cycVerificarPremium();
+  cycRenderBienvenida();
+  return true;
+}
+window.addEventListener('load',function(){
+  if(new URLSearchParams(location.search).get('pago')==='confirmado'){cycProcesarRetornoPago();}
+  else{cycVerificarPremium();}
+});
 // ASISTENTE IA
 const WORKER_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
 const CHAT_LIMIT=3;
