@@ -1,4 +1,4 @@
-const CACHE = 'cyc-v20260712b';
+const CACHE = 'cyc-v20260714a';
 // Rutas relativas: funcionan tanto en app.controlyconfianza.cl (raíz)
 // como en la URL antigua de github.io (subcarpeta /control-confianza-/).
 const URLS = [
@@ -33,6 +33,34 @@ self.addEventListener('activate', e => {
     )
   );
   self.clients.claim();
+});
+
+// Notificación push del servidor (alertas de comunas guardadas — llegan con la app cerrada)
+self.addEventListener('push', e => {
+  var d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) {}
+  e.waitUntil(
+    self.registration.showNotification(d.titulo || 'Control y Confianza', {
+      body: d.cuerpo || '',
+      icon: 'icon-192.png',
+      badge: 'icon-192.png',
+      tag: d.tag || 'push-cyc',
+      vibrate: [200, 100, 200],
+      data: { url: d.url || 'https://app.controlyconfianza.cl/seguridad-chile.html' }
+    })
+  );
+});
+
+// Si el usuario retira la suscripción o el navegador la rota, avisar al Worker para no acumular endpoints muertos
+self.addEventListener('pushsubscriptionchange', e => {
+  var vieja = e.oldSubscription && e.oldSubscription.endpoint;
+  if (vieja) {
+    e.waitUntil(fetch('https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev/push/baja', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ endpoint: vieja })
+    }).catch(function(){}));
+  }
 });
 
 // Abrir la app al hacer clic en una notificación

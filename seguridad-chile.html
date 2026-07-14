@@ -377,12 +377,28 @@ select:disabled{opacity:0.4}
       <span id="alertasEstadoTxt" style="flex:1;min-width:180px;font-size:11.5px;color:#bbb;line-height:1.5"></span>
       <button id="alertasEstadoBtn" onclick="cycToggleAlertas()" style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.5);color:#d4a017;padding:8px 12px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap"></button>
     </div>
+    <div style="border-top:1px solid #2a2a2a;margin-top:9px;padding-top:9px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span id="pushEstadoTxt" style="flex:1;min-width:180px;font-size:11.5px;color:#bbb;line-height:1.5"></span>
+        <button id="pushEstadoBtn" onclick="cycTogglePush()" style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.5);color:#d4a017;padding:8px 12px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap"></button>
+      </div>
+      <div id="pushPicker" style="display:none;margin-top:8px">
+        <div style="font-size:10.5px;color:#999;margin-bottom:6px">Elige hasta 3 comunas (donde vives, trabajas o te mueves):</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <select id="pushSelCom" style="flex:1;min-width:150px;background:#111;border:1px solid #333;color:#eee;padding:8px;border-radius:8px;font-size:12px"></select>
+          <button onclick="cycPushAgregar()" style="background:#222;border:1px solid #444;color:#ddd;padding:8px 12px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer">+ Agregar</button>
+        </div>
+        <div id="pushChips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
+        <button id="pushActivarBtn" onclick="cycPushActivar()" style="display:none;margin-top:8px;background:#d4a017;color:#111;border:none;padding:10px 16px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;width:100%">Activar alertas de mis comunas</button>
+        <div id="pushErr" style="font-size:10.5px;color:#e57373;margin-top:6px"></div>
+      </div>
+    </div>
     <a href="#" onclick="var x=document.getElementById('alertasComo');x.style.display=x.style.display==='none'?'block':'none';return false" style="font-size:10.5px;color:#d4a017;text-decoration:underline">¿Cómo funcionan las alertas?</a>
     <div id="alertasComo" style="display:none;font-size:10.5px;color:#999;line-height:1.7;margin-top:6px;border-top:1px solid #2a2a2a;padding-top:6px">
-      · Te avisamos <strong>una vez por zona</strong> cuando entras a un sector con riesgo alto o crítico (precisión ~1 km).<br>
-      · Funcionan <strong>solo con la app abierta</strong> — una app web no puede vigilar tu ubicación en segundo plano.<br>
-      · <strong>En iPhone:</strong> instala la app (Compartir → «Añadir a pantalla de inicio») para que lleguen las notificaciones.<br>
-      · Tu ubicación se procesa solo en tu teléfono: no se envía ni se almacena en ningún servidor.
+      Hay <strong>dos tipos de alerta</strong>, y tú eliges cuáles usar:<br>
+      · <strong>🛰 Alertas de zona (app abierta):</strong> te avisamos una vez por zona cuando entras a un sector con riesgo alto o crítico (precisión ~1 km). Usan tu GPS, que se procesa solo en tu teléfono — no se envía ni se almacena en ningún servidor. Una app web no puede vigilar tu ubicación en segundo plano, por eso requieren la app abierta.<br>
+      · <strong>🔔 Alertas de mis comunas (app cerrada):</strong> guardas hasta 3 comunas y te llega una notificación si su riesgo sube a ALTO o más — aunque la app esté cerrada. No usan tu ubicación: solo guardamos las comunas que elijas.<br>
+      · <strong>En iPhone:</strong> instala la app (Compartir → «Añadir a pantalla de inicio») y actívalas desde ahí — es requisito de Apple para recibir notificaciones.
     </div>
   </div>
   <div class="fgrid">
@@ -1180,6 +1196,149 @@ function cycToggleAlertas(){
   iniciarAlertas();
 }
 
+// === ALERTAS PUSH DE COMUNAS GUARDADAS (llegan aunque la app esté cerrada) ===
+// El navegador se suscribe con la clave pública VAPID; el Worker evalúa cada mañana
+// el índice de las comunas guardadas y manda la notificación por Web Push.
+var PUSH_VAPID='BAskvcrZIYLarYHXoVv7iv5vm_8yhwaympZ9n8dWt4C0J3DAmo87mwML-3QOrgLUfZdmFY7ZamTspymFxY28W20';
+var PUSH={comunas:[],soportadas:null,activo:false};
+
+function cycPushSoportado(){return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;}
+
+function cycVapidBytes(s){
+  s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';
+  var bin=atob(s),out=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);
+  return out;
+}
+
+function cycRenderPushEstado(){
+  var el=document.getElementById('pushEstadoTxt');
+  var btn=document.getElementById('pushEstadoBtn');
+  if(!el||!btn)return;
+  if(!cycPushSoportado()){
+    el.innerHTML='🔔 <strong style="color:#ddd">Alertas de tus comunas (app cerrada):</strong> tu navegador no las soporta. En iPhone: instala la app (Compartir → «Añadir a pantalla de inicio») y actívalas desde ahí.';
+    btn.style.display='none';return;
+  }
+  if(Notification.permission==='denied'){
+    el.innerHTML='🔕 <strong style="color:#ddd">Notificaciones bloqueadas por el navegador.</strong> Actívalas en la configuración del sitio para recibir alertas de tus comunas.';
+    btn.style.display='none';return;
+  }
+  var guardadas=[];
+  try{guardadas=JSON.parse(localStorage.getItem('cyc_push_comunas')||'[]');}catch(e){}
+  if(PUSH.activo&&guardadas.length){
+    var noms=guardadas.map(function(k){return (DB[k]&&DB[k].n)||k;}).join(', ');
+    el.innerHTML='🔔 <strong style="color:#7dc800">Alertas de tus comunas activas:</strong> '+noms+' — te avisamos si sube el riesgo, aunque la app esté cerrada.';
+    btn.textContent='Desactivar';btn.style.display='inline-block';return;
+  }
+  el.innerHTML='🔕 <strong style="color:#ddd">Alertas de mis comunas desactivadas.</strong> Guarda hasta 3 comunas y recibe un aviso si sube su riesgo — aunque la app esté cerrada.';
+  btn.textContent='Elegir comunas';btn.style.display='inline-block';
+}
+
+// Al cargar, sincronizar el estado real de la suscripción con lo guardado
+function cycPushSincronizar(){
+  if(!cycPushSoportado())return cycRenderPushEstado();
+  navigator.serviceWorker.ready.then(function(reg){return reg.pushManager.getSubscription();}).then(function(sub){
+    var guardadas=[];
+    try{guardadas=JSON.parse(localStorage.getItem('cyc_push_comunas')||'[]');}catch(e){}
+    PUSH.activo=!!(sub&&guardadas.length);
+    if(!sub)localStorage.removeItem('cyc_push_comunas');
+    cycRenderPushEstado();
+  }).catch(function(){cycRenderPushEstado();});
+}
+
+function cycTogglePush(){
+  var picker=document.getElementById('pushPicker');
+  if(PUSH.activo){
+    navigator.serviceWorker.ready.then(function(reg){return reg.pushManager.getSubscription();}).then(function(sub){
+      if(sub){
+        fetch(API_URL+'/push/baja',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({endpoint:sub.endpoint})}).catch(function(){});
+        return sub.unsubscribe();
+      }
+    }).then(function(){
+      PUSH.activo=false;PUSH.comunas=[];
+      localStorage.removeItem('cyc_push_comunas');
+      picker.style.display='none';
+      toast('Alertas de comunas desactivadas');
+      cycRenderPushEstado();
+    });
+    return;
+  }
+  if(picker.style.display==='none'){
+    picker.style.display='block';
+    cycPushCargarComunas();
+  } else {
+    picker.style.display='none';
+  }
+}
+
+function cycPushCargarComunas(){
+  var sel=document.getElementById('pushSelCom');
+  if(PUSH.soportadas){cycPushLlenarSelect();return;}
+  sel.innerHTML='<option value="">Cargando comunas…</option>';
+  fetch(API_URL+'/push/comunas').then(function(r){return r.json();}).then(function(d){
+    PUSH.soportadas=(d.comunas||[]).filter(function(k){return DB[k];});
+    cycPushLlenarSelect();
+  }).catch(function(){
+    sel.innerHTML='<option value="">Sin conexión — intenta de nuevo</option>';
+  });
+}
+
+function cycPushLlenarSelect(){
+  var sel=document.getElementById('pushSelCom');
+  var opts='<option value="">Elige una comuna…</option>';
+  var lista=PUSH.soportadas.slice().sort(function(a,b){return DB[a].n.localeCompare(DB[b].n);});
+  for(var i=0;i<lista.length;i++){
+    if(PUSH.comunas.indexOf(lista[i])<0)opts+='<option value="'+lista[i]+'">'+DB[lista[i]].n+'</option>';
+  }
+  sel.innerHTML=opts;
+  var chips=document.getElementById('pushChips');
+  chips.innerHTML=PUSH.comunas.map(function(k){
+    return '<span style="background:#222;border:1px solid #444;color:#eee;padding:5px 10px;border-radius:20px;font-size:11px">'+DB[k].n+' <a href="#" onclick="cycPushQuitar(\''+k+'\');return false" style="color:#e57373;text-decoration:none;font-weight:800;margin-left:4px">×</a></span>';
+  }).join('');
+  document.getElementById('pushActivarBtn').style.display=PUSH.comunas.length?'block':'none';
+}
+
+function cycPushAgregar(){
+  var sel=document.getElementById('pushSelCom');
+  var k=sel.value;
+  if(!k||PUSH.comunas.indexOf(k)>=0)return;
+  if(PUSH.comunas.length>=3){document.getElementById('pushErr').textContent='Máximo 3 comunas.';return;}
+  document.getElementById('pushErr').textContent='';
+  PUSH.comunas.push(k);
+  cycPushLlenarSelect();
+}
+
+function cycPushQuitar(k){
+  PUSH.comunas=PUSH.comunas.filter(function(x){return x!==k;});
+  cycPushLlenarSelect();
+}
+
+function cycPushActivar(){
+  var err=document.getElementById('pushErr');
+  err.textContent='';
+  if(!PUSH.comunas.length){err.textContent='Agrega al menos una comuna.';return;}
+  Notification.requestPermission().then(function(p){
+    if(p!=='granted'){err.textContent='Debes permitir las notificaciones para activar las alertas.';cycRenderPushEstado();return;}
+    navigator.serviceWorker.ready.then(function(reg){
+      return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:cycVapidBytes(PUSH_VAPID)});
+    }).then(function(sub){
+      var j=sub.toJSON();
+      return fetch(API_URL+'/push/suscribir',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({endpoint:sub.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,comunas:PUSH.comunas})
+      }).then(function(r){return r.json();});
+    }).then(function(d){
+      if(!d||!d.ok){err.textContent=(d&&d.error)||'No se pudo activar. Intenta de nuevo.';return;}
+      PUSH.activo=true;
+      localStorage.setItem('cyc_push_comunas',JSON.stringify(d.comunas||PUSH.comunas));
+      document.getElementById('pushPicker').style.display='none';
+      toast('🔔 Alertas de tus comunas activadas');
+      cycRenderPushEstado();
+    }).catch(function(e){
+      err.textContent='No se pudo activar ('+String(e).slice(0,80)+'). Intenta de nuevo.';
+    });
+  });
+}
+
 function notificarAlerta(key,titulo,cuerpo,toastTxt){
   navigator.serviceWorker.ready.then(function(sw){
     sw.showNotification(titulo,{
@@ -1261,6 +1420,7 @@ function rechazarPrivacidad(){
 
 window.addEventListener('load',function(){
   cycRenderAlertasEstado();
+  cycPushSincronizar();
   setTimeout(function(){
     var consent=localStorage.getItem('cyc_privacidad');
     if(consent==='aceptado'){
