@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control+ — La app del gremio de seguridad</title>
+<meta name="description" content="Bolsa de trabajo para guardias y seguridad municipal en Chile: ofertas de turnos, postulación en 1 toque y guía del gremio. Gratis.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Control y Confianza">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Control+ · de Control y Confianza">
+<meta property="og:description" content="Bolsa de trabajo para guardias y seguridad municipal en Chile: ofertas de turnos, postulación en 1 toque y guía del gremio. Gratis.">
+<meta property="og:url" content="https://app.controlyconfianza.cl/guardias.html">
+<meta property="og:image" content="https://app.controlyconfianza.cl/og-app.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Control+ · de Control y Confianza">
+<meta name="twitter:description" content="Bolsa de trabajo para guardias y seguridad municipal en Chile: ofertas de turnos, postulación en 1 toque y guía del gremio. Gratis.">
+<meta name="twitter:image" content="https://app.controlyconfianza.cl/og-app.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh}
+a{color:#d4a017}
+
+.header{background:linear-gradient(135deg,#1a1a1a,#111);padding:16px 20px;text-align:center;border-bottom:1px solid #222;position:relative}
+.header .volver{position:absolute;left:12px;top:16px;display:inline-flex;align-items:center;gap:5px;font-size:.72rem;color:#888;text-decoration:none;border:1px solid #333;padding:4px 10px;border-radius:99px}
+.header img{height:38px;margin-bottom:6px;border-radius:8px}
+.header h1{font-size:1.05rem;font-weight:800}
+.header h1 span{color:#d4a017}
+.header p{font-size:.72rem;color:#888;margin-top:2px}
+
+.tabs{display:flex;background:#1a1a1a;border-bottom:1px solid #222;position:sticky;top:0;z-index:10}
+.tab{flex:1;text-align:center;padding:13px 6px;font-size:.78rem;font-weight:700;color:#777;text-decoration:none;border-bottom:2px solid transparent}
+.tab.active{color:#d4a017;border-bottom-color:#d4a017}
+
+.container{max-width:600px;margin:0 auto;padding:16px 14px 40px}
+.view{display:none}
+.view.active{display:block}
+
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:12px}
+.empty{text-align:center;padding:40px 20px;color:#666;font-size:.85rem}
+.spinner{text-align:center;padding:30px;color:#666;font-size:.82rem}
+
+/* Ofertas */
+.oferta{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:16px;margin-bottom:12px}
+.oferta-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.oferta-titulo{font-size:.95rem;font-weight:800;line-height:1.35}
+.oferta-pago{font-size:1rem;font-weight:900;color:#d4a017;white-space:nowrap}
+.oferta-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{background:#111;border:1px solid #333;border-radius:99px;padding:3px 10px;font-size:.7rem;color:#aaa}
+.oferta-desc{font-size:.8rem;color:#999;line-height:1.5;margin-bottom:10px}
+.oferta-req{font-size:.72rem;color:#777;margin-bottom:12px}
+.oferta-req strong{color:#999}
+.btn-postular{width:100%;padding:12px;background:#d4a017;color:#111;border:none;border-radius:10px;font-size:.85rem;font-weight:800;cursor:pointer}
+.btn-postular:disabled{background:#333;color:#777;cursor:default}
+.oferta-msg{font-size:.72rem;margin-top:6px;min-height:1em}
+.oferta-msg.err{color:#e74c3c}
+.oferta-msg.ok{color:#7dc800}
+
+/* Auth */
+.auth-title{font-size:1rem;font-weight:800;margin-bottom:4px}
+.auth-sub{font-size:.78rem;color:#888;margin-bottom:16px;line-height:1.5}
+input[type=email],input[type=password],input[type=text],input[type=tel],select{
+  width:100%;padding:11px 12px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:.86rem;margin-bottom:10px}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:38px}
+.pw-wrap button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;padding:0;line-height:1}
+.btn-row2{display:flex;gap:8px;margin-bottom:8px}
+.btn-row2 button{flex:1;padding:11px;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer}
+.btn-secundario{background:#333;color:#fff}
+.btn-primario{background:#d4a017;color:#111}
+.link-sm{font-size:.7rem;text-decoration:underline;display:inline-block;margin-bottom:8px}
+.auth-msg{font-size:.75rem;color:#e74c3c;min-height:1em;margin-bottom:6px}
+
+/* Perfil form */
+label{display:block;font-size:.75rem;color:#999;font-weight:700;margin-bottom:5px;margin-top:4px}
+.opts-row{display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.opt-btn{flex:1;min-width:80px;padding:10px 6px;border:1px solid #333;border-radius:8px;background:#111;color:#888;font-size:.78rem;font-weight:700;cursor:pointer;text-align:center}
+.opt-btn.sel{background:#1a1200;border-color:#d4a017;color:#d4a017}
+.consent-row{display:flex;gap:10px;align-items:flex-start;background:#0d0d0d;border:1px solid #222;border-radius:10px;padding:12px;margin:14px 0}
+.consent-row input{width:auto;margin:2px 0 0}
+.consent-row label{font-size:.72rem;color:#999;font-weight:400;margin:0;line-height:1.5}
+.btn-guardar{width:100%;padding:13px;background:#d4a017;color:#111;border:none;border-radius:10px;font-size:.88rem;font-weight:800;cursor:pointer;margin-top:6px}
+.form-msg{font-size:.75rem;min-height:1em;margin-top:8px}
+.form-msg.err{color:#e74c3c}
+.form-msg.ok{color:#7dc800}
+
+/* Perfil resumen */
+.perfil-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #222;font-size:.82rem}
+.perfil-row:last-child{border-bottom:none}
+.perfil-row .k{color:#888}
+.perfil-row .v{font-weight:700;text-align:right}
+.btn-editar{width:100%;padding:11px;background:#333;color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-top:14px}
+.btn-salir{width:100%;padding:11px;background:none;color:#777;border:1px solid #333;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;margin-top:8px}
+
+/* Mis postulaciones */
+.post-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.post-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.post-titulo{font-size:.86rem;font-weight:800}
+.badge{font-size:.66rem;font-weight:800;padding:3px 10px;border-radius:99px;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
+.badge.postulado{background:#1a1a2e;color:#7a9bd8}
+.badge.aceptado{background:#0d2210;color:#7dc800}
+.badge.rechazado{background:#2a0a00;color:#e05000}
+.badge.espera{background:#2a1a00;color:#d4a017}
+.post-meta{font-size:.74rem;color:#888}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a class="volver" href="seguridad-chile.html">← Volver a la App</a>
+  <img src="icon-192.png" alt="Logo">
+  <h1>Control<span>+</span></h1>
+  <p>Bolsa de trabajo del gremio · Control &amp; Confianza</p>
+</header>
+
+<nav class="tabs">
+  <a class="tab" href="#ofertas" data-tab="ofertas">Ofertas</a>
+  <a class="tab" href="#perfil" data-tab="perfil">Mi Perfil</a>
+  <a class="tab" href="#mis-postulaciones" data-tab="mis-postulaciones">Mis Postulaciones</a>
+</nav>
+
+<main class="container">
+
+  <!-- OFERTAS -->
+  <section class="view" id="view-ofertas">
+    <div id="ofertasList" class="spinner">Cargando ofertas…</div>
+  </section>
+
+  <!-- PERFIL -->
+  <section class="view" id="view-perfil">
+    <div id="perfilContent"></div>
+  </section>
+
+  <!-- MIS POSTULACIONES -->
+  <section class="view" id="view-mis-postulaciones">
+    <div id="misPostContent"></div>
+  </section>
+
+</main>
+
+<script src="config.js"></script>
+<script src="cuadrante.js"></script>
+<script>
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+var CYC_TOKEN=localStorage.getItem('cyc_token')||null;
+var CYC_EMAIL=null;
+var CYC_PERFIL=null; // null=sin cargar aún, false=no tiene perfil, {..}=tiene perfil
+var CYC_OFERTAS=[];
+
+function fmtCLP(n){ if(n==null) return 'A convenir'; return '$'+Number(n).toLocaleString('es-CL'); }
+function fmtFecha(f){
+  if(!f) return '';
+  var d=new Date(f+'T00:00:00');
+  if(isNaN(d)) return f;
+  return d.toLocaleDateString('es-CL',{day:'numeric',month:'short',year:'numeric'});
+}
+function comunasOrdenadas(){
+  if(typeof CYC_COMUNAS==='undefined') return [];
+  return Object.keys(CYC_COMUNAS).map(function(k){return CYC_COMUNAS[k];}).sort(function(a,b){return a.localeCompare(b);});
+}
+
+/* ---------- Sesión ---------- */
+async function cycCargarSesion(){
+  if(!CYC_TOKEN){ CYC_EMAIL=null; CYC_PERFIL=false; return; }
+  try{
+    var res=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!res.ok){ cycCerrarSesion(true); return; }
+    var data=await res.json();
+    CYC_EMAIL=data.email||null;
+  }catch(e){}
+  try{
+    var res2=await fetch(API_URL+'/guardias/perfil',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    var data2=await res2.json();
+    CYC_PERFIL=data2.perfil||false;
+  }catch(e){ CYC_PERFIL=false; }
+}
+function cycCerrarSesion(silencioso){
+  localStorage.removeItem('cyc_token');
+  CYC_TOKEN=null; CYC_EMAIL=null; CYC_PERFIL=false;
+  CYC_PERFIL_POSTULADAS=null;
+  document.getElementById('ofertasList').removeAttribute('data-cargado');
+  if(!silencioso) renderView();
+}
+
+/* ---------- Navegación por hash ---------- */
+var VISTAS=['ofertas','perfil','mis-postulaciones'];
+function vistaActual(){
+  var h=(location.hash||'#ofertas').replace('#','');
+  return VISTAS.indexOf(h)>=0 ? h : 'ofertas';
+}
+function renderView(){
+  var v=vistaActual();
+  VISTAS.forEach(function(id){
+    document.getElementById('view-'+id).classList.toggle('active', id===v);
+  });
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.classList.toggle('active', t.dataset.tab===v);
+  });
+  if(v==='ofertas') renderOfertas();
+  else if(v==='perfil') renderPerfil();
+  else if(v==='mis-postulaciones') renderMisPostulaciones();
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange', renderView);
+
+/* ---------- Vista: Ofertas (F2) ---------- */
+async function cargarOfertas(){
+  try{
+    var res=await fetch(API_URL+'/guardias/ofertas');
+    var data=await res.json();
+    CYC_OFERTAS=data.ofertas||[];
+  }catch(e){ CYC_OFERTAS=[]; }
+}
+function renderOfertas(){
+  var el=document.getElementById('ofertasList');
+  if(!CYC_OFERTAS.length && !el.dataset.cargado){
+    el.innerHTML='<div class="spinner">Cargando ofertas…</div>';
+    cargarOfertas().then(function(){ el.dataset.cargado='1'; pintarOfertas(); });
+    return;
+  }
+  pintarOfertas();
+}
+function pintarOfertas(){
+  var el=document.getElementById('ofertasList');
+  if(!CYC_OFERTAS.length){
+    el.innerHTML='<div class="empty">🗓️<br><br>No hay ofertas abiertas por ahora.<br>Vuelve pronto — publicamos nuevas apenas hay turnos disponibles.</div>';
+    return;
+  }
+  var html='';
+  CYC_OFERTAS.forEach(function(o){
+    var yaPostulado = CYC_PERFIL_POSTULADAS && CYC_PERFIL_POSTULADAS.indexOf(o.id)>=0;
+    html+='<div class="oferta">'+
+      '<div class="oferta-top"><div class="oferta-titulo">'+esc(o.titulo)+'</div>'+
+      '<div class="oferta-pago">'+fmtCLP(o.pago_turno)+'</div></div>'+
+      '<div class="oferta-meta">'+
+        '<span class="chip">📍 '+esc(o.comuna)+(o.lugar?' — '+esc(o.lugar):'')+'</span>'+
+        '<span class="chip">📅 '+fmtFecha(o.fecha_inicio)+(o.fecha_fin?' → '+fmtFecha(o.fecha_fin):'')+'</span>'+
+        '<span class="chip">👥 '+o.cupos+' cupo'+(o.cupos==1?'':'s')+'</span>'+
+      '</div>'+
+      (o.descripcion?'<div class="oferta-desc">'+esc(o.descripcion)+'</div>':'')+
+      (o.requisitos?'<div class="oferta-req"><strong>Requisitos:</strong> '+esc(o.requisitos)+'</div>':'')+
+      '<button class="btn-postular" id="btnPost'+o.id+'" onclick="postularA('+o.id+')"'+(yaPostulado?' disabled':'')+'>'+
+        (yaPostulado?'Postulado ✓':'Postular')+
+      '</button>'+
+      '<div class="oferta-msg" id="msgPost'+o.id+'"></div>'+
+    '</div>';
+  });
+  el.innerHTML=html;
+}
+var CYC_PERFIL_POSTULADAS=null; // se llena al cargar "mis postulaciones"
+
+async function postularA(ofertaId){
+  var msg=document.getElementById('msgPost'+ofertaId);
+  var btn=document.getElementById('btnPost'+ofertaId);
+  if(!CYC_TOKEN){
+    location.hash='#perfil';
+    setTimeout(function(){ mostrarAvisoPerfil('Inicia sesión para postular a esta oferta.'); },50);
+    return;
+  }
+  if(!CYC_PERFIL){
+    location.hash='#perfil';
+    setTimeout(function(){ mostrarAvisoPerfil('Completa tu perfil para poder postular.'); },50);
+    return;
+  }
+  btn.disabled=true; btn.textContent='Enviando…';
+  try{
+    var res=await fetch(API_URL+'/guardias/postular',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({oferta_id:ofertaId})});
+    var data=await res.json();
+    if(res.ok){
+      btn.textContent='Postulado ✓';
+      if(msg){ msg.textContent='¡Listo! Puedes ver el estado en "Mis Postulaciones".'; msg.className='oferta-msg ok'; }
+    }else{
+      btn.disabled=false; btn.textContent='Postular';
+      if(msg){ msg.textContent=data.error||'No se pudo postular.'; msg.className='oferta-msg err'; }
+    }
+  }catch(e){
+    btn.disabled=false; btn.textContent='Postular';
+    if(msg){ msg.textContent='Error de conexión.'; msg.className='oferta-msg err'; }
+  }
+}
+
+/* ---------- Vista: Perfil (F1 + auth) ---------- */
+var avisoPerfilPendiente=null;
+function mostrarAvisoPerfil(txt){ avisoPerfilPendiente=txt; renderPerfil(); }
+
+function renderPerfil(){
+  var el=document.getElementById('perfilContent');
+  var aviso = avisoPerfilPendiente ? '<div class="card" style="border-color:#d4a017;background:#1a1200"><div style="font-size:.8rem;color:#d4a017">ℹ️ '+esc(avisoPerfilPendiente)+'</div></div>' : '';
+  avisoPerfilPendiente=null;
+
+  if(!CYC_TOKEN){
+    el.innerHTML=aviso+formAuth();
+    return;
+  }
+  if(CYC_PERFIL===null){
+    el.innerHTML='<div class="spinner">Cargando tu perfil…</div>';
+    return;
+  }
+  if(!CYC_PERFIL){
+    el.innerHTML=aviso+formPerfil(null);
+    return;
+  }
+  el.innerHTML=aviso+resumenPerfil(CYC_PERFIL);
+}
+
+function formAuth(){
+  return '<div class="card">'+
+    '<div class="auth-title">Inicia sesión o crea tu cuenta</div>'+
+    '<div class="auth-sub">Con la misma cuenta puedes usar Control+ y el resto de la app Control &amp; Confianza.</div>'+
+    '<label for="gEmail">Email</label>'+
+    '<input id="gEmail" type="email" placeholder="tucorreo@ejemplo.cl" autocomplete="email">'+
+    '<label for="gPass">Contraseña</label>'+
+    '<div class="pw-wrap"><input id="gPass" type="password" placeholder="Mínimo 8 caracteres" autocomplete="current-password">'+
+    '<button type="button" tabindex="-1" aria-label="Mostrar contraseña" onclick="cycToggleOjo(this)">👁</button></div>'+
+    '<div class="btn-row2">'+
+      '<button class="btn-secundario" onclick="cycAuth(\'login\')">Ya tengo cuenta</button>'+
+      '<button class="btn-primario" onclick="cycAuth(\'registro\')">Crear cuenta</button>'+
+    '</div>'+
+    '<a class="link-sm" href="recuperar-clave.html">¿Olvidaste tu contraseña?</a>'+
+    '<div class="auth-msg" id="authMsg"></div>'+
+  '</div>';
+}
+
+async function cycAuth(modo){
+  var email=document.getElementById('gEmail').value.trim();
+  var password=document.getElementById('gPass').value;
+  var msg=document.getElementById('authMsg');
+  msg.textContent='';
+  if(!email||!password){ msg.textContent='Completa email y contraseña.'; return; }
+  try{
+    var ruta=modo==='login'?'/auth/login':'/auth/registro';
+    var res=await fetch(API_URL+ruta,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:password})});
+    var data=await res.json();
+    if(!res.ok){ msg.textContent=data.error||'No se pudo continuar.'; return; }
+    CYC_TOKEN=data.token;
+    localStorage.setItem('cyc_token',CYC_TOKEN);
+    CYC_EMAIL=data.email;
+    CYC_PERFIL=null;
+    renderPerfil();
+    await cycCargarSesion();
+    renderPerfil();
+  }catch(e){ msg.textContent='Error de conexión.'; }
+}
+
+function formPerfil(actual){
+  actual=actual||{};
+  var disp=(actual.disponibilidad||'').split(',').filter(Boolean);
+  var comunas=comunasOrdenadas();
+  var comunaSel=actual.comuna||'';
+  var opciones='<option value="">— Elige tu comuna —</option>'+
+    comunas.map(function(n){return '<option value="'+esc(n)+'"'+(n===comunaSel?' selected':'')+'>'+esc(n)+'</option>';}).join('');
+  return '<div class="card">'+
+    '<div class="auth-title">'+(actual.nombre?'Editar mi perfil':'Completa tu perfil')+'</div>'+
+    '<div class="auth-sub">Estos datos los ve el equipo de Control &amp; Confianza cuando postulas a una oferta.</div>'+
+    '<label for="pNombre">Nombre completo</label>'+
+    '<input id="pNombre" type="text" value="'+esc(actual.nombre||'')+'" placeholder="Tu nombre">'+
+    '<label for="pComuna">Comuna donde vives</label>'+
+    '<select id="pComuna">'+opciones+'</select>'+
+    '<label for="pTelefono">Teléfono (WhatsApp)</label>'+
+    '<input id="pTelefono" type="tel" value="'+esc(actual.telefono||'')+'" placeholder="+56912345678">'+
+    '<label>Acreditación OS.10 (Ley 21.659)</label>'+
+    '<div class="opts-row" id="accRow">'+
+      opt('acc','si','Sí, vigente',actual.acreditacion)+
+      opt('acc','tramite','En trámite',actual.acreditacion)+
+      opt('acc','no','No',actual.acreditacion)+
+    '</div>'+
+    '<label>Disponibilidad</label>'+
+    '<div class="opts-row" id="dispRow">'+
+      optMulti('dia','Día',disp)+optMulti('noche','Noche',disp)+optMulti('finde','Fines de semana',disp)+
+    '</div>'+
+    (actual.nombre?'':
+      '<div class="consent-row"><input type="checkbox" id="pConsent"><label for="pConsent">Acepto que Control &amp; Confianza use mis datos de contacto para ofrecerme oportunidades laborales del gremio. <a href="terminos.html" target="_blank" rel="noopener noreferrer">Ver política de privacidad</a>.</label></div>'
+    )+
+    '<button class="btn-guardar" onclick="guardarPerfil()">Guardar perfil</button>'+
+    '<div class="form-msg" id="perfilMsg"></div>'+
+  '</div>';
+}
+function opt(grupo,val,label,actual){
+  return '<div class="opt-btn'+(actual===val?' sel':'')+'" data-grupo="'+grupo+'" data-val="'+val+'" onclick="selUnico(this)">'+label+'</div>';
+}
+function optMulti(val,label,actuales){
+  return '<div class="opt-btn'+(actuales.indexOf(val)>=0?' sel':'')+'" data-grupo="disp" data-val="'+val+'" onclick="selMulti(this)">'+label+'</div>';
+}
+function selUnico(el){
+  var grupo=el.dataset.grupo;
+  document.querySelectorAll('.opt-btn[data-grupo="'+grupo+'"]').forEach(function(b){b.classList.remove('sel');});
+  el.classList.add('sel');
+}
+function selMulti(el){ el.classList.toggle('sel'); }
+
+async function guardarPerfil(){
+  var msg=document.getElementById('perfilMsg');
+  msg.textContent='';
+  var nombre=document.getElementById('pNombre').value.trim();
+  var comuna=document.getElementById('pComuna').value;
+  var telefono=document.getElementById('pTelefono').value.trim();
+  var accEl=document.querySelector('.opt-btn[data-grupo="acc"].sel');
+  var acreditacion=accEl?accEl.dataset.val:'';
+  var disponibilidad=Array.from(document.querySelectorAll('.opt-btn[data-grupo="disp"].sel')).map(function(b){return b.dataset.val;});
+  var esNuevo = !CYC_PERFIL;
+  var consentEl=document.getElementById('pConsent');
+
+  if(!nombre){ msg.textContent='Escribe tu nombre.'; msg.className='form-msg err'; return; }
+  if(!comuna){ msg.textContent='Elige tu comuna.'; msg.className='form-msg err'; return; }
+  if(!telefono){ msg.textContent='Escribe tu teléfono.'; msg.className='form-msg err'; return; }
+  if(!acreditacion){ msg.textContent='Indica tu estado de acreditación.'; msg.className='form-msg err'; return; }
+  if(esNuevo && (!consentEl || !consentEl.checked)){ msg.textContent='Debes aceptar el uso de tus datos para continuar.'; msg.className='form-msg err'; return; }
+
+  var body={nombre:nombre,comuna:comuna,telefono:telefono,acreditacion:acreditacion,disponibilidad:disponibilidad};
+  if(esNuevo) body.consentimiento=true;
+
+  try{
+    var res=await fetch(API_URL+'/guardias/perfil',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
+    var data=await res.json();
+    if(!res.ok){ msg.textContent=data.error||'No se pudo guardar.'; msg.className='form-msg err'; return; }
+    CYC_PERFIL={nombre:nombre,comuna:comuna,telefono:telefono,acreditacion:acreditacion,disponibilidad:disponibilidad.join(',')};
+    renderPerfil();
+  }catch(e){ msg.textContent='Error de conexión.'; msg.className='form-msg err'; }
+}
+
+function resumenPerfil(p){
+  var accLabel={si:'Vigente',tramite:'En trámite',no:'No acreditado'}[p.acreditacion]||p.acreditacion;
+  var dispLabel={dia:'Día',noche:'Noche',finde:'Fines de semana'};
+  var disp=(p.disponibilidad||'').split(',').filter(Boolean).map(function(d){return dispLabel[d]||d;}).join(', ')||'—';
+  return '<div class="card">'+
+    '<div class="auth-title">Tu perfil</div>'+
+    (CYC_EMAIL?'<div class="auth-sub">'+esc(CYC_EMAIL)+'</div>':'')+
+    '<div class="perfil-row"><span class="k">Nombre</span><span class="v">'+esc(p.nombre)+'</span></div>'+
+    '<div class="perfil-row"><span class="k">Comuna</span><span class="v">'+esc(p.comuna)+'</span></div>'+
+    '<div class="perfil-row"><span class="k">Teléfono</span><span class="v">'+esc(p.telefono)+'</span></div>'+
+    '<div class="perfil-row"><span class="k">Acreditación</span><span class="v">'+esc(accLabel)+'</span></div>'+
+    '<div class="perfil-row"><span class="k">Disponibilidad</span><span class="v">'+esc(disp)+'</span></div>'+
+    '<button class="btn-editar" onclick="editarPerfil()">Editar perfil</button>'+
+    '<button class="btn-salir" onclick="cycCerrarSesion()">Cerrar sesión</button>'+
+  '</div>';
+}
+function editarPerfil(){
+  document.getElementById('perfilContent').innerHTML=formPerfil(CYC_PERFIL);
+}
+
+/* ---------- Vista: Mis Postulaciones (F3) ---------- */
+async function renderMisPostulaciones(){
+  var el=document.getElementById('misPostContent');
+  if(!CYC_TOKEN){
+    el.innerHTML='<div class="card"><div class="auth-title">Inicia sesión</div><div class="auth-sub">Crea tu cuenta o inicia sesión para ver tus postulaciones.</div><button class="btn-guardar" onclick="location.hash=\'#perfil\'">Ir a Mi Perfil</button></div>';
+    return;
+  }
+  el.innerHTML='<div class="spinner">Cargando tus postulaciones…</div>';
+  try{
+    var res=await fetch(API_URL+'/guardias/mis-postulaciones',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    var data=await res.json();
+    var lista=data.postulaciones||[];
+    CYC_PERFIL_POSTULADAS=lista.map(function(p){return p.oferta_id;});
+    if(!lista.length){
+      el.innerHTML='<div class="empty">Aún no has postulado a ninguna oferta.<br><br><a href="#ofertas">Ver ofertas disponibles →</a></div>';
+      return;
+    }
+    var html='';
+    lista.forEach(function(p){
+      html+='<div class="post-card">'+
+        '<div class="post-top"><div class="post-titulo">'+esc(p.titulo)+'</div><span class="badge '+p.estado+'">'+labelEstado(p.estado)+'</span></div>'+
+        '<div class="post-meta">📍 '+esc(p.comuna)+' · 📅 '+fmtFecha(p.fecha_inicio)+' · '+fmtCLP(p.pago_turno)+
+        (p.oferta_estado==='cerrada'?' · <span style="color:#666">oferta cerrada</span>':'')+
+        '</div>'+
+      '</div>';
+    });
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div class="empty">No se pudieron cargar tus postulaciones. Intenta de nuevo.</div>';
+  }
+}
+function labelEstado(e){
+  return {postulado:'Postulado',aceptado:'Aceptado',rechazado:'No seleccionado',espera:'Lista de espera'}[e]||e;
+}
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+/* ---------- Arranque ---------- */
+(async function(){
+  await cycCargarSesion();
+  renderView();
+})();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+</script>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
