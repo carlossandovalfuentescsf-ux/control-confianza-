@@ -200,7 +200,6 @@ function cycCerrarSesion(silencioso){
   localStorage.removeItem('cyc_token');
   CYC_TOKEN=null; CYC_EMAIL=null; CYC_PERFIL=false; CYC_IS_ADMIN=false;
   CYC_PERFIL_POSTULADAS=null;
-  document.getElementById('ofertasList').removeAttribute('data-cargado');
   actualizarTabAdmin();
   if(!silencioso) renderView();
 }
@@ -238,12 +237,8 @@ async function cargarOfertas(){
 }
 function renderOfertas(){
   var el=document.getElementById('ofertasList');
-  if(!CYC_OFERTAS.length && !el.dataset.cargado){
-    el.innerHTML='<div class="spinner">Cargando ofertas…</div>';
-    cargarOfertas().then(function(){ el.dataset.cargado='1'; pintarOfertas(); });
-    return;
-  }
-  pintarOfertas();
+  el.innerHTML='<div class="spinner">Cargando ofertas…</div>';
+  cargarOfertas().then(pintarOfertas);
 }
 function pintarOfertas(){
   var el=document.getElementById('ofertasList');
