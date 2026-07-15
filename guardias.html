@@ -104,6 +104,13 @@ label{display:block;font-size:.75rem;color:#999;font-weight:700;margin-bottom:5p
 .badge.rechazado{background:#2a0a00;color:#e05000}
 .badge.espera{background:#2a1a00;color:#d4a017}
 .post-meta{font-size:.74rem;color:#888}
+
+/* Admin */
+.badge.abierta{background:#0d2210;color:#7dc800}
+.badge.cerrada{background:#222;color:#888}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn-sm{flex:1;min-width:90px;padding:9px 8px;background:#333;color:#fff;border:none;border-radius:8px;font-size:.74rem;font-weight:700;cursor:pointer}
+.btn-sm-danger{background:#3a1400;color:#ff8a50}
 </style>
 </head>
 <body>
@@ -119,6 +126,7 @@ label{display:block;font-size:.75rem;color:#999;font-weight:700;margin-bottom:5p
   <a class="tab" href="#ofertas" data-tab="ofertas">Ofertas</a>
   <a class="tab" href="#perfil" data-tab="perfil">Mi Perfil</a>
   <a class="tab" href="#mis-postulaciones" data-tab="mis-postulaciones">Mis Postulaciones</a>
+  <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
 </nav>
 
 <main class="container">
@@ -138,6 +146,11 @@ label{display:block;font-size:.75rem;color:#999;font-weight:700;margin-bottom:5p
     <div id="misPostContent"></div>
   </section>
 
+  <!-- ADMIN -->
+  <section class="view" id="view-admin">
+    <div id="adminContent"></div>
+  </section>
+
 </main>
 
 <script src="config.js"></script>
@@ -148,6 +161,7 @@ var CYC_TOKEN=localStorage.getItem('cyc_token')||null;
 var CYC_EMAIL=null;
 var CYC_PERFIL=null; // null=sin cargar aún, false=no tiene perfil, {..}=tiene perfil
 var CYC_OFERTAS=[];
+var CYC_IS_ADMIN=false;
 
 function fmtCLP(n){ if(n==null) return 'A convenir'; return '$'+Number(n).toLocaleString('es-CL'); }
 function fmtFecha(f){
@@ -163,12 +177,14 @@ function comunasOrdenadas(){
 
 /* ---------- Sesión ---------- */
 async function cycCargarSesion(){
-  if(!CYC_TOKEN){ CYC_EMAIL=null; CYC_PERFIL=false; return; }
+  if(!CYC_TOKEN){ CYC_EMAIL=null; CYC_PERFIL=false; CYC_IS_ADMIN=false; actualizarTabAdmin(); return; }
   try{
     var res=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
     if(!res.ok){ cycCerrarSesion(true); return; }
     var data=await res.json();
     CYC_EMAIL=data.email||null;
+    CYC_IS_ADMIN=!!data.is_admin;
+    actualizarTabAdmin();
   }catch(e){}
   try{
     var res2=await fetch(API_URL+'/guardias/perfil',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
@@ -176,22 +192,28 @@ async function cycCargarSesion(){
     CYC_PERFIL=data2.perfil||false;
   }catch(e){ CYC_PERFIL=false; }
 }
+function actualizarTabAdmin(){
+  var tab=document.getElementById('tabAdmin');
+  if(tab) tab.style.display=CYC_IS_ADMIN?'':'none';
+}
 function cycCerrarSesion(silencioso){
   localStorage.removeItem('cyc_token');
-  CYC_TOKEN=null; CYC_EMAIL=null; CYC_PERFIL=false;
+  CYC_TOKEN=null; CYC_EMAIL=null; CYC_PERFIL=false; CYC_IS_ADMIN=false;
   CYC_PERFIL_POSTULADAS=null;
   document.getElementById('ofertasList').removeAttribute('data-cargado');
+  actualizarTabAdmin();
   if(!silencioso) renderView();
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','perfil','mis-postulaciones'];
+var VISTAS=['ofertas','perfil','mis-postulaciones','admin'];
 function vistaActual(){
   var h=(location.hash||'#ofertas').replace('#','');
   return VISTAS.indexOf(h)>=0 ? h : 'ofertas';
 }
 function renderView(){
   var v=vistaActual();
+  if(v==='admin' && !CYC_IS_ADMIN){ location.hash='#ofertas'; return; }
   VISTAS.forEach(function(id){
     document.getElementById('view-'+id).classList.toggle('active', id===v);
   });
@@ -201,6 +223,7 @@ function renderView(){
   if(v==='ofertas') renderOfertas();
   else if(v==='perfil') renderPerfil();
   else if(v==='mis-postulaciones') renderMisPostulaciones();
+  else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
 }
 window.addEventListener('hashchange', renderView);
@@ -473,6 +496,228 @@ async function renderMisPostulaciones(){
 }
 function labelEstado(e){
   return {postulado:'Postulado',aceptado:'Aceptado',rechazado:'No seleccionado',espera:'Lista de espera'}[e]||e;
+}
+
+/* ---------- Vista: Admin (F4) ---------- */
+var ADMIN_VISTA='lista'; // 'lista' | 'form' | 'postulantes'
+var ADMIN_OFERTAS=[];
+var ADMIN_OFERTA_EDIT=null;
+var ADMIN_OFERTA_ACTUAL=null;
+var ADMIN_POSTULANTES=[];
+
+function renderAdmin(){
+  var el=document.getElementById('adminContent');
+  if(ADMIN_VISTA==='form'){ el.innerHTML=formOferta(ADMIN_OFERTA_EDIT); return; }
+  if(ADMIN_VISTA==='postulantes'){ el.innerHTML='<div class="spinner">Cargando postulantes…</div>'; cargarPostulantes(); return; }
+  el.innerHTML='<div class="spinner">Cargando ofertas…</div>';
+  cargarOfertasAdmin();
+}
+
+async function cargarOfertasAdmin(){
+  var el=document.getElementById('adminContent');
+  try{
+    var res=await fetch(API_URL+'/guardias/admin/ofertas',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    var data=await res.json();
+    if(!res.ok){ el.innerHTML='<div class="empty">'+esc(data.error||'No se pudo cargar.')+'</div>'; return; }
+    ADMIN_OFERTAS=data.ofertas||[];
+    pintarOfertasAdmin();
+  }catch(e){ el.innerHTML='<div class="empty">Error de conexión.</div>'; }
+}
+
+function pintarOfertasAdmin(){
+  var el=document.getElementById('adminContent');
+  var html='<button class="btn-guardar" onclick="nuevaOferta()">+ Nueva oferta</button>';
+  if(!ADMIN_OFERTAS.length){
+    html+='<div class="empty">Aún no has publicado ninguna oferta.</div>';
+    el.innerHTML=html; return;
+  }
+  ADMIN_OFERTAS.forEach(function(o){
+    html+='<div class="oferta">'+
+      '<div class="oferta-top"><div class="oferta-titulo">'+esc(o.titulo)+'</div>'+
+      '<span class="badge '+o.estado+'">'+(o.estado==='abierta'?'Abierta':'Cerrada')+'</span></div>'+
+      '<div class="oferta-meta">'+
+        '<span class="chip">📍 '+esc(o.comuna)+(o.lugar?' — '+esc(o.lugar):'')+'</span>'+
+        '<span class="chip">📅 '+fmtFecha(o.fecha_inicio)+(o.fecha_fin?' → '+fmtFecha(o.fecha_fin):'')+'</span>'+
+        '<span class="chip">👥 '+o.cupos+' cupo'+(o.cupos==1?'':'s')+'</span>'+
+        '<span class="chip">'+fmtCLP(o.pago_turno)+'</span>'+
+      '</div>'+
+      '<div class="admin-actions">'+
+        '<button class="btn-sm" onclick="editarOferta('+o.id+')">Editar</button>'+
+        '<button class="btn-sm" onclick="verPostulantes('+o.id+')">Ver postulantes</button>'+
+        '<button class="btn-sm'+(o.estado==='abierta'?' btn-sm-danger':'')+'" onclick="toggleEstadoOferta('+o.id+',\''+(o.estado==='abierta'?'cerrada':'abierta')+'\')">'+(o.estado==='abierta'?'Cerrar':'Reabrir')+'</button>'+
+      '</div>'+
+    '</div>';
+  });
+  el.innerHTML=html;
+}
+
+function nuevaOferta(){ ADMIN_OFERTA_EDIT=null; ADMIN_VISTA='form'; renderAdmin(); }
+function editarOferta(id){
+  ADMIN_OFERTA_EDIT=ADMIN_OFERTAS.filter(function(o){return o.id===id;})[0]||null;
+  ADMIN_VISTA='form'; renderAdmin();
+}
+function volverListaAdmin(){ ADMIN_VISTA='lista'; renderAdmin(); }
+
+function formOferta(actual){
+  actual=actual||{};
+  var comunas=comunasOrdenadas();
+  var comunaSel=actual.comuna||'';
+  var opciones='<option value="">— Elige la comuna —</option>'+
+    comunas.map(function(n){return '<option value="'+esc(n)+'"'+(n===comunaSel?' selected':'')+'>'+esc(n)+'</option>';}).join('');
+  return '<button class="btn-salir" style="margin-bottom:12px" onclick="volverListaAdmin()">← Volver a ofertas</button>'+
+    '<div class="card">'+
+    '<div class="auth-title">'+(actual.id?'Editar oferta':'Nueva oferta')+'</div>'+
+    '<label for="oTitulo">Título</label>'+
+    '<input id="oTitulo" type="text" value="'+esc(actual.titulo||'')+'" placeholder="Ej: 100 guardias, festival X, sábado">'+
+    '<label for="oComuna">Comuna</label>'+
+    '<select id="oComuna">'+opciones+'</select>'+
+    '<label for="oLugar">Lugar (opcional)</label>'+
+    '<input id="oLugar" type="text" value="'+esc(actual.lugar||'')+'" placeholder="Dirección o referencia">'+
+    '<label for="oFechaInicio">Fecha inicio</label>'+
+    '<input id="oFechaInicio" type="date" value="'+esc((actual.fecha_inicio||'').slice(0,10))+'">'+
+    '<label for="oFechaFin">Fecha fin (opcional)</label>'+
+    '<input id="oFechaFin" type="date" value="'+esc((actual.fecha_fin||'').slice(0,10))+'">'+
+    '<label for="oPago">Pago por turno, CLP (vacío = a convenir)</label>'+
+    '<input id="oPago" type="text" inputmode="numeric" value="'+esc(actual.pago_turno==null?'':actual.pago_turno)+'" placeholder="Ej: 25000">'+
+    '<label for="oCupos">Cupos</label>'+
+    '<input id="oCupos" type="text" inputmode="numeric" value="'+esc(actual.cupos||'')+'" placeholder="Ej: 10">'+
+    '<label for="oDescripcion">Descripción (opcional)</label>'+
+    '<input id="oDescripcion" type="text" value="'+esc(actual.descripcion||'')+'" placeholder="Detalles del turno">'+
+    '<label for="oRequisitos">Requisitos (opcional)</label>'+
+    '<input id="oRequisitos" type="text" value="'+esc(actual.requisitos||'')+'" placeholder="Ej: OS.10 vigente">'+
+    '<button class="btn-guardar" onclick="guardarOferta('+(actual.id?actual.id:'null')+')">'+(actual.id?'Guardar cambios':'Publicar oferta')+'</button>'+
+    '<div class="form-msg" id="ofertaMsg"></div>'+
+  '</div>';
+}
+
+async function guardarOferta(id){
+  var msg=document.getElementById('ofertaMsg');
+  msg.textContent='';
+  var titulo=document.getElementById('oTitulo').value.trim();
+  var comuna=document.getElementById('oComuna').value;
+  var lugar=document.getElementById('oLugar').value.trim();
+  var fechaInicio=document.getElementById('oFechaInicio').value;
+  var fechaFin=document.getElementById('oFechaFin').value;
+  var pagoRaw=document.getElementById('oPago').value.trim();
+  var cuposRaw=document.getElementById('oCupos').value.trim();
+  var descripcion=document.getElementById('oDescripcion').value.trim();
+  var requisitos=document.getElementById('oRequisitos').value.trim();
+
+  if(!titulo){ msg.textContent='Escribe un título.'; msg.className='form-msg err'; return; }
+  if(!comuna){ msg.textContent='Elige la comuna.'; msg.className='form-msg err'; return; }
+  if(!fechaInicio){ msg.textContent='Indica la fecha de inicio.'; msg.className='form-msg err'; return; }
+  var cupos=parseInt(cuposRaw,10);
+  if(!(cupos>0)){ msg.textContent='Cupos debe ser mayor a 0.'; msg.className='form-msg err'; return; }
+
+  var body={titulo:titulo,comuna:comuna,lugar:lugar,fecha_inicio:fechaInicio,fecha_fin:fechaFin,cupos:cupos,descripcion:descripcion,requisitos:requisitos,pago_turno:pagoRaw?parseInt(pagoRaw,10):null};
+
+  try{
+    var res;
+    if(id){
+      res=await fetch(API_URL+'/guardias/ofertas/'+id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
+    }else{
+      res=await fetch(API_URL+'/guardias/ofertas',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
+    }
+    var data=await res.json();
+    if(!res.ok){ msg.textContent=data.error||'No se pudo guardar.'; msg.className='form-msg err'; return; }
+    ADMIN_VISTA='lista'; ADMIN_OFERTA_EDIT=null;
+    renderAdmin();
+  }catch(e){ msg.textContent='Error de conexión.'; msg.className='form-msg err'; }
+}
+
+async function toggleEstadoOferta(id,nuevoEstado){
+  if(nuevoEstado==='cerrada' && !confirm('¿Cerrar esta oferta? Dejará de verse en el feed público.')) return;
+  try{
+    var res=await fetch(API_URL+'/guardias/ofertas/'+id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({estado:nuevoEstado})});
+    if(res.ok) cargarOfertasAdmin();
+  }catch(e){}
+}
+
+function verPostulantes(id){
+  ADMIN_OFERTA_ACTUAL=ADMIN_OFERTAS.filter(function(o){return o.id===id;})[0]||{id:id};
+  ADMIN_VISTA='postulantes'; ADMIN_POSTULANTES=[];
+  renderAdmin();
+}
+
+async function cargarPostulantes(){
+  var el=document.getElementById('adminContent');
+  try{
+    var res=await fetch(API_URL+'/guardias/admin/postulantes?oferta_id='+ADMIN_OFERTA_ACTUAL.id,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    var data=await res.json();
+    if(!res.ok){ el.innerHTML='<div class="empty">'+esc(data.error||'No se pudo cargar.')+'</div>'; return; }
+    ADMIN_POSTULANTES=data.postulantes||[];
+    pintarPostulantes();
+  }catch(e){ el.innerHTML='<div class="empty">Error de conexión.</div>'; }
+}
+
+function waLink(tel){
+  var d=(tel||'').replace(/\D/g,'');
+  if(d.length===9 && d[0]==='9') d='56'+d;
+  return 'https://wa.me/'+d;
+}
+function labelAcreditacion(a){ return {si:'Vigente',tramite:'En trámite',no:'No acreditado'}[a]||a; }
+function labelDisponibilidad(d){
+  var m={dia:'Día',noche:'Noche',finde:'Fines de semana'};
+  return (d||'').split(',').filter(Boolean).map(function(x){return m[x]||x;}).join(', ')||'—';
+}
+
+function pintarPostulantes(){
+  var el=document.getElementById('adminContent');
+  var titulo=ADMIN_OFERTA_ACTUAL.titulo?esc(ADMIN_OFERTA_ACTUAL.titulo):('Oferta #'+ADMIN_OFERTA_ACTUAL.id);
+  var html='<button class="btn-salir" style="margin-bottom:12px" onclick="volverListaAdmin()">← Volver a ofertas</button>'+
+    '<div class="auth-title" style="margin-bottom:10px">Postulantes — '+titulo+'</div>';
+  if(!ADMIN_POSTULANTES.length){
+    html+='<div class="empty">Aún no hay postulantes para esta oferta.</div>';
+    el.innerHTML=html; return;
+  }
+  html+='<button class="btn-guardar" style="margin-bottom:12px" onclick="exportarCSV()">Exportar CSV</button>';
+  ADMIN_POSTULANTES.forEach(function(p){
+    html+='<div class="post-card">'+
+      '<div class="post-top"><div class="post-titulo">'+esc(p.nombre)+'</div>'+
+      '<span class="badge '+p.estado+'">'+labelEstado(p.estado)+'</span></div>'+
+      '<div class="post-meta">📍 '+esc(p.comuna)+' · <a href="'+esc(waLink(p.telefono))+'" target="_blank" rel="noopener noreferrer">💬 '+esc(p.telefono)+'</a></div>'+
+      '<div class="post-meta">Acreditación: '+esc(labelAcreditacion(p.acreditacion))+' · '+esc(labelDisponibilidad(p.disponibilidad))+'</div>'+
+      '<div class="opts-row" style="margin-top:8px">'+
+        estadoBtn(p.postulacion_id,'postulado',p.estado)+
+        estadoBtn(p.postulacion_id,'aceptado',p.estado)+
+        estadoBtn(p.postulacion_id,'espera',p.estado)+
+        estadoBtn(p.postulacion_id,'rechazado',p.estado)+
+      '</div>'+
+    '</div>';
+  });
+  el.innerHTML=html;
+}
+function estadoBtn(postId,val,actual){
+  return '<div class="opt-btn'+(actual===val?' sel':'')+'" onclick="cambiarEstadoPostulante('+postId+',\''+val+'\')">'+labelEstado(val)+'</div>';
+}
+
+async function cambiarEstadoPostulante(postId,estado){
+  try{
+    var res=await fetch(API_URL+'/guardias/admin/postulacion/'+postId,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({estado:estado})});
+    if(res.ok) cargarPostulantes();
+  }catch(e){}
+}
+
+function exportarCSV(){
+  var filas=[['Nombre','Comuna','Teléfono','Acreditación','Disponibilidad','Estado']];
+  ADMIN_POSTULANTES.forEach(function(p){
+    filas.push([p.nombre,p.comuna,p.telefono,labelAcreditacion(p.acreditacion),labelDisponibilidad(p.disponibilidad),labelEstado(p.estado)]);
+  });
+  var csv=filas.map(function(fila){
+    return fila.map(function(v){
+      var s=String(v==null?'':v).replace(/"/g,'""');
+      return '"'+s+'"';
+    }).join(',');
+  }).join('\r\n');
+  var blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='postulantes-oferta-'+ADMIN_OFERTA_ACTUAL.id+'.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function esc(s){
