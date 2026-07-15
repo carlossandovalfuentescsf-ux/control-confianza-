@@ -625,8 +625,10 @@ async function toggleEstadoOferta(id,nuevoEstado){
   if(nuevoEstado==='cerrada' && !confirm('¿Cerrar esta oferta? Dejará de verse en el feed público.')) return;
   try{
     var res=await fetch(API_URL+'/guardias/ofertas/'+id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({estado:nuevoEstado})});
-    if(res.ok) cargarOfertasAdmin();
-  }catch(e){}
+    var data=await res.json();
+    if(res.ok){ cargarOfertasAdmin(); }
+    else{ alert(data.error||'No se pudo actualizar la oferta (error '+res.status+').'); }
+  }catch(e){ alert('Error de conexión. Intenta de nuevo.'); }
 }
 
 function verPostulantes(id){
