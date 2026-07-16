@@ -159,6 +159,26 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .cres .total{font-size:.92rem}.cres .total b{color:#d4a017}
 .cnota{font-size:.68rem;color:#777;margin-top:10px;line-height:1.5}
 .cnota a{color:#d4a017}
+/* Teaser Control+ Premium (validación de demanda — mismo patrón lista de espera MiCuadra) */
+.premium{margin-top:26px;background:linear-gradient(180deg,rgba(212,160,23,.10),rgba(212,160,23,.02) 40%),#161616;border:1px solid rgba(212,160,23,.45);border-radius:16px;padding:18px 16px}
+.premium .p-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.premium .p-kicker{font-size:.64rem;font-weight:800;letter-spacing:.14em;color:#d4a017;text-transform:uppercase}
+.premium .p-precio{font-size:1.05rem;font-weight:900;color:#d4a017;white-space:nowrap}
+.premium .p-precio small{font-size:.62rem;color:#998a55;font-weight:700}
+.premium h3{font-size:1rem;margin:2px 0 4px;color:#f0e8d0}
+.premium .p-sub{font-size:.74rem;color:#999;margin-bottom:14px;line-height:1.5}
+.p-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.p-tool{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:10px 11px}
+.p-tool .t{font-size:.72rem;font-weight:800;color:#e8dfc8;display:flex;gap:6px;align-items:center;margin-bottom:3px}
+.p-tool p{font-size:.64rem;color:#8a8a8a;line-height:1.45;margin:0}
+.p-form{display:flex;gap:8px;margin-top:14px}
+.p-form input{flex:1;min-width:0;padding:11px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:.8rem}
+.p-form button{flex-shrink:0;background:#d4a017;color:#111;border:none;border-radius:8px;padding:11px 14px;font-size:.74rem;font-weight:800;cursor:pointer}
+.p-msg{font-size:.72rem;margin-top:8px;min-height:1em}
+.p-msg.ok{color:#7dc800}.p-msg.err{color:#e74c3c}
+.p-legal{font-size:.6rem;color:#666;margin-top:8px;line-height:1.5}
+.p-legal a{color:#998a55}
+@media (max-width:380px){.p-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -191,6 +211,32 @@ details.gficha .gcuerpo li{margin-bottom:4px}
   <!-- OFERTAS -->
   <section class="view" id="view-ofertas">
     <div id="ofertasList" class="spinner">Cargando ofertas…</div>
+
+    <!-- Próximamente: Control+ Premium (validación de demanda) -->
+    <div class="premium">
+      <div class="p-head">
+        <span class="p-kicker">Próximamente</span>
+        <span class="p-precio">$2.500<small> /mes</small></span>
+      </div>
+      <h3>Control+ Premium</h3>
+      <p class="p-sub">Estamos construyendo 8 herramientas para el gremio. Inscríbete y sé de los primeros — los inscritos entran con precio preferente.</p>
+      <div class="p-grid">
+        <div class="p-tool"><div class="t">⚡ Bolsa Premium</div><p>Te avisamos primero de cada oferta nueva y tu perfil destaca ante el reclutador.</p></div>
+        <div class="p-tool"><div class="t">🤖 Asistente Gremial IA</div><p>Consultas ilimitadas sobre tus leyes, dictámenes y procedimientos.</p></div>
+        <div class="p-tool"><div class="t">🧾 Verificador de Liquidación</div><p>Detecta recargos mal pagados y descuentos ilegales en tu liquidación.</p></div>
+        <div class="p-tool"><div class="t">📁 Carpeta Documental</div><p>Contratos, finiquitos y certificados respaldados y exportables.</p></div>
+        <div class="p-tool"><div class="t">🔒 Bitácora Blindada</div><p>Registro personal de incidentes, inalterable y con export PDF.</p></div>
+        <div class="p-tool"><div class="t">📅 Turnos + Familia</div><p>Tu pauta 4x4/5x2 en un calendario proyectado, compartible con tu familia.</p></div>
+        <div class="p-tool"><div class="t">🚑 Después del Incidente</div><p>Protocolo guiado tras un evento violento: qué registrar y tus derechos.</p></div>
+        <div class="p-tool"><div class="t">🎓 Mi Carrera</div><p>CV profesional en PDF y tu ruta de especializaciones.</p></div>
+      </div>
+      <div class="p-form">
+        <input id="pEmail" type="email" placeholder="tucorreo@ejemplo.cl" autocomplete="email">
+        <button onclick="inscribirPremium()">Inscribirme</button>
+      </div>
+      <div class="p-msg" id="pMsg"></div>
+      <p class="p-legal">Solo usaremos tu correo para avisarte de Control+ Premium. <a href="terminos.html" target="_blank" rel="noopener">Términos y Privacidad</a>.</p>
+    </div>
   </section>
 
   <!-- GUÍA (G2) -->
@@ -1105,6 +1151,22 @@ function calcularSueldo(){
     '<div class="fila total"><span>Total bruto estimado</span><b>'+clp(total)+'</b></div>'+
     (sueldo<CALC_IMM?'<div class="fila"><span style="color:#e08a2b">⚠ Tu sueldo base está bajo el mínimo legal de '+clp(CALC_IMM)+' — eso ya es reclamable.</span></div>':'')+
   '</div>';
+}
+
+/* ---------- Control+ Premium: inscripción de interés (validación de demanda) ----------
+   fuente = 'cplus-' + ?f= de la URL (mide qué canal trae inscritos: IG, grupo, directo). */
+var CPLUS_F=(function(){ try{ return (new URLSearchParams(location.search).get('f')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,30); }catch(e){ return ''; } })();
+async function inscribirPremium(){
+  var msg=document.getElementById('pMsg');
+  var email=(document.getElementById('pEmail').value||'').trim();
+  if(!email||email.indexOf('@')<1){ msg.textContent='Escribe un email válido.'; msg.className='p-msg err'; return; }
+  msg.textContent='Enviando…'; msg.className='p-msg';
+  try{
+    var res=await fetch(API_URL+'/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,fuente:'cplus-'+(CPLUS_F||'app')})});
+    var data=await res.json();
+    if(res.ok){ msg.textContent=data.mensaje||'¡Listo!'; msg.className='p-msg ok'; document.getElementById('pEmail').value=''; }
+    else{ msg.textContent=data.error||'No se pudo inscribir. Intenta de nuevo.'; msg.className='p-msg err'; }
+  }catch(e){ msg.textContent='Error de conexión. Intenta de nuevo.'; msg.className='p-msg err'; }
 }
 
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
