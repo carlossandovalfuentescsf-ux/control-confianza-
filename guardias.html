@@ -132,6 +132,33 @@ label{display:block;font-size:.75rem;color:#999;font-weight:700;margin-bottom:5p
 /* Instalada como app propia (PWA standalone): Control+ es un producto separado de C&C —
    el puente «Volver a la App» solo existe para quien navega por la web. */
 @media (display-mode: standalone){ .volver{display:none} }
+/* Sesión 4: Guía (G2) + Calculadora (G3) */
+.tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs .tab{white-space:nowrap}
+.gbloque{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:#d4a017;text-transform:uppercase;margin:18px 0 8px}
+details.gficha{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;margin-bottom:10px;overflow:hidden}
+details.gficha summary{cursor:pointer;padding:13px 14px;font-size:.85rem;font-weight:700;list-style:none;display:flex;gap:8px;align-items:center}
+details.gficha summary::before{content:'▸';color:#d4a017;flex-shrink:0;transition:transform .15s}
+details.gficha[open] summary::before{transform:rotate(90deg)}
+details.gficha .gcuerpo{padding:0 14px 14px;font-size:.8rem;color:#bbb;line-height:1.65}
+details.gficha .gcuerpo p{margin-bottom:8px}
+details.gficha .gcuerpo ul,details.gficha .gcuerpo ol{padding-left:20px;margin:6px 0}
+details.gficha .gcuerpo li{margin-bottom:4px}
+.gfuente{margin-top:10px;padding:9px 11px;background:#111;border:1px dashed #333;border-radius:8px;font-size:.68rem;color:#888}
+.gfuente a{color:#d4a017;text-decoration:none}
+.gprox{opacity:.55}
+.gprox summary::after{content:'próximamente';margin-left:auto;font-size:.62rem;font-weight:700;color:#888;border:1px solid #333;border-radius:99px;padding:2px 8px}
+.calc label{display:block;font-size:.72rem;font-weight:700;color:#ccc;margin:10px 0 4px}
+.calc input[type=text]{width:100%;box-sizing:border-box;padding:11px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:.9rem}
+.calc .chk{display:flex;align-items:center;gap:8px;font-size:.78rem;color:#ccc;margin:12px 0}
+.calc .chk input{width:18px;height:18px;accent-color:#d4a017}
+.cres{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;margin-top:14px}
+.cres .fila{display:flex;justify-content:space-between;font-size:.8rem;color:#bbb;padding:5px 0;border-bottom:1px dashed #222}
+.cres .fila:last-child{border-bottom:none}
+.cres .fila b{color:#f0e8d0;font-variant-numeric:tabular-nums}
+.cres .total{font-size:.92rem}.cres .total b{color:#d4a017}
+.cnota{font-size:.68rem;color:#777;margin-top:10px;line-height:1.5}
+.cnota a{color:#d4a017}
 </style>
 </head>
 <body>
@@ -152,8 +179,10 @@ label{display:block;font-size:.75rem;color:#999;font-weight:700;margin-bottom:5p
 
 <nav class="tabs">
   <a class="tab" href="#ofertas" data-tab="ofertas">Ofertas</a>
+  <a class="tab" href="#guia" data-tab="guia">Guía</a>
+  <a class="tab" href="#sueldo" data-tab="sueldo">Sueldo</a>
   <a class="tab" href="#perfil" data-tab="perfil">Mi Perfil</a>
-  <a class="tab" href="#mis-postulaciones" data-tab="mis-postulaciones">Mis Postulaciones</a>
+  <a class="tab" href="#mis-postulaciones" data-tab="mis-postulaciones">Postulaciones</a>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
 </nav>
 
@@ -162,6 +191,16 @@ label{display:block;font-size:.75rem;color:#999;font-weight:700;margin-bottom:5p
   <!-- OFERTAS -->
   <section class="view" id="view-ofertas">
     <div id="ofertasList" class="spinner">Cargando ofertas…</div>
+  </section>
+
+  <!-- GUÍA (G2) -->
+  <section class="view" id="view-guia">
+    <div id="guiaContent"></div>
+  </section>
+
+  <!-- SUELDO / CALCULADORA (G3) -->
+  <section class="view" id="view-sueldo">
+    <div id="sueldoContent"></div>
   </section>
 
   <!-- PERFIL -->
@@ -233,9 +272,10 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','perfil','mis-postulaciones','admin'];
+var VISTAS=['ofertas','guia','sueldo','perfil','mis-postulaciones','admin'];
 function vistaActual(){
   var h=(location.hash||'#ofertas').replace('#','');
+  if(h.indexOf('guia')===0) return 'guia'; // #guia-g23 abre la ficha g23 (links compartibles)
   return VISTAS.indexOf(h)>=0 ? h : 'ofertas';
 }
 function renderView(){
@@ -248,6 +288,8 @@ function renderView(){
     t.classList.toggle('active', t.dataset.tab===v);
   });
   if(v==='ofertas') renderOfertas();
+  else if(v==='guia') renderGuia();
+  else if(v==='sueldo') renderSueldo();
   else if(v==='perfil') renderPerfil();
   else if(v==='mis-postulaciones') renderMisPostulaciones();
   else if(v==='admin') renderAdmin();
@@ -954,6 +996,117 @@ function esc(s){
   await cycCargarSesion();
   renderView();
 })();
+/* ---------- Vista: Guía del Guardia (G2) — contenido aprobado por Carlos 16-07-2026 ----------
+   Regla D6: cada ficha con fuente primaria citada y fecha de revisión. Sin backend. */
+function gF(id,titulo,cuerpo,fuente){
+  return '<details class="gficha" id="'+id+'"><summary>'+titulo+'</summary><div class="gcuerpo">'+cuerpo+
+    '<div class="gfuente">Fuente: '+fuente+'<br>Última revisión: 16-07-2026</div></div></details>';
+}
+var GUIA_REV='16-07-2026';
+function renderGuia(){
+  var el=document.getElementById('guiaContent');
+  if(!el.dataset.listo){
+    var h='';
+    h+='<div class="gbloque">Bloque 1 · Acredítate (Ley 21.659)</div>';
+    h+=gF('g11','¿Dónde y cómo me acredito ahora como guardia?',
+      '<p>Desde el <strong>28 de noviembre de 2025</strong>, con la Ley 21.659 la acreditación ya <strong>no se tramita ante Carabineros (OS.10)</strong>: el organismo a cargo es la <strong>Subsecretaría de Prevención del Delito</strong>. El camino general:</p><ol><li>Cumplir los requisitos de la ley (ficha siguiente).</li><li>Aprobar el curso de formación en una entidad <strong>acreditada por la Subsecretaría</strong> — verifica que tenga resolución vigente antes de inscribirte.</li><li>Solicitar la credencial ante la Subsecretaría con tus certificados.</li></ol><p>Tu credencial es personal y acredita que puedes ejercer funciones de seguridad privada.</p>',
+      '<a href="https://subprevenciondeldelito.gob.cl/noticia/a-partir-de-hoy-chile-tiene-nueva-ley-de-seguridad-privada/" target="_blank" rel="noopener">Subsecretaría de Prevención del Delito</a> · <a href="https://www.bcn.cl/leychile/navegar?idNorma=1202067" target="_blank" rel="noopener">Ley 21.659 (BCN)</a>');
+    h+=gF('g12','¿Qué requisitos me van a pedir?',
+      '<ul><li>Ser <strong>mayor de edad</strong>.</li><li><strong>Enseñanza media</strong> completa o equivalente.</li><li>Condiciones <strong>físicas y psíquicas</strong> compatibles con la función.</li><li><strong>No haber sido condenado</strong> por crimen o simple delito — Certificado de Antecedentes para Fines Especiales (máx. 30 días).</li><li><strong>Certificado de No Sanción</strong> de la Subsecretaría (sin sanciones graves últimos 5 años).</li><li>Declaración jurada de no estar sancionado por la Ley 19.327 (Ley de Fútbol).</li></ul>',
+      '<a href="https://www.bcn.cl/leychile/navegar?idNorma=1202067" target="_blank" rel="noopener">Ley 21.659 (BCN)</a> · <a href="https://www.gob.cl/noticias/como-funcionara-nueva-ley-seguridad-privada/" target="_blank" rel="noopener">gob.cl</a>');
+    h+=gF('g13','¿Quién paga el curso? (la duda más repetida)',
+      '<p><strong>Tu empleador, siempre.</strong> La Dirección del Trabajo lo ha dicho en dictámenes reiterados: el costo de la formación del guardia es de cargo <strong>exclusivo</strong> del empleador. No puede exigirte pagarlo, ni reembolsarlo, <strong>ni descontarlo de tu sueldo</strong> — ni siquiera si renuncias después. Si te lo descontaron, puedes reclamarlo en la DT (ver «¿Dónde y cómo denuncio?»).</p>',
+      'Dictámenes DT <a href="https://www.dt.gob.cl/legislacion/1624/w3-article-104085.html" target="_blank" rel="noopener">Ord. 3515/2014</a>, Ord. 3518/2014 y Ord. 3004/2018');
+    h+='<div class="gbloque">Bloque 2 · Tus derechos</div>';
+    h+=gF('g21','¿Cuántas horas puedo trabajar a la semana?',
+      '<p>Desde el <strong>26 de abril de 2026</strong> la jornada ordinaria máxima es de <strong>42 horas semanales</strong> (Ley 21.561 «40 Horas»; baja a 40 h en 2028). En turnos rotativos el promedio puede calcularse en ciclos de hasta 4 semanas. Si tu pauta (4x4, 5x2, 6x1) supera el máximo, esas horas deben pagarse como extraordinarias o la pauta está mal armada.</p>',
+      '<a href="https://www.dt.gob.cl/portal/1626/w3-propertyname-2556.html" target="_blank" rel="noopener">DT — Minisitio 40 Horas</a> · <a href="https://www.bcn.cl/leychile/navegar?idNorma=1191554" target="_blank" rel="noopener">Ley 21.561 (BCN)</a>');
+    h+=gF('g22','¿Cómo se pagan mis horas extra?',
+      '<p>Con recargo mínimo del <strong>50% sobre el sueldo convenido</strong> para la jornada ordinaria, liquidadas <strong>junto con el sueldo del mismo período</strong>. El 50% es el piso legal: aplica igual en domingo, festivo u horario nocturno (puede pactarse más, nunca menos). Si tu sueldo base es menor al mínimo ($553.553), las horas extra se calculan <strong>sobre el mínimo</strong>. Máximo legal: 2 horas extra por día, pactadas por escrito. Usa la pestaña <a href="#sueldo">Sueldo</a> para calcularlas.</p>',
+      'DT — Consultas <a href="https://www.dt.gob.cl/portal/1628/w3-article-61608.html" target="_blank" rel="noopener">cálculo hora extraordinaria</a> y <a href="https://www.dt.gob.cl/portal/1628/w3-article-60173.html" target="_blank" rel="noopener">recargo domingo/festivo/nocturno</a> (arts. 30-32 CT)');
+    h+=gF('g23','¿Qué es la semana corrida y me corresponde?',
+      '<p>Si te pagan <strong>por día o por hora</strong> (no sueldo mensual fijo), tienes derecho a que te paguen también <strong>domingos y festivos</strong>: el promedio de lo ganado en la semana dividido por los días que estabas obligado a trabajar. Si tienes sueldo mensual + variables (bonos por turno), la semana corrida se calcula solo sobre la parte variable. No aplica si tu jornada está pactada en menos de 5 días a la semana.</p>',
+      'DT — Consulta <a href="https://www.dt.gob.cl/portal/1628/w3-article-60203.html" target="_blank" rel="noopener">cálculo de semana corrida</a> (art. 45 CT)');
+    h+=gF('g24','¿Quién paga mi uniforme y elementos de protección?',
+      '<p><strong>Tu empleador.</strong> El Código del Trabajo (art. 184) lo obliga a proteger eficazmente tu vida y salud, incluyendo entregar <strong>gratis</strong> los implementos y elementos de protección personal. Con la Ley 21.659, además, el guardia debe contar con el equipamiento mínimo de protección que define la ley y su reglamento — provisto por el empleador, nunca descontado de tu sueldo.</p>',
+      'Art. 184 <a href="https://www.bcn.cl/leychile/navegar?idNorma=207436" target="_blank" rel="noopener">Código del Trabajo (BCN)</a> · <a href="https://www.bcn.cl/leychile/navegar?idNorma=1202067" target="_blank" rel="noopener">Ley 21.659 (BCN)</a>');
+    h+=gF('g25','¿Me pueden descontar el curso de formación?',
+      '<p><strong>No, nunca.</strong> Ni al contratarte, ni durante, ni al irte de la empresa. Vale también para el <strong>curso de perfeccionamiento</strong>: es costo del empleador. Cualquier cláusula del contrato que diga lo contrario no vale, y el descuento es reclamable en la DT con efecto retroactivo.</p>',
+      'Dictámenes DT <a href="https://www.dt.gob.cl/legislacion/1624/w3-article-104085.html" target="_blank" rel="noopener">Ord. 3515/2014</a>, 3518/2014, 3004/2018');
+    h+=gF('g26','¿Tengo seguro de vida por ley?',
+      '<p><strong>Sí.</strong> La Ley 21.659 obliga a tu empleador a contratar un <strong>seguro de vida</strong> a tu favor que cubre los riesgos de la función (siniestros con ocasión del trabajo de seguridad), con los montos mínimos que fija la ley y su reglamento. Pide a tu empleador la póliza: tienes derecho a saber que existe y qué cubre.</p>',
+      '<a href="https://www.bcn.cl/leychile/navegar?idNorma=1202067" target="_blank" rel="noopener">Ley 21.659 (BCN)</a> y su reglamento');
+    h+=gF('g27','¿Cómo verifico que me están pagando las cotizaciones?',
+      '<p>Tu empleador debe declarar <strong>y pagar</strong> tus cotizaciones (AFP, salud, seguro de cesantía) cada mes. Verifícalo gratis con tu ClaveÚnica: certificado de cotizaciones en tu <strong>AFP</strong>, en <strong>AFC</strong> (cesantía) y en Fonasa/Isapre. Si aparecen «declaradas y no pagadas», la deuda existe igual y se reclama en la DT — y el no pago impide despedirte válidamente sin pagarlas antes (Ley Bustos, art. 162 CT).</p>',
+      '<a href="https://www.dt.gob.cl/portal/1626/w3-channel.html" target="_blank" rel="noopener">Dirección del Trabajo</a> · art. 162 <a href="https://www.bcn.cl/leychile/navegar?idNorma=207436" target="_blank" rel="noopener">Código del Trabajo (BCN)</a>');
+    h+=gF('g28','¿Qué hago si me atrasan el sueldo?',
+      '<p>El sueldo se paga en la fecha pactada (máximo cada un mes). Ante atraso: (1) deja constancia escrita ante tu jefatura y guarda copia; (2) si persiste, <strong>denuncia en la DT</strong> (ficha siguiente); (3) el atraso reiterado es causal de <strong>autodespido</strong> con derecho a indemnizaciones (art. 171 CT) — antes de tomar esa vía, asesórate. El empleador moroso debe además reajustes e intereses.</p>',
+      'Arts. 55, 63 y 171 <a href="https://www.bcn.cl/leychile/navegar?idNorma=207436" target="_blank" rel="noopener">Código del Trabajo (BCN)</a>');
+    h+=gF('g29','¿Dónde y cómo denuncio a mi empleador?',
+      '<p>En la <strong>Dirección del Trabajo</strong>: online en <a href="https://www.dt.gob.cl" target="_blank" rel="noopener">dt.gob.cl</a> con ClaveÚnica («Denuncia») o presencial en la Inspección del Trabajo de tu comuna. La denuncia puede ser <strong>reservada</strong>: el empleador no sabe quién denunció. Adjunta contrato, liquidaciones y cualquier respaldo escrito. Es gratis y no necesitas abogado.</p>',
+      '<a href="https://www.dt.gob.cl/portal/1626/w3-channel.html" target="_blank" rel="noopener">Dirección del Trabajo — canales de denuncia</a>');
+    h+=gF('g210','Cambió la empresa que ganó la licitación, ¿pierdo todo?',
+      '<p>Tu relación laboral es <strong>con tu empleador</strong>, no con la instalación: si tu empresa pierde el contrato, debe pagarte <strong>finiquito completo</strong> (vacaciones proporcionales, remuneraciones pendientes e indemnizaciones si corresponde). Que la nueva empresa «te recontrate» no borra lo que te debe la anterior. El finiquito se firma ante ministro de fe y puedes firmarlo <strong>con reserva de derechos</strong> si algo no te cuadra.</p>',
+      'Art. 177 <a href="https://www.bcn.cl/leychile/navegar?idNorma=207436" target="_blank" rel="noopener">Código del Trabajo (BCN)</a> · <a href="https://www.dt.gob.cl/portal/1626/w3-channel.html" target="_blank" rel="noopener">DT</a>');
+    h+='<div class="gbloque">Bloque 3 · Cómo actuar ante…</div>';
+    h+='<details class="gficha gprox"><summary>10 fichas de actuación (delito flagrante, agresión, accidente laboral…)</summary></details>';
+    h+='<div class="gbloque">Bloque 4 · Modo Inspector Municipal (Ley 21.802)</div>';
+    h+='<details class="gficha gprox"><summary>Qué sí / qué no puede hacer un inspector municipal</summary></details>';
+    el.innerHTML=h;
+    el.dataset.listo='1';
+  }
+  // #guia-g23 → abre y muestra esa ficha (links compartibles en grupos)
+  var m=(location.hash||'').match(/^#guia-(g\d+)$/);
+  if(m){
+    var f=document.getElementById(m[1]);
+    if(f){ f.open=true; setTimeout(function(){ f.scrollIntoView({behavior:'smooth',block:'start'}); },80); }
+  }
+}
+
+/* ---------- Vista: Calculadora de Sueldo (G3) — fórmulas aprobadas 16-07-2026 ----------
+   Regla §2.2: cada fórmula con fuente DT/BCN o no se implementa. Sin recargo nocturno
+   legal general (mito de blogs): solo el 50% de las horas extra (arts. 30-32 CT). */
+var CALC_IMM=553553;      // Ingreso Mínimo Mensual desde 01-05-2026 (Ley 21.830, dt.gob.cl art. 60141)
+var CALC_JORNADA=42;      // horas semanales desde 26-04-2026 (Ley 21.561)
+function renderSueldo(){
+  var el=document.getElementById('sueldoContent');
+  if(el.dataset.listo){ return; }
+  el.innerHTML='<div class="card calc">'+
+    '<div class="auth-title">Calculadora de sueldo y horas extra</div>'+
+    '<div class="auth-sub">Referencial, con las reglas oficiales de la Dirección del Trabajo. Tu liquidación siempre manda.</div>'+
+    '<label for="cSueldo">Sueldo base mensual (CLP)</label>'+
+    '<input id="cSueldo" type="text" inputmode="numeric" placeholder="Ej: 560000">'+
+    '<label for="cHoras">Horas extra del mes</label>'+
+    '<input id="cHoras" type="text" inputmode="numeric" placeholder="Ej: 12 (0 si ninguna)">'+
+    '<div class="chk"><input id="cGrati" type="checkbox" checked><label for="cGrati" style="margin:0">Mi empleador paga gratificación legal (art. 50, el sistema típico del rubro)</label></div>'+
+    '<button class="btn-guardar" onclick="calcularSueldo()">Calcular</button>'+
+    '<div id="cResultado"></div>'+
+    '<p class="cnota">Fórmulas: valor hora = (sueldo ÷ 30 × 28) ÷ '+(CALC_JORNADA*4)+' (jornada de '+CALC_JORNADA+' h — <a href="https://www.dt.gob.cl/portal/1628/w3-article-95182.html" target="_blank" rel="noopener">DT</a>) · hora extra = valor hora × 1,5 (<a href="https://www.dt.gob.cl/portal/1628/w3-article-61608.html" target="_blank" rel="noopener">DT</a>; si tu sueldo es menor al mínimo de $'+CALC_IMM.toLocaleString('es-CL')+', se calcula sobre el mínimo) · gratificación art. 50 = 25% del sueldo con tope de 4,75 IMM al año (<a href="https://www.dt.gob.cl/portal/1626/w3-article-99034.html" target="_blank" rel="noopener">DT</a>). No existe recargo nocturno legal general: de noche rige el mismo 50% (<a href="https://www.dt.gob.cl/portal/1628/w3-article-60173.html" target="_blank" rel="noopener">DT</a>). ¿Te pagaron menos? Mira <a href="#guia-g29">cómo reclamar en la DT</a>.</p>'+
+  '</div>';
+  el.dataset.listo='1';
+}
+function calcularSueldo(){
+  var sueldo=parseInt((document.getElementById('cSueldo').value||'').replace(/\D/g,''),10)||0;
+  var horas=parseInt((document.getElementById('cHoras').value||'').replace(/\D/g,''),10)||0;
+  var conGrati=document.getElementById('cGrati').checked;
+  var out=document.getElementById('cResultado');
+  if(!(sueldo>0)){ out.innerHTML='<div class="cres"><div class="fila"><span>Escribe tu sueldo base para calcular.</span></div></div>'; return; }
+  var base=Math.max(sueldo,CALC_IMM);                    // horas extra nunca bajo el mínimo (DT)
+  var valorHora=Math.round((base/30*28)/(CALC_JORNADA*4)); // factor DT para jornada vigente
+  var extra=Math.round(valorHora*1.5*horas);
+  var grati=conGrati?Math.round(Math.min(sueldo*0.25,CALC_IMM*4.75/12)):0;
+  var total=sueldo+extra+grati;
+  function clp(n){return '$'+n.toLocaleString('es-CL');}
+  out.innerHTML='<div class="cres">'+
+    '<div class="fila"><span>Valor de tu hora ordinaria</span><b>'+clp(valorHora)+'</b></div>'+
+    '<div class="fila"><span>Valor hora extra (+50%)</span><b>'+clp(Math.round(valorHora*1.5))+'</b></div>'+
+    (horas>0?'<div class="fila"><span>'+horas+' hora'+(horas==1?'':'s')+' extra del mes</span><b>'+clp(extra)+'</b></div>':'')+
+    (conGrati?'<div class="fila"><span>Gratificación legal mensual (art. 50)</span><b>'+clp(grati)+'</b></div>':'')+
+    '<div class="fila total"><span>Total bruto estimado</span><b>'+clp(total)+'</b></div>'+
+    (sueldo<CALC_IMM?'<div class="fila"><span style="color:#e08a2b">⚠ Tu sueldo base está bajo el mínimo legal de '+clp(CALC_IMM)+' — eso ya es reclamable.</span></div>':'')+
+  '</div>';
+}
+
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
