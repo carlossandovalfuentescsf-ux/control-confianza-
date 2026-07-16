@@ -137,8 +137,15 @@ label{display:block;font-size:.75rem;color:#999;font-weight:700;margin-bottom:5p
 <body>
 
 <header class="header">
-  <a class="volver" href="seguridad-chile.html">← Volver a la App</a>
+  <a class="volver" id="linkVolverCyC" href="seguridad-chile.html">← Volver a la App</a>
   <img src="icon-cplus-192.png" alt="Logo Control+">
+  <script>
+  // Control+ instalada = producto aparte: sin puente a C&C. Cubre Android (display-mode)
+  // e iOS (navigator.standalone); el CSS de display-mode queda como primera línea.
+  if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true){
+    document.getElementById('linkVolverCyC').style.display='none';
+  }
+  </script>
   <h1>Control<span>+</span></h1>
   <p>Bolsa de trabajo del gremio · Control &amp; Confianza</p>
 </header>
