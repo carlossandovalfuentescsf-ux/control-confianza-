@@ -189,6 +189,11 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .eco img.e-ic{border-radius:4px}
 .eco .e-firma{font-size:.62rem;color:#555;margin-top:14px;line-height:1.6}
 .eco .e-firma a{color:#8a7a45;text-decoration:none}
+/* Las ofertas mandan: teaser Premium y pie de ecosistema aparecen recién
+   cuando el feed ya está pintado (primera impresión = trabajo, no promoción). */
+#ofertasList{min-height:55vh}
+.premium,.eco{display:none}
+body.extras-listas .premium,body.extras-listas .eco{display:block}
 </style>
 </head>
 <body>
@@ -377,8 +382,14 @@ async function cargarOfertas(){
 function renderOfertas(){
   var el=document.getElementById('ofertasList');
   el.innerHTML='<div class="spinner">Cargando ofertas…</div>';
-  cargarOfertas().then(pintarOfertas);
+  cargarOfertas().then(function(){
+    pintarOfertas();
+    document.body.classList.add('extras-listas'); // recién ahora: Premium + ecosistema
+  });
 }
+// Failsafe: si alguien entra directo a Guía/Sueldo (sin pasar por el feed), los extras
+// igual aparecen a los pocos segundos al final de la página.
+setTimeout(function(){ document.body.classList.add('extras-listas'); },3000);
 function pintarOfertas(){
   var el=document.getElementById('ofertasList');
   if(!CYC_OFERTAS.length){
