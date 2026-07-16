@@ -57,6 +57,15 @@ a{color:#d4a017}
 .oferta-msg{font-size:.72rem;margin-top:6px;min-height:1em}
 .oferta-msg.err{color:#e74c3c}
 .oferta-msg.ok{color:#7dc800}
+/* Sesión 3.5: sellos, empleo permanente y bolsa de la comunidad */
+.oferta-sello{margin-bottom:8px}
+.sello{display:inline-block;border-radius:99px;padding:3px 10px;font-size:.66rem;font-weight:800;letter-spacing:.02em}
+.sello-cyc{background:rgba(212,160,23,.14);border:1px solid rgba(212,160,23,.55);color:#d4a017}
+.sello-com{background:rgba(120,160,220,.10);border:1px solid rgba(120,160,220,.45);color:#8fb4e8}
+.pago-sub{display:block;font-size:.6rem;font-weight:600;color:#8a8a8a;text-align:right}
+.btn-contactar{display:block;text-align:center;text-decoration:none;background:#1f6f43;color:#eafff2}
+.btn-reportar{display:block;margin:8px 0 0 auto;background:none;border:none;color:#666;font-size:.66rem;cursor:pointer;padding:4px 0;text-decoration:underline}
+.btn-reportar:hover{color:#e74c3c}
 
 /* Auth */
 .auth-title{font-size:1rem;font-weight:800;margin-bottom:4px}
@@ -250,23 +259,51 @@ function pintarOfertas(){
   var html='';
   CYC_OFERTAS.forEach(function(o){
     var yaPostulado = CYC_PERFIL_POSTULADAS && CYC_PERFIL_POSTULADAS.indexOf(o.id)>=0;
+    var esEmpleo = o.tipo==='empleo';
+    var esComunidad = o.origen==='comunidad';
+    // Monto protagonista (D4): empleo → renta líquida mensual; turno → pago por turno.
+    var pago = esEmpleo ? (o.renta_mensual!=null?fmtCLP(o.renta_mensual)+'<span class="pago-sub">/mes líquido</span>':'A convenir')
+                        : fmtCLP(o.pago_turno);
+    // Sello: protege la marca sin frenar el volumen (§12.3).
+    var sello = esComunidad
+      ? '<span class="sello sello-com" title="Publicada desde el gremio. Confirma condiciones directamente con quien recluta.">🤝 De la comunidad — verifica antes</span>'
+      : '<span class="sello sello-cyc" title="Oferta propia o revisada por Control y Confianza.">✔ Verificada por C&C</span>';
+    var meta='<span class="chip">📍 '+esc(o.comuna)+(o.lugar?' — '+esc(o.lugar):'')+'</span>';
+    if(esEmpleo){
+      if(o.pauta) meta+='<span class="chip">🔁 '+esc(o.pauta)+'</span>';
+      if(o.horario) meta+='<span class="chip">🕐 '+esc(o.horario)+'</span>';
+      if(o.empresa_nombre) meta+='<span class="chip">🏢 '+esc(o.empresa_nombre)+'</span>';
+    }else{
+      meta+='<span class="chip">📅 '+fmtFecha(o.fecha_inicio)+(o.fecha_fin?' → '+fmtFecha(o.fecha_fin):'')+'</span>';
+    }
+    meta+='<span class="chip">👥 '+o.cupos+' cupo'+(o.cupos==1?'':'s')+'</span>';
+    // Cap. 13: en ofertas de la comunidad el guardia contacta ÉL al reclutador — jamás entregamos sus datos.
+    var accion = esComunidad
+      ? '<a class="btn-postular btn-contactar" href="'+esc(waLink(o.contacto_whatsapp||''))+'" target="_blank" rel="noopener noreferrer">💬 Contactar por WhatsApp</a>'
+      : '<button class="btn-postular" id="btnPost'+o.id+'" onclick="postularA('+o.id+')"'+(yaPostulado?' disabled':'')+'>'+(yaPostulado?'Postulado ✓':'Postular')+'</button>';
     html+='<div class="oferta">'+
+      '<div class="oferta-sello">'+sello+'</div>'+
       '<div class="oferta-top"><div class="oferta-titulo">'+esc(o.titulo)+'</div>'+
-      '<div class="oferta-pago">'+fmtCLP(o.pago_turno)+'</div></div>'+
-      '<div class="oferta-meta">'+
-        '<span class="chip">📍 '+esc(o.comuna)+(o.lugar?' — '+esc(o.lugar):'')+'</span>'+
-        '<span class="chip">📅 '+fmtFecha(o.fecha_inicio)+(o.fecha_fin?' → '+fmtFecha(o.fecha_fin):'')+'</span>'+
-        '<span class="chip">👥 '+o.cupos+' cupo'+(o.cupos==1?'':'s')+'</span>'+
-      '</div>'+
+      '<div class="oferta-pago">'+pago+'</div></div>'+
+      '<div class="oferta-meta">'+meta+'</div>'+
       (o.descripcion?'<div class="oferta-desc">'+esc(o.descripcion)+'</div>':'')+
       (o.requisitos?'<div class="oferta-req"><strong>Requisitos:</strong> '+esc(o.requisitos)+'</div>':'')+
-      '<button class="btn-postular" id="btnPost'+o.id+'" onclick="postularA('+o.id+')"'+(yaPostulado?' disabled':'')+'>'+
-        (yaPostulado?'Postulado ✓':'Postular')+
-      '</button>'+
+      accion+
       '<div class="oferta-msg" id="msgPost'+o.id+'"></div>'+
+      '<button class="btn-reportar" onclick="reportarOferta('+o.id+')">🚩 Reportar oferta</button>'+
     '</div>';
   });
   el.innerHTML=html;
+}
+
+async function reportarOferta(id){
+  var motivo=prompt('¿Qué tiene de malo esta oferta? (ej: ya se llenó, datos falsos, sospechosa)');
+  if(motivo===null) return;
+  try{
+    var res=await fetch(API_URL+'/guardias/reportar-oferta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({oferta_id:id,motivo:motivo})});
+    var data=await res.json();
+    alert(data.mensaje||data.error||'Reporte enviado.');
+  }catch(e){ alert('Error de conexión. Intenta de nuevo.'); }
 }
 var CYC_PERFIL_POSTULADAS=null; // se llena al cargar "mis postulaciones"
 
@@ -505,6 +542,7 @@ function renderAdmin(){
   var el=document.getElementById('adminContent');
   if(ADMIN_VISTA==='form'){ el.innerHTML=formOferta(ADMIN_OFERTA_EDIT); return; }
   if(ADMIN_VISTA==='postulantes'){ el.innerHTML='<div class="spinner">Cargando postulantes…</div>'; cargarPostulantes(); return; }
+  if(ADMIN_VISTA==='pegar'){ el.innerHTML=vistaPegar(); return; }
   el.innerHTML='<div class="spinner">Cargando ofertas…</div>';
   cargarOfertasAdmin();
 }
@@ -522,29 +560,152 @@ async function cargarOfertasAdmin(){
 
 function pintarOfertasAdmin(){
   var el=document.getElementById('adminContent');
-  var html='<button class="btn-guardar" onclick="nuevaOferta()">+ Nueva oferta</button>';
+  var html='<div class="admin-actions" style="margin-bottom:12px">'+
+    '<button class="btn-guardar" style="flex:1" onclick="nuevaOferta()">+ Nueva oferta</button>'+
+    '<button class="btn-guardar" style="flex:1;background:#2a2a2a;color:#d4a017;border:1px solid #d4a017" onclick="vistaPegarAbrir()">📋 Pegar del grupo (IA)</button>'+
+  '</div>';
   if(!ADMIN_OFERTAS.length){
     html+='<div class="empty">Aún no has publicado ninguna oferta.</div>';
     el.innerHTML=html; return;
   }
   ADMIN_OFERTAS.forEach(function(o){
+    var esEmpleo=o.tipo==='empleo';
+    var pagoChip=esEmpleo?(o.renta_mensual!=null?fmtCLP(o.renta_mensual)+'/mes':'A convenir'):fmtCLP(o.pago_turno);
     html+='<div class="oferta">'+
       '<div class="oferta-top"><div class="oferta-titulo">'+esc(o.titulo)+'</div>'+
       '<span class="badge '+o.estado+'">'+(o.estado==='abierta'?'Abierta':'Cerrada')+'</span></div>'+
       '<div class="oferta-meta">'+
+        '<span class="chip">'+(o.origen==='comunidad'?'🤝 Comunidad':'✔ C&C')+' · '+(esEmpleo?'Empleo':'Turno')+'</span>'+
         '<span class="chip">📍 '+esc(o.comuna)+(o.lugar?' — '+esc(o.lugar):'')+'</span>'+
-        '<span class="chip">📅 '+fmtFecha(o.fecha_inicio)+(o.fecha_fin?' → '+fmtFecha(o.fecha_fin):'')+'</span>'+
-        '<span class="chip">👥 '+o.cupos+' cupo'+(o.cupos==1?'':'s')+'</span>'+
-        '<span class="chip">'+fmtCLP(o.pago_turno)+'</span>'+
+        (esEmpleo
+          ?((o.pauta?'<span class="chip">🔁 '+esc(o.pauta)+'</span>':'')+(o.empresa_nombre?'<span class="chip">🏢 '+esc(o.empresa_nombre)+'</span>':''))
+          :'<span class="chip">📅 '+fmtFecha(o.fecha_inicio)+(o.fecha_fin?' → '+fmtFecha(o.fecha_fin):'')+'</span>')+
+        '<span class="chip">👥 '+o.cupos+'</span>'+
+        '<span class="chip">'+pagoChip+'</span>'+
+        (o.expira_at?'<span class="chip">⏳ vence '+fmtFecha(o.expira_at)+'</span>':'')+
+        (o.reportes>0?'<span class="chip" style="border-color:#e74c3c;color:#e74c3c">🚩 '+o.reportes+' reporte'+(o.reportes==1?'':'s')+'</span>':'')+
       '</div>'+
       '<div class="admin-actions">'+
         '<button class="btn-sm" onclick="editarOferta('+o.id+')">Editar</button>'+
-        '<button class="btn-sm" onclick="verPostulantes('+o.id+')">Ver postulantes</button>'+
+        (o.origen==='comunidad'?'':'<button class="btn-sm" onclick="verPostulantes('+o.id+')">Ver postulantes</button>')+
         '<button class="btn-sm'+(o.estado==='abierta'?' btn-sm-danger':'')+'" onclick="toggleEstadoOferta('+o.id+',\''+(o.estado==='abierta'?'cerrada':'abierta')+'\')">'+(o.estado==='abierta'?'Cerrar':'Reabrir')+'</button>'+
       '</div>'+
     '</div>';
   });
   el.innerHTML=html;
+}
+
+/* ---------- Sesión 3.5: pegar del grupo → extraer con IA → previsualizar → publicar ---------- */
+var ADMIN_EXTRAIDAS=[];
+function vistaPegarAbrir(){ ADMIN_EXTRAIDAS=[]; ADMIN_VISTA='pegar'; renderAdmin(); }
+
+function vistaPegar(){
+  var html='<button class="btn-salir" style="margin-bottom:12px" onclick="volverListaAdmin()">← Volver a ofertas</button>'+
+    '<div class="card">'+
+    '<div class="auth-title">Pegar ofertas del grupo</div>'+
+    '<div class="auth-sub">Copia uno o varios mensajes del grupo de WhatsApp y pégalos aquí. La IA los separa y arma las tarjetas; tú revisas y publicas. Se publican con sello «De la comunidad».</div>'+
+    '<textarea id="pegarTexto" rows="8" style="width:100%;background:#111;border:1px solid #333;border-radius:10px;color:#eee;padding:10px;font-size:.8rem" placeholder="Pega aquí los mensajes…"></textarea>'+
+    '<button class="btn-guardar" id="btnExtraer" onclick="extraerOfertas()" style="margin-top:10px">🤖 Extraer ofertas</button>'+
+    '<div class="form-msg" id="pegarMsg"></div>'+
+    '</div>'+
+    '<div id="previewExtraidas"></div>';
+  return html;
+}
+
+async function extraerOfertas(){
+  var msg=document.getElementById('pegarMsg');
+  var btn=document.getElementById('btnExtraer');
+  var texto=document.getElementById('pegarTexto').value.trim();
+  if(texto.length<20){ msg.textContent='Pega al menos un mensaje completo.'; msg.className='form-msg err'; return; }
+  btn.disabled=true; btn.textContent='Extrayendo…'; msg.textContent='';
+  try{
+    var res=await fetch(API_URL+'/guardias/admin/extraer',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({texto:texto})});
+    var data=await res.json();
+    if(!res.ok){ msg.textContent=data.error||'No se pudo extraer.'; msg.className='form-msg err'; return; }
+    ADMIN_EXTRAIDAS=(data.ofertas||[]).map(function(o){ o._publicada=false; return o; });
+    msg.textContent='Encontré '+ADMIN_EXTRAIDAS.length+' oferta'+(ADMIN_EXTRAIDAS.length==1?'':'s')+'. Revisa y publica:';
+    msg.className='form-msg ok';
+    pintarExtraidas();
+  }catch(e){ msg.textContent='Error de conexión.'; msg.className='form-msg err'; }
+  finally{ btn.disabled=false; btn.textContent='🤖 Extraer ofertas'; }
+}
+
+function campoPrev(i,campo,label,valor,placeholder){
+  return '<label style="margin-top:6px">'+label+'</label>'+
+    '<input type="text" id="ex_'+campo+'_'+i+'" value="'+esc(valor==null?'':String(valor))+'" placeholder="'+esc(placeholder||'')+'">';
+}
+
+function pintarExtraidas(){
+  var el=document.getElementById('previewExtraidas');
+  var html='';
+  ADMIN_EXTRAIDAS.forEach(function(o,i){
+    html+='<div class="card" id="cardEx'+i+'" style="margin-top:12px'+(o._publicada?';opacity:.45':'')+'">'+
+      '<div class="oferta-top"><div class="oferta-titulo">Oferta '+(i+1)+(o._publicada?' — ✅ publicada':'')+'</div>'+
+      '<span class="chip">'+(o.tipo==='turno'?'Turno':'Empleo')+'</span></div>'+
+      campoPrev(i,'titulo','Título',o.titulo)+
+      campoPrev(i,'comuna','Comuna',o.comuna,'Ej: La Florida')+
+      campoPrev(i,'empresa_nombre','Empresa (opcional)',o.empresa_nombre)+
+      campoPrev(i,'renta_mensual','Renta mensual líquida CLP (vacío = a convenir)',o.renta_mensual)+
+      campoPrev(i,'pauta','Pauta (4x4, 5x2…)',o.pauta)+
+      campoPrev(i,'horario','Horario',o.horario)+
+      campoPrev(i,'lugar','Lugar / dirección (opcional)',o.lugar)+
+      campoPrev(i,'cupos','Cupos',o.cupos||1)+
+      campoPrev(i,'requisitos','Requisitos (opcional)',o.requisitos)+
+      campoPrev(i,'contacto_whatsapp','WhatsApp del reclutador (obligatorio)',o.contacto_whatsapp,'56912345678')+
+      campoPrev(i,'descripcion','Descripción (opcional)',o.descripcion)+
+      '<button class="btn-guardar" id="btnPub'+i+'" onclick="publicarExtraida('+i+')"'+(o._publicada?' disabled':'')+' style="margin-top:10px">'+(o._publicada?'Publicada ✓':'Publicar esta oferta')+'</button>'+
+      '<div class="form-msg" id="msgEx'+i+'"></div>'+
+    '</div>';
+  });
+  var pendientes=ADMIN_EXTRAIDAS.filter(function(o){return !o._publicada;}).length;
+  if(pendientes>1) html+='<button class="btn-guardar" style="margin-top:14px" onclick="publicarTodas()">Publicar todas ('+pendientes+')</button>';
+  el.innerHTML=html;
+}
+
+function leerExtraida(i){
+  function v(campo){ var e=document.getElementById('ex_'+campo+'_'+i); return e?e.value.trim():''; }
+  return {
+    tipo: ADMIN_EXTRAIDAS[i].tipo||'empleo',
+    origen: 'comunidad',
+    titulo: v('titulo'),
+    comuna: v('comuna'),
+    empresa_nombre: v('empresa_nombre')||null,
+    renta_mensual: v('renta_mensual')?parseInt(v('renta_mensual'),10):null,
+    pauta: v('pauta')||null,
+    horario: v('horario')||null,
+    lugar: v('lugar')||null,
+    cupos: parseInt(v('cupos'),10)||1,
+    requisitos: v('requisitos')||null,
+    contacto_whatsapp: v('contacto_whatsapp'),
+    descripcion: v('descripcion')||null,
+    fecha_inicio: ADMIN_EXTRAIDAS[i].fecha_inicio||null,
+    fecha_fin: ADMIN_EXTRAIDAS[i].fecha_fin||null,
+    pago_turno: ADMIN_EXTRAIDAS[i].pago_turno||null
+  };
+}
+
+async function publicarExtraida(i){
+  var msg=document.getElementById('msgEx'+i);
+  var btn=document.getElementById('btnPub'+i);
+  var body=leerExtraida(i);
+  if(!body.titulo){ msg.textContent='Falta el título.'; msg.className='form-msg err'; return false; }
+  if(!body.comuna){ msg.textContent='Falta la comuna.'; msg.className='form-msg err'; return false; }
+  if(!body.contacto_whatsapp){ msg.textContent='Falta el WhatsApp del reclutador (obligatorio en ofertas de la comunidad).'; msg.className='form-msg err'; return false; }
+  btn.disabled=true; btn.textContent='Publicando…';
+  try{
+    var res=await fetch(API_URL+'/guardias/ofertas',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
+    var data=await res.json();
+    if(!res.ok){ msg.textContent=data.error||'No se pudo publicar.'; msg.className='form-msg err'; btn.disabled=false; btn.textContent='Publicar esta oferta'; return false; }
+    ADMIN_EXTRAIDAS[i]._publicada=true;
+    pintarExtraidas();
+    return true;
+  }catch(e){ msg.textContent='Error de conexión.'; msg.className='form-msg err'; btn.disabled=false; btn.textContent='Publicar esta oferta'; return false; }
+}
+
+async function publicarTodas(){
+  for(var i=0;i<ADMIN_EXTRAIDAS.length;i++){
+    if(!ADMIN_EXTRAIDAS[i]._publicada){ await publicarExtraida(i); }
+  }
 }
 
 function nuevaOferta(){ ADMIN_OFERTA_EDIT=null; ADMIN_VISTA='form'; renderAdmin(); }
@@ -560,52 +721,98 @@ function formOferta(actual){
   var comunaSel=actual.comuna||'';
   var opciones='<option value="">— Elige la comuna —</option>'+
     comunas.map(function(n){return '<option value="'+esc(n)+'"'+(n===comunaSel?' selected':'')+'>'+esc(n)+'</option>';}).join('');
+  var tipoSel=actual.tipo||'turno';
+  var origenSel=actual.origen||'cyc';
   return '<button class="btn-salir" style="margin-bottom:12px" onclick="volverListaAdmin()">← Volver a ofertas</button>'+
     '<div class="card">'+
     '<div class="auth-title">'+(actual.id?'Editar oferta':'Nueva oferta')+'</div>'+
+    '<label for="oTipo">Tipo de oferta</label>'+
+    '<select id="oTipo" onchange="toggleTipoOferta()">'+
+      '<option value="turno"'+(tipoSel==='turno'?' selected':'')+'>Turno por evento (pago por turno)</option>'+
+      '<option value="empleo"'+(tipoSel==='empleo'?' selected':'')+'>Empleo permanente (renta mensual)</option>'+
+    '</select>'+
+    '<label for="oOrigen">Origen</label>'+
+    '<select id="oOrigen">'+
+      '<option value="cyc"'+(origenSel==='cyc'?' selected':'')+'>C&amp;C — verificada (postulan en la app)</option>'+
+      '<option value="comunidad"'+(origenSel==='comunidad'?' selected':'')+'>Comunidad — contactan directo al reclutador</option>'+
+    '</select>'+
     '<label for="oTitulo">Título</label>'+
-    '<input id="oTitulo" type="text" value="'+esc(actual.titulo||'')+'" placeholder="Ej: 100 guardias, festival X, sábado">'+
+    '<input id="oTitulo" type="text" value="'+esc(actual.titulo||'')+'" placeholder="Ej: Guardia 4x4 día — Mall X">'+
     '<label for="oComuna">Comuna</label>'+
     '<select id="oComuna">'+opciones+'</select>'+
     '<label for="oLugar">Lugar (opcional)</label>'+
     '<input id="oLugar" type="text" value="'+esc(actual.lugar||'')+'" placeholder="Dirección o referencia">'+
-    '<label for="oFechaInicio">Fecha inicio</label>'+
-    '<input id="oFechaInicio" type="date" value="'+esc((actual.fecha_inicio||'').slice(0,10))+'">'+
-    '<label for="oFechaFin">Fecha fin (opcional)</label>'+
-    '<input id="oFechaFin" type="date" value="'+esc((actual.fecha_fin||'').slice(0,10))+'">'+
-    '<label for="oPago">Pago por turno, CLP (vacío = a convenir)</label>'+
-    '<input id="oPago" type="text" inputmode="numeric" value="'+esc(actual.pago_turno==null?'':actual.pago_turno)+'" placeholder="Ej: 25000">'+
+    '<div id="bloqueTurno" style="display:'+(tipoSel==='turno'?'block':'none')+'">'+
+      '<label for="oFechaInicio">Fecha inicio</label>'+
+      '<input id="oFechaInicio" type="date" value="'+esc((actual.fecha_inicio||'').slice(0,10))+'">'+
+      '<label for="oFechaFin">Fecha fin (opcional)</label>'+
+      '<input id="oFechaFin" type="date" value="'+esc((actual.fecha_fin||'').slice(0,10))+'">'+
+      '<label for="oPago">Pago por turno, CLP (vacío = a convenir)</label>'+
+      '<input id="oPago" type="text" inputmode="numeric" value="'+esc(actual.pago_turno==null?'':actual.pago_turno)+'" placeholder="Ej: 25000">'+
+    '</div>'+
+    '<div id="bloqueEmpleo" style="display:'+(tipoSel==='empleo'?'block':'none')+'">'+
+      '<label for="oRenta">Renta mensual líquida, CLP (vacío = a convenir)</label>'+
+      '<input id="oRenta" type="text" inputmode="numeric" value="'+esc(actual.renta_mensual==null?'':actual.renta_mensual)+'" placeholder="Ej: 620000">'+
+      '<label for="oPauta">Pauta (opcional)</label>'+
+      '<input id="oPauta" type="text" value="'+esc(actual.pauta||'')+'" placeholder="Ej: 4x4, 5x2, 6x1">'+
+      '<label for="oHorario">Horario (opcional)</label>'+
+      '<input id="oHorario" type="text" value="'+esc(actual.horario||'')+'" placeholder="Ej: día 08:00–20:00">'+
+      '<label for="oEmpresa">Empresa (opcional)</label>'+
+      '<input id="oEmpresa" type="text" value="'+esc(actual.empresa_nombre||'')+'" placeholder="Ej: Titán Reclutamiento">'+
+      '<label for="oExpira">Vence el (vacío = 14 días)</label>'+
+      '<input id="oExpira" type="date" value="'+esc((actual.expira_at||'').slice(0,10))+'">'+
+    '</div>'+
+    '<label for="oWhatsapp">WhatsApp del reclutador (obligatorio si origen = comunidad)</label>'+
+    '<input id="oWhatsapp" type="text" inputmode="numeric" value="'+esc(actual.contacto_whatsapp||'')+'" placeholder="56912345678">'+
     '<label for="oCupos">Cupos</label>'+
     '<input id="oCupos" type="text" inputmode="numeric" value="'+esc(actual.cupos||'')+'" placeholder="Ej: 10">'+
     '<label for="oDescripcion">Descripción (opcional)</label>'+
-    '<input id="oDescripcion" type="text" value="'+esc(actual.descripcion||'')+'" placeholder="Detalles del turno">'+
+    '<input id="oDescripcion" type="text" value="'+esc(actual.descripcion||'')+'" placeholder="Detalles">'+
     '<label for="oRequisitos">Requisitos (opcional)</label>'+
     '<input id="oRequisitos" type="text" value="'+esc(actual.requisitos||'')+'" placeholder="Ej: OS.10 vigente">'+
     '<button class="btn-guardar" onclick="guardarOferta('+(actual.id?actual.id:'null')+')">'+(actual.id?'Guardar cambios':'Publicar oferta')+'</button>'+
     '<div class="form-msg" id="ofertaMsg"></div>'+
   '</div>';
 }
+function toggleTipoOferta(){
+  var t=document.getElementById('oTipo').value;
+  document.getElementById('bloqueTurno').style.display=(t==='turno'?'block':'none');
+  document.getElementById('bloqueEmpleo').style.display=(t==='empleo'?'block':'none');
+}
 
 async function guardarOferta(id){
   var msg=document.getElementById('ofertaMsg');
   msg.textContent='';
+  var tipo=document.getElementById('oTipo').value;
+  var origen=document.getElementById('oOrigen').value;
   var titulo=document.getElementById('oTitulo').value.trim();
   var comuna=document.getElementById('oComuna').value;
   var lugar=document.getElementById('oLugar').value.trim();
   var fechaInicio=document.getElementById('oFechaInicio').value;
   var fechaFin=document.getElementById('oFechaFin').value;
   var pagoRaw=document.getElementById('oPago').value.trim();
+  var rentaRaw=document.getElementById('oRenta').value.trim();
+  var pauta=document.getElementById('oPauta').value.trim();
+  var horario=document.getElementById('oHorario').value.trim();
+  var empresa=document.getElementById('oEmpresa').value.trim();
+  var expira=document.getElementById('oExpira').value;
+  var whatsapp=document.getElementById('oWhatsapp').value.trim();
   var cuposRaw=document.getElementById('oCupos').value.trim();
   var descripcion=document.getElementById('oDescripcion').value.trim();
   var requisitos=document.getElementById('oRequisitos').value.trim();
 
   if(!titulo){ msg.textContent='Escribe un título.'; msg.className='form-msg err'; return; }
   if(!comuna){ msg.textContent='Elige la comuna.'; msg.className='form-msg err'; return; }
-  if(!fechaInicio){ msg.textContent='Indica la fecha de inicio.'; msg.className='form-msg err'; return; }
+  if(tipo==='turno' && !fechaInicio){ msg.textContent='Indica la fecha de inicio.'; msg.className='form-msg err'; return; }
+  if(origen==='comunidad' && !whatsapp){ msg.textContent='Oferta de la comunidad: falta el WhatsApp del reclutador.'; msg.className='form-msg err'; return; }
   var cupos=parseInt(cuposRaw,10);
   if(!(cupos>0)){ msg.textContent='Cupos debe ser mayor a 0.'; msg.className='form-msg err'; return; }
 
-  var body={titulo:titulo,comuna:comuna,lugar:lugar,fecha_inicio:fechaInicio,fecha_fin:fechaFin,cupos:cupos,descripcion:descripcion,requisitos:requisitos,pago_turno:pagoRaw?parseInt(pagoRaw,10):null};
+  var body={tipo:tipo,origen:origen,titulo:titulo,comuna:comuna,lugar:lugar,fecha_inicio:fechaInicio,fecha_fin:fechaFin,cupos:cupos,descripcion:descripcion,requisitos:requisitos,
+    pago_turno:pagoRaw?parseInt(pagoRaw,10):null,
+    renta_mensual:rentaRaw?parseInt(rentaRaw,10):null,
+    pauta:pauta||null,horario:horario||null,empresa_nombre:empresa||null,
+    contacto_whatsapp:whatsapp||null,expira_at:expira||null};
 
   try{
     var res;
