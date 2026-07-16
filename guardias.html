@@ -129,13 +129,16 @@ label{display:block;font-size:.75rem;color:#999;font-weight:700;margin-bottom:5p
 .btn-sm{flex:1;min-width:90px;padding:9px 8px;background:#333;color:#fff;border:none;border-radius:8px;font-size:.74rem;font-weight:700;cursor:pointer}
 .btn-sm-danger{background:#3a1400;color:#ff8a50}
 .btn-whatsapp{display:block;width:100%;box-sizing:border-box;text-align:center;padding:11px;background:#25d366;color:#0b1f14;border-radius:8px;font-size:.82rem;font-weight:800;text-decoration:none;margin:10px 0}
+/* Instalada como app propia (PWA standalone): Control+ es un producto separado de C&C —
+   el puente «Volver a la App» solo existe para quien navega por la web. */
+@media (display-mode: standalone){ .volver{display:none} }
 </style>
 </head>
 <body>
 
 <header class="header">
   <a class="volver" href="seguridad-chile.html">← Volver a la App</a>
-  <img src="icon-192.png" alt="Logo">
+  <img src="icon-cplus-192.png" alt="Logo Control+">
   <h1>Control<span>+</span></h1>
   <p>Bolsa de trabajo del gremio · Control &amp; Confianza</p>
 </header>
