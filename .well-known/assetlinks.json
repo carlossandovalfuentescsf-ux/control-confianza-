@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "cl.controlyconfianza.app",
+      "sha256_cert_fingerprints": [
+        "16:B4:B3:49:B5:BB:67:1E:42:A4:7B:AE:36:3F:24:E0:87:22:9E:E6:10:59:27:53:9D:45:8D:FC:EB:1C:7B:C5"
+      ]
+    }
+  }
+]
