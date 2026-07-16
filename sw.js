@@ -1,4 +1,4 @@
-const CACHE = 'cyc-v20260716g';
+const CACHE = 'cyc-v20260716h';
 // Rutas relativas: funcionan tanto en app.controlyconfianza.cl (raíz)
 // como en la URL antigua de github.io (subcarpeta /control-confianza-/).
 const URLS = [
@@ -87,8 +87,13 @@ self.addEventListener('fetch', e => {
     e.respondWith(fetch(e.request));
     return;
   }
+  // HTML siempre revalidado contra el servidor (esquiva el max-age=600 de Pages):
+  // los cambios se ven al próximo abrir, sin esperar 10 minutos. Si no hay cambios,
+  // el servidor responde 304 y cuesta un par de KB.
+  const esHTML = e.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/');
+  const peticion = esHTML ? new Request(e.request, { cache: 'no-cache' }) : e.request;
   e.respondWith(
-    fetch(e.request)
+    fetch(peticion)
       .then(response => {
         const copy = response.clone();
         caches.open(CACHE).then(c => c.put(e.request, copy));
