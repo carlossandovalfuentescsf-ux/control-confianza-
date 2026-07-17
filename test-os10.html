@@ -208,7 +208,7 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
 
 </main>
 
-<script src="banco-os10.js?v=20260717a"></script>
+<script src="banco-os10.js?v=20260717b"></script>
 <script>
 // ====== BANCO DE PREGUNTAS ======
 // Cargado desde banco-os10.js: 300 preguntas en 3 niveles y 21 áreas,
@@ -311,22 +311,27 @@ function render(){
   item.opciones.forEach(function(op, i){
     var b = document.createElement("button");
     b.className = "opcion";
-    b.innerHTML = '<span class="letra">'+letras[i]+'</span><span>'+op.txt+'</span>';
+    var sl = document.createElement("span"); sl.className = "letra"; sl.textContent = letras[i];
+    var st = document.createElement("span"); st.textContent = op.txt; // textContent: el texto jamás se interpreta como HTML
+    b.appendChild(sl); b.appendChild(st);
     b.onclick = function(){ responder(i); };
     cont.appendChild(b);
   });
 
   document.getElementById("quiz-feedback").className = "feedback";
   document.getElementById("btn-siguiente").classList.add("hidden");
+  // Cada pregunta nueva parte desde arriba (en móvil quedabas scrolleado al fondo de la anterior)
+  window.scrollTo(0, 0);
 }
 
 function responder(i){
   var item = estado.lista[estado.idx];
   if(item.elegida !== -1) return; // ya respondida
-  item.elegida = i;
   var botones = document.getElementById("quiz-opciones").children;
   var idxCorrecta = -1;
   for(var k=0;k<item.opciones.length;k++){ if(item.opciones[k].correcta) idxCorrecta=k; }
+  if(idxCorrecta === -1) return; // dato corrupto: no bloquear al usuario dejando botones muertos
+  item.elegida = i;
   for(var k=0;k<botones.length;k++){ botones[k].disabled = true; }
   botones[idxCorrecta].classList.add("correcta");
   var acerto = (i===idxCorrecta);
@@ -340,6 +345,11 @@ function responder(i){
   document.getElementById("btn-siguiente").classList.remove("hidden");
   document.getElementById("btn-siguiente").textContent =
     (estado.idx+1 < estado.lista.length) ? "Siguiente →" : (estado.modo==="ensayo" ? "Ver resultado →" : "Terminar →");
+  // En móvil el feedback y "Siguiente" quedan bajo el borde de la pantalla — llevarlos a la vista
+  setTimeout(function(){
+    var acc = document.getElementById("btn-siguiente");
+    if(acc && acc.scrollIntoView) acc.scrollIntoView({behavior:"smooth", block:"end"});
+  }, 60);
 }
 
 function siguiente(){
