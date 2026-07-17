@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificación y transparencia – Control y Confianza</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Control y Confianza">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Verificación y transparencia — Control y Confianza">
+<meta property="og:description" content="Quiénes somos, qué datos pide (y cuáles NO) y cómo verificar por tu cuenta que nuestra app es segura. Desconfiar está bien: aquí están las pruebas.">
+<meta property="og:url" content="https://app.controlyconfianza.cl/verificacion.html">
+<meta property="og:image" content="https://app.controlyconfianza.cl/og-app.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Verificación y transparencia — Control y Confianza">
+<meta name="twitter:description" content="Desconfiar está bien. Aquí están las pruebas verificables de que nuestra app es segura.">
+<meta name="twitter:image" content="https://app.controlyconfianza.cl/og-app.png">
+<meta name="description" content="Página de transparencia de Control y Confianza: empresa constituida, marca registrada, sin APK, sin permisos abusivos, y enlaces para que verifiques por tu cuenta.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;color:#f0e8d0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:16px 24px;display:flex;align-items:center;gap:12px}
+header img{width:44px;height:44px;object-fit:contain;border-radius:8px}
+header .hn{font-size:17px;font-weight:800;color:#f0e8d0}
+header .hs{font-size:11px;color:#d4a017;font-weight:700;letter-spacing:2px}
+main{max-width:720px;margin:0 auto;padding:36px 20px 60px}
+h1{font-size:24px;font-weight:900;margin-bottom:6px}
+.fecha{font-size:12px;color:#888;margin-bottom:24px}
+.intro{font-size:15px;line-height:1.75;color:#ddd;margin-bottom:8px}
+.indice{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:18px 20px;margin:24px 0 28px;font-size:13px}
+.indice a{color:#d4a017;text-decoration:none;display:block;padding:3px 0}
+h2{font-size:19px;font-weight:900;color:#d4a017;margin:34px 0 14px;padding-top:8px;border-top:1px solid #2a2a2a}
+h3{font-size:15px;font-weight:800;margin:20px 0 8px;color:#f0e8d0}
+p,li{font-size:14px;line-height:1.75;color:#ccc;margin-bottom:10px}
+ul{margin:0 0 12px 20px}
+strong{color:#f0e8d0}
+a{color:#d4a017}
+.destacado{background:#1a1a1a;border-left:3px solid #d4a017;border-radius:0 8px 8px 0;padding:14px 16px;margin:16px 0}
+.destacado p{margin:0}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0 16px}
+th{text-align:left;color:#d4a017;font-weight:800;padding:8px;border-bottom:2px solid #2a2a2a}
+td{padding:8px;border-bottom:1px solid #222;color:#ccc;vertical-align:top;line-height:1.6}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:16px 18px}
+.card .th{font-size:13px;font-weight:800;letter-spacing:1px;margin-bottom:10px}
+.card.si .th{color:#3fb950}
+.card.no .th{color:#f0e8d0}
+.card ul{list-style:none;margin:0}
+.card li{font-size:13.5px;line-height:1.6;padding-left:22px;position:relative;margin-bottom:8px;color:#ccc}
+.card.si li::before{content:"✓";position:absolute;left:0;color:#3fb950;font-weight:900}
+.card.no li::before{content:"✕";position:absolute;left:0;color:#c9503f;font-weight:900}
+.verif{display:block;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:16px 18px;margin:12px 0;text-decoration:none;transition:border-color .15s,background .15s}
+.verif:hover{border-color:#d4a017;background:#1e1c14}
+.verif .vt{font-size:14.5px;font-weight:800;color:#f0e8d0;margin-bottom:4px}
+.verif .vt span{color:#d4a017;font-weight:900}
+.verif .vd{font-size:12.5px;line-height:1.55;color:#aaa;margin:0}
+.verif .vu{font-size:11px;color:#666;word-break:break-all;margin-top:6px}
+.dominio{background:#14140e;border:1px solid #d4a017;border-radius:12px;padding:16px 18px;margin:16px 0;text-align:center}
+.dominio .du{font-size:18px;font-weight:900;color:#d4a017;letter-spacing:.5px}
+.dominio p{font-size:12.5px;color:#aaa;margin:6px 0 0}
+.volver{display:block;text-align:center;margin-top:36px;font-size:13px;color:#d4a017;text-decoration:none}
+.footer{text-align:center;padding:24px 20px;border-top:1px solid #1e1e1e;font-size:12px;color:#555;margin-top:40px}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="icon-192.png" alt="Logo Control y Confianza">
+  <div>
+    <div class="hn">Control &amp; Confianza</div>
+    <div class="hs">SEGURIDAD PRIVADA</div>
+  </div>
+</header>
+
+<main>
+<h1>Verificación y transparencia</h1>
+<div class="fecha">Última actualización: 16 de julio de 2026</div>
+
+<p class="intro">Antes de abrir cualquier enlace o instalar cualquier app, <strong>desconfiar es lo correcto</strong>. Es exactamente lo que enseñamos. Por eso no te pedimos que confíes en nuestra palabra: en esta página te damos las herramientas para que <strong>lo verifiques tú mismo</strong>, con fuentes independientes que no controlamos.</p>
+
+<div class="destacado">
+  <p>Somos una empresa chilena constituida, con marca registrada, y nuestras aplicaciones funcionan en el navegador (no se instala ningún archivo <em>.apk</em> ni <em>.exe</em>). Todo lo que afirmamos aquí abajo lo puedes comprobar con un clic.</p>
+</div>
+
+<div class="indice">
+  <strong style="display:block;margin-bottom:6px">Contenido</strong>
+  <a href="#quienes">1. Quiénes somos</a>
+  <a href="#verifica">2. Verifícalo por tu cuenta</a>
+  <a href="#datos">3. Qué datos pide la app (y cuáles NO)</a>
+  <a href="#dominio">4. Nuestro único dominio oficial</a>
+  <a href="#link-seguro">5. Cómo saber si cualquier link es seguro</a>
+  <a href="#contacto">6. Contacto</a>
+</div>
+
+<h2 id="quienes">1. Quiénes somos</h2>
+<p>Nuestras aplicaciones son operadas por <strong>Control y Confianza CSF SpA</strong>, empresa chilena de asesorías en seguridad privada.</p>
+<table>
+  <tr><th>Dato</th><th>Valor</th></tr>
+  <tr><td>Razón social</td><td>Control y Confianza CSF SpA</td></tr>
+  <tr><td>RUT</td><td>78.043.129-6</td></tr>
+  <tr><td>Marca registrada (INAPI)</td><td>Solicitud SM1110278 — Clase 45 (servicios de seguridad)</td></tr>
+  <tr><td>Contacto</td><td>WhatsApp <a href="https://wa.me/56984600273" rel="noopener noreferrer" target="_blank">+56 9 8460 0273</a> · <a href="mailto:contacto@controlyconfianza.cl">contacto@controlyconfianza.cl</a></td></tr>
+  <tr><td>Sitio institucional</td><td><a href="https://www.controlyconfianza.cl" rel="noopener noreferrer" target="_blank">www.controlyconfianza.cl</a></td></tr>
+</table>
+
+<h2 id="verifica">2. Verifícalo por tu cuenta</h2>
+<p>Estos enlaces llevan a servicios de <strong>terceros independientes</strong>. No podemos alterar lo que muestran. Ábrelos y compruébalo:</p>
+
+<a class="verif" href="https://transparencyreport.google.com/safe-browsing/search?url=app.controlyconfianza.cl" rel="noopener noreferrer" target="_blank">
+  <div class="vt"><span>Google Safe Browsing</span> — el semáforo de seguridad de Google</div>
+  <p class="vd">Google analiza permanentemente los sitios web en busca de malware o phishing. Para nuestro dominio informa: <strong>"No se encontró contenido no seguro"</strong>. Es el mismo sistema que usa Chrome para advertirte de páginas peligrosas.</p>
+  <p class="vu">transparencyreport.google.com/safe-browsing → app.controlyconfianza.cl</p>
+</a>
+
+<a class="verif" href="https://ion.inapi.cl/Marca/BuscadorMarca.aspx" rel="noopener noreferrer" target="_blank">
+  <div class="vt"><span>INAPI</span> — Instituto Nacional de Propiedad Industrial</div>
+  <p class="vd">El registro oficial de marcas de Chile. Busca "Control y Confianza" o la solicitud <strong>SM1110278</strong> y verás que la marca es nuestra. Una estafa no registra marca a su nombre real.</p>
+  <p class="vu">ion.inapi.cl → buscar: SM1110278</p>
+</a>
+
+<a class="verif" href="https://www.virustotal.com/gui/domain/app.controlyconfianza.cl" rel="noopener noreferrer" target="_blank">
+  <div class="vt"><span>VirusTotal</span> — 90+ motores antivirus a la vez</div>
+  <p class="vd">Analiza nuestro dominio con decenas de motores de seguridad de forma simultánea. Es la herramienta que usan los propios equipos de ciberseguridad para revisar enlaces sospechosos.</p>
+  <p class="vu">virustotal.com/gui/domain/app.controlyconfianza.cl</p>
+</a>
+
+<h2 id="datos">3. Qué datos pide la app (y cuáles NO)</h2>
+<p>La mayor parte de nuestras herramientas se usan <strong>sin registrarse</strong>. Cuando contratas un plan, pedimos lo mínimo. Esto es lo que hace y lo que <strong>nunca</strong> hace:</p>
+
+<div class="grid2">
+  <div class="card no">
+    <div class="th">LO QUE NUNCA HACE</div>
+    <ul>
+      <li>No instala ningún archivo <em>.apk</em> ni <em>.exe</em> en tu teléfono</li>
+      <li>No accede a tus contactos</li>
+      <li>No exige tu ubicación GPS para funcionar</li>
+      <li>No lee tus mensajes, fotos ni llamadas</li>
+      <li>No usa cookies de seguimiento publicitario</li>
+      <li>No vende ni comparte tus datos con terceros</li>
+    </ul>
+  </div>
+  <div class="card si">
+    <div class="th">LO QUE SÍ HACE</div>
+    <ul>
+      <li>Funciona en tu navegador (es una PWA, como abrir una página web)</li>
+      <li>Todo el tráfico va cifrado con HTTPS</li>
+      <li>Si contratas un plan: guarda tu correo y una contraseña con cifrado (hash)</li>
+      <li>Guarda tus preferencias en tu propio dispositivo (localStorage)</li>
+      <li>Puedes pedir borrar tu cuenta y datos cuando quieras (Ley 19.628)</li>
+    </ul>
+  </div>
+</div>
+<p style="font-size:12.5px;color:#999">El detalle completo está en nuestros <a href="terminos.html">Términos y Política de Privacidad</a>.</p>
+
+<h2 id="dominio">4. Nuestro único dominio oficial</h2>
+<p>Si un enlace no empieza exactamente con esta dirección, <strong>no es nuestro</strong>. Desconfía de cualquier variación con letras cambiadas, guiones extra o dominios distintos.</p>
+<div class="dominio">
+  <div class="du">app.controlyconfianza.cl</div>
+  <p>Sitio institucional: www.controlyconfianza.cl</p>
+</div>
+
+<h2 id="link-seguro">5. Cómo saber si cualquier link es seguro</h2>
+<p>Esto sirve para nuestro sitio y para <strong>cualquier enlace</strong> que te llegue por WhatsApp, correo o redes. Guárdalo:</p>
+<ul>
+  <li><strong>Mira el candado y la dirección completa.</strong> Debe empezar con <em>https://</em> y el dominio debe ser el que esperas, sin letras cambiadas.</li>
+  <li><strong>Pásalo por Google Safe Browsing</strong> (enlace de la sección 2): pega la dirección y Google te dice si es peligrosa.</li>
+  <li><strong>Ante la duda, no lo abras.</strong> Escríbenos por WhatsApp y confirmamos si el enlace es realmente nuestro.</li>
+  <li><strong>Ningún servicio serio te pedirá tu clave por un link.</strong> Nosotros tampoco.</li>
+</ul>
+<div class="destacado">
+  <p>Desconfiar y verificar no es paranoia: es seguridad bien entendida. Preferimos un usuario que comprueba a uno que confía a ciegas.</p>
+</div>
+
+<h2 id="contacto">6. Contacto</h2>
+<p>¿Dudas sobre la seguridad de la app o sobre un enlace que recibiste?</p>
+<ul>
+  <li>WhatsApp: <a href="https://wa.me/56984600273" rel="noopener noreferrer" target="_blank">+56 9 8460 0273</a></li>
+  <li>Correo: <a href="mailto:contacto@controlyconfianza.cl">contacto@controlyconfianza.cl</a></li>
+  <li>Sitio web: <a href="https://www.controlyconfianza.cl" rel="noopener noreferrer" target="_blank">www.controlyconfianza.cl</a></li>
+</ul>
+
+<a class="volver" href="index.html">← Volver al inicio</a>
+</main>
+
+<div class="footer">Control &amp; Confianza Seguridad Privada — Chile</div>
+
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
