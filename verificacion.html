@@ -182,11 +182,19 @@ td{padding:8px;border-bottom:1px solid #222;color:#ccc;vertical-align:top;line-h
   <li>Sitio web: <a href="https://www.controlyconfianza.cl" rel="noopener noreferrer" target="_blank">www.controlyconfianza.cl</a></li>
 </ul>
 
-<a class="volver" href="index.html">← Volver al inicio</a>
+<a class="volver" id="volver" href="index.html">← Volver al inicio</a>
 </main>
 
 <div class="footer">Control &amp; Confianza Seguridad Privada — Chile</div>
 
+<script>
+// Retorno según origen: si vienes de Control+, vuelves a Control+.
+if(new URLSearchParams(location.search).get('de')==='controlmas'){
+  var v=document.getElementById('volver');
+  v.href='guardias.html';
+  v.textContent='← Volver a Control+';
+}
+</script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
