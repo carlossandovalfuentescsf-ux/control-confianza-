@@ -243,7 +243,7 @@ var BANCO = [
  f:"Debe <b>activar la emergencia e iniciar RCP si está capacitado</b>."},
 {n:"basico",a:"b6",q:"¿Cuál es el número telefónico del SAMU en Chile?",
  o:["131","132","133","134"],
- f:"El <b>131</b> es el SAMU. Recuerda: 132 Bomberos, 133 Carabineros. <i>(Respuesta completada por el asesor en el banco anterior.)</i>"},
+ f:"El <b>131</b> es el SAMU. Recuerda: 132 Bomberos, 133 Carabineros."},
 {n:"basico",a:"b6",q:"¿Cuál es la frecuencia recomendada para las compresiones torácicas durante una reanimación cardiopulmonar en un adulto?",
  o:["Entre 100 y 120 compresiones por minuto","Entre 40 y 60 por minuto","Entre 150 y 180 por minuto","No existe una frecuencia recomendada"],
  f:"La frecuencia recomendada es de <b>100 a 120 compresiones por minuto</b>."},
