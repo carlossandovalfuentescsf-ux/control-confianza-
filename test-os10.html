@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test OS10 Gratis 2026 — Simulador Examen Guardia de Seguridad | Control y Confianza</title>
+<meta name="description" content="Simulador gratis del Test OS10 para guardias de seguridad en Chile. Preguntas de práctica por área con explicaciones, basadas en la Ley 21.659 y el Decreto 209/2025. Sin registro, funciona en tu celular.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Control y Confianza">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Test OS10 Gratis 2026 — Simulador para Guardias de Seguridad">
+<meta property="og:description" content="Practica gratis para tu examen OS10 con preguntas explicadas por área, según la Ley 21.659 y el Decreto 209/2025. Sin registro.">
+<meta property="og:url" content="https://app.controlyconfianza.cl/test-os10.html">
+<meta property="og:image" content="https://app.controlyconfianza.cl/og-app.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Test OS10 Gratis 2026 — Simulador para Guardias">
+<meta name="twitter:description" content="Practica gratis para tu examen OS10 con preguntas explicadas, según la Ley 21.659 y el Decreto 209/2025.">
+<link rel="apple-touch-icon" href="icon-cplus-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-cplus-192.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh}
+a{color:#d4a017}
+.header{background:linear-gradient(135deg,#1a1a1a,#111);padding:16px 20px;text-align:center;border-bottom:1px solid #222;position:relative}
+.header .volver{position:absolute;left:12px;top:16px;display:inline-flex;align-items:center;gap:5px;font-size:.72rem;color:#888;text-decoration:none;border:1px solid #333;padding:4px 10px;border-radius:99px}
+.header img{height:38px;margin-bottom:6px;border-radius:8px}
+.header h1{font-size:1.05rem;font-weight:800}
+.header h1 span{color:#d4a017}
+.header p{font-size:.72rem;color:#888;margin-top:2px}
+main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
+.disclaimer{background:#1a1a1a;border:1px solid #3a3320;border-left:3px solid #d4a017;border-radius:0 8px 8px 0;padding:10px 14px;font-size:11.5px;line-height:1.6;color:#bdb6a3;margin-bottom:22px}
+.disclaimer strong{color:#e6c25a}
+.hero{text-align:center;margin-bottom:24px}
+.hero h2{font-size:1.5rem;font-weight:900;line-height:1.15;margin-bottom:10px}
+.hero h2 span{color:#d4a017}
+.hero p{font-size:13.5px;color:#aaa;line-height:1.6;max-width:34em;margin:0 auto}
+.modos{display:grid;gap:12px;margin-bottom:26px}
+.modo{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px;text-align:left;cursor:pointer;transition:border-color .15s,transform .1s;color:inherit;font:inherit;width:100%}
+.modo:hover{border-color:#d4a017}
+.modo:active{transform:scale(.99)}
+.modo .mt{font-size:15px;font-weight:800;color:#f0e8d0;display:flex;align-items:center;gap:9px}
+.modo .mt .ic{font-size:20px}
+.modo .md{font-size:12.5px;color:#999;line-height:1.55;margin-top:6px}
+.seccion-titulo{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#d4a017;margin:24px 0 12px}
+.areas{display:grid;gap:9px}
+.area-btn{background:#161616;border:1px solid #262626;border-radius:11px;padding:13px 15px;text-align:left;cursor:pointer;color:inherit;font:inherit;display:flex;align-items:center;gap:12px;transition:border-color .15s}
+.area-btn:hover{border-color:#d4a017}
+.area-btn .an{font-size:20px;flex-shrink:0}
+.area-btn .at{font-size:13.5px;font-weight:700;color:#f0e8d0}
+.area-btn .ac{font-size:11px;color:#777;margin-top:1px}
+.area-btn .go{margin-left:auto;color:#d4a017;font-size:16px}
+/* Quiz */
+.quiztop{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:12px;color:#888}
+.quiztop .badge{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:99px;padding:4px 11px;font-weight:700;color:#d4a017}
+.progbar{height:6px;background:#222;border-radius:99px;overflow:hidden;margin-bottom:20px}
+.progbar>i{display:block;height:100%;background:linear-gradient(90deg,#b8860b,#d4a017);width:0;transition:width .3s}
+.pregunta{font-size:16.5px;font-weight:700;line-height:1.45;margin-bottom:18px;color:#f0e8d0}
+.opciones{display:grid;gap:10px}
+.opcion{background:#171717;border:1.5px solid #2a2a2a;border-radius:11px;padding:13px 15px;text-align:left;cursor:pointer;color:#ddd;font:inherit;font-size:13.5px;line-height:1.45;transition:border-color .12s,background .12s;display:flex;gap:10px;align-items:flex-start}
+.opcion:hover:not(:disabled){border-color:#555}
+.opcion .letra{font-weight:800;color:#888;flex-shrink:0}
+.opcion.correcta{border-color:#3fb950;background:rgba(63,185,80,.1)}
+.opcion.correcta .letra{color:#3fb950}
+.opcion.incorrecta{border-color:#c9503f;background:rgba(201,80,63,.1)}
+.opcion.incorrecta .letra{color:#c9503f}
+.opcion:disabled{cursor:default}
+.feedback{margin-top:16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:11px;padding:14px;font-size:13px;line-height:1.6;display:none}
+.feedback.show{display:block}
+.feedback .fl{font-weight:800;font-size:12px;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.feedback.ok .fl{color:#3fb950}
+.feedback.no .fl{color:#e08a2b}
+.feedback .fund{color:#bdb6a3}
+.feedback .fund b{color:#e6c25a}
+.acciones{margin-top:18px;display:flex;gap:10px}
+.btn{border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:800;cursor:pointer;flex:1;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:#d4a017;color:#111}
+.btn-ghost{background:#222;color:#d4a017;border:1px solid #333;flex:0 0 auto}
+/* Resultado */
+.res-score{text-align:center;padding:26px 16px;border-radius:16px;margin-bottom:22px}
+.res-score.aprob{background:linear-gradient(135deg,#16351b,#122b16);border:1px solid #3fb950}
+.res-score.reprob{background:linear-gradient(135deg,#3a1f18,#2b1611);border:1px solid #c9503f}
+.res-score .pct{font-size:52px;font-weight:900;line-height:1}
+.res-score.aprob .pct{color:#3fb950}
+.res-score.reprob .pct{color:#e08a2b}
+.res-score .st{font-size:15px;font-weight:800;margin-top:6px}
+.res-score .sd{font-size:12.5px;color:#bbb;margin-top:6px;line-height:1.5}
+.res-areas{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:8px 16px;margin-bottom:22px}
+.res-area{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #222;font-size:13px}
+.res-area:last-child{border-bottom:none}
+.res-area .rn{color:#ddd}
+.res-area .rv{font-weight:800}
+.res-area .rv.ok{color:#3fb950}
+.res-area .rv.mid{color:#e08a2b}
+.res-area .rv.low{color:#c9503f}
+.cta{background:linear-gradient(135deg,#1c1a15,#141310);border:1px solid #d4a017;border-radius:16px;padding:22px;text-align:center;margin-bottom:18px}
+.cta h3{font-size:17px;font-weight:900;margin-bottom:8px}
+.cta h3 span{color:#d4a017}
+.cta p{font-size:13px;color:#bbb;line-height:1.6;margin-bottom:16px}
+.cta .btn-primary{display:inline-block;text-decoration:none;text-align:center;padding:14px 26px;flex:none}
+.cta .sub{display:block;margin-top:12px;font-size:12px;color:#888;text-decoration:none}
+.foot{text-align:center;padding:22px 16px 0;border-top:1px solid #1e1e1e;margin-top:8px;font-size:12px;color:#666}
+.foot a{color:#d4a017;text-decoration:none}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a class="volver" id="linkVolverCyC" href="guardias.html">← Volver a Control+</a>
+  <script>
+  if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true){
+    var _v=document.getElementById('linkVolverCyC'); if(_v) _v.style.display='none';
+  }
+  </script>
+  <img src="icon-cplus-192.png" alt="Logo Control+">
+  <h1>Test OS10 <span>·</span> Simulador</h1>
+  <p>Práctica gratis para tu examen · Control&nbsp;+ de Control&nbsp;&amp;&nbsp;Confianza</p>
+</header>
+
+<main>
+
+  <!-- ===== INICIO ===== -->
+  <section id="pantalla-inicio">
+    <div class="disclaimer">
+      <strong>Ensayo de práctica. No es el examen oficial de Carabineros.</strong> Preparación basada en la normativa vigente: <strong>Ley N.º 21.659</strong> sobre Seguridad Privada y su Reglamento (<strong>D.S. N.º 209 de 2025</strong>). Úsalo para estudiar; el examen oficial lo rinde ante la autoridad correspondiente.
+    </div>
+
+    <div class="hero">
+      <h2>Prepárate para el <span>Test OS10</span> gratis</h2>
+      <p>Practica con preguntas explicadas por área. Cada respuesta trae su fundamento, para que no solo aciertes: entiendas por qué. Sin registro y desde tu celular.</p>
+    </div>
+
+    <div class="modos">
+      <button class="modo" onclick="iniciarEnsayo()">
+        <div class="mt"><span class="ic">📝</span> Ensayo completo</div>
+        <div class="md">20 preguntas al azar de todas las áreas. Se corrige al final como el examen real (se aprueba con 60%), con tu puntaje por área.</div>
+      </button>
+      <button class="modo" onclick="mostrarAreas()">
+        <div class="mt"><span class="ic">📚</span> Práctica por área</div>
+        <div class="md">Elige un tema y estudia con corrección inmediata y explicación en cada pregunta.</div>
+      </button>
+    </div>
+
+    <div id="lista-areas" class="hidden">
+      <div class="seccion-titulo">Elige un área</div>
+      <div class="areas" id="areas-cont"></div>
+    </div>
+  </section>
+
+  <!-- ===== QUIZ ===== -->
+  <section id="pantalla-quiz" class="hidden">
+    <div class="quiztop">
+      <span id="quiz-area"></span>
+      <span class="badge" id="quiz-cont">1 / 20</span>
+    </div>
+    <div class="progbar"><i id="quiz-prog"></i></div>
+    <div class="pregunta" id="quiz-pregunta"></div>
+    <div class="opciones" id="quiz-opciones"></div>
+    <div class="feedback" id="quiz-feedback">
+      <div class="fl" id="quiz-flabel"></div>
+      <div class="fund" id="quiz-fund"></div>
+    </div>
+    <div class="acciones">
+      <button class="btn btn-ghost" onclick="salirQuiz()">Salir</button>
+      <button class="btn btn-primary hidden" id="btn-siguiente" onclick="siguiente()">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- ===== RESULTADO ===== -->
+  <section id="pantalla-resultado" class="hidden">
+    <div class="res-score" id="res-box">
+      <div class="pct" id="res-pct">0%</div>
+      <div class="st" id="res-st"></div>
+      <div class="sd" id="res-sd"></div>
+    </div>
+    <div class="seccion-titulo">Tu desempeño por área</div>
+    <div class="res-areas" id="res-areas"></div>
+
+    <div class="cta">
+      <h3>Ahora que sabes dónde estás parado, <span>da el siguiente paso</span></h3>
+      <p>Control+ es la app del gremio: bolsa de trabajo con ofertas de turnos, tus derechos y la guía de acreditación OS.10. Todo en un lugar.</p>
+      <a class="btn btn-primary" href="guardias.html?f=test-os10">Ver la bolsa de trabajo →</a>
+      <a class="sub" href="guardias.html?f=test-os10">O revisa la guía de acreditación y tus derechos en Control+</a>
+    </div>
+
+    <div class="acciones">
+      <button class="btn btn-ghost" onclick="reiniciar()">← Inicio</button>
+      <button class="btn btn-primary" onclick="iniciarEnsayo()">Repetir ensayo</button>
+    </div>
+  </section>
+
+  <div class="foot">
+    Control&nbsp;+ de <strong>Control &amp; Confianza</strong> — seguridad privada acreditada OS.10<br>
+    <a href="verificacion.html?de=controlmas">Verificación</a> · <a href="terminos.html">Términos y Privacidad</a>
+  </div>
+
+</main>
+
+<script>
+// ====== BANCO DE PREGUNTAS (validado por asesor OS.10 — Ley 21.659 + D.S. 209/2025) ======
+// En cada pregunta, la opción en posición 0 es la CORRECTA; las alternativas se barajan al mostrar.
+var AREAS = [
+  {id:"legal", nombre:"Marco Legal", icono:"⚖️"},
+  {id:"func",  nombre:"Funciones y Prohibiciones", icono:"🛡️"},
+  {id:"ddhh",  nombre:"Derechos Humanos", icono:"🤝"},
+  {id:"fuerza",nombre:"Uso de la Fuerza", icono:"✊"},
+  {id:"pa",    nombre:"Primeros Auxilios", icono:"➕"},
+  {id:"emer",  nombre:"Prevención y Emergencias", icono:"🚨"}
+];
+
+var BANCO = [
+  // ---- Marco Legal ----
+  {a:"legal", q:"¿Qué organismo es la autoridad competente para otorgar las autorizaciones y acreditaciones en materia de seguridad privada?",
+   o:["La Subsecretaría de Prevención del Delito","Carabineros de Chile (OS-10)","La municipalidad respectiva","El Ministerio del Trabajo"],
+   f:"Bajo la <b>Ley 21.659</b>, la <b>Subsecretaría de Prevención del Delito</b> otorga las autorizaciones y acreditaciones. Carabineros (OS-10) cumple el rol de fiscalización."},
+  {a:"legal", q:"¿Qué institución ejerce funciones de fiscalización y control del cumplimiento de la normativa de seguridad privada?",
+   o:["Carabineros de Chile, a través de la Autoridad Fiscalizadora (OS-10)","La Subsecretaría de Prevención del Delito","La Policía de Investigaciones (PDI)","La Inspección del Trabajo"],
+   f:"La <b>Autoridad Fiscalizadora (OS-10 de Carabineros)</b> fiscaliza y controla; la Subsecretaría de Prevención del Delito es la que autoriza y acredita."},
+  {a:"legal", q:"¿Cuál es la normativa principal que regula actualmente la seguridad privada en Chile?",
+   o:["La Ley N.º 21.659 y su Reglamento (D.S. N.º 209 de 2025)","El Decreto Ley 3.607","La Ley 19.628 sobre datos personales","El Reglamento 208"],
+   f:"La <b>Ley N.º 21.659</b> sobre Seguridad Privada y su Reglamento, el <b>D.S. N.º 209 de 2025</b> del Ministerio del Interior y Seguridad Pública."},
+  {a:"legal", q:"Para desempeñarse como guardia de seguridad privada se requiere:",
+   o:["Aprobar el curso de formación y obtener la autorización vigente conforme a la Ley 21.659","Solo tener la mayoría de edad","Un contrato de trabajo, sin más requisitos","Autorización de la municipalidad"],
+   f:"Se exige <b>aprobar el curso de formación</b> y contar con la <b>autorización vigente</b> otorgada conforme a la Ley 21.659."},
+  {a:"legal", q:"¿Cuál es la duración mínima del curso de formación para guardias de seguridad privada?",
+   o:["90 horas pedagógicas","40 horas pedagógicas","60 horas pedagógicas","120 horas pedagógicas"],
+   f:"El <b>Decreto 209</b> establece un mínimo de <b>90 horas pedagógicas</b> para el curso de formación."},
+  {a:"legal", q:"Para mantener actualizadas sus competencias, el guardia debe aprobar periódicamente:",
+   o:["El curso de perfeccionamiento establecido en el Reglamento","Un nuevo curso de formación completo cada año","Un examen de tiro","Ningún curso: la credencial es permanente"],
+   f:"El Reglamento establece el <b>curso de perfeccionamiento</b> para mantener actualizadas las competencias del guardia."},
+
+  // ---- Funciones y Prohibiciones ----
+  {a:"func", q:"La principal función del guardia de seguridad privada es:",
+   o:["Prevenir riesgos, disuadir conductas ilícitas y proteger personas y bienes","Detener e investigar a los delincuentes","Reemplazar a Carabineros en la vía pública","Sancionar las infracciones que presencie"],
+   f:"El rol del guardia es <b>preventivo y disuasivo</b>: proteger personas y bienes, no reprimir ni investigar."},
+  {a:"func", q:"¿Puede un guardia detener a una persona?",
+   o:["Sí, únicamente en caso de delito flagrante, poniéndola de inmediato a disposición de Carabineros o la PDI","No, en ningún caso","Sí, a cualquier persona que le parezca sospechosa","Sí, y puede trasladarla él mismo a la comisaría"],
+   f:"Solo procede en <b>delito flagrante</b> (detención por cualquier persona de la ley procesal penal), con <b>entrega inmediata</b> a Carabineros o la PDI."},
+  {a:"func", q:"¿Puede un guardia realizar interrogatorios o tomar declaraciones?",
+   o:["No; esa función corresponde exclusivamente a las policías y autoridades competentes","Sí, es parte de sus funciones","Solo si la persona lo acepta","Sí, si hay testigos presentes"],
+   f:"El Reglamento lo <b>prohíbe expresamente</b>: el guardia no tiene facultades de investigación ni de interrogatorio."},
+  {a:"func", q:"¿Cuándo puede un guardia portar un arma de fuego durante sus funciones?",
+   o:["Solo cuando la legislación lo autorice y cuente con las autorizaciones legales correspondientes para el puesto y el arma","Siempre que lo estime necesario","Nunca, bajo ninguna circunstancia","Con cualquier arma que adquiera legalmente"],
+   f:"Requiere <b>autorización legal específica</b> para el puesto y para el arma respectiva; no basta con estar acreditado como guardia."},
+  {a:"func", q:"¿Cuál de las siguientes corresponde a una función propia del guardia de seguridad?",
+   o:["Controlar accesos, efectuar vigilancia preventiva, informar novedades y activar los procedimientos establecidos","Realizar allanamientos","Cursar infracciones de tránsito","Tomar declaraciones a los testigos"],
+   f:"Sus funciones son de <b>control de acceso, vigilancia preventiva, informe de novedades</b> y activación de los procedimientos establecidos."},
+
+  // ---- Derechos Humanos ----
+  {a:"ddhh", q:"Durante el desempeño de sus funciones el guardia debe respetar principalmente:",
+   o:["La dignidad y los derechos fundamentales de todas las personas","Solo las órdenes de su empleador","Únicamente los derechos de los clientes","Las reglas internas por sobre la ley"],
+   f:"El respeto a la <b>dignidad y los derechos fundamentales</b> de todas las personas es un principio rector de la función."},
+  {a:"ddhh", q:"¿Está permitido aplicar torturas, malos tratos o tratos degradantes para obtener información?",
+   o:["No, está absolutamente prohibido","Sí, en casos muy graves","Sí, si lo autoriza el supervisor","Sí, tratándose de delincuentes"],
+   f:"La prohibición de la <b>tortura y los tratos crueles o degradantes es absoluta</b>, sin excepción."},
+  {a:"ddhh", q:"¿Cómo debe actuar frente a personas con discapacidad, adultos mayores, niños o personas en situación de vulnerabilidad?",
+   o:["Con respeto, trato digno y las consideraciones especiales que correspondan","Con el mismo procedimiento, sin distinción alguna","Derivándolas siempre a otra persona","Impidiéndoles el ingreso por seguridad"],
+   f:"Corresponde un <b>trato digno y con consideraciones especiales</b> hacia los grupos vulnerables."},
+  {a:"ddhh", q:"¿Puede un guardia revisar las pertenencias de una persona contra su voluntad?",
+   o:["No; solo puede efectuar revisiones voluntarias, respetando los derechos fundamentales y los procedimientos autorizados","Sí, por la fuerza si es necesario","Sí, es obligatorio para todos","Sí, incluyendo revisar su teléfono"],
+   f:"Solo <b>revisiones voluntarias</b>; el guardia no tiene facultades de registro forzado y debe respetar los derechos fundamentales."},
+  {a:"ddhh", q:"El guardia debe abstenerse de discriminar por motivos de:",
+   o:["Sexo, género, edad, nacionalidad, raza, religión, discapacidad, orientación sexual u otra condición protegida por la ley","Solo la nacionalidad","Solo la vestimenta de la persona","La hora en que ingresa"],
+   f:"Se prohíbe la <b>discriminación arbitraria</b> por cualquier condición protegida por la ley."},
+
+  // ---- Uso de la Fuerza ----
+  {a:"fuerza", q:"El uso de la fuerza por parte del guardia debe ser:",
+   o:["Excepcional, legal, necesario y proporcional","La primera respuesta ante cualquier conflicto","A criterio libre del guardia","Igual para toda situación"],
+   f:"La fuerza debe ser <b>excepcional, legal, necesaria y proporcional</b> a la situación."},
+  {a:"fuerza", q:"El principio de proporcionalidad significa que:",
+   o:["La respuesta debe ser adecuada al nivel de amenaza existente","Se use siempre la máxima fuerza disponible","Se responda con un nivel superior al de la agresión","No se use nunca la fuerza"],
+   f:"<b>Proporcionalidad</b>: la respuesta guarda relación con la entidad de la amenaza enfrentada."},
+  {a:"fuerza", q:"¿Cuál es el primer nivel dentro del uso gradual de la fuerza?",
+   o:["La presencia preventiva y la comunicación verbal","El contacto físico inmediato","El uso de medios de defensa","La reducción física de la persona"],
+   f:"El uso gradual parte por la <b>presencia preventiva y la comunicación verbal</b>, antes de cualquier contacto físico."},
+  {a:"fuerza", q:"Para que exista legítima defensa deben concurrir:",
+   o:["Agresión ilegítima, necesidad racional del medio empleado y falta de provocación suficiente por parte de quien se defiende","Que haya testigos del hecho","Autorización previa del empleador","Que el agresor esté armado"],
+   f:"Son los requisitos de la legítima defensa del <b>artículo 10 del Código Penal</b>."},
+  {a:"fuerza", q:"Si una situación supera las capacidades del guardia, éste debe:",
+   o:["Solicitar apoyo inmediato a las policías, resguardar la seguridad de las personas y seguir los protocolos establecidos","Enfrentarla solo","Abandonar el puesto","Esperar sin actuar"],
+   f:"Debe <b>solicitar apoyo a las policías</b>, resguardar a las personas y seguir los protocolos establecidos."},
+
+  // ---- Primeros Auxilios ----
+  {a:"pa", q:"Si una persona está inconsciente y no respira normalmente, la primera maniobra de reanimación consiste en:",
+   o:["Iniciar compresiones torácicas de alta calidad y activar el sistema de emergencia","Darle agua","Sentarla y esperar","Golpearle la espalda"],
+   f:"La RCP se basa en <b>compresiones torácicas de alta calidad</b> (profundidad 5–6 cm) y <b>activar el sistema de emergencia</b>."},
+  {a:"pa", q:"¿Cuál es la frecuencia recomendada para las compresiones torácicas durante la RCP?",
+   o:["Entre 100 y 120 compresiones por minuto","Entre 40 y 60 por minuto","Entre 150 y 180 por minuto","Las que se puedan, sin un ritmo definido"],
+   f:"La frecuencia recomendada es de <b>100 a 120 compresiones por minuto</b>, con profundidad de 5–6 cm."},
+  {a:"pa", q:"Frente a una hemorragia externa abundante se debe:",
+   o:["Aplicar presión directa sobre la herida utilizando los elementos de protección disponibles","Aplicar de inmediato un torniquete","Lavar la herida con alcohol","Elevar a la persona y esperar"],
+   f:"La primera medida es la <b>presión directa</b> sobre la herida, usando elementos de protección."},
+  {a:"pa", q:"¿Qué maniobra se utiliza en un adulto consciente con obstrucción grave de la vía aérea por cuerpo extraño?",
+   o:["La maniobra de Heimlich (compresiones abdominales)","Respiración boca a boca","Darle de beber agua","Recostarlo de inmediato"],
+   f:"La <b>maniobra de Heimlich</b> (compresiones abdominales) busca expulsar el cuerpo extraño que obstruye la vía aérea."},
+  {a:"pa", q:"¿Cuál es el número telefónico del SAMU (urgencia médica) en Chile?",
+   o:["131","132","133","134"],
+   f:"<b>131</b> es el SAMU. Recuerda: 132 Bomberos y 133 Carabineros."},
+
+  // ---- Prevención y Emergencias ----
+  {a:"emer", q:"Ante un principio de incendio, la primera acción del guardia es:",
+   o:["Activar el sistema de emergencia, dar la alarma y aplicar el procedimiento del plan de emergencia","Combatir el fuego a toda costa","Buscar el origen del fuego","Esperar a Bomberos sin actuar"],
+   f:"Primero <b>activar la emergencia y dar la alarma</b>, aplicando el plan de emergencia; la vida de las personas es la prioridad."},
+  {a:"emer", q:"Al utilizar un extintor portátil, se debe dirigir el agente extintor hacia:",
+   o:["La base del fuego","La parte alta de las llamas","El humo","El techo del recinto"],
+   f:"Se apunta a la <b>base del fuego</b> para cortar la combustión."},
+  {a:"emer", q:"Si se detecta un paquete o bulto sospechoso, se debe:",
+   o:["No manipularlo, aislar el área y comunicar de inmediato la situación a la autoridad correspondiente","Abrirlo para verificar su contenido","Trasladarlo fuera del recinto","Dejarlo donde está sin dar aviso"],
+   f:"<b>Nunca se manipula</b>: se aísla el área y se comunica de inmediato a la autoridad."},
+  {a:"emer", q:"¿Cuál es el número telefónico de emergencias de Carabineros de Chile?",
+   o:["133","131","132","130"],
+   f:"<b>133</b> es Carabineros. Recuerda: 132 Bomberos y 131 SAMU."},
+  {a:"emer", q:"El plan de evacuación de una instalación tiene por finalidad:",
+   o:["Establecer las vías de evacuación, zonas de seguridad, responsabilidades y procedimientos para proteger la vida de las personas","Indicar solo la salida principal","Definir el horario de colación","Ubicar las cámaras de seguridad"],
+   f:"El plan define <b>vías de evacuación, zonas de seguridad, responsabilidades y procedimientos</b> para proteger la vida durante una emergencia."}
+];
+
+// ====== ESTADO ======
+var estado = null; // {modo, lista:[{qref, opciones:[{txt,correcta}], elegida}], idx}
+
+function barajar(arr){
+  var a = arr.slice();
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+function areaNombre(id){ for(var i=0;i<AREAS.length;i++){ if(AREAS[i].id===id) return AREAS[i].nombre; } return ""; }
+function areaIcono(id){ for(var i=0;i<AREAS.length;i++){ if(AREAS[i].id===id) return AREAS[i].icono; } return ""; }
+
+function prepararPregunta(qref){
+  // qref.o[0] es la correcta; barajamos las 4 conservando cuál es correcta
+  var opts = qref.o.map(function(txt,i){ return {txt:txt, correcta:(i===0)}; });
+  return {qref:qref, opciones:barajar(opts), elegida:-1};
+}
+
+// ====== NAVEGACIÓN ======
+function ir(id){
+  ["pantalla-inicio","pantalla-quiz","pantalla-resultado"].forEach(function(p){
+    document.getElementById(p).classList.toggle("hidden", p!==id);
+  });
+  window.scrollTo(0,0);
+}
+function mostrarAreas(){
+  var cont = document.getElementById("areas-cont");
+  cont.innerHTML = "";
+  AREAS.forEach(function(ar){
+    var n = BANCO.filter(function(q){return q.a===ar.id;}).length;
+    var b = document.createElement("button");
+    b.className = "area-btn";
+    b.innerHTML = '<span class="an">'+ar.icono+'</span><span><span class="at">'+ar.nombre+'</span><span class="ac">'+n+' preguntas</span></span><span class="go">→</span>';
+    b.onclick = function(){ iniciarPractica(ar.id); };
+    cont.appendChild(b);
+  });
+  document.getElementById("lista-areas").classList.remove("hidden");
+  document.getElementById("lista-areas").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function iniciarPractica(areaId){
+  var preguntas = barajar(BANCO.filter(function(q){return q.a===areaId;}));
+  estado = {modo:"practica", area:areaId, lista:preguntas.map(prepararPregunta), idx:0};
+  ir("pantalla-quiz");
+  render();
+}
+function iniciarEnsayo(){
+  var preguntas = barajar(BANCO).slice(0,20);
+  estado = {modo:"ensayo", lista:preguntas.map(prepararPregunta), idx:0};
+  ir("pantalla-quiz");
+  render();
+}
+function salirQuiz(){ if(confirm("¿Salir del test? Perderás el avance de esta ronda.")){ reiniciar(); } }
+function reiniciar(){
+  estado=null;
+  document.getElementById("lista-areas").classList.add("hidden");
+  ir("pantalla-inicio");
+}
+
+// ====== RENDER PREGUNTA ======
+function render(){
+  var item = estado.lista[estado.idx];
+  var total = estado.lista.length;
+  document.getElementById("quiz-area").textContent =
+    (estado.modo==="ensayo" ? "Ensayo completo" : areaIcono(estado.area)+" "+areaNombre(estado.area));
+  document.getElementById("quiz-cont").textContent = (estado.idx+1)+" / "+total;
+  document.getElementById("quiz-prog").style.width = ((estado.idx)/total*100)+"%";
+  document.getElementById("quiz-pregunta").textContent = item.qref.q;
+
+  var cont = document.getElementById("quiz-opciones");
+  cont.innerHTML = "";
+  var letras = ["A","B","C","D"];
+  item.opciones.forEach(function(op, i){
+    var b = document.createElement("button");
+    b.className = "opcion";
+    b.innerHTML = '<span class="letra">'+letras[i]+'</span><span>'+op.txt+'</span>';
+    b.onclick = function(){ responder(i); };
+    cont.appendChild(b);
+  });
+
+  document.getElementById("quiz-feedback").className = "feedback";
+  document.getElementById("btn-siguiente").classList.add("hidden");
+}
+
+function responder(i){
+  var item = estado.lista[estado.idx];
+  if(item.elegida !== -1) return; // ya respondida
+  item.elegida = i;
+  var botones = document.getElementById("quiz-opciones").children;
+  var idxCorrecta = -1;
+  for(var k=0;k<item.opciones.length;k++){ if(item.opciones[k].correcta) idxCorrecta=k; }
+  for(var k=0;k<botones.length;k++){ botones[k].disabled = true; }
+  botones[idxCorrecta].classList.add("correcta");
+  var acerto = (i===idxCorrecta);
+  if(!acerto) botones[i].classList.add("incorrecta");
+
+  // Feedback (práctica: siempre; ensayo: también mostramos, es estudio)
+  var fb = document.getElementById("quiz-feedback");
+  fb.className = "feedback show " + (acerto ? "ok" : "no");
+  document.getElementById("quiz-flabel").textContent = acerto ? "✓ Correcto" : "✗ Incorrecto";
+  document.getElementById("quiz-fund").innerHTML = item.qref.f;
+  document.getElementById("btn-siguiente").classList.remove("hidden");
+  document.getElementById("btn-siguiente").textContent =
+    (estado.idx+1 < estado.lista.length) ? "Siguiente →" : (estado.modo==="ensayo" ? "Ver resultado →" : "Terminar →");
+}
+
+function siguiente(){
+  if(estado.idx+1 < estado.lista.length){
+    estado.idx++;
+    render();
+  } else {
+    if(estado.modo==="ensayo"){ mostrarResultado(); }
+    else { reiniciar(); }
+  }
+}
+
+// ====== RESULTADO (ensayo) ======
+function mostrarResultado(){
+  var total = estado.lista.length, correctas = 0;
+  var porArea = {};
+  estado.lista.forEach(function(item){
+    var idxC=-1; for(var k=0;k<item.opciones.length;k++){ if(item.opciones[k].correcta) idxC=k; }
+    var ok = (item.elegida===idxC);
+    if(ok) correctas++;
+    var a = item.qref.a;
+    if(!porArea[a]) porArea[a]={ok:0,tot:0};
+    porArea[a].tot++; if(ok) porArea[a].ok++;
+  });
+  var pct = Math.round(correctas/total*100);
+  var aprob = pct>=60;
+
+  var box = document.getElementById("res-box");
+  box.className = "res-score " + (aprob?"aprob":"reprob");
+  document.getElementById("res-pct").textContent = pct+"%";
+  document.getElementById("res-st").textContent = aprob ? "¡Aprobado! ("+correctas+"/"+total+")" : "Aún no ("+correctas+"/"+total+")";
+  document.getElementById("res-sd").textContent = aprob
+    ? "Superaste el 60% que exige el examen. Sigue practicando para llegar seguro."
+    : "El examen se aprueba con 60%. Repasa las áreas más bajas y vuelve a intentarlo.";
+
+  var cont = document.getElementById("res-areas");
+  cont.innerHTML = "";
+  AREAS.forEach(function(ar){
+    var d = porArea[ar.id];
+    if(!d) return;
+    var p = Math.round(d.ok/d.tot*100);
+    var cls = p>=60 ? "ok" : (p>=40 ? "mid" : "low");
+    var row = document.createElement("div");
+    row.className = "res-area";
+    row.innerHTML = '<span class="rn">'+ar.icono+' '+ar.nombre+'</span><span class="rv '+cls+'">'+d.ok+'/'+d.tot+'</span>';
+    cont.appendChild(row);
+  });
+
+  ir("pantalla-resultado");
+}
+</script>
+</body>
+</html>
