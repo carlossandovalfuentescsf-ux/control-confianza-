@@ -101,6 +101,14 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
 .cta .sub{display:block;margin-top:12px;font-size:12px;color:#888;text-decoration:none}
 .foot{text-align:center;padding:22px 16px 0;border-top:1px solid #1e1e1e;margin-top:8px;font-size:12px;color:#666}
 .foot a{color:#d4a017;text-decoration:none}
+.niveles-label{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#d4a017;margin-bottom:10px}
+.niveles{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.nivel-chip{flex:1;min-width:70px;background:#161616;border:1.5px solid #262626;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;color:#aaa;font:inherit;font-size:12.5px;font-weight:700;transition:border-color .12s,color .12s,background .12s}
+.nivel-chip.active{border-color:#d4a017;color:#d4a017;background:rgba(212,160,23,.1)}
+.nivel-badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-bottom:12px}
+.nivel-badge.basico{background:rgba(63,185,80,.15);color:#3fb950}
+.nivel-badge.intermedio{background:rgba(224,138,43,.15);color:#e08a2b}
+.nivel-badge.avanzado{background:rgba(201,80,63,.18);color:#e0645a}
 .hidden{display:none}
 </style>
 </head>
@@ -126,10 +134,18 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
       <p>Practica con preguntas explicadas por área. Cada respuesta trae su fundamento, para que no solo aciertes: entiendas por qué. Sin registro y desde tu celular.</p>
     </div>
 
+    <div class="niveles-label">Nivel de dificultad</div>
+    <div class="niveles" id="niveles">
+      <button class="nivel-chip active" data-nivel="todos" onclick="setNivel('todos')">Todos</button>
+      <button class="nivel-chip" data-nivel="basico" onclick="setNivel('basico')">Básico</button>
+      <button class="nivel-chip" data-nivel="intermedio" onclick="setNivel('intermedio')">Intermedio</button>
+      <button class="nivel-chip" data-nivel="avanzado" onclick="setNivel('avanzado')">Avanzado</button>
+    </div>
+
     <div class="modos">
       <button class="modo" onclick="iniciarEnsayo()">
         <div class="mt"><span class="ic">📝</span> Ensayo completo</div>
-        <div class="md">20 preguntas al azar de todas las áreas. Se corrige al final como el examen real (se aprueba con 60%), con tu puntaje por área.</div>
+        <div class="md">Hasta 20 preguntas al azar del nivel elegido. Se corrige al final como el examen real (se aprueba con 60%), con tu puntaje por área.</div>
       </button>
       <button class="modo" onclick="mostrarAreas()">
         <div class="mt"><span class="ic">📚</span> Práctica por área</div>
@@ -150,6 +166,7 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
       <span class="badge" id="quiz-cont">1 / 20</span>
     </div>
     <div class="progbar"><i id="quiz-prog"></i></div>
+    <div id="quiz-nivel"></div>
     <div class="pregunta" id="quiz-pregunta"></div>
     <div class="opciones" id="quiz-opciones"></div>
     <div class="feedback" id="quiz-feedback">
@@ -527,8 +544,49 @@ var BANCO = [
    f:"Actuar siempre <b>dentro de las atribuciones que la ley le confiere</b>."}
 ];
 
+// ====== NIVELES DE DIFICULTAD (validado por asesor OS.10) ======
+// Cada arreglo mapea, EN ORDEN, las preguntas de esa área: basico | intermedio | avanzado.
+var NIVELES = {
+  legal:  ["intermedio","intermedio","basico","basico","intermedio","intermedio"],
+  func:   ["basico","intermedio","basico","avanzado","basico"],
+  ddhh:   ["basico","basico","basico","intermedio","basico"],
+  fuerza: ["basico","intermedio","intermedio","avanzado","basico"],
+  pa:     ["basico","intermedio","basico","intermedio","basico"],
+  emer:   ["basico","intermedio","intermedio","basico","intermedio"],
+  proc:   ["intermedio","intermedio","basico","basico","intermedio"],
+  acceso: ["basico","intermedio","intermedio","intermedio","basico"],
+  comm:   ["basico","intermedio","intermedio","basico","basico"],
+  delito: ["intermedio","basico","intermedio","basico","intermedio"],
+  etica:  ["basico","intermedio","avanzado","basico","basico"],
+  prl:    ["basico","basico","intermedio","intermedio","basico"],
+  respjur:["intermedio","avanzado","avanzado","avanzado","avanzado"],
+  ddff:   ["intermedio","intermedio","basico","avanzado","avanzado"],
+  flag:   ["avanzado","intermedio","intermedio","avanzado","intermedio"],
+  sitio:  ["intermedio","intermedio","avanzado","intermedio","intermedio"],
+  datos:  ["intermedio","basico","intermedio","avanzado","basico"],
+  deberes:["basico","avanzado","intermedio","avanzado","avanzado"]
+};
+(function(){
+  var cnt = {};
+  BANCO.forEach(function(q){
+    var k = cnt[q.a] = (cnt[q.a]==null ? 0 : cnt[q.a]+1);
+    var arr = NIVELES[q.a];
+    q.n = (arr && arr[k]) ? arr[k] : "intermedio";
+  });
+})();
+var NIVEL_TXT = {basico:"Básico", intermedio:"Intermedio", avanzado:"Avanzado"};
+
 // ====== ESTADO ======
 var estado = null; // {modo, lista:[{qref, opciones:[{txt,correcta}], elegida}], idx}
+var nivelSel = "todos";
+function setNivel(n){
+  nivelSel = n;
+  document.querySelectorAll("#niveles .nivel-chip").forEach(function(c){
+    c.classList.toggle("active", c.dataset.nivel===n);
+  });
+  if(!document.getElementById("lista-areas").classList.contains("hidden")) mostrarAreas();
+}
+function filtroNivel(q){ return nivelSel==="todos" || q.n===nivelSel; }
 
 function barajar(arr){
   var a = arr.slice();
@@ -554,25 +612,31 @@ function ir(id){
 function mostrarAreas(){
   var cont = document.getElementById("areas-cont");
   cont.innerHTML = "";
+  var alguna = false;
   AREAS.forEach(function(ar){
-    var n = BANCO.filter(function(q){return q.a===ar.id;}).length;
+    var n = BANCO.filter(function(q){return q.a===ar.id && filtroNivel(q);}).length;
+    if(n===0) return; // ocultar áreas sin preguntas en el nivel elegido
+    alguna = true;
     var b = document.createElement("button");
     b.className = "area-btn";
-    b.innerHTML = '<span class="an">'+ar.icono+'</span><span><span class="at">'+ar.nombre+'</span><span class="ac">'+n+' preguntas</span></span><span class="go">→</span>';
+    b.innerHTML = '<span class="an">'+ar.icono+'</span><span><span class="at">'+ar.nombre+'</span><span class="ac">'+n+' pregunta'+(n===1?'':'s')+'</span></span><span class="go">→</span>';
     b.onclick = function(){ iniciarPractica(ar.id); };
     cont.appendChild(b);
   });
+  if(!alguna){ cont.innerHTML = '<div style="color:#888;font-size:13px;padding:8px">No hay preguntas de este nivel.</div>'; }
   document.getElementById("lista-areas").classList.remove("hidden");
   document.getElementById("lista-areas").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function iniciarPractica(areaId){
-  var preguntas = barajar(BANCO.filter(function(q){return q.a===areaId;}));
+  var preguntas = barajar(BANCO.filter(function(q){return q.a===areaId && filtroNivel(q);}));
   estado = {modo:"practica", area:areaId, lista:preguntas.map(prepararPregunta), idx:0};
   ir("pantalla-quiz");
   render();
 }
 function iniciarEnsayo(){
-  var preguntas = barajar(BANCO).slice(0,20);
+  var pool = BANCO.filter(filtroNivel);
+  if(pool.length===0){ alert("No hay preguntas de este nivel."); return; }
+  var preguntas = barajar(pool).slice(0, Math.min(20, pool.length));
   estado = {modo:"ensayo", lista:preguntas.map(prepararPregunta), idx:0};
   ir("pantalla-quiz");
   render();
@@ -592,6 +656,7 @@ function render(){
     (estado.modo==="ensayo" ? "Ensayo completo" : areaIcono(estado.area)+" "+areaNombre(estado.area));
   document.getElementById("quiz-cont").textContent = (estado.idx+1)+" / "+total;
   document.getElementById("quiz-prog").style.width = ((estado.idx)/total*100)+"%";
+  document.getElementById("quiz-nivel").innerHTML = '<span class="nivel-badge '+item.qref.n+'">'+(NIVEL_TXT[item.qref.n]||"")+'</span>';
   document.getElementById("quiz-pregunta").textContent = item.qref.q;
 
   var cont = document.getElementById("quiz-opciones");
