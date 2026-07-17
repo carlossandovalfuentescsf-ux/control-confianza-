@@ -136,8 +136,7 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
 
     <div class="niveles-label">Nivel de dificultad</div>
     <div class="niveles" id="niveles">
-      <button class="nivel-chip active" data-nivel="todos" onclick="setNivel('todos')">Todos</button>
-      <button class="nivel-chip" data-nivel="basico" onclick="setNivel('basico')">Básico</button>
+      <button class="nivel-chip active" data-nivel="basico" onclick="setNivel('basico')">Básico</button>
       <button class="nivel-chip" data-nivel="intermedio" onclick="setNivel('intermedio')">Intermedio</button>
       <button class="nivel-chip" data-nivel="avanzado" onclick="setNivel('avanzado')">Avanzado</button>
     </div>
@@ -209,376 +208,22 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
 
 </main>
 
+<script src="banco-os10.js?v=20260717a"></script>
 <script>
-// ====== BANCO DE PREGUNTAS (validado por asesor OS.10 — Ley 21.659 + D.S. 209/2025) ======
-// En cada pregunta, la opción en posición 0 es la CORRECTA; las alternativas se barajan al mostrar.
-var AREAS = [
-  {id:"legal", nombre:"Marco Legal", icono:"⚖️"},
-  {id:"func",  nombre:"Funciones y Prohibiciones", icono:"🛡️"},
-  {id:"ddhh",  nombre:"Derechos Humanos", icono:"🤝"},
-  {id:"fuerza",nombre:"Uso de la Fuerza", icono:"✊"},
-  {id:"pa",    nombre:"Primeros Auxilios", icono:"➕"},
-  {id:"emer",  nombre:"Prevención y Emergencias", icono:"🚨"},
-  {id:"proc",  nombre:"Procedimientos Operativos", icono:"📋"},
-  {id:"acceso",nombre:"Control de Accesos", icono:"🚪"},
-  {id:"comm",  nombre:"Comunicaciones", icono:"📻"},
-  {id:"delito",nombre:"Prevención del Delito", icono:"🔍"},
-  {id:"etica", nombre:"Ética Profesional", icono:"🎖️"},
-  {id:"prl",   nombre:"Prevención de Riesgos Laborales", icono:"🦺"},
-  {id:"respjur",nombre:"Responsabilidad Jurídica", icono:"📜"},
-  {id:"ddff",  nombre:"Derechos Fundamentales", icono:"🕊️"},
-  {id:"flag",  nombre:"Flagrancia y Procedimiento", icono:"🚓"},
-  {id:"sitio", nombre:"Evidencia y Sitio del Suceso", icono:"🔦"},
-  {id:"datos", nombre:"Protección de Datos y Reserva", icono:"🔒"},
-  {id:"deberes",nombre:"Deberes Legales", icono:"🏛️"}
-];
-
-var BANCO = [
-  // ---- Marco Legal ----
-  {a:"legal", q:"¿Qué organismo es la autoridad competente para otorgar las autorizaciones y acreditaciones en materia de seguridad privada?",
-   o:["La Subsecretaría de Prevención del Delito","Carabineros de Chile (OS-10)","La municipalidad respectiva","El Ministerio del Trabajo"],
-   f:"Bajo la <b>Ley 21.659</b>, la <b>Subsecretaría de Prevención del Delito</b> otorga las autorizaciones y acreditaciones. Carabineros (OS-10) cumple el rol de fiscalización."},
-  {a:"legal", q:"¿Qué institución ejerce funciones de fiscalización y control del cumplimiento de la normativa de seguridad privada?",
-   o:["Carabineros de Chile, a través de la Autoridad Fiscalizadora (OS-10)","La Subsecretaría de Prevención del Delito","La Policía de Investigaciones (PDI)","La Inspección del Trabajo"],
-   f:"La <b>Autoridad Fiscalizadora (OS-10 de Carabineros)</b> fiscaliza y controla; la Subsecretaría de Prevención del Delito es la que autoriza y acredita."},
-  {a:"legal", q:"¿Cuál es la normativa principal que regula actualmente la seguridad privada en Chile?",
-   o:["La Ley N.º 21.659 y su Reglamento (D.S. N.º 209 de 2025)","El Decreto Ley 3.607","La Ley 19.628 sobre datos personales","El Reglamento 208"],
-   f:"La <b>Ley N.º 21.659</b> sobre Seguridad Privada y su Reglamento, el <b>D.S. N.º 209 de 2025</b> del Ministerio del Interior y Seguridad Pública."},
-  {a:"legal", q:"Para desempeñarse como guardia de seguridad privada se requiere:",
-   o:["Aprobar el curso de formación y obtener la autorización vigente conforme a la Ley 21.659","Solo tener la mayoría de edad","Un contrato de trabajo, sin más requisitos","Autorización de la municipalidad"],
-   f:"Se exige <b>aprobar el curso de formación</b> y contar con la <b>autorización vigente</b> otorgada conforme a la Ley 21.659."},
-  {a:"legal", q:"¿Cuál es la duración mínima del curso de formación para guardias de seguridad privada?",
-   o:["90 horas pedagógicas","40 horas pedagógicas","60 horas pedagógicas","120 horas pedagógicas"],
-   f:"El <b>Decreto 209</b> establece un mínimo de <b>90 horas pedagógicas</b> para el curso de formación."},
-  {a:"legal", q:"Para mantener actualizadas sus competencias, el guardia debe aprobar periódicamente:",
-   o:["El curso de perfeccionamiento establecido en el Reglamento","Un nuevo curso de formación completo cada año","Un examen de tiro","Ningún curso: la credencial es permanente"],
-   f:"El Reglamento establece el <b>curso de perfeccionamiento</b> para mantener actualizadas las competencias del guardia."},
-
-  // ---- Funciones y Prohibiciones ----
-  {a:"func", q:"La principal función del guardia de seguridad privada es:",
-   o:["Prevenir riesgos, disuadir conductas ilícitas y proteger personas y bienes","Detener e investigar a los delincuentes","Reemplazar a Carabineros en la vía pública","Sancionar las infracciones que presencie"],
-   f:"El rol del guardia es <b>preventivo y disuasivo</b>: proteger personas y bienes, no reprimir ni investigar."},
-  {a:"func", q:"¿Puede un guardia detener a una persona?",
-   o:["Sí, únicamente en caso de delito flagrante, poniéndola de inmediato a disposición de Carabineros o la PDI","No, en ningún caso","Sí, a cualquier persona que le parezca sospechosa","Sí, y puede trasladarla él mismo a la comisaría"],
-   f:"Solo procede en <b>delito flagrante</b> (detención por cualquier persona de la ley procesal penal), con <b>entrega inmediata</b> a Carabineros o la PDI."},
-  {a:"func", q:"¿Puede un guardia realizar interrogatorios o tomar declaraciones?",
-   o:["No; esa función corresponde exclusivamente a las policías y autoridades competentes","Sí, es parte de sus funciones","Solo si la persona lo acepta","Sí, si hay testigos presentes"],
-   f:"El Reglamento lo <b>prohíbe expresamente</b>: el guardia no tiene facultades de investigación ni de interrogatorio."},
-  {a:"func", q:"¿Cuándo puede un guardia portar un arma de fuego durante sus funciones?",
-   o:["Solo cuando la legislación lo autorice y cuente con las autorizaciones legales correspondientes para el puesto y el arma","Siempre que lo estime necesario","Nunca, bajo ninguna circunstancia","Con cualquier arma que adquiera legalmente"],
-   f:"Requiere <b>autorización legal específica</b> para el puesto y para el arma respectiva; no basta con estar acreditado como guardia."},
-  {a:"func", q:"¿Cuál de las siguientes corresponde a una función propia del guardia de seguridad?",
-   o:["Controlar accesos, efectuar vigilancia preventiva, informar novedades y activar los procedimientos establecidos","Realizar allanamientos","Cursar infracciones de tránsito","Tomar declaraciones a los testigos"],
-   f:"Sus funciones son de <b>control de acceso, vigilancia preventiva, informe de novedades</b> y activación de los procedimientos establecidos."},
-
-  // ---- Derechos Humanos ----
-  {a:"ddhh", q:"Durante el desempeño de sus funciones el guardia debe respetar principalmente:",
-   o:["La dignidad y los derechos fundamentales de todas las personas","Solo las órdenes de su empleador","Únicamente los derechos de los clientes","Las reglas internas por sobre la ley"],
-   f:"El respeto a la <b>dignidad y los derechos fundamentales</b> de todas las personas es un principio rector de la función."},
-  {a:"ddhh", q:"¿Está permitido aplicar torturas, malos tratos o tratos degradantes para obtener información?",
-   o:["No, está absolutamente prohibido","Sí, en casos muy graves","Sí, si lo autoriza el supervisor","Sí, tratándose de delincuentes"],
-   f:"La prohibición de la <b>tortura y los tratos crueles o degradantes es absoluta</b>, sin excepción."},
-  {a:"ddhh", q:"¿Cómo debe actuar frente a personas con discapacidad, adultos mayores, niños o personas en situación de vulnerabilidad?",
-   o:["Con respeto, trato digno y las consideraciones especiales que correspondan","Con el mismo procedimiento, sin distinción alguna","Derivándolas siempre a otra persona","Impidiéndoles el ingreso por seguridad"],
-   f:"Corresponde un <b>trato digno y con consideraciones especiales</b> hacia los grupos vulnerables."},
-  {a:"ddhh", q:"¿Puede un guardia revisar las pertenencias de una persona contra su voluntad?",
-   o:["No; solo puede efectuar revisiones voluntarias, respetando los derechos fundamentales y los procedimientos autorizados","Sí, por la fuerza si es necesario","Sí, es obligatorio para todos","Sí, incluyendo revisar su teléfono"],
-   f:"Solo <b>revisiones voluntarias</b>; el guardia no tiene facultades de registro forzado y debe respetar los derechos fundamentales."},
-  {a:"ddhh", q:"El guardia debe abstenerse de discriminar por motivos de:",
-   o:["Sexo, género, edad, nacionalidad, raza, religión, discapacidad, orientación sexual u otra condición protegida por la ley","Solo la nacionalidad","Solo la vestimenta de la persona","La hora en que ingresa"],
-   f:"Se prohíbe la <b>discriminación arbitraria</b> por cualquier condición protegida por la ley."},
-
-  // ---- Uso de la Fuerza ----
-  {a:"fuerza", q:"El uso de la fuerza por parte del guardia debe ser:",
-   o:["Excepcional, legal, necesario y proporcional","La primera respuesta ante cualquier conflicto","A criterio libre del guardia","Igual para toda situación"],
-   f:"La fuerza debe ser <b>excepcional, legal, necesaria y proporcional</b> a la situación."},
-  {a:"fuerza", q:"El principio de proporcionalidad significa que:",
-   o:["La respuesta debe ser adecuada al nivel de amenaza existente","Se use siempre la máxima fuerza disponible","Se responda con un nivel superior al de la agresión","No se use nunca la fuerza"],
-   f:"<b>Proporcionalidad</b>: la respuesta guarda relación con la entidad de la amenaza enfrentada."},
-  {a:"fuerza", q:"¿Cuál es el primer nivel dentro del uso gradual de la fuerza?",
-   o:["La presencia preventiva y la comunicación verbal","El contacto físico inmediato","El uso de medios de defensa","La reducción física de la persona"],
-   f:"El uso gradual parte por la <b>presencia preventiva y la comunicación verbal</b>, antes de cualquier contacto físico."},
-  {a:"fuerza", q:"Para que exista legítima defensa deben concurrir:",
-   o:["Agresión ilegítima, necesidad racional del medio empleado y falta de provocación suficiente por parte de quien se defiende","Que haya testigos del hecho","Autorización previa del empleador","Que el agresor esté armado"],
-   f:"Son los requisitos de la legítima defensa del <b>artículo 10 del Código Penal</b>."},
-  {a:"fuerza", q:"Si una situación supera las capacidades del guardia, éste debe:",
-   o:["Solicitar apoyo inmediato a las policías, resguardar la seguridad de las personas y seguir los protocolos establecidos","Enfrentarla solo","Abandonar el puesto","Esperar sin actuar"],
-   f:"Debe <b>solicitar apoyo a las policías</b>, resguardar a las personas y seguir los protocolos establecidos."},
-
-  // ---- Primeros Auxilios ----
-  {a:"pa", q:"Si una persona está inconsciente y no respira normalmente, la primera maniobra de reanimación consiste en:",
-   o:["Iniciar compresiones torácicas de alta calidad y activar el sistema de emergencia","Darle agua","Sentarla y esperar","Golpearle la espalda"],
-   f:"La RCP se basa en <b>compresiones torácicas de alta calidad</b> (profundidad 5–6 cm) y <b>activar el sistema de emergencia</b>."},
-  {a:"pa", q:"¿Cuál es la frecuencia recomendada para las compresiones torácicas durante la RCP?",
-   o:["Entre 100 y 120 compresiones por minuto","Entre 40 y 60 por minuto","Entre 150 y 180 por minuto","Las que se puedan, sin un ritmo definido"],
-   f:"La frecuencia recomendada es de <b>100 a 120 compresiones por minuto</b>, con profundidad de 5–6 cm."},
-  {a:"pa", q:"Frente a una hemorragia externa abundante se debe:",
-   o:["Aplicar presión directa sobre la herida utilizando los elementos de protección disponibles","Aplicar de inmediato un torniquete","Lavar la herida con alcohol","Elevar a la persona y esperar"],
-   f:"La primera medida es la <b>presión directa</b> sobre la herida, usando elementos de protección."},
-  {a:"pa", q:"¿Qué maniobra se utiliza en un adulto consciente con obstrucción grave de la vía aérea por cuerpo extraño?",
-   o:["La maniobra de Heimlich (compresiones abdominales)","Respiración boca a boca","Darle de beber agua","Recostarlo de inmediato"],
-   f:"La <b>maniobra de Heimlich</b> (compresiones abdominales) busca expulsar el cuerpo extraño que obstruye la vía aérea."},
-  {a:"pa", q:"¿Cuál es el número telefónico del SAMU (urgencia médica) en Chile?",
-   o:["131","132","133","134"],
-   f:"<b>131</b> es el SAMU. Recuerda: 132 Bomberos y 133 Carabineros."},
-
-  // ---- Prevención y Emergencias ----
-  {a:"emer", q:"Ante un principio de incendio, la primera acción del guardia es:",
-   o:["Activar el sistema de emergencia, dar la alarma y aplicar el procedimiento del plan de emergencia","Combatir el fuego a toda costa","Buscar el origen del fuego","Esperar a Bomberos sin actuar"],
-   f:"Primero <b>activar la emergencia y dar la alarma</b>, aplicando el plan de emergencia; la vida de las personas es la prioridad."},
-  {a:"emer", q:"Al utilizar un extintor portátil, se debe dirigir el agente extintor hacia:",
-   o:["La base del fuego","La parte alta de las llamas","El humo","El techo del recinto"],
-   f:"Se apunta a la <b>base del fuego</b> para cortar la combustión."},
-  {a:"emer", q:"Si se detecta un paquete o bulto sospechoso, se debe:",
-   o:["No manipularlo, aislar el área y comunicar de inmediato la situación a la autoridad correspondiente","Abrirlo para verificar su contenido","Trasladarlo fuera del recinto","Dejarlo donde está sin dar aviso"],
-   f:"<b>Nunca se manipula</b>: se aísla el área y se comunica de inmediato a la autoridad."},
-  {a:"emer", q:"¿Cuál es el número telefónico de emergencias de Carabineros de Chile?",
-   o:["133","131","132","130"],
-   f:"<b>133</b> es Carabineros. Recuerda: 132 Bomberos y 131 SAMU."},
-  {a:"emer", q:"El plan de evacuación de una instalación tiene por finalidad:",
-   o:["Establecer las vías de evacuación, zonas de seguridad, responsabilidades y procedimientos para proteger la vida de las personas","Indicar solo la salida principal","Definir el horario de colación","Ubicar las cámaras de seguridad"],
-   f:"El plan define <b>vías de evacuación, zonas de seguridad, responsabilidades y procedimientos</b> para proteger la vida durante una emergencia."},
-
-  // ---- Procedimientos Operativos ----
-  {a:"proc", q:"¿Cuál debe ser la primera acción al detectar una puerta de acceso forzada?",
-   o:["Informar inmediatamente la novedad, resguardar el lugar y aplicar el procedimiento establecido","Entrar solo a revisar qué ocurrió","Cerrar la puerta y continuar la ronda","Esperar al día siguiente para reportarlo"],
-   f:"Ante una puerta forzada: <b>informar de inmediato, resguardar el sitio y aplicar el procedimiento</b>; no se altera la escena ni se actúa en solitario."},
-  {a:"proc", q:"Si durante una ronda preventiva encuentra una ventana abierta fuera del horario normal, debe:",
-   o:["Verificar la situación sin alterar el sitio, informar y seguir el protocolo interno","Cerrarla de inmediato y no informar","Ignorarla si no hay nadie a la vista","Abandonar la ronda para buscar al responsable"],
-   f:"Se <b>verifica sin alterar el sitio, se informa y se sigue el protocolo</b>, preservando el lugar por si hubo un incidente."},
-  {a:"proc", q:"Durante una ronda de vigilancia, el guardia debe:",
-   o:["Mantener una observación permanente y registrar cualquier novedad relevante","Realizar la ronda lo más rápido posible","Usar el teléfono para entretenerse","Saltarse las zonas ya revisadas antes"],
-   f:"La ronda exige <b>observación permanente y registro</b> de toda novedad relevante."},
-  {a:"proc", q:"¿Cuál es el objetivo principal de una ronda preventiva?",
-   o:["Detectar oportunamente condiciones de riesgo y prevenir incidentes","Cumplir un requisito sin más","Marcar los relojes de control","Mostrar presencia solo ante el jefe"],
-   f:"La ronda preventiva busca <b>detectar riesgos a tiempo y prevenir incidentes</b>."},
-  {a:"proc", q:"¿Qué debe hacer el guardia si detecta una falla crítica en un sistema de seguridad?",
-   o:["Informar inmediatamente al responsable y dejar constancia en el registro correspondiente","Intentar repararlo él mismo","Apagar el sistema y continuar","No informar para no alarmar"],
-   f:"Se <b>informa de inmediato al responsable</b> y se deja <b>constancia escrita</b> en el registro."},
-
-  // ---- Control de Accesos ----
-  {a:"acceso", q:"El control de acceso tiene como finalidad principal:",
-   o:["Permitir el ingreso únicamente de personas, vehículos o bienes autorizados","Cobrar por el ingreso","Registrar solo a los sospechosos","Controlar el tránsito de la vía pública"],
-   f:"Su fin es <b>permitir el ingreso solo de personas, vehículos o bienes autorizados</b>."},
-  {a:"acceso", q:"Si una persona se niega a identificarse para ingresar a una instalación privada, el guardia debe:",
-   o:["Negar el acceso conforme a los procedimientos establecidos por la entidad","Dejarla pasar igual","Retenerla por la fuerza","Llamar de inmediato a la policía"],
-   f:"Sin identificación, se <b>niega el acceso según los procedimientos</b>; el guardia no retiene por la fuerza."},
-  {a:"acceso", q:"Un visitante desea ingresar fuera del horario autorizado. El guardia debe:",
-   o:["Aplicar el procedimiento interno y solicitar la autorización correspondiente","Dejarlo pasar sin más","Negarle el acceso sin explicación ni registro","Decidir según su criterio personal"],
-   f:"Se <b>aplica el procedimiento interno</b> y se solicita la <b>autorización correspondiente</b>."},
-  {a:"acceso", q:"Cuando un proveedor retira bienes desde una instalación, el guardia debe verificar:",
-   o:["Que exista la autorización o documentación correspondiente","Que el proveedor sea conocido","Solo su identidad, sin documentos","Nada, si el proveedor va apurado"],
-   f:"Debe verificar la <b>autorización o documentación</b> que respalde la salida de los bienes."},
-  {a:"acceso", q:"El registro de visitas tiene por objeto:",
-   o:["Mantener la trazabilidad de las personas que ingresan y salen de la instalación","Cobrar una entrada","Guardar datos para publicidad","Cumplir un trámite sin uso real"],
-   f:"Sirve para la <b>trazabilidad</b> de quienes ingresan y salen de la instalación."},
-
-  // ---- Comunicaciones ----
-  {a:"comm", q:"Una comunicación radial efectiva debe ser:",
-   o:["Clara, breve, precisa y profesional","Larga y muy detallada","Informal y relajada","En una clave que solo el guardia entienda"],
-   f:"La comunicación radial debe ser <b>clara, breve, precisa y profesional</b>."},
-  {a:"comm", q:"Antes de transmitir un mensaje por radio, el guardia debe:",
-   o:["Verificar que el canal esté libre","Subir el volumen al máximo","Hablar sin esperar","Cambiar de canal al azar"],
-   f:"Se <b>verifica que el canal esté libre</b> para no interrumpir otras comunicaciones."},
-  {a:"comm", q:"En una comunicación de emergencia se debe informar primero:",
-   o:["La naturaleza del incidente y su ubicación","El nombre del guardia","La hora exacta del reloj","Lo que ocurrió el día anterior"],
-   f:"Primero se informa <b>qué ocurre (naturaleza) y dónde (ubicación)</b>."},
-  {a:"comm", q:"El lenguaje utilizado en las comunicaciones operativas debe ser:",
-   o:["Objetivo, respetuoso y libre de expresiones ofensivas","Coloquial y con groserías si hay confianza","Ambiguo, para no comprometerse","Técnico e incomprensible"],
-   f:"Debe ser <b>objetivo, respetuoso y sin expresiones ofensivas</b>."},
-  {a:"comm", q:"Las comunicaciones internas deben mantenerse:",
-   o:["Reservadas y utilizadas únicamente para fines del servicio","Compartidas en redes sociales","Disponibles para cualquier persona","Grabadas para uso personal"],
-   f:"Deben ser <b>reservadas</b> y usarse solo para <b>fines del servicio</b>."},
-
-  // ---- Prevención del Delito ----
-  {a:"delito", q:"Una conducta sospechosa debe ser:",
-   o:["Observada, informada y tratada conforme a los protocolos de seguridad","Ignorada mientras no pase nada","Enfrentada físicamente de inmediato","Comentada con otros visitantes"],
-   f:"Se <b>observa, se informa y se trata según los protocolos</b> de seguridad."},
-  {a:"delito", q:"El objetivo de la vigilancia preventiva es:",
-   o:["Reducir las oportunidades para la comisión de delitos","Atrapar delincuentes en el acto","Reemplazar a la policía","Registrar a todos los que pasan"],
-   f:"Busca <b>reducir las oportunidades</b> de que se cometan delitos."},
-  {a:"delito", q:"Si una persona abandona un objeto y se retira rápidamente del lugar, el guardia debe:",
-   o:["No manipular el objeto, aislar el sector e informar de inmediato","Abrir el objeto para revisarlo","Perseguir a la persona","Llevar el objeto a otro lugar"],
-   f:"<b>No manipular</b> el objeto, <b>aislar el sector</b> e <b>informar de inmediato</b>."},
-  {a:"delito", q:"¿Qué conducta contribuye a prevenir hurtos en una instalación?",
-   o:["Mantener vigilancia permanente sobre accesos y zonas críticas","Revisar el teléfono en el puesto","Confiar en que nadie robará","Vigilar solo cuando hay jefes presentes"],
-   f:"La <b>vigilancia permanente sobre accesos y zonas críticas</b> previene los hurtos."},
-  {a:"delito", q:"El guardia debe conocer especialmente:",
-   o:["Los puntos vulnerables y las áreas críticas de la instalación","Solo la entrada principal","Los horarios de colación del personal","La vida privada de los trabajadores"],
-   f:"Debe conocer los <b>puntos vulnerables y las áreas críticas</b> de la instalación."},
-
-  // ---- Ética Profesional ----
-  {a:"etica", q:"El guardia debe actuar en todo momento con:",
-   o:["Probidad, responsabilidad e imparcialidad","Simpatía hacia los conocidos","Rigor solo con los desconocidos","Flexibilidad según le convenga"],
-   f:"Debe actuar con <b>probidad, responsabilidad e imparcialidad</b>."},
-  {a:"etica", q:"Si un tercero ofrece dinero para permitir un ingreso no autorizado, el guardia debe:",
-   o:["Rechazar el ofrecimiento e informar inmediatamente el hecho","Aceptar si nadie se entera","Aceptar solo por esta vez","Ignorarlo y dejar pasar"],
-   f:"Se <b>rechaza el soborno</b> y se <b>informa de inmediato</b> el hecho."},
-  {a:"etica", q:"La información obtenida durante el servicio:",
-   o:["Debe mantenerse reservada, salvo requerimiento de la autoridad competente o del empleador conforme a la ley","Puede compartirse con amigos","Puede publicarse en redes sociales","Es de libre uso del guardia"],
-   f:"Es <b>reservada</b>, salvo requerimiento de la <b>autoridad competente o del empleador conforme a la ley</b>."},
-  {a:"etica", q:"El uniforme del guardia representa:",
-   o:["La autoridad funcional y la imagen profesional de la empresa de seguridad","Un simple traje de trabajo","Una autoridad igual a la de la policía","Un disfraz sin importancia"],
-   f:"Representa la <b>autoridad funcional</b> y la <b>imagen profesional de la empresa</b> de seguridad."},
-  {a:"etica", q:"Un guardia no debe abandonar su puesto:",
-   o:["Sin autorización o sin haber sido debidamente relevado","Nunca, ni siquiera en una emergencia","Cuando se aburre","Si no hay nadie mirando"],
-   f:"No se abandona el puesto <b>sin autorización o sin haber sido relevado</b> debidamente."},
-
-  // ---- Prevención de Riesgos Laborales ----
-  {a:"prl", q:"Antes de iniciar un turno, el guardia debe verificar:",
-   o:["El estado de los equipos y elementos asignados para el servicio","Solo que su uniforme esté limpio","Nada, empieza directo","El clima del día"],
-   f:"Verifica el <b>estado de los equipos y elementos asignados</b> para el servicio."},
-  {a:"prl", q:"El uso de elementos de protección personal tiene como finalidad:",
-   o:["Disminuir los riesgos para la salud y seguridad del trabajador","Mejorar la imagen únicamente","Cumplir un capricho de la empresa","Aumentar la incomodidad"],
-   f:"Reducen los <b>riesgos para la salud y seguridad</b> del trabajador."},
-  {a:"prl", q:"Si un guardia sufre un accidente durante el servicio, debe:",
-   o:["Informarlo inmediatamente y seguir el procedimiento establecido por la empresa","Ocultarlo para no tener problemas","Retirarse sin avisar","Esperar al fin del turno para verlo"],
-   f:"Se <b>informa de inmediato</b> y se sigue el <b>procedimiento establecido por la empresa</b>."},
-  {a:"prl", q:"Una condición insegura corresponde a:",
-   o:["Una situación del entorno que puede provocar un accidente","Un error atribuible solo a la persona","Una falta de ánimo del trabajador","Una orden del supervisor"],
-   f:"Es una <b>situación del entorno</b> con potencial de provocar un accidente."},
-  {a:"prl", q:"El principal objetivo de la prevención de riesgos laborales es:",
-   o:["Evitar accidentes y enfermedades derivadas del trabajo","Reducir costos de la empresa","Cumplir un simple trámite","Sancionar a los trabajadores"],
-   f:"Su objetivo es <b>evitar accidentes y enfermedades</b> derivadas del trabajo."},
-
-  // ---- Responsabilidad Jurídica del Guardia ----
-  {a:"respjur", q:"El guardia de seguridad privada ejerce funciones:",
-   o:["De carácter preventivo y no policial","Policiales, iguales a las de Carabineros","Judiciales, como un fiscal","De carácter militar"],
-   f:"El guardia ejerce funciones de carácter <b>preventivo, no policial</b>."},
-  {a:"respjur", q:"El guardia puede restringir la libertad de una persona únicamente cuando:",
-   o:["Existe un delito flagrante y conforme a la ley","La persona le parece sospechosa","El cliente se lo solicita","Desea interrogarla"],
-   f:"Solo ante <b>delito flagrante y conforme a la ley</b> (detención por cualquier persona)."},
-  {a:"respjur", q:"¿Quién tiene el monopolio del uso legítimo de la fuerza pública en Chile?",
-   o:["El Estado, a través de las instituciones autorizadas por la Constitución y las leyes","Las empresas de seguridad privada","Cada guardia según su criterio","Las municipalidades"],
-   f:"El <b>monopolio de la fuerza pública es del Estado</b>, mediante las instituciones que la Constitución y las leyes autorizan."},
-  {a:"respjur", q:"El guardia responde legalmente por los daños que cause cuando:",
-   o:["Actúa con dolo o culpa, conforme a la legislación vigente","Nunca responde","Solo si lo denuncia el cliente","Solo si hay cámaras que lo graben"],
-   f:"Responde cuando actúa con <b>dolo o culpa</b>, conforme a la legislación vigente."},
-  {a:"respjur", q:"El incumplimiento deliberado de los protocolos de seguridad puede generar:",
-   o:["Responsabilidad administrativa, civil y eventualmente penal","Solo una amonestación verbal","Ninguna consecuencia","Solo un descuento de sueldo"],
-   f:"Puede generar responsabilidad <b>administrativa, civil y eventualmente penal</b>."},
-
-  // ---- Derechos Fundamentales ----
-  {a:"ddff", q:"Toda actuación del guardia debe respetar especialmente:",
-   o:["Los derechos fundamentales garantizados por la Constitución y las leyes","Solo las órdenes del jefe","Las costumbres del lugar","Su propio criterio"],
-   f:"Debe respetar los <b>derechos fundamentales</b> garantizados por la Constitución y las leyes."},
-  {a:"ddff", q:"El derecho a la igualdad ante la ley implica que el guardia debe:",
-   o:["Tratar a todas las personas sin discriminación arbitraria","Tratar mejor a los clientes conocidos","Ser más estricto con los extranjeros","Priorizar a quien pague más"],
-   f:"La igualdad ante la ley exige un <b>trato sin discriminación arbitraria</b>."},
-  {a:"ddff", q:"La dignidad de las personas debe respetarse:",
-   o:["En todo momento y circunstancia","Solo con los clientes","Solo si la persona lo merece","Solo en horario laboral"],
-   f:"La dignidad se respeta <b>en todo momento y circunstancia</b>."},
-  {a:"ddff", q:"¿Puede el guardia divulgar información privada obtenida durante el servicio?",
-   o:["No, salvo cuando la ley lo permita o exista requerimiento de la autoridad competente","Sí, si le parece","Sí, con sus colegas","Sí, en redes sociales"],
-   f:"No puede divulgarla, salvo que la <b>ley lo permita o lo requiera la autoridad competente</b>."},
-  {a:"ddff", q:"Toda intervención del guardia debe ajustarse al principio de:",
-   o:["Legalidad","Conveniencia","Fuerza","Autoridad personal"],
-   f:"Toda intervención se ajusta al <b>principio de legalidad</b>."},
-
-  // ---- Flagrancia y Procedimiento ----
-  {a:"flag", q:"Existe delito flagrante cuando:",
-   o:["El delito se está cometiendo o acaba de cometerse, en los casos previstos por la ley","Alguien parece sospechoso","Circula un rumor de robo","El guardia lo intuye"],
-   f:"Hay flagrancia cuando el delito <b>se está cometiendo o acaba de cometerse</b>, en los casos que la ley señala."},
-  {a:"flag", q:"Luego de una detención por flagrancia, el guardia debe:",
-   o:["Entregar inmediatamente al detenido a Carabineros o a la Policía de Investigaciones","Trasladarlo él mismo a la comisaría","Interrogarlo primero","Retenerlo hasta el fin del turno"],
-   f:"<b>Entrega inmediata</b> del detenido a Carabineros o a la PDI."},
-  {a:"flag", q:"El guardia debe evitar durante una detención:",
-   o:["Aplicar fuerza innecesaria o realizar actos humillantes","Avisar a la policía","Identificarse","Pedir apoyo"],
-   f:"Debe evitar la <b>fuerza innecesaria</b> y los <b>actos humillantes</b>."},
-  {a:"flag", q:"Una persona retenida debe ser mantenida:",
-   o:["Solo el tiempo estrictamente necesario para entregarla a la policía competente","El tiempo que el guardia decida","Hasta que confiese","Hasta que llegue el cliente"],
-   f:"Solo el <b>tiempo estrictamente necesario</b> para entregarla a la policía competente."},
-  {a:"flag", q:"El guardia debe informar el procedimiento realizado mediante:",
-   o:["El registro o informe correspondiente conforme a los protocolos internos","Un mensaje verbal informal","Una publicación en redes sociales","No es necesario informar"],
-   f:"Mediante el <b>registro o informe correspondiente</b>, según los protocolos internos."},
-
-  // ---- Evidencia y Sitio del Suceso ----
-  {a:"sitio", q:"Si ocurre un delito dentro de la instalación, el guardia debe:",
-   o:["Resguardar el lugar evitando su alteración","Limpiar el lugar de inmediato","Mover los objetos para ordenar","Dejar entrar a los curiosos"],
-   f:"Debe <b>resguardar el lugar evitando su alteración</b>."},
-  {a:"sitio", q:"El sitio del suceso debe preservarse porque:",
-   o:["Puede contener evidencias relevantes para la investigación","Se ve más ordenado","Lo exige el cliente por estética","Evita reclamos"],
-   f:"Porque puede contener <b>evidencias relevantes para la investigación</b>."},
-  {a:"sitio", q:"El guardia no debe manipular evidencia salvo que:",
-   o:["Sea estrictamente necesario para proteger la vida o evitar un riesgo inminente","Quiera revisarla por curiosidad","Se lo pida un tercero","Le estorbe para su ronda"],
-   f:"Solo se manipula si es <b>estrictamente necesario para proteger la vida o evitar un riesgo inminente</b>."},
-  {a:"sitio", q:"El acceso al sitio del suceso debe limitarse a:",
-   o:["Las personas autorizadas o competentes","Cualquiera que quiera ver","Los medios de prensa","Los vecinos del sector"],
-   f:"El acceso se limita a las <b>personas autorizadas o competentes</b>."},
-  {a:"sitio", q:"Registrar oportunamente los hechos permite:",
-   o:["Facilitar la investigación y acreditar el procedimiento realizado","Perder menos tiempo","Justificar un descanso","Evitar hacer la ronda"],
-   f:"Permite <b>facilitar la investigación y acreditar el procedimiento</b> realizado."},
-
-  // ---- Protección de Datos y Reserva ----
-  {a:"datos", q:"La información obtenida mediante cámaras de seguridad:",
-   o:["Debe utilizarse únicamente para los fines autorizados","Puede usarse para cualquier fin","Puede compartirse libremente","Es del guardia que las opera"],
-   f:"Debe usarse <b>únicamente para los fines autorizados</b>."},
-  {a:"datos", q:"¿Puede el guardia publicar imágenes del servicio en redes sociales?",
-   o:["No","Sí, si son entretenidas","Sí, siempre que no se vean rostros","Sí, con el permiso de un colega"],
-   f:"<b>No.</b> Las imágenes del servicio no se publican en redes sociales."},
-  {a:"datos", q:"La identidad de una víctima conocida durante el servicio:",
-   o:["Debe mantenerse reservada","Puede comentarse con otros","Puede publicarse","Es información pública"],
-   f:"La identidad de la víctima debe <b>mantenerse reservada</b>."},
-  {a:"datos", q:"Los registros de seguridad pertenecen:",
-   o:["A la entidad responsable de la instalación, conforme a la normativa aplicable","Al guardia que los genera","A quien los solicite","A nadie en particular"],
-   f:"Pertenecen a la <b>entidad responsable de la instalación</b>, conforme a la normativa aplicable."},
-  {a:"datos", q:"La confidencialidad de la información constituye:",
-   o:["Una obligación profesional del guardia","Una opción voluntaria","Un favor al cliente","Una formalidad sin valor"],
-   f:"Es una <b>obligación profesional</b> del guardia."},
-
-  // ---- Deberes Legales ----
-  {a:"deberes", q:"El guardia debe cumplir sus funciones:",
-   o:["Conforme a la ley, los reglamentos y los procedimientos autorizados","Según su criterio personal","Como le indiquen los clientes, aunque sea ilegal","Sin reglas fijas"],
-   f:"Conforme a la <b>ley, los reglamentos y los procedimientos autorizados</b>."},
-  {a:"deberes", q:"Una orden manifiestamente ilegal debe ser:",
-   o:["Rechazada e informada conforme a los conductos establecidos","Cumplida sin cuestionar","Cumplida solo si nadie mira","Ignorada en silencio"],
-   f:"Se <b>rechaza y se informa</b> por los conductos establecidos."},
-  {a:"deberes", q:"El guardia tiene el deber de informar cuando:",
-   o:["Detecta hechos que puedan constituir un delito o comprometan la seguridad","Solo si se lo preguntan","Solo a fin de mes","Nunca, para no involucrarse"],
-   f:"Debe informar cuando <b>detecta hechos que puedan ser delito o comprometan la seguridad</b>."},
-  {a:"deberes", q:"El uso de la fuerza sin justificación legal puede generar:",
-   o:["Responsabilidad penal, civil y administrativa","Solo una advertencia","Ninguna consecuencia","Un reconocimiento"],
-   f:"Puede generar responsabilidad <b>penal, civil y administrativa</b>."},
-  {a:"deberes", q:"La principal obligación jurídica del guardia es:",
-   o:["Actuar siempre dentro de las atribuciones que la ley le confiere","Obedecer al cliente por sobre la ley","Resolver todo por su cuenta","Evitar el trabajo riesgoso"],
-   f:"Actuar siempre <b>dentro de las atribuciones que la ley le confiere</b>."}
-];
-
-// ====== NIVELES DE DIFICULTAD (validado por asesor OS.10) ======
-// Cada arreglo mapea, EN ORDEN, las preguntas de esa área: basico | intermedio | avanzado.
-var NIVELES = {
-  legal:  ["intermedio","intermedio","basico","basico","intermedio","intermedio"],
-  func:   ["basico","intermedio","basico","avanzado","basico"],
-  ddhh:   ["basico","basico","basico","intermedio","basico"],
-  fuerza: ["basico","intermedio","intermedio","avanzado","basico"],
-  pa:     ["basico","intermedio","basico","intermedio","basico"],
-  emer:   ["basico","intermedio","intermedio","basico","intermedio"],
-  proc:   ["intermedio","intermedio","basico","basico","intermedio"],
-  acceso: ["basico","intermedio","intermedio","intermedio","basico"],
-  comm:   ["basico","intermedio","intermedio","basico","basico"],
-  delito: ["intermedio","basico","intermedio","basico","intermedio"],
-  etica:  ["basico","intermedio","avanzado","basico","basico"],
-  prl:    ["basico","basico","intermedio","intermedio","basico"],
-  respjur:["intermedio","avanzado","avanzado","avanzado","avanzado"],
-  ddff:   ["intermedio","intermedio","basico","avanzado","avanzado"],
-  flag:   ["avanzado","intermedio","intermedio","avanzado","intermedio"],
-  sitio:  ["intermedio","intermedio","avanzado","intermedio","intermedio"],
-  datos:  ["intermedio","basico","intermedio","avanzado","basico"],
-  deberes:["basico","avanzado","intermedio","avanzado","avanzado"]
-};
-(function(){
-  var cnt = {};
-  BANCO.forEach(function(q){
-    var k = cnt[q.a] = (cnt[q.a]==null ? 0 : cnt[q.a]+1);
-    var arr = NIVELES[q.a];
-    q.n = (arr && arr[k]) ? arr[k] : "intermedio";
+// ====== BANCO DE PREGUNTAS ======
+// Cargado desde banco-os10.js: 300 preguntas en 3 niveles y 21 áreas,
+// del manual del asesor OS.10 (Ley 21.659 + D.S. 209/2025). o[0] = correcta.
+var AREAS = [];
+NIVELES_DEF.forEach(function(nv){
+  nv.areas.forEach(function(ar){
+    AREAS.push({id:ar.id, nivel:nv.id, nombre:ar.nombre, icono:ar.icono});
   });
-})();
+});
 var NIVEL_TXT = {basico:"Básico", intermedio:"Intermedio", avanzado:"Avanzado"};
 
 // ====== ESTADO ======
 var estado = null; // {modo, lista:[{qref, opciones:[{txt,correcta}], elegida}], idx}
-var nivelSel = "todos";
+var nivelSel = "basico";
 function setNivel(n){
   nivelSel = n;
   document.querySelectorAll("#niveles .nivel-chip").forEach(function(c){
@@ -586,7 +231,7 @@ function setNivel(n){
   });
   if(!document.getElementById("lista-areas").classList.contains("hidden")) mostrarAreas();
 }
-function filtroNivel(q){ return nivelSel==="todos" || q.n===nivelSel; }
+function filtroNivel(q){ return q.n===nivelSel; }
 
 function barajar(arr){
   var a = arr.slice();
@@ -614,6 +259,7 @@ function mostrarAreas(){
   cont.innerHTML = "";
   var alguna = false;
   AREAS.forEach(function(ar){
+    if(ar.nivel!==nivelSel) return;
     var n = BANCO.filter(function(q){return q.a===ar.id && filtroNivel(q);}).length;
     if(n===0) return; // ocultar áreas sin preguntas en el nivel elegido
     alguna = true;
