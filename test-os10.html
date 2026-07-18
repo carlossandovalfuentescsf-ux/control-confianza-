@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Test OS10 Gratis 2026 — Simulador Examen Guardia de Seguridad | Control y Confianza</title>
-<meta name="description" content="Simulador gratis del Test OS10 para guardias de seguridad en Chile. Preguntas de práctica por área con explicaciones, basadas en la Ley 21.659 y el Decreto 209/2025. Sin registro, funciona en tu celular.">
+<meta name="description" content="Simulador gratis del Test OS10 para guardias de seguridad en Chile. Preguntas de práctica por área con explicaciones, basadas en la Ley 21.659 y el Decreto 209/2024. Sin registro, funciona en tu celular.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Control y Confianza">
 <meta property="og:locale" content="es_CL">
 <meta property="og:title" content="Test OS10 Gratis 2026 — Simulador para Guardias de Seguridad">
-<meta property="og:description" content="Practica gratis para tu examen OS10 con preguntas explicadas por área, según la Ley 21.659 y el Decreto 209/2025. Sin registro.">
+<meta property="og:description" content="Practica gratis para tu examen OS10 con preguntas explicadas por área, según la Ley 21.659 y el Decreto 209/2024. Sin registro.">
 <meta property="og:url" content="https://app.controlyconfianza.cl/test-os10.html">
 <meta property="og:image" content="https://app.controlyconfianza.cl/og-app.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Test OS10 Gratis 2026 — Simulador para Guardias">
-<meta name="twitter:description" content="Practica gratis para tu examen OS10 con preguntas explicadas, según la Ley 21.659 y el Decreto 209/2025.">
+<meta name="twitter:description" content="Practica gratis para tu examen OS10 con preguntas explicadas, según la Ley 21.659 y el Decreto 209/2024.">
 <link rel="apple-touch-icon" href="icon-cplus-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-cplus-192.png">
 <style>
@@ -102,7 +102,8 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
 .foot{text-align:center;padding:22px 16px 0;border-top:1px solid #1e1e1e;margin-top:8px;font-size:12px;color:#666}
 .foot a{color:#d4a017;text-decoration:none}
 .niveles-label{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#d4a017;margin-bottom:10px}
-.niveles{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.niveles{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.nivel-desc{font-size:13px;color:#999;line-height:1.5;margin-bottom:24px;padding:0 2px}
 .nivel-chip{flex:1;min-width:70px;background:#161616;border:1.5px solid #262626;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;color:#aaa;font:inherit;font-size:12.5px;font-weight:700;transition:border-color .12s,color .12s,background .12s}
 .nivel-chip.active{border-color:#d4a017;color:#d4a017;background:rgba(212,160,23,.1)}
 .nivel-badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-bottom:12px}
@@ -132,7 +133,7 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
   <!-- ===== INICIO ===== -->
   <section id="pantalla-inicio">
     <div class="disclaimer">
-      <strong>Ensayo de práctica. No es el examen oficial de Carabineros.</strong> Preparación basada en la normativa vigente: <strong>Ley N.º 21.659</strong> sobre Seguridad Privada y su Reglamento (<strong>D.S. N.º 209 de 2025</strong>). Úsalo para estudiar; el examen oficial lo rinde ante la autoridad correspondiente.
+      <strong>Ensayo de práctica. No es el examen oficial de Carabineros.</strong> Preparación basada en la normativa vigente: <strong>Ley N.º 21.659</strong> sobre Seguridad Privada y su Reglamento (<strong>D.S. N.º 209, de 2024</strong>). Úsalo para estudiar; el examen oficial lo rinde ante la autoridad correspondiente.
     </div>
 
     <div class="hero">
@@ -147,11 +148,12 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
       <button class="nivel-chip" data-nivel="intermedio" onclick="setNivel('intermedio')">Intermedio</button>
       <button class="nivel-chip" data-nivel="avanzado" onclick="setNivel('avanzado')">Avanzado</button>
     </div>
+    <div class="nivel-desc" id="nivel-desc"></div>
 
     <div class="modos">
       <div class="modo" style="cursor:default">
         <div class="mt"><span class="ic">📝</span> Ensayo</div>
-        <div class="md">Preguntas al azar del nivel elegido, con corrección y explicación al instante. Se aprueba con 60% y al final ves tu puntaje por área. Tú eliges cuánto tiempo tienes:</div>
+        <div class="md">Preguntas al azar del nivel elegido, con corrección y explicación al instante. <span id="regla-aprob">Se aprueba con 60%</span> y al final ves tu puntaje por área. Tú eliges cuánto tiempo tienes:</div>
         <div class="lens">
           <button class="len-chip" onclick="iniciarEnsayo(10)">⚡ Rápido<span>10 preguntas</span></button>
           <button class="len-chip" onclick="iniciarEnsayo(20)">📝 Normal<span>20 preguntas</span></button>
@@ -165,7 +167,7 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
       </button>
       <a class="modo" href="estudio-os10.html" style="display:block;text-decoration:none">
         <div class="mt"><span class="ic">📖</span> Guía de estudio gratis</div>
-        <div class="md">Las 21 áreas del examen explicadas en simple: lo esencial, errores frecuentes y base legal. Descargable en PDF.</div>
+        <div class="md">Las 24 áreas del examen explicadas en simple: lo esencial, errores frecuentes y base legal. Descargable en PDF.</div>
       </a>
     </div>
 
@@ -208,7 +210,7 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
     <div id="res-estudio" class="hidden">
       <div class="seccion-titulo">Para mejorar, si te interesa</div>
       <div class="areas" id="res-estudio-areas"></div>
-      <p style="font-size:12px;color:#888;margin:10px 2px 22px;line-height:1.6">También puedes estudiar con la <a href="estudio-os10.html">Guía de Estudio del Test OS10</a> (las 21 áreas explicadas, descargable en PDF) o repasar la <a href="guardias.html?f=test-os10#guia">Guía de Acreditación OS.10</a> de Control+.</p>
+      <p style="font-size:12px;color:#888;margin:10px 2px 22px;line-height:1.6">También puedes estudiar con la <a href="estudio-os10.html">Guía de Estudio del Test OS10</a> (las 24 áreas explicadas, descargable en PDF) o repasar la <a href="guardias.html?f=test-os10#guia">Guía de Acreditación OS.10</a> de Control+.</p>
     </div>
 
     <div class="cta">
@@ -231,11 +233,11 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
 
 </main>
 
-<script src="banco-os10.js?v=20260717b"></script>
+<script src="banco-os10.js?v=20260718b"></script>
 <script>
 // ====== BANCO DE PREGUNTAS ======
-// Cargado desde banco-os10.js: 300 preguntas en 3 niveles y 21 áreas,
-// del manual del asesor OS.10 (Ley 21.659 + D.S. 209/2025). o[0] = correcta.
+// Cargado desde banco-os10.js: 300 preguntas en 3 niveles y 24 áreas,
+// ancladas al temario oficial Res. Ex. 2.183/2025 (Ley 21.659 + D.S. 209 de 2024). o[0] = correcta.
 var AREAS = [];
 NIVELES_DEF.forEach(function(nv){
   nv.areas.forEach(function(ar){
@@ -243,6 +245,9 @@ NIVELES_DEF.forEach(function(nv){
   });
 });
 var NIVEL_TXT = {basico:"Básico", intermedio:"Intermedio", avanzado:"Avanzado"};
+// Umbral de aprobación por nivel, igual que los exámenes reales (Res. Ex. 2.183/2025):
+// Formación 60% (art. 43.2) — niveles Básico e Intermedio; Especialización 70% (art. 53) — nivel Avanzado.
+function umbralNivel(n){ return n==="avanzado" ? 70 : 60; }
 
 // ====== ESTADO ======
 var estado = null; // {modo, lista:[{qref, opciones:[{txt,correcta}], elegida}], idx}
@@ -252,6 +257,10 @@ function setNivel(n){
   document.querySelectorAll("#niveles .nivel-chip").forEach(function(c){
     c.classList.toggle("active", c.dataset.nivel===n);
   });
+  var nv = null;
+  NIVELES_DEF.forEach(function(x){ if(x.id===n) nv=x; });
+  document.getElementById("nivel-desc").textContent = nv ? nv.desc : "";
+  document.getElementById("regla-aprob").textContent = "Se aprueba con "+umbralNivel(n)+"%";
   if(!document.getElementById("lista-areas").classList.contains("hidden")) mostrarAreas();
   pintarStats();
 }
@@ -424,7 +433,9 @@ function mostrarResultado(){
     porArea[a].tot++; if(ok) porArea[a].ok++;
   });
   var pct = Math.round(correctas/total*100);
-  var aprob = pct>=60;
+  var um = umbralNivel(nivelSel);
+  var aprob = pct>=um;
+  var examen = nivelSel==="avanzado" ? "el examen de Especialización (riesgo medio/alto)" : "el examen del curso de Formación";
   guardarStat(nivelSel, pct);
 
   var box = document.getElementById("res-box");
@@ -432,8 +443,8 @@ function mostrarResultado(){
   document.getElementById("res-pct").textContent = pct+"%";
   document.getElementById("res-st").textContent = aprob ? "¡Aprobado! ("+correctas+"/"+total+")" : "Aún no ("+correctas+"/"+total+")";
   document.getElementById("res-sd").textContent = aprob
-    ? "Superaste el 60% que exige el examen. Sigue practicando para llegar seguro."
-    : "El examen se aprueba con 60%. Repasa las áreas más bajas y vuelve a intentarlo.";
+    ? "Superaste el "+um+"% que exige "+examen+". Sigue practicando para llegar seguro."
+    : examen.charAt(0).toUpperCase()+examen.slice(1)+" se aprueba con "+um+"%. Repasa las áreas más bajas y vuelve a intentarlo.";
 
   var cont = document.getElementById("res-areas");
   cont.innerHTML = "";
@@ -441,7 +452,7 @@ function mostrarResultado(){
     var d = porArea[ar.id];
     if(!d) return;
     var p = Math.round(d.ok/d.tot*100);
-    var cls = p>=60 ? "ok" : (p>=40 ? "mid" : "low");
+    var cls = p>=um ? "ok" : (p>=um-20 ? "mid" : "low");
     var row = document.createElement("div");
     row.className = "res-area";
     row.innerHTML = '<span class="rn">'+ar.icono+' '+ar.nombre+'</span><span class="rv '+cls+'">'+d.ok+'/'+d.tot+'</span>';
@@ -452,7 +463,7 @@ function mostrarResultado(){
   var debiles = [];
   AREAS.forEach(function(ar){
     var d = porArea[ar.id];
-    if(d && d.ok/d.tot < 0.6) debiles.push({ar:ar, p:d.ok/d.tot});
+    if(d && d.ok/d.tot < um/100) debiles.push({ar:ar, p:d.ok/d.tot});
   });
   debiles.sort(function(a,b){ return a.p-b.p; });
   var est = document.getElementById("res-estudio");
@@ -474,7 +485,7 @@ function mostrarResultado(){
   ir("pantalla-resultado");
 }
 
-pintarStats();
+setNivel(nivelSel); // pinta descripción del nivel, regla de aprobación y stats iniciales
 
 // ====== ENLACE DIRECTO ?area= (desde la Guía de Estudio) ======
 (function(){

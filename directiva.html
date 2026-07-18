@@ -131,7 +131,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
   </div>
   <div class="card" id="vInfoFija" style="display:none">
     <h2>🏢 Genera el borrador de tu Directiva de Funcionamiento</h2>
-    <p>Toda entidad que contrata guardias de seguridad en Chile debe contar con una <strong>Directiva de Funcionamiento</strong> aprobada, conforme a los <strong>artículos 51 al 55 de la Ley 21.659</strong> de Seguridad Privada y los artículos 90 al 93 de su reglamento (Decreto 209, de 2025). Este asistente construye el borrador completo siguiendo el formato oficial (Formulario N° 01), usando el plano de tu predio y el análisis de riesgo de tu comuna.</p>
+    <p>Toda entidad que contrata guardias de seguridad en Chile debe contar con una <strong>Directiva de Funcionamiento</strong> aprobada, conforme a los <strong>artículos 51 al 55 de la Ley 21.659</strong> de Seguridad Privada y los artículos 90 al 93 de su reglamento (Decreto 209, de 2024). Este asistente construye el borrador completo siguiendo el formato oficial (Formulario N° 01), usando el plano de tu predio y el análisis de riesgo de tu comuna.</p>
     <p style="font-size:0.74rem">📌 La Directiva se presenta ante la autoridad con <strong>15 días hábiles de anticipación</strong> al inicio del servicio y tiene una <strong>vigencia de 3 años</strong> para instalaciones.</p>
     <p>Al finalizar, un <strong>asesor de seguridad acreditado OS.10</strong> revisa, corrige y visa tu Directiva para su presentación — ese servicio se cotiza por WhatsApp según la envergadura de tu instalación.</p>
     <div class="aviso">⚖️ El documento que genera esta herramienta es un <strong>BORRADOR</strong> y no tiene validez ante la autoridad hasta ser revisado y visado por un asesor acreditado.</div>
@@ -343,7 +343,7 @@ function expedienteVacio(){
     horarios:[{dias:'Lunes a viernes',desde:'08:00',hasta:'20:00'}],
     personal:{total:'',horas:'8',turnos:[{nombre:'Turno día',desde:'08:00',hasta:'20:00',guardias:''}]},
     objetivos:{
-      objetivo:'Proteger la integridad física de las personas, las instalaciones y los bienes de la entidad, mediante labores preventivas de vigilancia y control, dando cumplimiento a la Ley 21.659 de Seguridad Privada y su reglamento (Decreto 209, de 2025), incluyendo la coordinación con Carabineros de Chile y la denuncia oportuna de delitos.',
+      objetivo:'Proteger la integridad física de las personas, las instalaciones y los bienes de la entidad, mediante labores preventivas de vigilancia y control, dando cumplimiento a la Ley 21.659 de Seguridad Privada y su reglamento (Decreto 209, de 2024), incluyendo la coordinación con Carabineros de Chile y la denuncia oportuna de delitos.',
       tareas:''
     },
     tenida:{items:['Pantalón y camisa institucional','Chaqueta o parka con la palabra "SEGURIDAD"','Credencial visible con nombre y fotografía'],otro:''},
@@ -787,7 +787,7 @@ function construirDoc(){
   const comunaN=(typeof CYC_COMUNAS!=='undefined'&&CYC_COMUNAS[e.lugar.comuna])||e.lugar.comuna||'';
   const fecha=new Date().toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
   let html='<div class="d-portada"><img src="icon-192.png" alt="Control y Confianza"><div class="d-form">Formulario N° 01 — Borrador para revisión</div>'+
-    '<h1>DIRECTIVA DE FUNCIONAMIENTO</h1><div class="d-sub">Para implementar servicios con guardias de seguridad — Arts. 51 a 55, Ley 21.659 · Arts. 90 a 93, Decreto 209 (2025)</div>'+
+    '<h1>DIRECTIVA DE FUNCIONAMIENTO</h1><div class="d-sub">Para implementar servicios con guardias de seguridad — Arts. 51 a 55, Ley 21.659 · Arts. 90 a 93, Decreto 209 (2024)</div>'+
     '<div class="d-sub" style="margin-top:4px">'+esc(e.empleador.nombre)+' · '+esc(e.lugar.dir)+(comunaN?', '+esc(comunaN):'')+'</div>'+
     '<div class="d-folio">Folio '+esc(e.folio)+' · '+fecha+'</div></div>';
   html+=docSec('I. Antecedentes del empleador',
