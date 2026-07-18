@@ -109,6 +109,12 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
 .nivel-badge.basico{background:rgba(63,185,80,.15);color:#3fb950}
 .nivel-badge.intermedio{background:rgba(224,138,43,.15);color:#e08a2b}
 .nivel-badge.avanzado{background:rgba(201,80,63,.18);color:#e0645a}
+.hero .sello{margin-top:10px;font-size:11.5px;color:#d4a017;font-weight:700;line-height:1.5}
+.lens{display:flex;gap:8px;margin-top:12px}
+.len-chip{flex:1;background:#161616;border:1.5px solid #2a2a2a;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;color:#f0e8d0;font:inherit;font-size:12.5px;font-weight:800;transition:border-color .12s}
+.len-chip:hover{border-color:#d4a017}
+.len-chip span{display:block;font-size:10.5px;color:#888;font-weight:600;margin-top:3px}
+.mstats{margin-top:10px;font-size:11.5px;color:#8a8471}
 .hidden{display:none}
 </style>
 </head>
@@ -132,6 +138,7 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
     <div class="hero">
       <h2>Prepárate para el <span>Test OS10</span> gratis</h2>
       <p>Practica con preguntas explicadas por área. Cada respuesta trae su fundamento, para que no solo aciertes: entiendas por qué. Sin registro y desde tu celular.</p>
+      <p class="sello">✓ Banco de 300 preguntas redactado y validado por un asesor de seguridad privada acreditado OS.10</p>
     </div>
 
     <div class="niveles-label">Nivel de dificultad</div>
@@ -142,10 +149,16 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
     </div>
 
     <div class="modos">
-      <button class="modo" onclick="iniciarEnsayo()">
-        <div class="mt"><span class="ic">📝</span> Ensayo completo</div>
-        <div class="md">Hasta 20 preguntas al azar del nivel elegido. Se corrige al final como el examen real (se aprueba con 60%), con tu puntaje por área.</div>
-      </button>
+      <div class="modo" style="cursor:default">
+        <div class="mt"><span class="ic">📝</span> Ensayo</div>
+        <div class="md">Preguntas al azar del nivel elegido, con corrección y explicación al instante. Se aprueba con 60% y al final ves tu puntaje por área. Tú eliges cuánto tiempo tienes:</div>
+        <div class="lens">
+          <button class="len-chip" onclick="iniciarEnsayo(10)">⚡ Rápido<span>10 preguntas</span></button>
+          <button class="len-chip" onclick="iniciarEnsayo(20)">📝 Normal<span>20 preguntas</span></button>
+          <button class="len-chip" onclick="iniciarEnsayo(60)">🎓 Completo<span>60 preguntas</span></button>
+        </div>
+        <div class="mstats" id="stats-inicio"></div>
+      </div>
       <button class="modo" onclick="mostrarAreas()">
         <div class="mt"><span class="ic">📚</span> Práctica por área</div>
         <div class="md">Elige un tema y estudia con corrección inmediata y explicación en cada pregunta.</div>
@@ -187,6 +200,12 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
     </div>
     <div class="seccion-titulo">Tu desempeño por área</div>
     <div class="res-areas" id="res-areas"></div>
+
+    <div id="res-estudio" class="hidden">
+      <div class="seccion-titulo">Para mejorar, si te interesa</div>
+      <div class="areas" id="res-estudio-areas"></div>
+      <p style="font-size:12px;color:#888;margin:10px 2px 22px;line-height:1.6">También puedes repasar gratis la <a href="guardias.html?f=test-os10#guia">Guía de Acreditación OS.10</a> de Control+: requisitos, curso y credencial paso a paso.</p>
+    </div>
 
     <div class="cta">
       <h3>Ahora que sabes dónde estás parado, <span>da el siguiente paso</span></h3>
@@ -230,6 +249,7 @@ function setNivel(n){
     c.classList.toggle("active", c.dataset.nivel===n);
   });
   if(!document.getElementById("lista-areas").classList.contains("hidden")) mostrarAreas();
+  pintarStats();
 }
 function filtroNivel(q){ return q.n===nivelSel; }
 
@@ -279,19 +299,44 @@ function iniciarPractica(areaId){
   ir("pantalla-quiz");
   render();
 }
-function iniciarEnsayo(){
+var ultimoLargo = 20;
+function iniciarEnsayo(n){
+  n = n || ultimoLargo;
+  ultimoLargo = n;
   var pool = BANCO.filter(filtroNivel);
   if(pool.length===0){ alert("No hay preguntas de este nivel."); return; }
-  var preguntas = barajar(pool).slice(0, Math.min(20, pool.length));
+  var preguntas = barajar(pool).slice(0, Math.min(n, pool.length));
   estado = {modo:"ensayo", lista:preguntas.map(prepararPregunta), idx:0};
   ir("pantalla-quiz");
   render();
+}
+
+// ====== ESTADÍSTICAS LOCALES (solo este dispositivo, sin registro) ======
+function cargarStats(){ try{ return JSON.parse(localStorage.getItem("os10_stats")||"{}"); }catch(e){ return {}; } }
+function guardarStat(nivel, pct){
+  try{
+    var s = cargarStats();
+    s.intentos = (s.intentos||0)+1;
+    if(!s.mejor) s.mejor = {};
+    if(s.mejor[nivel]===undefined || pct>s.mejor[nivel]) s.mejor[nivel]=pct;
+    localStorage.setItem("os10_stats", JSON.stringify(s));
+  }catch(e){}
+}
+function pintarStats(){
+  var el = document.getElementById("stats-inicio");
+  if(!el) return;
+  var s = cargarStats();
+  if(!s.intentos){ el.textContent=""; return; }
+  var m = (s.mejor||{})[nivelSel];
+  el.textContent = "Tu mejor ensayo en "+(NIVEL_TXT[nivelSel]||nivelSel)+": "+(m===undefined?"—":m+"%")+
+    " · "+s.intentos+(s.intentos===1?" ensayo rendido":" ensayos rendidos")+" en este dispositivo";
 }
 function salirQuiz(){ if(confirm("¿Salir del test? Perderás el avance de esta ronda.")){ reiniciar(); } }
 function reiniciar(){
   estado=null;
   document.getElementById("lista-areas").classList.add("hidden");
   ir("pantalla-inicio");
+  pintarStats();
 }
 
 // ====== RENDER PREGUNTA ======
@@ -376,6 +421,7 @@ function mostrarResultado(){
   });
   var pct = Math.round(correctas/total*100);
   var aprob = pct>=60;
+  guardarStat(nivelSel, pct);
 
   var box = document.getElementById("res-box");
   box.className = "res-score " + (aprob?"aprob":"reprob");
@@ -398,8 +444,33 @@ function mostrarResultado(){
     cont.appendChild(row);
   });
 
+  // Estudio dirigido: hasta 3 áreas más débiles con práctica directa (opcional, sin obligar)
+  var debiles = [];
+  AREAS.forEach(function(ar){
+    var d = porArea[ar.id];
+    if(d && d.ok/d.tot < 0.6) debiles.push({ar:ar, p:d.ok/d.tot});
+  });
+  debiles.sort(function(a,b){ return a.p-b.p; });
+  var est = document.getElementById("res-estudio");
+  var estCont = document.getElementById("res-estudio-areas");
+  estCont.innerHTML = "";
+  if(debiles.length){
+    debiles.slice(0,3).forEach(function(d){
+      var b = document.createElement("button");
+      b.className = "area-btn";
+      b.innerHTML = '<span class="an">'+d.ar.icono+'</span><span><span class="at">Practicar '+d.ar.nombre+'</span><span class="ac">corrección y explicación en cada pregunta</span></span><span class="go">→</span>';
+      b.onclick = function(){ iniciarPractica(d.ar.id); };
+      estCont.appendChild(b);
+    });
+    est.classList.remove("hidden");
+  } else {
+    est.classList.add("hidden");
+  }
+
   ir("pantalla-resultado");
 }
+
+pintarStats();
 </script>
 </body>
 </html>
