@@ -228,7 +228,8 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
 
   <div class="foot">
     Control&nbsp;+ de <strong>Control &amp; Confianza</strong> — seguridad privada acreditada OS.10<br>
-    <a href="verificacion.html?de=controlmas">Verificación</a> · <a href="terminos.html">Términos y Privacidad</a>
+    <a href="verificacion.html?de=controlmas">Verificación</a> · <a href="terminos.html">Términos y Privacidad</a><br>
+    <span style="font-size:10.5px;color:#555">Banco de preguntas © 2026 Control y Confianza CSF SpA — compilación protegida por la Ley N.º 17.336; prohibida su reproducción sin autorización.</span>
   </div>
 
 </main>
@@ -313,12 +314,39 @@ function iniciarPractica(areaId){
   render();
 }
 var ultimoLargo = 20;
+// ====== ROTACIÓN DE PREGUNTAS (solo este dispositivo, sin registro) ======
+// El ensayo prioriza preguntas que este dispositivo aún no ha visto en el nivel;
+// cuando se agota el banco del nivel, el ciclo se reinicia. Así dos ensayos
+// seguidos no repiten preguntas mientras queden sin ver.
+function qKey(q){
+  var h = 0, s = q.q;
+  for(var i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i))|0; }
+  return String(h);
+}
+function cargarVistas(){ try{ return JSON.parse(localStorage.getItem("os10_vistas")||"{}"); }catch(e){ return {}; } }
+function guardarVistas(v){ try{ localStorage.setItem("os10_vistas", JSON.stringify(v)); }catch(e){} }
+
 function iniciarEnsayo(n){
   n = n || ultimoLargo;
   ultimoLargo = n;
   var pool = BANCO.filter(filtroNivel);
   if(pool.length===0){ alert("No hay preguntas de este nivel."); return; }
-  var preguntas = barajar(pool).slice(0, Math.min(n, pool.length));
+  var vistasAll = cargarVistas();
+  var vistas = vistasAll[nivelSel] || {};
+  var noVistas = [], yaVistas = [];
+  pool.forEach(function(q){ (vistas[qKey(q)] ? yaVistas : noVistas).push(q); });
+  var sel = barajar(noVistas).slice(0, Math.min(n, pool.length));
+  if(sel.length < Math.min(n, pool.length)){
+    // Se agotaron las no vistas: se completa el ensayo con ya vistas y parte un ciclo nuevo.
+    vistas = {};
+    var enSel = {}; sel.forEach(function(q){ enSel[qKey(q)] = 1; });
+    var faltan = Math.min(n, pool.length) - sel.length;
+    barajar(yaVistas).forEach(function(q){ if(faltan>0 && !enSel[qKey(q)]){ sel.push(q); faltan--; } });
+  }
+  sel.forEach(function(q){ vistas[qKey(q)] = 1; });
+  vistasAll[nivelSel] = vistas;
+  guardarVistas(vistasAll);
+  var preguntas = barajar(sel);
   estado = {modo:"ensayo", lista:preguntas.map(prepararPregunta), idx:0};
   ir("pantalla-quiz");
   render();

@@ -1,4 +1,8 @@
 // ====== BANCO TEST OS.10 v4 — 300 preguntas ancladas al temario oficial (18-07-2026) ======
+// © 2026 Control y Confianza CSF SpA (RUT 78.043.129-6). Banco de preguntas redactado y validado
+// por asesor de seguridad privada acreditado OS.10. Esta compilación está protegida por la
+// Ley N.º 17.336 de Propiedad Intelectual; prohibida su reproducción, extracción o uso comercial
+// sin autorización escrita. Marca «Control y Confianza» registrada ante INAPI (SM1110278, clase 45).
 // Origen: manual del asesor OS.10 (v2, 17-07) + corrección de anclaje normativo (paso 1-4, Res. Ex. 2.183/2025).
 // 96 preguntas se mantienen del banco v2; 122 fueron reancladas (mismo hecho, enunciado/distractores reescritos
 // para exigir conocimiento real, no sentido común); 82 son nuevas, dirigidas a asignaturas antes ausentes
