@@ -163,6 +163,10 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
         <div class="mt"><span class="ic">📚</span> Práctica por área</div>
         <div class="md">Elige un tema y estudia con corrección inmediata y explicación en cada pregunta.</div>
       </button>
+      <a class="modo" href="estudio-os10.html" style="display:block;text-decoration:none">
+        <div class="mt"><span class="ic">📖</span> Guía de estudio gratis</div>
+        <div class="md">Las 21 áreas del examen explicadas en simple: lo esencial, errores frecuentes y base legal. Descargable en PDF.</div>
+      </a>
     </div>
 
     <div id="lista-areas" class="hidden">
@@ -204,7 +208,7 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
     <div id="res-estudio" class="hidden">
       <div class="seccion-titulo">Para mejorar, si te interesa</div>
       <div class="areas" id="res-estudio-areas"></div>
-      <p style="font-size:12px;color:#888;margin:10px 2px 22px;line-height:1.6">También puedes repasar gratis la <a href="guardias.html?f=test-os10#guia">Guía de Acreditación OS.10</a> de Control+: requisitos, curso y credencial paso a paso.</p>
+      <p style="font-size:12px;color:#888;margin:10px 2px 22px;line-height:1.6">También puedes estudiar con la <a href="estudio-os10.html">Guía de Estudio del Test OS10</a> (las 21 áreas explicadas, descargable en PDF) o repasar la <a href="guardias.html?f=test-os10#guia">Guía de Acreditación OS.10</a> de Control+.</p>
     </div>
 
     <div class="cta">
@@ -471,6 +475,19 @@ function mostrarResultado(){
 }
 
 pintarStats();
+
+// ====== ENLACE DIRECTO ?area= (desde la Guía de Estudio) ======
+(function(){
+  try{
+    var areaId = new URLSearchParams(location.search).get("area");
+    if(!areaId) return;
+    var ar = null;
+    for(var i=0;i<AREAS.length;i++){ if(AREAS[i].id===areaId){ ar=AREAS[i]; break; } }
+    if(!ar) return;
+    setNivel(ar.nivel);
+    iniciarPractica(ar.id);
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
