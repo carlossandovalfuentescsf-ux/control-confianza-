@@ -807,15 +807,25 @@ function pintarExtraidas(){
   var el=document.getElementById('previewExtraidas');
   var html='';
   ADMIN_EXTRAIDAS.forEach(function(o,i){
+    var esTurno=(o.tipo==='turno');
     html+='<div class="card" id="cardEx'+i+'" style="margin-top:12px'+(o._publicada?';opacity:.45':'')+'">'+
       '<div class="oferta-top"><div class="oferta-titulo">Oferta '+(i+1)+(o._publicada?' — ✅ publicada':'')+'</div>'+
-      '<span class="chip">'+(o.tipo==='turno'?'Turno':'Empleo')+'</span></div>'+
+      '<span class="chip">'+(esTurno?'Turno':'Empleo')+'</span></div>'+
+      '<label style="margin-top:6px">Tipo</label>'+
+      '<select id="ex_tipo_'+i+'" onchange="cambiarTipoExtraida('+i+')">'+
+        '<option value="empleo"'+(esTurno?'':' selected')+'>Empleo permanente (pauta recurrente, sin fecha fija)</option>'+
+        '<option value="turno"'+(esTurno?' selected':'')+'>Turno puntual (evento o día específico)</option>'+
+      '</select>'+
       campoPrev(i,'titulo','Título',o.titulo)+
       campoPrev(i,'comuna','Comuna',o.comuna,'Ej: La Florida')+
       campoPrev(i,'empresa_nombre','Empresa (opcional)',o.empresa_nombre)+
       campoPrev(i,'renta_mensual','Renta mensual líquida CLP (vacío = a convenir)',o.renta_mensual)+
       campoPrev(i,'pauta','Pauta (4x4, 5x2…)',o.pauta)+
       campoPrev(i,'horario','Horario',o.horario)+
+      '<div id="ex_fecha_wrap_'+i+'" style="display:'+(esTurno?'block':'none')+'">'+
+        '<label style="margin-top:6px">Fecha del turno (AAAA-MM-DD)</label>'+
+        '<input type="date" id="ex_fecha_inicio_'+i+'" value="'+esc(o.fecha_inicio||'')+'">'+
+      '</div>'+
       campoPrev(i,'lugar','Lugar / dirección (opcional)',o.lugar)+
       campoPrev(i,'cupos','Cupos',o.cupos||1)+
       campoPrev(i,'requisitos','Requisitos (opcional)',o.requisitos)+
@@ -830,10 +840,19 @@ function pintarExtraidas(){
   el.innerHTML=html;
 }
 
+function cambiarTipoExtraida(i){
+  var tipo=document.getElementById('ex_tipo_'+i).value;
+  ADMIN_EXTRAIDAS[i].tipo=tipo;
+  document.getElementById('ex_fecha_wrap_'+i).style.display=(tipo==='turno')?'block':'none';
+}
+
 function leerExtraida(i){
   function v(campo){ var e=document.getElementById('ex_'+campo+'_'+i); return e?e.value.trim():''; }
+  var tipoEl=document.getElementById('ex_tipo_'+i);
+  var tipo=tipoEl?tipoEl.value:(ADMIN_EXTRAIDAS[i].tipo||'empleo');
+  var fechaEl=document.getElementById('ex_fecha_inicio_'+i);
   return {
-    tipo: ADMIN_EXTRAIDAS[i].tipo||'empleo',
+    tipo: tipo,
     origen: 'comunidad',
     titulo: v('titulo'),
     comuna: v('comuna'),
@@ -846,7 +865,7 @@ function leerExtraida(i){
     requisitos: v('requisitos')||null,
     contacto_whatsapp: v('contacto_whatsapp'),
     descripcion: v('descripcion')||null,
-    fecha_inicio: ADMIN_EXTRAIDAS[i].fecha_inicio||null,
+    fecha_inicio: (tipo==='turno'&&fechaEl) ? fechaEl.value.trim() : (ADMIN_EXTRAIDAS[i].fecha_inicio||null),
     fecha_fin: ADMIN_EXTRAIDAS[i].fecha_fin||null,
     pago_turno: ADMIN_EXTRAIDAS[i].pago_turno||null
   };
@@ -859,6 +878,7 @@ async function publicarExtraida(i){
   if(!body.titulo){ msg.textContent='Falta el título.'; msg.className='form-msg err'; return false; }
   if(!body.comuna){ msg.textContent='Falta la comuna.'; msg.className='form-msg err'; return false; }
   if(!body.contacto_whatsapp){ msg.textContent='Falta el WhatsApp del reclutador (obligatorio en ofertas de la comunidad).'; msg.className='form-msg err'; return false; }
+  if(body.tipo==='turno' && !/^\d{4}-\d{2}-\d{2}/.test(body.fecha_inicio||'')){ msg.textContent='Es un turno puntual: agrega la fecha, o cambia el "Tipo" a "Empleo permanente" si es una pauta recurrente sin día fijo.'; msg.className='form-msg err'; return false; }
   btn.disabled=true; btn.textContent='Publicando…';
   try{
     var res=await fetch(API_URL+'/guardias/ofertas',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
