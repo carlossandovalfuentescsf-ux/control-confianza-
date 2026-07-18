@@ -398,7 +398,7 @@ select:disabled{opacity:0.4}
 <main>
 <div class="pagina" id="pInicio">
   <button onclick="abrirPeligro()" style="width:100%;background:#c0392b;color:#fff;border:none;padding:14px;border-radius:12px;font-size:16px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.5px">&#9888; Estoy en peligro</button>
-  <button onclick="abrirTelefonos()" style="width:100%;background:#1a1a1a;border:1px solid #3a3a3a;color:#d4a017;padding:11px;border-radius:11px;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:14px">&#128222; Tel&eacute;fonos que salvan vidas <span style="font-weight:400;color:#888">— intoxicaciones, rescate y m&aacute;s</span></button>
+  <button onclick="abrirTelefonos()" style="width:100%;background:rgba(21,101,192,.12);border:1px solid rgba(21,101,192,.55);color:#7abaff;padding:9px;border-radius:10px;font-size:12.5px;font-weight:800;cursor:pointer;margin-bottom:16px">&#128222; Tel&eacute;fonos que salvan vidas <span style="font-weight:400;color:#6a8db0">— intoxicaciones, rescate y m&aacute;s</span></button>
   <div class="titulo">Conoce el riesgo<br><em>antes de llegar</em></div>
   <p class="subtit">Datos de delincuencia por sector — gratis y sin limites. Con herramientas premium opcionales.</p>
   <p style="font-size:11px;color:#555;text-align:center;margin-top:-6px;margin-bottom:10px">Cifras actualizadas · <span data-datos="periodo">Q1 2026</span> · Fuente: Subsecretaria de Prevencion del Delito</p>
@@ -1716,6 +1716,13 @@ function compartirUbicacion(){
 }
 
 </script>
+
+<div style="padding:0 16px;margin-top:10px;">
+  <a href="guardias.html?f=app-cyc" onclick="try{cycTelemetria('seguridad-chile','click_controlmas',true)}catch(e){}" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#1a1a1a 0%,#221c08 100%);border:1px solid rgba(212,160,23,.5);border-radius:12px;padding:13px 14px;text-decoration:none;color:#f0e8d0">
+    <img src="icon-cplus-192.png" alt="Control+" style="width:40px;height:40px;border-radius:9px;flex-shrink:0">
+    <span style="text-align:left"><strong style="display:block;font-size:13.5px;color:#d4a017">&iquest;Trabajas en seguridad? Conoce Control+</strong><span style="font-size:11px;color:#aaa;line-height:1.4">La app del gremio: bolsa de trabajo con ofertas reales, Test OS10 gratis y gu&iacute;a de tus derechos.</span></span>
+  </a>
+</div>
 
 <div style="background:#1a1a1a;border-top:2px solid #d4a017;padding:14px 16px;text-align:center;margin-top:10px;">
   <p style="color:#aaa;font-size:12px;margin:0 0 10px 0;">Síguenos en redes sociales</p>
