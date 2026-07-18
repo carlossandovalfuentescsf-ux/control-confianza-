@@ -250,6 +250,40 @@ var NIVEL_TXT = {basico:"Básico", intermedio:"Intermedio", avanzado:"Avanzado"}
 // Formación 60% (art. 43.2) — niveles Básico e Intermedio; Especialización 70% (art. 53) — nivel Avanzado.
 function umbralNivel(n){ return n==="avanzado" ? 70 : 60; }
 
+// ====== MEDICIÓN POR CANAL (18-07-2026) ======
+// Mismo patrón que guardias.html: captura ?f= y lo persiste en localStorage
+// (clave compartida entre páginas — si ya llegó por guardias.html, se hereda solo).
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+var CPLUS_F=(function(){
+  try{
+    var f=(new URLSearchParams(location.search).get('f')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,30);
+    if(f){ localStorage.setItem('cplus_fuente',f); return f; }
+  }catch(e){}
+  try{ return localStorage.getItem('cplus_fuente')||''; }catch(e){ return ''; }
+})();
+function cycTelemetria(herramienta,accion,ok,detalle){
+  try{
+    fetch(API_URL+'/telemetria',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({herramienta:herramienta,accion:accion,ok:ok!==false,
+        detalle:detalle?String(detalle).slice(0,300):undefined,fuente:CPLUS_F||undefined})}).catch(function(){});
+  }catch(e){}
+}
+cycTelemetria('test-os10','carga_pagina',true);
+// Propaga la fuente real a los links de vuelta a Control+ (antes varios traían
+// ?f=test-os10 fijo, o ningún parámetro, perdiendo el canal real de origen) y mide el clic.
+(function(){
+  try{
+    document.querySelectorAll('a[href^="guardias.html"]').forEach(function(a){
+      var base=a.getAttribute('href').split('?')[0].split('#')[0];
+      var hash=a.getAttribute('href').indexOf('#guia')>=0?'#guia':'';
+      a.href=base+'?f='+encodeURIComponent(CPLUS_F||'test-os10')+hash;
+      a.addEventListener('click',function(){ cycTelemetria('test-os10','clic_bolsa_trabajo',true); });
+    });
+    var linkGuia=document.querySelector('a[href^="estudio-os10.html"]');
+    if(linkGuia) linkGuia.addEventListener('click',function(){ cycTelemetria('test-os10','clic_guia_estudio',true); });
+  }catch(e){}
+})();
+
 // ====== ESTADO ======
 var estado = null; // {modo, lista:[{qref, opciones:[{txt,correcta}], elegida}], idx}
 var nivelSel = "basico";
@@ -348,6 +382,7 @@ function iniciarEnsayo(n){
   guardarVistas(vistasAll);
   var preguntas = barajar(sel);
   estado = {modo:"ensayo", lista:preguntas.map(prepararPregunta), idx:0};
+  cycTelemetria('test-os10','inicio_ensayo',true,nivelSel+':'+n);
   ir("pantalla-quiz");
   render();
 }
@@ -465,6 +500,7 @@ function mostrarResultado(){
   var aprob = pct>=um;
   var examen = nivelSel==="avanzado" ? "el examen de Especialización (riesgo medio/alto)" : "el examen del curso de Formación";
   guardarStat(nivelSel, pct);
+  cycTelemetria('test-os10','resultado_ensayo',aprob,nivelSel+':'+pct+'%');
 
   var box = document.getElementById("res-box");
   box.className = "res-score " + (aprob?"aprob":"reprob");
