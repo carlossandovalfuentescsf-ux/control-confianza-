@@ -158,6 +158,24 @@ select:disabled{opacity:0.4}
 .pel-samu{background:#1565c0;color:#fff}
 .pel-wsp{background:#1a7a3c;color:#fff}
 .pel-cerrar{background:transparent;border:1px solid #444;color:#aaa;font-size:14px;margin-top:8px;padding:12px;border-radius:10px;width:100%;max-width:340px;cursor:pointer}
+.pel-nota{width:100%;max-width:340px;background:rgba(192,57,43,.12);border:1px dashed rgba(192,57,43,.5);border-radius:10px;padding:10px 12px;font-size:12px;color:#e8b8b0;line-height:1.5;margin-top:-6px}
+.pel-nota strong{color:#fff}
+.pel-otros{width:100%;max-width:340px;background:#222;border:1px solid #444;color:#d4a017;font-size:14px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer}
+#mtelefonos{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1600;align-items:flex-end;justify-content:center}
+#mtelefonos.open{display:flex}
+.tel-box{background:#1a1a1a;border-radius:20px 20px 0 0;padding:18px 14px 26px;width:100%;max-width:480px;border-top:2px solid #d4a017;max-height:88vh;overflow-y:auto}
+.tel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.tel-tit{font-size:17px;font-weight:900;color:#f0e8d0}
+.tel-cerrar{background:none;border:none;color:#888;font-size:18px;cursor:pointer;padding:4px 8px}
+.tel-intro{font-size:12px;color:#999;line-height:1.5;margin-bottom:12px}
+.tel-grupo{font-size:11px;font-weight:800;color:#d4a017;text-transform:uppercase;letter-spacing:1px;margin:14px 2px 7px}
+.tel-item{display:flex;align-items:center;gap:12px;background:#111;border:1px solid #262626;border-radius:11px;padding:11px 12px;margin-bottom:7px;text-decoration:none}
+.tel-item:active{border-color:#d4a017}
+.tel-num{flex-shrink:0;min-width:64px;text-align:center;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.45);color:#d4a017;font-size:13px;font-weight:900;padding:8px 6px;border-radius:8px}
+.tel-txt{font-size:12px;color:#bbb;line-height:1.45}
+.tel-txt b{display:block;color:#f0e8d0;font-size:13px}
+.tel-destacado{border-color:rgba(212,160,23,.6);background:#171204}
+.tel-fuente{font-size:10px;color:#666;line-height:1.5;margin-top:12px}
 .mbox{background:#1a1a1a;border-radius:20px 20px 0 0;padding:20px 16px 30px;width:100%;max-width:480px;border-top:2px solid #c0392b;max-height:90vh;overflow-y:auto}
 .mbox h2{font-size:19px;font-weight:900;margin-bottom:3px}
 .msub{font-size:12px;color:#888;margin-bottom:14px}
@@ -296,10 +314,47 @@ select:disabled{opacity:0.4}
 <div id="mpeligro">
   <div class="pel-tit">&#x26A0;&#xFE0F; Estoy en peligro</div>
   <div class="pel-sub">Elige una accion de emergencia</div>
-  <button class="pel-btn pel-133" onclick="location.href='tel:133'">&#128222; Llamar Carabineros 133</button>
-  <button class="pel-btn pel-samu" onclick="location.href='tel:131'">&#128657; Llamar SAMU 131</button>
+  <button class="pel-btn pel-133" onclick="try{cycTelemetria('seguridad-chile','tel_133',true)}catch(e){};location.href='tel:133'">&#128222; Llamar Carabineros 133</button>
+  <div class="pel-nota">Si quedas en espera, <strong>no cortes</strong>: los llamados se priorizan. Mientras esperas, al&eacute;jate del peligro y comparte tu ubicaci&oacute;n.</div>
+  <button class="pel-btn pel-samu" onclick="try{cycTelemetria('seguridad-chile','tel_131',true)}catch(e){};location.href='tel:131'">&#128657; Llamar SAMU 131</button>
   <button class="pel-btn pel-wsp" onclick="compartirUbicacion()">&#128205; Compartir mi ubicacion por WhatsApp</button>
+  <button class="pel-otros" onclick="cerrarPeligro();abrirTelefonos()">&#128222; Otros tel&eacute;fonos de emergencia</button>
   <button class="pel-cerrar" onclick="cerrarPeligro()">Cancelar</button>
+</div>
+
+<!-- TELEFONOS QUE SALVAN VIDAS (numeros verificados en fuente oficial 18-07-2026) -->
+<div id="mtelefonos">
+  <div class="tel-box">
+    <div class="tel-head">
+      <div class="tel-tit">&#128222; Tel&eacute;fonos que salvan vidas</div>
+      <button class="tel-cerrar" onclick="cerrarTelefonos()">&#10005;</button>
+    </div>
+    <p class="tel-intro">N&uacute;meros oficiales que la mayor&iacute;a no conoce hasta que los necesita. Todos gratuitos. Toca para llamar.</p>
+
+    <div class="tel-grupo">Emergencia ahora</div>
+    <a class="tel-item" href="tel:131" onclick="telLlamada('131')"><span class="tel-num">131</span><span class="tel-txt"><b>SAMU — Ambulancia</b>Emergencia m&eacute;dica</span></a>
+    <a class="tel-item" href="tel:132" onclick="telLlamada('132')"><span class="tel-num">132</span><span class="tel-txt"><b>Bomberos</b>Incendio, rescate, accidentes</span></a>
+    <a class="tel-item" href="tel:133" onclick="telLlamada('133')"><span class="tel-num">133</span><span class="tel-txt"><b>Carabineros</b>Delito en curso, peligro</span></a>
+    <a class="tel-item" href="tel:134" onclick="telLlamada('134')"><span class="tel-num">134</span><span class="tel-txt"><b>PDI</b>Investigaci&oacute;n policial</span></a>
+
+    <div class="tel-grupo">Salud</div>
+    <a class="tel-item tel-destacado" href="tel:226353800" onclick="telLlamada('cituc')"><span class="tel-num">2&nbsp;2635&nbsp;3800</span><span class="tel-txt"><b>CITUC — Intoxicaciones (24/7)</b>Medicamentos, productos de aseo, plaguicidas, mordeduras. El n&uacute;mero que pocos conocen y que ha salvado vidas.</span></a>
+    <a class="tel-item" href="tel:6003607777" onclick="telLlamada('salud_responde')"><span class="tel-num">600&nbsp;360&nbsp;7777</span><span class="tel-txt"><b>Salud Responde (24/7)</b>Orientaci&oacute;n m&eacute;dica del MINSAL</span></a>
+    <a class="tel-item" href="tel:*4141" onclick="telLlamada('4141')"><span class="tel-num">*4141</span><span class="tel-txt"><b>Prevenci&oacute;n del suicidio (24/7)</b>&laquo;No est&aacute;s solo, no est&aacute;s sola&raquo; — gratuito y confidencial</span></a>
+
+    <div class="tel-grupo">Familia y protecci&oacute;n</div>
+    <a class="tel-item" href="tel:1455" onclick="telLlamada('1455')"><span class="tel-num">1455</span><span class="tel-txt"><b>Violencia contra la mujer</b>Orientaci&oacute;n SernamEG, confidencial</span></a>
+    <a class="tel-item" href="tel:147" onclick="telLlamada('147')"><span class="tel-num">147</span><span class="tel-txt"><b>Fono Ni&ntilde;os</b>Carabineros — protecci&oacute;n infantil</span></a>
+    <a class="tel-item" href="tel:1412" onclick="telLlamada('1412')"><span class="tel-num">1412</span><span class="tel-txt"><b>SENDA</b>Drogas y alcohol — apoyo y orientaci&oacute;n</span></a>
+
+    <div class="tel-grupo">Naturaleza y rescate</div>
+    <a class="tel-item" href="tel:130" onclick="telLlamada('130')"><span class="tel-num">130</span><span class="tel-txt"><b>CONAF</b>Incendios forestales</span></a>
+    <a class="tel-item" href="tel:136" onclick="telLlamada('136')"><span class="tel-num">136</span><span class="tel-txt"><b>Socorro Andino</b>Emergencia en la monta&ntilde;a</span></a>
+    <a class="tel-item" href="tel:137" onclick="telLlamada('137')"><span class="tel-num">137</span><span class="tel-txt"><b>Autoridad Mar&iacute;tima</b>Playas y borde costero</span></a>
+    <a class="tel-item" href="tel:138" onclick="telLlamada('138')"><span class="tel-num">138</span><span class="tel-txt"><b>Rescate a&eacute;reo</b></span></a>
+
+    <p class="tel-fuente">N&uacute;meros verificados en fuentes oficiales (Gob. de Chile, cituc.uc.cl, ChileAtiende, MINSAL) — &uacute;ltima revisi&oacute;n 18-07-2026. Si un n&uacute;mero cambia, av&iacute;sanos con el bot&oacute;n de opini&oacute;n.</p>
+  </div>
 </div>
 
 <!-- ASISTENTE IA -->
@@ -334,7 +389,7 @@ select:disabled{opacity:0.4}
     </div>
   </div>
   <div style="display:flex;gap:6px;">
-    <a href="tel:133" style="background:#c0392b;color:white;border:none;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;display:flex;align-items:center;">📞 133</a>
+    <a href="#" onclick="abrirPeligro();return false" style="background:#c0392b;color:white;border:none;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;display:flex;align-items:center;">&#9888; SOS</a>
     <button id="chipCuenta" onclick="abrirModal()" title="Mi cuenta" style="background:#1a1a1a;border:1px solid rgba(212,160,23,.6);color:#d4a017;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">👤</button>
     <button class="btnprem" onclick="abrirModal()" style="background:#d4a017;color:#111;">Planes</button>
   </div>
@@ -342,7 +397,8 @@ select:disabled{opacity:0.4}
 
 <main>
 <div class="pagina" id="pInicio">
-  <button onclick="abrirPeligro()" style="width:100%;background:#c0392b;color:#fff;border:none;padding:14px;border-radius:12px;font-size:16px;font-weight:900;cursor:pointer;margin-bottom:14px;letter-spacing:.5px">&#9888; Estoy en peligro</button>
+  <button onclick="abrirPeligro()" style="width:100%;background:#c0392b;color:#fff;border:none;padding:14px;border-radius:12px;font-size:16px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.5px">&#9888; Estoy en peligro</button>
+  <button onclick="abrirTelefonos()" style="width:100%;background:#1a1a1a;border:1px solid #3a3a3a;color:#d4a017;padding:11px;border-radius:11px;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:14px">&#128222; Tel&eacute;fonos que salvan vidas <span style="font-weight:400;color:#888">— intoxicaciones, rescate y m&aacute;s</span></button>
   <div class="titulo">Conoce el riesgo<br><em>antes de llegar</em></div>
   <p class="subtit">Datos de delincuencia por sector — gratis y sin limites. Con herramientas premium opcionales.</p>
   <p style="font-size:11px;color:#555;text-align:center;margin-top:-6px;margin-bottom:10px">Cifras actualizadas · <span data-datos="periodo">Q1 2026</span> · Fuente: Subsecretaria de Prevencion del Delito</p>
@@ -473,28 +529,25 @@ select:disabled{opacity:0.4}
     <div class="rcomuna" id="rNom"></div>
     <div class="rnivel" id="rNivel"></div>
   </div>
-  <div class="sosbarra">
-    <button class="btnsos" onclick="abrirPeligro()" style="background:#c0392b;color:#fff;border:none">&#9888; Peligro</button>
-    <button class="btnubic2" onclick="compartirUbicacion()">Compartir ubicacion</button>
-    <button class="btnsos" onclick="location.href='tel:133'">SOS 133</button>
+  <div style="padding:2px 10px 0 10px">
+    <div style="font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin:4px 2px 8px">Herramientas gratuitas</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <a href="sos-auto.html" style="display:block;background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.45);text-align:center;padding:12px 6px;text-decoration:none;border-radius:10px"><span style="display:block;font-size:13px;font-weight:800;color:#f0a090">🚗 SOS Auto</span><span style="display:block;font-size:9.5px;color:#999;margin-top:2px">Robo y portonazo paso a paso</span><span style="display:inline-block;font-size:9px;font-weight:700;color:#8fce8f;border:1px solid #2e4a2e;border-radius:99px;padding:1px 7px;margin-top:5px">Gratis</span></a>
+      <a href="plan-hogar.html" style="display:block;background:rgba(100,160,212,.12);border:1px solid rgba(100,160,212,.45);text-align:center;padding:12px 6px;text-decoration:none;border-radius:10px"><span style="display:block;font-size:13px;font-weight:800;color:#7abaff">🏠 Plan Hogar</span><span style="display:block;font-size:9.5px;color:#999;margin-top:2px">Diagn&oacute;stico de tu casa</span><span style="display:inline-block;font-size:9px;font-weight:700;color:#8fce8f;border:1px solid #2e4a2e;border-radius:99px;padding:1px 7px;margin-top:5px">Gratis · informe en Plan Personal</span></a>
+      <a href="georef-predio.html" style="display:block;background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.45);text-align:center;padding:12px 6px;text-decoration:none;border-radius:10px"><span style="display:block;font-size:13px;font-weight:800;color:#2ecc71">🗺️ Mi Cobertura</span><span style="display:block;font-size:9.5px;color:#999;margin-top:2px">Plano de tu propiedad</span><span style="display:inline-block;font-size:9px;font-weight:700;color:#8fce8f;border:1px solid #2e4a2e;border-radius:99px;padding:1px 7px;margin-top:5px">Gratis · informe en Plan Personal</span></a>
+      <a href="matriz-riesgo.html" style="display:block;background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.45);text-align:center;padding:12px 6px;text-decoration:none;border-radius:10px"><span style="display:block;font-size:13px;font-weight:800;color:#d4a017">🧮 Riesgo Empresa</span><span style="display:block;font-size:9.5px;color:#999;margin-top:2px">Calculadora OS.10</span><span style="display:inline-block;font-size:9px;font-weight:700;color:#8fce8f;border:1px solid #2e4a2e;border-radius:99px;padding:1px 7px;margin-top:5px">Gratis · completo en Plan Personal/Empresa</span></a>
+    </div>
   </div>
-
-  <div style="padding:6px 10px 0 10px;">
-    <a href="#" data-wa-msg="Hola%2C%20consulté%20la%20app%20de%20seguridad%20y%20me%20interesa%20una%20cotización%20para%20mi%20sector." target="_blank" style="display:block;background:#d4a017;color:#111;text-align:center;padding:12px;font-size:15px;font-weight:900;text-decoration:none;border-radius:10px;">💬 Solicitar cotización gratuita</a>
-  </div>
-  <div style="padding:4px 10px 0 10px;display:flex;gap:8px;">
-    <a href="matriz-riesgo.html" style="flex:1;display:block;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.5);color:#d4a017;text-align:center;padding:14px 6px;font-size:13px;font-weight:800;text-decoration:none;border-radius:10px;white-space:nowrap">🧮 Riesgo Empresa</a>
-    <a href="plan-hogar.html" style="flex:1;display:block;background:rgba(100,160,212,.15);border:1px solid rgba(100,160,212,.5);color:#7abaff;text-align:center;padding:14px 6px;font-size:13px;font-weight:800;text-decoration:none;border-radius:10px;white-space:nowrap">🏠 Plan Hogar</a>
-    <a href="georef-predio.html" style="flex:1;display:block;background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.5);color:#2ecc71;text-align:center;padding:14px 6px;font-size:13px;font-weight:800;text-decoration:none;border-radius:10px;white-space:nowrap">🗺️ Mi Cobertura</a>
-  </div>
-  <div style="padding:8px 10px 0 10px;">
+  <div style="padding:12px 10px 0 10px">
+    <div style="font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin:0 2px 8px">Servicios para empresas y traslados</div>
     <a href="directiva.html" style="display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,rgba(212,160,23,.28),rgba(212,160,23,.1));border:1px solid #d4a017;color:#f0e8d0;padding:13px 14px;text-decoration:none;border-radius:12px;text-align:center;">
       <span style="font-size:22px">📄</span>
       <span><strong style="display:block;font-size:14px;color:#d4a017">Directiva de Funcionamiento</strong><span style="font-size:11px;color:#aaa">Documento legal para contratar guardias · Plan Empresa</span></span>
     </a>
+    <a href="traslado-vip.html" style="display:block;background:rgba(200,165,88,.12);border:1px solid rgba(200,165,88,.55);color:#c8a558;text-align:center;padding:12px 8px;font-size:13px;font-weight:800;text-decoration:none;border-radius:10px;margin-top:8px">🚘 Traslado VIP · Transporte de alta seguridad</a>
   </div>
-  <div style="padding:8px 10px 0 10px;">
-    <a href="traslado-vip.html" style="display:block;background:rgba(200,165,88,.12);border:1px solid rgba(200,165,88,.55);color:#c8a558;text-align:center;padding:12px 8px;font-size:13px;font-weight:800;text-decoration:none;border-radius:10px;">🚘 Traslado VIP · Transporte de alta seguridad</a>
+  <div style="padding:12px 10px 0 10px;">
+    <a href="#" data-wa-msg="Hola%2C%20us%C3%A9%20la%20app%20de%20seguridad%20y%20quiero%20cotizar%20guardias%20o%20asesor%C3%ADa%20para%20mi%20empresa%20o%20comunidad." target="_blank" style="display:block;background:#d4a017;color:#111;text-align:center;padding:12px;font-size:14px;font-weight:900;text-decoration:none;border-radius:10px;">💬 ¿Necesitas guardias o asesor&iacute;a? Cotiza gratis</a>
   </div>
 
   <div style="display:flex;gap:8px;padding:6px 10px 4px 10px;">
@@ -1448,6 +1501,9 @@ function cerrarModal(){document.getElementById("modal").className="mbg";}
 function togglePinfo(btn){var bloque=btn.nextElementSibling;var abierto=bloque.classList.toggle("open");btn.innerHTML=abierto?"ⓘ ¿Qué hace cada herramienta? ▴":"ⓘ ¿Qué hace cada herramienta? ▾";}
 function abrirPeligro(){document.getElementById("mpeligro").classList.add("open");}
 function cerrarPeligro(){document.getElementById("mpeligro").classList.remove("open");}
+function abrirTelefonos(){document.getElementById("mtelefonos").classList.add("open");try{cycTelemetria('seguridad-chile','abrir_telefonos',true)}catch(e){}}
+function cerrarTelefonos(){document.getElementById("mtelefonos").classList.remove("open");}
+function telLlamada(cual){try{cycTelemetria('seguridad-chile','tel_llamada',true,cual)}catch(e){}}
 function restaurarUltimaComuna(){try{var ult=JSON.parse(localStorage.getItem('cyc_lastCom')||'null');if(ult&&ult.key){mostrar(ult.key,ult.nombre,0);}}catch(e){}}
 function esperarLeafletYRestaurar(intentos){
   if(typeof L!=="undefined"){restaurarUltimaComuna();return;}
