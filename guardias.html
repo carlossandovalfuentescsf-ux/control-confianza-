@@ -215,7 +215,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
 <nav class="tabs">
   <a class="tab" href="#ofertas" data-tab="ofertas">Ofertas</a>
   <a class="tab" href="#guia" data-tab="guia">Guía</a>
-  <a class="tab" href="test-os10.html?f=controlmas" style="color:#d4a017">🎓 Test OS10</a>
+  <a class="tab" id="tabTestOS10" href="test-os10.html?f=controlmas" style="color:#d4a017">🎓 Test OS10</a>
   <a class="tab" href="#sueldo" data-tab="sueldo">Sueldo</a>
   <a class="tab" href="#perfil" data-tab="perfil">Mi Perfil</a>
   <a class="tab" href="#mis-postulaciones" data-tab="mis-postulaciones">Postulaciones</a>
@@ -299,6 +299,37 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
 <script src="cuadrante.js"></script>
 <script>
 const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+
+/* Fuente/canal de captación (?f= en la URL) — persiste en localStorage para que se
+   mantenga aunque el visitante navegue dentro del sitio sin el parámetro (18-07-2026,
+   medición por canal de la bolsa de trabajo + Test OS10, mismo patrón que MiCuadra). */
+var CPLUS_F=(function(){
+  try{
+    var f=(new URLSearchParams(location.search).get('f')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,30);
+    if(f){ localStorage.setItem('cplus_fuente',f); return f; }
+  }catch(e){}
+  try{ return localStorage.getItem('cplus_fuente')||''; }catch(e){ return ''; }
+})();
+function cycTelemetria(herramienta,accion,ok,detalle){
+  try{
+    fetch(API_URL+'/telemetria',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({herramienta:herramienta,accion:accion,ok:ok!==false,
+        detalle:detalle?String(detalle).slice(0,300):undefined,fuente:CPLUS_F||undefined})}).catch(function(){});
+  }catch(e){}
+}
+cycTelemetria('guardias','carga_pagina',true);
+// Propaga la fuente real al tab del Test OS10 (antes pisaba cualquier canal entrante
+// con un ?f=controlmas fijo, perdiendo la atribución) y mide el clic.
+(function(){
+  try{
+    var tabTest=document.getElementById('tabTestOS10');
+    if(tabTest){
+      tabTest.href='test-os10.html?f='+encodeURIComponent(CPLUS_F||'controlmas');
+      tabTest.addEventListener('click',function(){ cycTelemetria('guardias','clic_test_os10',true); });
+    }
+  }catch(e){}
+})();
+
 var CYC_TOKEN=localStorage.getItem('cyc_token')||null;
 var CYC_EMAIL=null;
 var CYC_PERFIL=null; // null=sin cargar aún, false=no tiene perfil, {..}=tiene perfil
@@ -468,6 +499,7 @@ async function postularA(ofertaId){
     if(res.ok){
       btn.textContent='Postulado ✓';
       if(msg){ msg.textContent='¡Listo! Puedes ver el estado en "Mis Postulaciones".'; msg.className='oferta-msg ok'; }
+      cycTelemetria('guardias','postular_oferta',true);
     }else{
       btn.disabled=false; btn.textContent='Postular';
       if(msg){ msg.textContent=data.error||'No se pudo postular.'; msg.className='oferta-msg err'; }
@@ -1236,8 +1268,8 @@ function calcularSueldo(){
 }
 
 /* ---------- Control+ Premium: inscripción de interés (validación de demanda) ----------
-   fuente = 'cplus-' + ?f= de la URL (mide qué canal trae inscritos: IG, grupo, directo). */
-var CPLUS_F=(function(){ try{ return (new URLSearchParams(location.search).get('f')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,30); }catch(e){ return ''; } })();
+   fuente = 'cplus-' + ?f= de la URL (mide qué canal trae inscritos: IG, grupo, directo).
+   CPLUS_F ya está declarado arriba, junto a API_URL. */
 async function inscribirPremium(){
   var msg=document.getElementById('pMsg');
   var email=(document.getElementById('pEmail').value||'').trim();
