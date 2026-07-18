@@ -738,14 +738,20 @@ function pintarOfertasAdmin(){
 
 /* ---------- Sesión 3.5: pegar del grupo → extraer con IA → previsualizar → publicar ---------- */
 var ADMIN_EXTRAIDAS=[];
-function vistaPegarAbrir(){ ADMIN_EXTRAIDAS=[]; ADMIN_VISTA='pegar'; renderAdmin(); }
+var ADMIN_IMAGEN=null; // {data:base64SinPrefijo, media_type} — captura adjunta, opcional
+function vistaPegarAbrir(){ ADMIN_EXTRAIDAS=[]; ADMIN_IMAGEN=null; ADMIN_VISTA='pegar'; renderAdmin(); }
 
 function vistaPegar(){
   var html='<button class="btn-salir" style="margin-bottom:12px" onclick="volverListaAdmin()">← Volver a ofertas</button>'+
     '<div class="card">'+
     '<div class="auth-title">Pegar ofertas del grupo</div>'+
-    '<div class="auth-sub">Copia uno o varios mensajes del grupo de WhatsApp y pégalos aquí. La IA los separa y arma las tarjetas; tú revisas y publicas. Se publican con sello «De la comunidad».</div>'+
-    '<textarea id="pegarTexto" rows="8" style="width:100%;background:#111;border:1px solid #333;border-radius:10px;color:#eee;padding:10px;font-size:.8rem" placeholder="Pega aquí los mensajes…"></textarea>'+
+    '<div class="auth-sub">Copia uno o varios mensajes del grupo de WhatsApp, o adjunta directamente una captura de pantalla. La IA los separa y arma las tarjetas; tú revisas y publicas. Se publican con sello «De la comunidad».</div>'+
+    '<textarea id="pegarTexto" rows="8" style="width:100%;background:#111;border:1px solid #333;border-radius:10px;color:#eee;padding:10px;font-size:.8rem" placeholder="Pega aquí los mensajes (o solo adjunta la captura abajo)…"></textarea>'+
+    '<div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+
+      '<label class="btn-guardar" style="background:#2a2a2a;color:#d4a017;border:1px solid #d4a017;display:inline-block;cursor:pointer;margin:0">📷 Adjuntar captura<input type="file" id="pegarImagenInput" accept="image/*" style="display:none" onchange="adjuntarCaptura(this.files[0])"></label>'+
+      '<span id="pegarImagenNombre" style="font-size:.75rem;color:#999"></span>'+
+    '</div>'+
+    '<div id="pegarImagenPreview"></div>'+
     '<button class="btn-guardar" id="btnExtraer" onclick="extraerOfertas()" style="margin-top:10px">🤖 Extraer ofertas</button>'+
     '<div class="form-msg" id="pegarMsg"></div>'+
     '</div>'+
@@ -753,14 +759,35 @@ function vistaPegar(){
   return html;
 }
 
+function adjuntarCaptura(file){
+  var nombreEl=document.getElementById('pegarImagenNombre');
+  var previewEl=document.getElementById('pegarImagenPreview');
+  if(!file){ ADMIN_IMAGEN=null; nombreEl.textContent=''; previewEl.innerHTML=''; return; }
+  if(!/^image\//.test(file.type)){ nombreEl.textContent='Ese archivo no es una imagen.'; return; }
+  if(file.size>6*1024*1024){ nombreEl.textContent='Imagen muy pesada (máx. 6 MB).'; ADMIN_IMAGEN=null; return; }
+  var reader=new FileReader();
+  reader.onload=function(){
+    var base64=String(reader.result).split(',')[1]||'';
+    ADMIN_IMAGEN={data:base64, media_type:file.type};
+    nombreEl.textContent=file.name;
+    previewEl.innerHTML='<div style="margin-top:8px;position:relative;display:inline-block">'+
+      '<img src="'+String(reader.result)+'" style="max-width:180px;max-height:180px;border-radius:8px;border:1px solid #333">'+
+      '<button onclick="adjuntarCaptura(null);document.getElementById(\'pegarImagenInput\').value=\'\'" style="position:absolute;top:-8px;right:-8px;background:#c9503f;color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer">✕</button>'+
+      '</div>';
+  };
+  reader.readAsDataURL(file);
+}
+
 async function extraerOfertas(){
   var msg=document.getElementById('pegarMsg');
   var btn=document.getElementById('btnExtraer');
   var texto=document.getElementById('pegarTexto').value.trim();
-  if(texto.length<20){ msg.textContent='Pega al menos un mensaje completo.'; msg.className='form-msg err'; return; }
+  if(texto.length<20 && !ADMIN_IMAGEN){ msg.textContent='Pega al menos un mensaje completo, o adjunta una captura.'; msg.className='form-msg err'; return; }
   btn.disabled=true; btn.textContent='Extrayendo…'; msg.textContent='';
   try{
-    var res=await fetch(API_URL+'/guardias/admin/extraer',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({texto:texto})});
+    var body={texto:texto};
+    if(ADMIN_IMAGEN) body.imagen=ADMIN_IMAGEN;
+    var res=await fetch(API_URL+'/guardias/admin/extraer',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
     var data=await res.json();
     if(!res.ok){ msg.textContent=data.error||'No se pudo extraer.'; msg.className='form-msg err'; return; }
     ADMIN_EXTRAIDAS=(data.ofertas||[]).map(function(o){ o._publicada=false; return o; });
