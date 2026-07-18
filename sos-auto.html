@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS Auto — robo de vehículo y portonazo: qué hacer paso a paso | Control y Confianza</title>
+<meta name="description" content="¿Te robaron el auto o sufriste un portonazo? Guía gratis paso a paso de una empresa de seguridad chilena: dónde denunciar, plazos del seguro, bloqueo del TAG y cómo aumentar las opciones de encontrarlo.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Control y Confianza">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="SOS Auto — robo y portonazo: qué hacer paso a paso">
+<meta property="og:description" content="Guía gratis y sin registro: denuncia, plazos del seguro, bloqueo del TAG y difusión segura. De una empresa de seguridad chilena.">
+<meta property="og:url" content="https://app.controlyconfianza.cl/sos-auto.html">
+<meta property="og:image" content="https://app.controlyconfianza.cl/og-app.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SOS Auto — robo y portonazo: qué hacer paso a paso">
+<meta name="twitter:description" content="Guía gratis y sin registro: denuncia, plazos del seguro, bloqueo del TAG y difusión segura.">
+<meta name="twitter:image" content="https://app.controlyconfianza.cl/og-app.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh;}
+a{color:#d4a017;}
+
+/* Header */
+.header{background:linear-gradient(135deg,#1a1a1a,#111);padding:16px 20px;text-align:center;border-bottom:1px solid #222;position:relative}
+.header .volver{position:absolute;left:12px;top:16px;display:inline-flex;align-items:center;gap:5px;font-size:.72rem;color:#888;text-decoration:none;border:1px solid #333;padding:4px 10px;border-radius:99px}
+.header img{height:38px;margin-bottom:6px;border-radius:8px}
+.header h1{font-size:1.05rem;font-weight:800}
+.header h1 span{color:#d4a017}
+.header p{font-size:.72rem;color:#888;margin-top:2px}
+
+.container{max-width:600px;margin:0 auto;padding:16px 14px 90px;}
+
+/* Cabecera de propósito (regla: toda herramienta explica para qué es) */
+.proposito{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:12px;}
+.proposito .badge{display:inline-flex;align-items:center;gap:5px;background:#1a1200;border:1px solid #d4a017;color:#d4a017;font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:99px;margin-bottom:10px;}
+.proposito p{font-size:.84rem;color:#ccc;line-height:1.55;}
+.proposito p b{color:#f0e8d0;}
+.proposito .dato{font-size:.76rem;color:#999;margin-top:8px;line-height:1.5;}
+.sello{background:#161616;border:1px dashed #333;border-radius:10px;padding:11px 13px;font-size:.72rem;color:#999;line-height:1.5;margin-top:10px;}
+.sello b{color:#d4a017;}
+
+/* Emergencia */
+.emergencia{display:flex;gap:8px;margin-bottom:14px;}
+.btn-emergencia{flex:1;display:block;text-align:center;background:#2a1200;border:1px solid #7a3a00;color:#ffb066;font-weight:800;font-size:.9rem;padding:13px 8px;border-radius:12px;text-decoration:none;}
+.btn-emergencia small{display:block;font-weight:400;font-size:.66rem;color:#c98;margin-top:2px;}
+
+/* Selector de modo */
+.modos{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.modo-card{display:block;width:100%;text-align:left;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:16px;cursor:pointer;color:#f0e8d0;font-family:inherit;}
+.modo-card:active{border-color:#d4a017;}
+.modo-card.activa{border-color:#d4a017;background:#1c1808;}
+.modo-card .mtitulo{font-size:.95rem;font-weight:800;display:flex;align-items:center;gap:8px;}
+.modo-card .mdesc{font-size:.76rem;color:#999;margin-top:4px;line-height:1.45;}
+
+.seccion{display:none;}
+.seccion.activa{display:block;}
+
+/* Pasos del wizard */
+.progreso{font-size:.72rem;color:#888;margin:4px 2px 10px;}
+.progreso b{color:#d4a017;}
+.paso{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;margin-bottom:10px;overflow:hidden;}
+.paso.hecho{border-color:#2e4a2e;}
+.paso-cab{display:flex;align-items:flex-start;gap:10px;padding:14px;cursor:pointer;}
+.paso-num{flex-shrink:0;width:26px;height:26px;border-radius:99px;background:#222;color:#d4a017;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:1px solid #3a3a3a;}
+.paso.hecho .paso-num{background:#1d3a1d;color:#8fce8f;border-color:#2e4a2e;}
+.paso-tit{font-size:.88rem;font-weight:800;line-height:1.35;flex:1;padding-top:3px;}
+.paso-flecha{color:#666;font-size:.8rem;padding-top:5px;}
+.paso-cuerpo{display:none;padding:0 14px 14px 50px;}
+.paso.abierto .paso-cuerpo{display:block;}
+.paso-cuerpo p, .paso-cuerpo li{font-size:.8rem;color:#ccc;line-height:1.55;}
+.paso-cuerpo ul{padding-left:16px;margin:6px 0;}
+.paso-cuerpo .ojo{background:#1a1200;border:1px solid #3a2e00;border-radius:9px;padding:10px 12px;font-size:.75rem;color:#d4a017;line-height:1.5;margin:8px 0;}
+.paso-acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.btn-accion{display:inline-block;background:#d4a017;color:#111;font-weight:800;font-size:.78rem;padding:9px 14px;border-radius:9px;text-decoration:none;border:none;cursor:pointer;font-family:inherit;}
+.btn-accion.sec{background:#222;color:#d4a017;border:1px solid #3a3a3a;}
+.chk-listo{display:inline-flex;align-items:center;gap:7px;margin-top:12px;font-size:.78rem;color:#8fce8f;cursor:pointer;user-select:none;}
+.chk-listo input{width:17px;height:17px;accent-color:#2e7d32;}
+.fuente-mini{font-size:.66rem;color:#777;margin-top:9px;line-height:1.4;}
+.fuente-mini a{color:#997;}
+
+/* Bloques portonazo */
+.ptabs{display:flex;gap:6px;margin-bottom:12px;}
+.ptab{flex:1;background:#1a1a1a;border:1px solid #2a2a2a;color:#999;font-size:.76rem;font-weight:700;padding:9px 4px;border-radius:10px;cursor:pointer;font-family:inherit;}
+.ptab.activa{background:#1c1808;border-color:#d4a017;color:#d4a017;}
+.pbloque{display:none;}
+.pbloque.activa{display:block;}
+.consejo{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:13px 14px;margin-bottom:9px;}
+.consejo .ctit{font-size:.82rem;font-weight:800;margin-bottom:4px;}
+.consejo p{font-size:.78rem;color:#bbb;line-height:1.5;}
+.regla-oro{background:#2a1200;border:1px solid #7a3a00;border-radius:12px;padding:14px;margin-bottom:12px;}
+.regla-oro .ctit{color:#ffb066;font-size:.85rem;font-weight:800;margin-bottom:5px;}
+.regla-oro p{font-size:.8rem;color:#dcb;line-height:1.55;}
+
+/* Premium teaser */
+.prem-tit{font-size:.92rem;font-weight:800;margin:22px 2px 4px;}
+.prem-sub{font-size:.74rem;color:#888;margin:0 2px 12px;line-height:1.5;}
+.prem-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.prem-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:13px;position:relative;}
+.prem-card .ptit{font-size:.78rem;font-weight:800;margin-bottom:4px;}
+.prem-card .pdesc{font-size:.68rem;color:#999;line-height:1.45;}
+.prem-card .ptag{display:inline-block;background:#1a1200;border:1px solid #3a2e00;color:#d4a017;font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:99px;margin-top:8px;}
+@media(max-width:380px){.prem-grid{grid-template-columns:1fr;}}
+
+/* Fuentes y footer */
+.fuentes{background:#161616;border:1px solid #262626;border-radius:12px;padding:14px;margin-top:20px;}
+.fuentes h3{font-size:.76rem;color:#d4a017;margin-bottom:8px;}
+.fuentes li{font-size:.68rem;color:#999;line-height:1.6;margin-left:16px;}
+.fuentes .rev{font-size:.64rem;color:#666;margin-top:8px;}
+.disclaimer{font-size:.66rem;color:#666;line-height:1.5;margin-top:14px;padding:0 2px;}
+.eco{margin-top:22px;border-top:1px solid #222;padding-top:16px;}
+.eco h3{font-size:.8rem;color:#888;margin-bottom:10px;}
+.eco a{display:block;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:11px;padding:12px 14px;margin-bottom:8px;text-decoration:none;}
+.eco .etit{font-size:.8rem;font-weight:800;color:#f0e8d0;}
+.eco .edesc{font-size:.7rem;color:#999;margin-top:2px;line-height:1.4;}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a class="volver" href="index.html">← App C&amp;C</a>
+  <img src="icon-192.png" alt="Logo Control y Confianza">
+  <h1>SOS <span>Auto</span></h1>
+  <p>Robo y portonazo: qué hacer paso a paso</p>
+</header>
+
+<div class="container">
+
+  <!-- Para qué es y por qué es útil -->
+  <div class="proposito">
+    <span class="badge">🛡 Gratis · sin registro · funciona offline si instalaste la App</span>
+    <p><b>SOS Auto te guía paso a paso si te roban el auto o sufres un portonazo:</b> qué hacer primero, dónde denunciar, los plazos del seguro, cómo bloquear el TAG y cómo aumentar las opciones de encontrarlo.</p>
+    <p class="dato">En Chile se roban alrededor de 100 vehículos al día y la mayoría de las víctimas no tiene seguro que la oriente. Esta guía existe para que en ese momento no tengas que adivinar.</p>
+    <div class="sello"><b>Orientación de Control y Confianza CSF SpA</b>, empresa de seguridad chilena (asesor acreditado OS.10). No rastreamos ni recuperamos vehículos: la búsqueda y recuperación es función exclusiva de Carabineros (SEBV). Aquí te ordenamos los pasos que sí dependen de ti.</div>
+  </div>
+
+  <!-- Emergencia siempre visible -->
+  <div class="emergencia">
+    <a class="btn-emergencia" href="tel:133" onclick="tele('llamada_133')">📞 133<small>Carabineros</small></a>
+    <a class="btn-emergencia" href="tel:134" onclick="tele('llamada_134')">📞 134<small>PDI</small></a>
+  </div>
+
+  <!-- Selector de modo -->
+  <div class="modos">
+    <button class="modo-card" id="btn-robo" onclick="verSeccion('robo')">
+      <div class="mtitulo">🚨 Me robaron el auto</div>
+      <div class="mdesc">Checklist paso a paso: denuncia, TAG, seguro, encargo, difusión segura y documentos. Tu avance queda guardado en este teléfono.</div>
+    </button>
+    <button class="modo-card" id="btn-portonazo" onclick="verSeccion('portonazo')">
+      <div class="mtitulo">⚠️ Portonazo</div>
+      <div class="mdesc">Cómo prevenirlo, qué hacer durante (regla de oro: tu vida vale más que el auto) y los pasos después.</div>
+    </button>
+  </div>
+
+  <!-- ====== SECCIÓN ROBO ====== -->
+  <div class="seccion" id="sec-robo">
+    <p class="progreso">Tu avance: <b id="prog-txt">0 de 8 pasos</b> — puedes cerrar y retomar cuando quieras.</p>
+
+    <div class="paso" data-paso="p1">
+      <div class="paso-cab" onclick="togglePaso(this)">
+        <div class="paso-num">1</div><div class="paso-tit">Descarta lo obvio (1 minuto)</div><div class="paso-flecha">▾</div>
+      </div>
+      <div class="paso-cuerpo">
+        <p>Antes de asumir el robo: ¿pudo llevárselo la grúa (estacionamiento prohibido o multas)? ¿Alguien de tu familia lo tomó? Una llamada a la municipalidad del sector o a tu casa te ahorra una denuncia en falso.</p>
+        <label class="chk-listo"><input type="checkbox" onchange="marcar(this)"> Listo, fue robo</label>
+      </div>
+    </div>
+
+    <div class="paso" data-paso="p2">
+      <div class="paso-cab" onclick="togglePaso(this)">
+        <div class="paso-num">2</div><div class="paso-tit">Denuncia de inmediato — presencial</div><div class="paso-flecha">▾</div>
+      </div>
+      <div class="paso-cuerpo">
+        <p>Llama al <b>133</b> (Carabineros) o al <b>134</b> (PDI), o ve a la comisaría más cercana. La denuncia deja tu patente con <b>encargo por robo</b>: desde ese momento todo control policial y lector de patentes del país puede detectarla. Además es requisito del seguro.</p>
+        <div class="ojo">⚠️ El robo de un vehículo <b>no se denuncia por Comisaría Virtual</b> — requiere denuncia presencial (la virtual solo acepta robo de <i>accesorios</i>, robo por sorpresa y hurtos).</div>
+        <p>También existe la <b>Denuncia en Línea de la Fiscalía</b> (con Clave Única). Es válida, pero <b>no es inmediata</b>: se deriva a una fiscalía local que te contacta después. Úsala como respaldo o si no puedes ir presencial — para un auto recién robado, el 133 y la comisaría van primero porque activan el encargo al instante.</p>
+        <p>Ten a mano: <b>patente, marca, modelo, color, lugar y hora</b> en que lo dejaste, y el N° de chasis/VIN si lo tienes.</p>
+        <div class="paso-acciones">
+          <a class="btn-accion" href="tel:133" onclick="tele('llamada_133')">Llamar 133</a>
+          <a class="btn-accion sec" href="https://www.chileatiende.gob.cl/fichas/32194-denuncia-ante-carabineros-por-robo-y-otros-delitos" target="_blank" rel="noopener">Cómo se hace la denuncia</a>
+        </div>
+        <p class="fuente-mini">Fuentes: <a href="https://www.chileatiende.gob.cl/fichas/32194-denuncia-ante-carabineros-por-robo-y-otros-delitos" target="_blank" rel="noopener">ChileAtiende — Denuncia ante Carabineros</a> · <a href="https://agenda.minpublico.cl/denuncia/" target="_blank" rel="noopener">Fiscalía — Denuncia en Línea</a></p>
+        <label class="chk-listo"><input type="checkbox" onchange="marcar(this)"> Denuncia hecha</label>
+      </div>
+    </div>
+
+    <div class="paso" data-paso="p3">
+      <div class="paso-cab" onclick="togglePaso(this)">
+        <div class="paso-num">3</div><div class="paso-tit">Bloquea el TAG hoy mismo</div><div class="paso-flecha">▾</div>
+      </div>
+      <div class="paso-cuerpo">
+        <p>Si el auto tiene TAG, avisa a tu concesionaria de autopista (idealmente dentro de <b>2 días hábiles</b>, con la denuncia en mano). Si no lo bloqueas, cada pórtico que crucen los ladrones es deuda a tu nombre — y los movimientos del TAG pueden ayudar a la investigación.</p>
+        <p class="fuente-mini">Fuente: <a href="https://peajeschile.com/auto-robado-bloqueo/" target="_blank" rel="noopener">Peajes de Chile — bloqueo por robo</a> y tu concesionaria (Autopase, Vespucio Norte, etc.)</p>
+        <label class="chk-listo"><input type="checkbox" onchange="marcar(this)"> TAG bloqueado (o no tenía)</label>
+      </div>
+    </div>
+
+    <div class="paso" data-paso="p4">
+      <div class="paso-cab" onclick="togglePaso(this)">
+        <div class="paso-num">4</div><div class="paso-tit">¿Tienes seguro? Avísale ya</div><div class="paso-flecha">▾</div>
+      </div>
+      <div class="paso-cuerpo">
+        <p>Notifica a tu compañía <b>lo antes posible</b>: el plazo lo fija tu póliza y suele ser de <b>10 días o menos</b> — hay siniestros rechazados por avisar tarde. Pide el número de siniestro.</p>
+        <p>Si el auto no aparece en <b>30 días</b> desde el robo, se declara pérdida total y corresponde la indemnización según tu póliza.</p>
+        <div class="ojo">¿Sin seguro? No estás solo — es el caso de la mayoría. Los pasos 2, 3, 5 y 6 son gratis y son los que realmente mueven la búsqueda.</div>
+        <p class="fuente-mini">Fuentes: <a href="https://portal.aach.cl/preguntas-frecuentes/cual-es-el-plazo-para-denunciar-un-siniestro-en-un-seguro-de-auto-chile/" target="_blank" rel="noopener">AACH — plazos de denuncio</a> · <a href="https://portal.aach.cl/preguntas-frecuentes/como-funciona-un-seguro-en-el-caso-del-robo-de-un-vehiculo/" target="_blank" rel="noopener">AACH — cómo opera el seguro en robo</a></p>
+        <label class="chk-listo"><input type="checkbox" onchange="marcar(this)"> Seguro avisado (o no tengo)</label>
+      </div>
+    </div>
+
+    <div class="paso" data-paso="p5">
+      <div class="paso-cab" onclick="togglePaso(this)">
+        <div class="paso-num">5</div><div class="paso-tit">Verifica que el encargo quedó activo</div><div class="paso-flecha">▾</div>
+      </div>
+      <div class="paso-cuerpo">
+        <p>En <b>autoseguro.gob.cl</b> (sitio del Gobierno) puedes consultar gratis por patente si tu vehículo figura con encargo por robo. Si a las horas de la denuncia no aparece, vuelve a la comisaría con tu copia.</p>
+        <div class="paso-acciones">
+          <a class="btn-accion" href="https://www.autoseguro.gob.cl/" target="_blank" rel="noopener" onclick="tele('clic_autoseguro')">Consultar en autoseguro.gob.cl</a>
+        </div>
+        <label class="chk-listo"><input type="checkbox" onchange="marcar(this)"> Encargo verificado</label>
+      </div>
+    </div>
+
+    <div class="paso" data-paso="p6">
+      <div class="paso-cab" onclick="togglePaso(this)">
+        <div class="paso-num">6</div><div class="paso-tit">Súmalo a la búsqueda ciudadana (gratis)</div><div class="paso-flecha">▾</div>
+      </div>
+      <div class="paso-cuerpo">
+        <p>Reporta la patente en <b>Lominic</b>, una red gratuita donde miles de usuarios escanean patentes: si alguien detecta tu auto, te llega una alerta con la ubicación. Es un complemento ciudadano — la recuperación siempre es de Carabineros.</p>
+        <div class="paso-acciones">
+          <a class="btn-accion sec" href="https://www.lominic.com/cl/" target="_blank" rel="noopener" onclick="tele('clic_lominic')">Reportar en Lominic</a>
+        </div>
+        <label class="chk-listo"><input type="checkbox" onchange="marcar(this)"> Reportado</label>
+      </div>
+    </div>
+
+    <div class="paso" data-paso="p7">
+      <div class="paso-cab" onclick="togglePaso(this)">
+        <div class="paso-num">7</div><div class="paso-tit">Difúndelo — pero de forma segura</div><div class="paso-flecha">▾</div>
+      </div>
+      <div class="paso-cuerpo">
+        <p><b>Sí publica:</b> patente, marca/modelo/color, sector y hora del robo, alguna seña particular (pegatina, llantas, abolladuras).</p>
+        <p><b>No publiques:</b> tu dirección exacta, tus rutinas, tu teléfono en grupos abiertos (pide que te escriban por mensaje directo). Los datos personales en público te exponen a estafas del tipo «lo tengo yo, deposita y te lo devuelvo».</p>
+        <div class="ojo">Si alguien te exige dinero por «devolverte» el auto, es extorsión: no pagues y repórtalo al 133 con los pantallazos.</div>
+        <label class="chk-listo"><input type="checkbox" onchange="marcar(this)"> Difundido con cuidado</label>
+      </div>
+    </div>
+
+    <div class="paso" data-paso="p8">
+      <div class="paso-cab" onclick="togglePaso(this)">
+        <div class="paso-num">8</div><div class="paso-tit">Junta los documentos (y si aparece, no te acerques)</div><div class="paso-flecha">▾</div>
+      </div>
+      <div class="paso-cuerpo">
+        <p>Para el seguro y los trámites vas a necesitar: <b>padrón</b> (certificado de inscripción), <b>copia de la denuncia</b>, <b>certificado de anotaciones vigentes</b> y tu <b>cédula</b>.</p>
+        <div class="ojo">🚫 Si ves tu auto en la calle o alguien te dice dónde está: <b>no te acerques ni intentes recuperarlo tú</b>. Llama al 133 con la ubicación. Puede estar en manos de gente armada — deja que actúe Carabineros.</div>
+        <label class="chk-listo"><input type="checkbox" onchange="marcar(this)"> Documentos listos</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECCIÓN PORTONAZO ====== -->
+  <div class="seccion" id="sec-portonazo">
+    <div class="regla-oro">
+      <div class="ctit">Regla de oro</div>
+      <p><b>Tu vida y la de tu familia valen más que el auto.</b> El vehículo se repone, se rastrea o lo cubre el seguro. Ante un portonazo: no te resistas, entrega las llaves y aléjate.</p>
+    </div>
+
+    <div class="ptabs">
+      <button class="ptab activa" onclick="verPTab(this,'prev')">Prevenir</button>
+      <button class="ptab" onclick="verPTab(this,'durante')">Durante</button>
+      <button class="ptab" onclick="verPTab(this,'despues')">Después</button>
+    </div>
+
+    <div class="pbloque activa" id="ptab-prev">
+      <div class="consejo"><div class="ctit">🏠 El momento crítico: llegar y salir de casa</div><p>La mayoría de los portonazos ocurre en la entrada del domicilio. Baja la velocidad una cuadra antes, mira espejos y veredas. Si ves un vehículo o personas sospechosas cerca de tu portón, <b>no te detengas</b>: da la vuelta a la manzana y llama al 133.</p></div>
+      <div class="consejo"><div class="ctit">🚦 En semáforos, sobre todo de noche</div><p>Deja espacio con el auto de adelante para poder maniobrar y salir. Seguros puestos, ventanas arriba, celular guardado (un teléfono a la vista también motiva el ataque).</p></div>
+      <div class="consejo"><div class="ctit">💡 Ilumina tu entrada</div><p>Un acceso oscuro es el escenario ideal. Luz con sensor en el portón y poda de arbustos que den escondite cambian el riesgo de tu casa más de lo que parece.</p></div>
+      <div class="consejo"><div class="ctit">🔁 Varía tus rutinas</div><p>Los portonazos planificados observan horarios fijos. Si puedes, alterna rutas y horas de llegada, y avisa en casa para que no te esperen con el portón abierto de antemano.</p></div>
+    </div>
+
+    <div class="pbloque" id="ptab-durante">
+      <div class="consejo"><div class="ctit">1. No te resistas</div><p>Manos visibles, sin movimientos bruscos, sin discutir. Entrega las llaves. Si hay niños a bordo, dilo con calma («voy a sacar a mi hijo») y sácalos primero — los agresores quieren el auto, no complicaciones.</p></div>
+      <div class="consejo"><div class="ctit">2. Aléjate del vehículo</div><p>Retrocede y deja que se lo lleven. No persigas, no te cuelgues de la puerta, no intentes «ganar segundos».</p></div>
+      <div class="consejo"><div class="ctit">3. Observa solo si es seguro</div><p>Sin arriesgarte: ¿cuántos eran? ¿ropa, edad aproximada? ¿hacia dónde huyeron? ¿había otro vehículo apoyando? Esos datos, entregados al 133 en caliente, multiplican las opciones de intercepción.</p></div>
+    </div>
+
+    <div class="pbloque" id="ptab-despues">
+      <div class="consejo"><div class="ctit">1. Llama al 133 de inmediato</div><p>Los primeros minutos son la mejor ventana para interceptar el vehículo (flagrancia). Da patente, modelo, color, dirección de fuga y cuántos eran. Después haz la denuncia presencial.</p></div>
+      <div class="consejo"><div class="ctit">2. Sigue el checklist de robo</div><p>Desde aquí aplican los mismos pasos: TAG, seguro, encargo, difusión y documentos. Ábrelo con el botón de abajo — tu avance queda guardado.</p></div>
+      <div class="consejo"><div class="ctit">3. Si se llevaron tus llaves o documentos</div><p>Con llaves de tu casa o documentos con tu dirección, asume que saben dónde vives: <b>cambia cerraduras</b> hoy, avisa a tu familia y refuerza la atención los días siguientes.</p></div>
+      <div class="consejo"><div class="ctit">4. Cuida también lo emocional</div><p>Un portonazo es un asalto violento y es normal quedar con miedo, insomnio o angustia. Si persiste, busca apoyo — Salud Responde <a href="tel:6003607777">600 360 7777</a> orienta gratis las 24 horas.</p></div>
+      <div class="paso-acciones" style="margin-top:4px">
+        <button class="btn-accion" onclick="verSeccion('robo')">Abrir checklist de robo →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PREMIUM (visible, no funcional aún) ====== -->
+  <h2 class="prem-tit">Prepárate antes: pronto en los planes C&amp;C</h2>
+  <p class="prem-sub">La guía de crisis siempre será gratis. Esto es lo que viene para quienes quieren estar listos <i>antes</i> de que pase:</p>
+  <div class="prem-grid">
+    <div class="prem-card"><div class="ptit">🚗 Ficha Mi Vehículo</div><div class="pdesc">Guarda patente, VIN, póliza y fotos. Si pasa algo, el protocolo se llena solo en 1 toque.</div><span class="ptag">Próximamente · Plan Personal</span></div>
+    <div class="prem-card"><div class="ptit">📄 Dossier PDF</div><div class="pdesc">Todos tus datos y la denuncia en un documento listo para Carabineros y el seguro.</div><span class="ptag">Próximamente · Plan Personal</span></div>
+    <div class="prem-card"><div class="ptit">🔔 Alerta de tu comuna</div><div class="pdesc">Aviso si suben los portonazos o robos de auto donde vives. Sin GPS, con app cerrada.</div><span class="ptag">Próximamente · Plan Personal</span></div>
+    <div class="prem-card"><div class="ptit">📅 Auto en Regla</div><div class="pdesc">Te avisamos antes de que venzan tu revisión técnica, permiso de circulación, SOAP y licencia. Nunca más una multa por olvido.</div><span class="ptag">Próximamente · Plan Personal</span></div>
+    <div class="prem-card"><div class="ptit">🏠 Diagnóstico Portonazo</div><div class="pdesc">Evalúa la entrada de tu casa con ojos de experto: puntaje de riesgo y recomendaciones con informe PDF.</div><span class="ptag">Próximamente · Plan Personal</span></div>
+    <div class="prem-card"><div class="ptit">🔎 Chequeo Express</div><div class="pdesc">Encargo, revisión técnica y multas de tu patente en las fuentes oficiales, guiado en 1 toque. Ideal antes de comprar un usado.</div><span class="ptag">Próximamente · Plan Personal</span></div>
+    <div class="prem-card"><div class="ptit">🏢 Modo Flota</div><div class="pdesc">Varios vehículos y protocolo corporativo post-robo para tu empresa.</div><span class="ptag">Próximamente · Plan Empresa</span></div>
+  </div>
+
+  <!-- Fuentes -->
+  <div class="fuentes">
+    <h3>Fuentes de esta guía</h3>
+    <ul>
+      <li><a href="https://www.chileatiende.gob.cl/fichas/32194-denuncia-ante-carabineros-por-robo-y-otros-delitos" target="_blank" rel="noopener">ChileAtiende — Denuncia por robo ante Carabineros</a></li>
+      <li><a href="https://www.chileatiende.gob.cl/fichas/25160-encargo-y-busqueda-de-vehiculos-consulta-en-el-sistema" target="_blank" rel="noopener">ChileAtiende — Encargo y búsqueda de vehículos (SEBV)</a></li>
+      <li><a href="https://agenda.minpublico.cl/denuncia/" target="_blank" rel="noopener">Ministerio Público — Denuncia en Línea de la Fiscalía</a></li>
+      <li><a href="https://portal.aach.cl/preguntas-frecuentes/cual-es-el-plazo-para-denunciar-un-siniestro-en-un-seguro-de-auto-chile/" target="_blank" rel="noopener">AACH — Plazo para denunciar un siniestro</a> y <a href="https://portal.aach.cl/preguntas-frecuentes/como-funciona-un-seguro-en-el-caso-del-robo-de-un-vehiculo/" target="_blank" rel="noopener">AACH — El seguro en caso de robo</a></li>
+      <li><a href="https://www.autoseguro.gob.cl/" target="_blank" rel="noopener">autoseguro.gob.cl — Consulta oficial de vehículos con encargo</a></li>
+      <li><a href="https://peajeschile.com/auto-robado-bloqueo/" target="_blank" rel="noopener">Peajes de Chile — Bloqueo de TAG por robo</a></li>
+      <li><a href="https://www.lominic.com/cl/" target="_blank" rel="noopener">Lominic — Red ciudadana de vehículos robados</a></li>
+    </ul>
+    <p class="rev">Última revisión: 18-07-2026. Los plazos de tu póliza mandan sobre los valores típicos indicados aquí.</p>
+  </div>
+
+  <p class="disclaimer">Esta guía entrega orientación general de seguridad y no reemplaza la asesoría legal ni las condiciones de tu póliza. En una emergencia, llama siempre al 133. Control y Confianza no participa en la búsqueda ni recuperación de vehículos.</p>
+
+  <!-- Ecosistema -->
+  <div class="eco">
+    <h3>Más de Control y Confianza</h3>
+    <a href="index.html" id="eco-app"><div class="etit">🛡 App C&amp;C Seguridad</div><div class="edesc">Mapa de riesgo por comuna, protocolos SOS y asistente de seguridad. Gratis.</div></a>
+    <a href="alerta-vecino.html" id="eco-alerta"><div class="etit">🔔 Alertas por comuna</div><div class="edesc">Recibe avisos de seguridad de hasta 3 comunas, con la app cerrada.</div></a>
+    <a href="plan-hogar.html" id="eco-hogar"><div class="etit">🏠 Plan de Seguridad del Hogar</div><div class="edesc">Diagnóstico gratis de tu casa en 10 minutos — clave si sufriste un portonazo con tus llaves.</div></a>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script>
+// ====== MEDICIÓN POR CANAL — mismo patrón que test-os10.html/guardias.html ======
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+var CPLUS_F=(function(){
+  try{
+    var f=(new URLSearchParams(location.search).get('f')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,30);
+    if(f){ localStorage.setItem('cplus_fuente',f); return f; }
+  }catch(e){}
+  try{ return localStorage.getItem('cplus_fuente')||''; }catch(e){ return ''; }
+})();
+function tele(accion,detalle){
+  try{
+    fetch(API_URL+'/telemetria',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({herramienta:'sos-auto',accion:accion,ok:true,
+        detalle:detalle?String(detalle).slice(0,300):undefined,fuente:CPLUS_F||undefined})}).catch(function(){});
+  }catch(e){}
+}
+tele('carga_pagina');
+
+// Propaga la fuente a los links del ecosistema (canal real de origen, patrón 18-07)
+(function(){
+  try{
+    [['eco-app','index.html'],['eco-alerta','alerta-vecino.html'],['eco-hogar','plan-hogar.html']].forEach(function(par){
+      var a=document.getElementById(par[0]);
+      if(a){ a.href=par[1]+'?f='+encodeURIComponent(CPLUS_F||'sos-auto');
+        a.addEventListener('click',function(){ tele('clic_eco',par[1]); }); }
+    });
+  }catch(e){}
+})();
+
+// ====== NAVEGACIÓN ======
+function verSeccion(cual){
+  document.getElementById('sec-robo').classList.toggle('activa',cual==='robo');
+  document.getElementById('sec-portonazo').classList.toggle('activa',cual==='portonazo');
+  document.getElementById('btn-robo').classList.toggle('activa',cual==='robo');
+  document.getElementById('btn-portonazo').classList.toggle('activa',cual==='portonazo');
+  tele('abrir_'+cual);
+  var sec=document.getElementById('sec-'+cual);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+  try{ localStorage.setItem('sosauto_seccion',cual); }catch(e){}
+}
+function togglePaso(cab){ cab.parentElement.classList.toggle('abierto'); }
+function verPTab(btn,cual){
+  document.querySelectorAll('.ptab').forEach(function(t){ t.classList.remove('activa'); });
+  btn.classList.add('activa');
+  document.querySelectorAll('.pbloque').forEach(function(b){ b.classList.remove('activa'); });
+  document.getElementById('ptab-'+cual).classList.add('activa');
+  tele('ptab_'+cual);
+}
+
+// ====== CHECKLIST PERSISTENTE (localStorage, solo este dispositivo) ======
+var TOTAL_PASOS=8;
+function estadoPasos(){
+  try{ return JSON.parse(localStorage.getItem('sosauto_pasos')||'{}'); }catch(e){ return {}; }
+}
+function marcar(chk){
+  var paso=chk.closest('.paso'); var id=paso.dataset.paso;
+  var st=estadoPasos(); st[id]=chk.checked;
+  try{ localStorage.setItem('sosauto_pasos',JSON.stringify(st)); }catch(e){}
+  paso.classList.toggle('hecho',chk.checked);
+  if(chk.checked){ paso.classList.remove('abierto'); tele('paso_completado',id); }
+  pintarProgreso();
+}
+function pintarProgreso(){
+  var st=estadoPasos(); var n=0;
+  for(var k in st){ if(st[k]) n++; }
+  document.getElementById('prog-txt').textContent=n+' de '+TOTAL_PASOS+' pasos';
+}
+(function(){
+  var st=estadoPasos();
+  document.querySelectorAll('.paso').forEach(function(p){
+    if(st[p.dataset.paso]){ p.classList.add('hecho'); var c=p.querySelector('.chk-listo input'); if(c) c.checked=true; }
+  });
+  pintarProgreso();
+  // Reabrir donde quedó; si no, primer paso del wizard abierto por defecto al entrar a robo
+  var seccion='';
+  try{ seccion=localStorage.getItem('sosauto_seccion')||''; }catch(e){}
+  if(seccion==='robo'||seccion==='portonazo'){ verSeccion(seccion); }
+})();
+</script>
+</body>
+</html>
