@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Tablero de Mando — Control y Confianza</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;color:#f0e8d0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:60px}
+header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:16px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:20px;color:#d4a017}
+header .sub{font-size:12px;color:#888;width:100%}
+.wrap{max-width:1000px;margin:0 auto;padding:20px 16px}
+.intro{background:#1a1a1a;border:1px solid #2a2a2a;border-left:4px solid #d4a017;border-radius:14px;padding:16px 20px;margin-bottom:20px;font-size:14px;line-height:1.6;color:#ccc}
+.intro b{color:#f0e8d0}
+.hitos{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.hito{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 16px;font-size:13px;flex:1;min-width:200px}
+.hito .dias{font-size:22px;font-weight:900;color:#d4a017}
+.hito .que{color:#aaa;font-size:12px;line-height:1.4}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:20px}
+.card h2{font-size:15px;color:#d4a017;margin-bottom:4px}
+.card .porque{font-size:12px;color:#888;margin-bottom:14px;line-height:1.4}
+.big{font-size:36px;font-weight:900;line-height:1}
+.big small{font-size:15px;font-weight:400;color:#888}
+.delta{font-size:13px;color:#8bc34a;margin-top:4px}
+.delta.cero{color:#888}
+.barra{background:#2a2a2a;border-radius:8px;height:10px;margin:12px 0 6px;overflow:hidden}
+.barra>div{background:#d4a017;height:100%;border-radius:8px;transition:width .5s}
+.meta-txt{font-size:12px;color:#888}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+th{text-align:left;color:#888;font-weight:600;padding:6px 8px;border-bottom:1px solid #333;font-size:12px}
+td{padding:6px 8px;border-bottom:1px solid #222}
+tr:last-child td{border-bottom:none}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;background:#2a2a2a;border-radius:10px;padding:2px 10px;font-size:12px;margin:2px 4px 2px 0}
+.ok{color:#8bc34a}.alerta{color:#e8b520}.frio{color:#888}
+.links a{display:inline-block;background:#1a1a1a;border:1px solid #333;border-radius:20px;padding:8px 18px;font-size:13px;color:#f0e8d0;text-decoration:none;margin:4px 8px 4px 0}
+.links a:hover{border-color:#d4a017}
+.vacio{color:#888;font-size:13px;font-style:italic}
+#login,#cargando,#error{max-width:420px;margin:60px auto;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:28px;text-align:center}
+#login input{width:100%;background:#111;border:1px solid #333;border-radius:10px;color:#f0e8d0;padding:12px;font-size:15px;margin-bottom:10px}
+#login button{width:100%;background:#d4a017;color:#111;font-weight:900;font-size:15px;border:none;border-radius:10px;padding:12px;cursor:pointer}
+#login .msg{color:#e57373;font-size:13px;margin-top:8px;min-height:18px}
+footer{text-align:center;font-size:12px;color:#666;margin-top:30px;line-height:1.6}
+footer a{color:#d4a017}
+.actualizado{font-size:11px;color:#666;text-align:right;margin-bottom:10px}
+@media(max-width:600px){.big{font-size:28px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 Tablero de Mando</h1>
+  <span style="font-size:12px;color:#888">Control y Confianza · solo administración</span>
+  <div class="sub">Los números que el Plan Norte ordena vigilar, en una sola pantalla.</div>
+</header>
+
+<div class="wrap">
+
+<!-- Estado: sin sesión -->
+<div id="login" style="display:none">
+  <h2 style="color:#d4a017;margin-bottom:6px">Acceso de administración</h2>
+  <p style="font-size:13px;color:#aaa;margin-bottom:16px">Esta página muestra métricas internas del negocio. Inicia sesión con la cuenta de administrador.</p>
+  <input type="email" id="log-email" placeholder="Correo" autocomplete="username">
+  <div style="position:relative"><input type="password" id="log-pass" placeholder="Contraseña" autocomplete="current-password"></div>
+  <button onclick="hacerLogin()">Entrar</button>
+  <div class="msg" id="log-msg"></div>
+</div>
+
+<div id="cargando" style="display:none"><p>Cargando el tablero…</p></div>
+<div id="error" style="display:none"><p id="error-txt" style="color:#e57373"></p></div>
+
+<!-- Tablero -->
+<div id="tablero" style="display:none">
+
+  <div class="intro">
+    <b>¿Para qué sirve esto?</b> Reúne en una pantalla los números que el Plan Norte (Cap. 7) manda vigilar cada semana: el embudo activo OS.10/B2B, la demanda de Control+ Premium y el gate de MiCuadra. La regla del Plan: <b>el tablero se lee en minutos, no en horas</b> — se opera sobre el embudo, se responde ante el ingreso recurrente. Complementa (no reemplaza) el correo del chequeo semanal de los lunes.
+  </div>
+
+  <div class="actualizado" id="actualizado"></div>
+
+  <div class="hitos" id="hitos"></div>
+
+  <div class="grid">
+
+    <div class="card">
+      <h2>🚪 Gate de MiCuadra</h2>
+      <div class="porque">Umbral ~40–50 inscritos reales al 30-09-2026. Se lee, no se empuja: si no cruza, se congela sin culpa (Plan v1.2, Cap. 6.3).</div>
+      <div class="big" id="mi-total">—<small> / 40–50 inscritos</small></div>
+      <div class="delta" id="mi-7d"></div>
+      <div class="barra"><div id="mi-barra" style="width:0%"></div></div>
+      <div class="meta-txt" id="mi-veredicto"></div>
+      <table id="mi-comunas" style="display:none"><thead><tr><th>Comuna</th><th class="num">Inscritos</th></tr></thead><tbody></tbody></table>
+    </div>
+
+    <div class="card">
+      <h2>⭐ Control+ Premium — demanda medida</h2>
+      <div class="porque">Inscritos al avisador premium (~$2.500/mes), por canal. Es el termómetro de si el recurrente gremial merece construirse.</div>
+      <div class="big" id="cp-total">—<small> inscritos al avisador</small></div>
+      <div class="delta" id="cp-7d"></div>
+      <div id="cp-fuentes" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h2>💼 Señales B2B (apuesta #1)</h2>
+      <div class="porque">Lo que convierte alcance en plata: documentos, visaciones y planes activos. Este es el eslabón de veredicto del giro v1.2.</div>
+      <table>
+        <tbody>
+        <tr><td>Directivas creadas (total)</td><td class="num" id="b2b-dir">—</td></tr>
+        <tr><td><b>Solicitudes de visación</b></td><td class="num" id="b2b-vis">—</td></tr>
+        <tr><td><b>Plan Empresa activos</b></td><td class="num" id="b2b-emp">—</td></tr>
+        <tr><td>Plan Personal activos</td><td class="num" id="b2b-per">—</td></tr>
+        <tr><td>Traslado VIP (últimos 30 días / total)</td><td class="num" id="b2b-vip">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>✈️ Fase G0 — Seguridad para Viajeros</h2>
+      <div class="porque">Tráfico atribuible a <span class="pill">?f=seo-viajeros</span> (últimos 30 días). El punto de control corre solo el 17-08-2026 y decide si la fase sigue o se pausa.</div>
+      <div id="g0-datos"></div>
+    </div>
+
+    <div class="card" style="grid-column:1/-1">
+      <h2>📈 Uso por canal — últimos 7 días</h2>
+      <div class="porque">Qué pieza/canal (<span class="pill">?f=</span>) trae uso real a cada herramienta. Es la palanca semanal: más de lo que funciona, menos de lo que no.</div>
+      <table id="uso-tabla"><thead><tr><th>Herramienta</th><th>Fuente (?f=)</th><th>Acción</th><th class="num">Eventos</th></tr></thead><tbody></tbody></table>
+      <div class="vacio" id="uso-vacio" style="display:none;margin-top:8px">Sin eventos con atribución esta semana.</div>
+    </div>
+
+    <div class="card">
+      <h2>🧱 Base del ecosistema</h2>
+      <div class="porque">Volumen general — contexto, no veredicto.</div>
+      <table>
+        <tbody>
+        <tr><td>Usuarios registrados</td><td class="num" id="base-usuarios">—</td></tr>
+        <tr><td>Perfiles de guardia (Control+)</td><td class="num" id="base-perfiles">—</td></tr>
+        <tr><td>Ofertas abiertas en la bolsa</td><td class="num" id="base-ofertas">—</td></tr>
+        <tr><td>Postulaciones (7 días)</td><td class="num" id="base-post">—</td></tr>
+        <tr><td>Suscripciones push por comuna</td><td class="num" id="base-push">—</td></tr>
+        <tr><td>Opiniones recibidas (7 días)</td><td class="num" id="base-feedback">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>🔭 Instrumentos externos</h2>
+      <div class="porque">Lo que este tablero no puede traer solo (requieren tu sesión de Google/Meta) — un clic y estás ahí.</div>
+      <div class="links">
+        <a href="https://search.google.com/search-console?resource_id=sc-domain:controlyconfianza.cl" target="_blank" rel="noopener">Google Search Console (SEO)</a>
+        <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener">Cloudflare (Worker y Analytics)</a>
+        <a href="https://www.instagram.com/control_y_confianza/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+      <div class="meta-txt" style="margin-top:10px">En Search Console: Rendimiento → clics e impresiones de los artículos pilar (Test OS10, Seguridad Vehicular, Viajeros).</div>
+    </div>
+
+  </div>
+
+  <footer>
+    Datos en vivo desde la base D1 vía Worker (solo administrador · solo lectura).<br>
+    Umbrales y fechas: Plan Norte v1.2 (Cap. 5–7) · POS v1.2 (Cap. 5) — <a href="index.html">volver a la App C&C</a>
+  </footer>
+
+</div>
+</div>
+
+<script>
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+let CYC_TOKEN=localStorage.getItem('cyc_token')||null;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function mostrar(id){['login','cargando','error','tablero'].forEach(x=>document.getElementById(x).style.display=x===id?'block':'none');}
+
+// Los tres hitos con fecha fija del H1 (Plan v1.2, Cap. 7.4)
+const HITOS=[
+  {fecha:'2026-08-17', que:'Punto de control fase G0 Viajeros (corre solo y te reporta)'},
+  {fecha:'2026-09-30', que:'Corte del gate de MiCuadra (¿llegó a 40–50 inscritos?)'},
+  {fecha:'2026-10-01', que:'Revisión de octubre: acción comercial sobre el Registro (~nov-2026)', etiqueta:'octubre'}
+];
+function pintarHitos(){
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  document.getElementById('hitos').innerHTML=HITOS.map(h=>{
+    const f=new Date(h.fecha+'T00:00:00');
+    const dias=Math.round((f-hoy)/86400000);
+    const txt=dias>1?('faltan '+dias+' días'):dias===1?'es mañana':dias===0?'ES HOY':'ya pasó — revisa el resultado';
+    const fechaTxt=h.etiqueta||f.toLocaleDateString('es-CL',{day:'numeric',month:'short'});
+    return '<div class="hito"><div class="dias">'+esc(fechaTxt)+'</div><div class="que">'+esc(h.que)+'</div><div class="meta-txt '+(dias<=7&&dias>=0?'alerta':'')+'">'+esc(txt)+'</div></div>';
+  }).join('');
+}
+
+async function hacerLogin(){
+  const email=document.getElementById('log-email').value.trim();
+  const pass=document.getElementById('log-pass').value;
+  const msg=document.getElementById('log-msg');
+  if(!email||!pass){msg.textContent='Completa correo y contraseña.';return;}
+  msg.textContent='';
+  try{
+    const r=await fetch(API_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const d=await r.json();
+    if(!r.ok||!d.token){msg.textContent=d.error||'No se pudo iniciar sesión.';return;}
+    CYC_TOKEN=d.token; localStorage.setItem('cyc_token',CYC_TOKEN);
+    cargar();
+  }catch(e){msg.textContent='Error de conexión. Intenta de nuevo.';}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login').style.display==='block')hacerLogin();});
+
+function num(n){return (n==null?'—':Number(n).toLocaleString('es-CL'));}
+
+function pintar(d){
+  document.getElementById('actualizado').textContent='Actualizado: '+new Date(d.generado).toLocaleString('es-CL',{timeZone:'America/Santiago'});
+  pintarHitos();
+
+  // Gate MiCuadra
+  const mt=d.gate_micuadra.total||0;
+  document.getElementById('mi-total').innerHTML=num(mt)+'<small> / 40–50 inscritos</small>';
+  const m7=d.gate_micuadra.ultimos7d||0;
+  const el7=document.getElementById('mi-7d');
+  el7.textContent=m7>0?('+'+m7+' esta semana'):'sin inscritos nuevos esta semana';
+  el7.className='delta'+(m7>0?'':' cero');
+  document.getElementById('mi-barra').style.width=Math.min(100,Math.round(mt/40*100))+'%';
+  document.getElementById('mi-veredicto').innerHTML=mt>=40
+    ?'<span class="ok">✅ Umbral alcanzado — corresponde decisión GO (construir la red viva).</span>'
+    :(mt+' de 40 — '+(mt===0?'<span class="frio">la lista sigue fría; el gate decide solo el 30-09.</span>':'<span class="alerta">hay señal parcial; el gate decide el 30-09.</span>'));
+  const comunas=d.gate_micuadra.por_comuna||[];
+  if(comunas.length){
+    const t=document.getElementById('mi-comunas'); t.style.display='table';
+    t.querySelector('tbody').innerHTML=comunas.map(r=>'<tr><td>'+esc(r.comuna)+'</td><td class="num">'+num(r.n)+'</td></tr>').join('');
+  }
+
+  // Control+ Premium
+  document.getElementById('cp-total').innerHTML=num(d.cplus.total)+'<small> inscritos al avisador</small>';
+  const c7=d.cplus.ultimos7d||0;
+  const cpEl=document.getElementById('cp-7d');
+  cpEl.textContent=c7>0?('+'+c7+' esta semana'):'sin inscritos nuevos esta semana';
+  cpEl.className='delta'+(c7>0?'':' cero');
+  const fu=d.cplus.por_fuente||[];
+  document.getElementById('cp-fuentes').innerHTML=fu.length
+    ?fu.map(r=>'<span class="pill">'+esc(String(r.fuente).replace(/^cplus-/,''))+': <b>'+num(r.n)+'</b></span>').join('')
+    :'<span class="vacio">Aún nadie se inscribe — revisar si las piezas con ?f= están circulando.</span>';
+
+  // B2B
+  document.getElementById('b2b-dir').textContent=num(d.b2b.directivas);
+  document.getElementById('b2b-vis').textContent=num(d.b2b.visaciones);
+  document.getElementById('b2b-emp').textContent=num(d.b2b.plan_empresa_activos);
+  document.getElementById('b2b-per').textContent=num(d.b2b.plan_personal_activos);
+  document.getElementById('b2b-vip').textContent=num(d.b2b.vip_30d)+' / '+num(d.b2b.vip_total);
+
+  // G0 viajeros
+  const g0=d.viajeros_g0_30d||[];
+  document.getElementById('g0-datos').innerHTML=g0.length
+    ?'<table><thead><tr><th>Herramienta</th><th>Acción</th><th class="num">Eventos</th></tr></thead><tbody>'+g0.map(r=>'<tr><td>'+esc(r.herramienta)+'</td><td>'+esc(r.accion)+'</td><td class="num">'+num(r.n)+'</td></tr>').join('')+'</tbody></table>'
+    :'<div class="vacio">Aún sin tráfico atribuible — normal mientras los artículos ES/EN se publican y Google los indexa. El checkpoint del 17-08 evalúa con datos.</div>';
+
+  // Uso por canal
+  const uso=d.uso_7d||[];
+  const cuerpo=document.getElementById('uso-tabla').querySelector('tbody');
+  if(uso.length){
+    cuerpo.innerHTML=uso.map(r=>'<tr><td>'+esc(r.herramienta)+'</td><td>'+esc(r.fuente)+'</td><td>'+esc(r.accion)+'</td><td class="num">'+num(r.n)+'</td></tr>').join('');
+  }else{
+    document.getElementById('uso-tabla').style.display='none';
+    document.getElementById('uso-vacio').style.display='block';
+  }
+
+  // Base
+  document.getElementById('base-usuarios').textContent=num(d.base.usuarios);
+  document.getElementById('base-perfiles').textContent=num(d.base.guardias_perfiles);
+  document.getElementById('base-ofertas').textContent=num(d.base.ofertas_abiertas);
+  document.getElementById('base-post').textContent=num(d.base.postulaciones_7d);
+  document.getElementById('base-push').textContent=num(d.base.push_subs);
+  document.getElementById('base-feedback').textContent=num(d.base.feedback_7d);
+
+  mostrar('tablero');
+}
+
+async function cargar(){
+  if(!CYC_TOKEN){mostrar('login');return;}
+  mostrar('cargando');
+  try{
+    const r=await fetch(API_URL+'/admin/tablero',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(r.status===401){localStorage.removeItem('cyc_token');CYC_TOKEN=null;mostrar('login');return;}
+    if(r.status===403){document.getElementById('error-txt').textContent='Tu cuenta no es de administrador. Esta página es solo para la administración del ecosistema.';mostrar('error');return;}
+    const d=await r.json();
+    if(!r.ok){document.getElementById('error-txt').textContent=d.error||'Error cargando el tablero.';mostrar('error');return;}
+    pintar(d);
+  }catch(e){
+    document.getElementById('error-txt').textContent='Error de conexión con el servidor. Revisa tu internet e intenta de nuevo.';
+    mostrar('error');
+  }
+}
+cargar();
+</script>
+</body>
+</html>
