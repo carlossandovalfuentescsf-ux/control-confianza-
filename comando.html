@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Comando de Control — Control y Confianza</title>
+<link rel="manifest" href="comando-manifest.json">
+<meta name="theme-color" content="#111111">
+<link rel="apple-touch-icon" href="icon-comando-192.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh;padding-bottom:60px}
+header{background:#1a1a1a;border-bottom:2px solid #d4a017;padding:18px 20px;text-align:center;position:relative}
+header h1{font-size:1.15rem;font-weight:800;color:#d4a017}
+header .sub{font-size:0.76rem;color:#888;margin-top:4px}
+.salir{position:absolute;right:14px;top:18px;font-size:0.7rem;color:#888;text-decoration:none;border:1px solid #333;padding:5px 10px;border-radius:99px}
+.wrap{max-width:760px;margin:0 auto;padding:16px 14px 110px}
+.intro{background:#1a1200;border:1px solid #3a2e00;border-left:4px solid #d4a017;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:0.82rem;line-height:1.6;color:#e8c98a}
+.intro b{color:#f0e8d0}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:14px}
+.card h2{font-size:1rem;font-weight:800;color:#d4a017;margin-bottom:4px}
+.card .porque{font-size:0.76rem;color:#888;margin-bottom:12px;line-height:1.45}
+label{display:block;font-size:0.74rem;font-weight:700;color:#ccc;margin:10px 0 4px}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:9px 10px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:0.85rem;font-family:inherit}
+textarea{min-height:50px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#d4a017}
+.fila{display:flex;gap:8px;flex-wrap:wrap}
+.fila>div{flex:1;min-width:120px}
+.chk{display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#ccc;padding:6px 0;cursor:pointer}
+.chk input{width:auto;accent-color:#d4a017}
+.btn{border:none;border-radius:10px;font-size:0.86rem;font-weight:800;cursor:pointer;padding:11px 16px}
+.btn-oro{background:#d4a017;color:#111}
+.btn-gris{background:#111;color:#999;border:1px solid #333}
+.btn-borde{background:transparent;color:#d4a017;border:1px solid #d4a017}
+.btn-full{display:block;width:100%;text-align:center;margin-top:8px}
+.radio-grupo{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.radio-op{flex:1;min-width:140px;background:#111;border:1px solid #333;border-radius:8px;padding:9px 10px;font-size:0.8rem;color:#ccc;cursor:pointer;display:flex;align-items:center;gap:6px}
+.radio-op input{accent-color:#d4a017}
+.radio-op.activo{border-color:#d4a017;color:#f0e8d0}
+table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:6px}
+th{text-align:left;color:#888;font-weight:700;padding:6px 4px;border-bottom:1px solid #333;font-size:0.68rem;text-transform:uppercase}
+td{padding:6px 4px;border-bottom:1px solid #222;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;background:#111;border:1px solid #333;border-radius:99px;padding:3px 10px;font-size:0.7rem;color:#ccc}
+.pill.pend{border-color:#7d2e2e;color:#ef9a9a}
+.pill.ok{border-color:#2e7d32;color:#a5d6a7}
+.btn-x{background:none;border:none;color:#e74c3c;font-size:0.95rem;cursor:pointer;padding:2px 6px}
+.msg{margin-top:10px;font-size:0.78rem;line-height:1.5;display:none;border-radius:8px;padding:10px}
+.msg.ok{display:block;background:#15301a;border:1px solid #2e7d32;color:#a5d6a7}
+.msg.err{display:block;background:#301515;border:1px solid #7d2e2e;color:#ef9a9a}
+.lanzador{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.tarjeta{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:16px 14px;text-decoration:none;color:#f0e8d0;display:block;transition:border-color .2s}
+.tarjeta:hover{border-color:#d4a017}
+.tarjeta .ic{font-size:1.6rem;margin-bottom:6px}
+.tarjeta .t{font-size:0.86rem;font-weight:800}
+.tarjeta .d{font-size:0.68rem;color:#888;margin-top:3px;line-height:1.4}
+.resumen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.resumen-box{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px}
+.resumen-box h3{font-size:0.72rem;color:#888;text-transform:uppercase;margin-bottom:8px}
+.resumen-linea{display:flex;justify-content:space-between;font-size:0.8rem;padding:3px 0}
+.total-grande{font-size:1.5rem;font-weight:900;color:#d4a017;margin:6px 0}
+.vacio{color:#888;font-size:0.78rem;font-style:italic}
+#login,#cargando,#error{max-width:420px;margin:60px auto;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:28px;text-align:center}
+#login input{margin-bottom:10px}
+#login button{width:100%}
+footer{text-align:center;font-size:0.72rem;color:#666;margin-top:24px;line-height:1.6}
+footer a{color:#d4a017}
+@media(display-mode:standalone){.salir{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛡️ Comando de Control</h1>
+  <div class="sub">Control y Confianza · solo administración</div>
+  <a class="salir" href="index.html" id="salirLink" style="display:none">Volver a la App</a>
+</header>
+
+<div class="wrap">
+
+<div id="login" style="display:none">
+  <h2 style="color:#d4a017;margin-bottom:6px">Acceso de administración</h2>
+  <p style="font-size:13px;color:#aaa;margin-bottom:16px">Comando de Control reúne las herramientas internas del negocio. Solo para administración.</p>
+  <input type="text" id="log-email" placeholder="Correo" autocomplete="username">
+  <input type="text" id="log-pass" placeholder="Contraseña" autocomplete="current-password" style="-webkit-text-security:disc">
+  <button class="btn btn-oro" onclick="hacerLogin()">Entrar</button>
+  <div class="msg" id="log-msg"></div>
+</div>
+
+<div id="cargando" style="display:none"><p>Cargando…</p></div>
+<div id="error" style="display:none"><p id="error-txt" style="color:#e57373"></p></div>
+
+<div id="app" style="display:none">
+
+  <div class="intro">
+    <b>¿Para qué sirve esto?</b> Es el escritorio del dueño del negocio, separado de las apps que usan clientes y guardias — con su propio ícono, instalable, para ti y hasta 3 personas más del equipo. Reúne el Tablero, el Cotizador y el Panel de Ofertas en un solo lugar, y suma la herramienta nacida de Limache: <b>registrar al toque cada gasto pagado con plata propia</b> (foto de la boleta → la IA lee el monto → queda claro cuánto debe devolver la empresa), para que nunca más se pierda la cuenta.
+  </div>
+
+  <div class="card">
+    <h2>🚀 Herramientas</h2>
+    <div class="lanzador">
+      <a class="tarjeta" href="tablero.html"><div class="ic">📊</div><div class="t">Tablero de Mando</div><div class="d">Métricas del negocio en una pantalla</div></a>
+      <a class="tarjeta" href="eventos-cotizador.html"><div class="ic">🧮</div><div class="t">Cotizador de Eventos</div><div class="d">Presupuestos de dotación de guardias</div></a>
+      <a class="tarjeta" href="guardias.html#admin"><div class="ic">💼</div><div class="t">Panel de Ofertas</div><div class="d">Publicar y gestionar ofertas de Control+</div></a>
+      <a class="tarjeta" href="#gastos"><div class="ic">🧾</div><div class="t">Gastos de Evento</div><div class="d">Rendición de plata propia por foto de boleta</div></a>
+    </div>
+  </div>
+
+  <div class="card" id="gastos">
+    <h2>🧾 Gastos de Evento</h2>
+    <div class="porque">Sube la foto de la boleta y la IA propone monto/comercio/fecha — tú confirmas o corriges. Marca quién pagó: si fue plata propia, queda pendiente hasta que marques «devuelto».</div>
+
+    <label>Foto de la boleta (opcional — puedes llenar a mano)</label>
+    <input type="file" id="g-foto" accept="image/*" onchange="leerBoleta(this)">
+    <div class="msg" id="msgExtraer"></div>
+
+    <div class="fila">
+      <div><label>Evento/etiqueta</label><input type="text" id="g-evento" placeholder="Ej: Festival Limache"></div>
+      <div><label>Fecha</label><input type="date" id="g-fecha"></div>
+    </div>
+    <div class="fila">
+      <div><label>Comercio</label><input type="text" id="g-comercio" placeholder="Nombre del local"></div>
+      <div><label>Monto (CLP)</label><input type="number" id="g-monto" min="0"></div>
+    </div>
+    <label>Categoría</label>
+    <select id="g-categoria">
+      <option value="colacion">Colación</option>
+      <option value="transporte">Transporte</option>
+      <option value="materiales">Materiales</option>
+      <option value="radios">Radios</option>
+      <option value="otro" selected>Otro</option>
+    </select>
+
+    <label>¿Quién pagó?</label>
+    <div class="radio-grupo">
+      <label class="radio-op" id="opCaja"><input type="radio" name="g-quien" value="caja" checked onchange="cambiarQuien()">Caja de la empresa</label>
+      <label class="radio-op" id="opPropia"><input type="radio" name="g-quien" value="propia" onchange="cambiarQuien()">Plata propia</label>
+    </div>
+    <div id="nombrePropio" style="display:none"><label>¿De quién?</label><input type="text" id="g-nombre" placeholder="Ej: Carlos"></div>
+
+    <label>Nota (opcional)</label>
+    <textarea id="g-nota"></textarea>
+
+    <button class="btn btn-oro btn-full" onclick="guardarGasto()">Guardar gasto</button>
+    <div class="msg" id="msgGasto"></div>
+
+    <div style="margin-top:16px;border-top:1px solid #222;padding-top:12px">
+      <div class="fila">
+        <div><label>Filtrar por evento/etiqueta</label><input type="text" id="f-filtroEvento" placeholder="Dejar vacío = todos" oninput="cargarGastosDebounce()"></div>
+      </div>
+
+      <div id="resumenGastos"></div>
+
+      <table id="tablaGastos" style="margin-top:12px">
+        <thead><tr><th>Fecha</th><th>Comercio</th><th>Categoría</th><th class="num">Monto</th><th>Pagó</th><th>Estado</th><th></th></tr></thead>
+        <tbody id="tbGastos"></tbody>
+      </table>
+      <div class="vacio" id="gastosVacio" style="display:none">Sin gastos registrados.</div>
+
+      <button class="btn btn-borde btn-full" onclick="exportarCSV()" style="margin-top:10px">⬇️ Exportar CSV</button>
+    </div>
+  </div>
+
+  <footer>
+    Comando de Control · datos vía Worker/D1 (solo administrador) — <a href="index.html">volver a la App C&C</a>
+  </footer>
+
+</div>
+</div>
+
+<script>
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+let CYC_TOKEN=localStorage.getItem('cyc_token')||null;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function mostrar(id){['login','cargando','error','app'].forEach(x=>document.getElementById(x).style.display=x===id?'block':'none');}
+function clp(n){return '$'+Math.round(n||0).toLocaleString('es-CL');}
+
+if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true){
+  document.getElementById('salirLink').style.display='none';
+}
+
+function cambiarQuien(){
+  const propia=document.querySelector('input[name="g-quien"]:checked').value==='propia';
+  document.getElementById('nombrePropio').style.display=propia?'block':'none';
+  document.getElementById('opCaja').classList.toggle('activo',!propia);
+  document.getElementById('opPropia').classList.toggle('activo',propia);
+}
+cambiarQuien();
+
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(r.result.split(',')[1]);
+    r.onerror=reject;
+    r.readAsDataURL(file);
+  });
+}
+
+async function leerBoleta(input){
+  const file=input.files[0];
+  if(!file)return;
+  const msg=document.getElementById('msgExtraer');
+  msg.className='msg';msg.textContent='';
+  if(file.size>6*1024*1024){msg.className='msg err';msg.textContent='La foto pesa demasiado (máx. 6MB).';return;}
+  msg.className='msg ok';msg.textContent='Leyendo la boleta…';msg.style.display='block';
+  try{
+    const data=await fileToBase64(file);
+    const resp=await fetch(API_URL+'/admin/gastos/extraer',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({imagen:{data,media_type:file.type||'image/jpeg'}})});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo leer la boleta.';return;}
+    if(d.fecha)document.getElementById('g-fecha').value=d.fecha;
+    if(d.comercio)document.getElementById('g-comercio').value=d.comercio;
+    if(d.monto)document.getElementById('g-monto').value=d.monto;
+    if(d.categoria)document.getElementById('g-categoria').value=d.categoria;
+    msg.className='msg ok';msg.textContent='Boleta leída — revisa y corrige si hace falta antes de guardar.';
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión. Puedes llenar los datos a mano.';}
+}
+
+async function guardarGasto(){
+  const msg=document.getElementById('msgGasto');
+  msg.className='msg';msg.textContent='';
+  const monto=Number(document.getElementById('g-monto').value);
+  if(!(monto>0)){msg.className='msg err';msg.textContent='Ingresa un monto válido.';return;}
+  const propia=document.querySelector('input[name="g-quien"]:checked').value==='propia';
+  const nombre=document.getElementById('g-nombre').value.trim();
+  if(propia&&!nombre){msg.className='msg err';msg.textContent='Indica el nombre de quién puso la plata propia.';return;}
+  const pagadoPor=propia?nombre:'caja_empresa';
+  try{
+    const resp=await fetch(API_URL+'/admin/gastos',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({
+        evento_txt:document.getElementById('g-evento').value.trim(),
+        fecha:document.getElementById('g-fecha').value||null,
+        comercio:document.getElementById('g-comercio').value.trim(),
+        monto, categoria:document.getElementById('g-categoria').value,
+        pagado_por:pagadoPor, nota:document.getElementById('g-nota').value.trim()
+      })});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo guardar.';return;}
+    msg.className='msg ok';msg.textContent='Gasto guardado.';
+    document.getElementById('g-comercio').value='';document.getElementById('g-monto').value='';
+    document.getElementById('g-nombre').value='';document.getElementById('g-nota').value='';
+    document.getElementById('g-foto').value='';
+    document.getElementById('msgExtraer').className='msg';
+    cargarGastos();
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
+let ultimosGastos=[];
+let debounceT=null;
+function cargarGastosDebounce(){clearTimeout(debounceT);debounceT=setTimeout(cargarGastos,400);}
+
+async function cargarGastos(){
+  const evento=document.getElementById('f-filtroEvento').value.trim();
+  try{
+    const url=API_URL+'/admin/gastos'+(evento?'?evento='+encodeURIComponent(evento):'');
+    const resp=await fetch(url,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok)return;
+    ultimosGastos=d.gastos||[];
+    pintarResumen(d.resumen||{});
+    pintarTabla();
+  }catch(e){}
+}
+
+const CAT_LABEL={colacion:'Colación',transporte:'Transporte',materiales:'Materiales',radios:'Radios',otro:'Otro'};
+
+function pintarResumen(r){
+  const el=document.getElementById('resumenGastos');
+  const cats=Object.entries(r.por_categoria||{});
+  const pagadores=Object.entries(r.por_pagador||{});
+  el.innerHTML='<div class="total-grande">'+clp(r.total)+'</div>'+
+    '<div class="resumen-grid">'+
+    '<div class="resumen-box"><h3>Por categoría</h3>'+
+      (cats.length?cats.map(([k,v])=>'<div class="resumen-linea"><span>'+(CAT_LABEL[k]||k)+'</span><b>'+clp(v)+'</b></div>').join(''):'<div class="vacio">Sin datos.</div>')+
+    '</div>'+
+    '<div class="resumen-box"><h3>Por quién pagó</h3>'+
+      (pagadores.length?pagadores.map(([k,v])=>{
+        const nombre=k==='caja_empresa'?'Caja de la empresa':k;
+        const pend=v.pendiente>0?'<span class="pill pend">pendiente '+clp(v.pendiente)+'</span>':(k==='caja_empresa'?'':'<span class="pill ok">al día</span>');
+        return '<div class="resumen-linea"><span>'+esc(nombre)+'</span><b>'+clp(v.pagado)+'</b></div><div style="text-align:right;margin-bottom:4px">'+pend+'</div>';
+      }).join(''):'<div class="vacio">Sin datos.</div>')+
+    '</div></div>';
+}
+
+function pintarTabla(){
+  const tb=document.getElementById('tbGastos');
+  const vacio=document.getElementById('gastosVacio');
+  const tabla=document.getElementById('tablaGastos');
+  if(!ultimosGastos.length){tabla.style.display='none';vacio.style.display='block';return;}
+  tabla.style.display='table';vacio.style.display='none';
+  tb.innerHTML=ultimosGastos.map(g=>{
+    const quien=g.pagado_por==='caja_empresa'?'Caja':esc(g.pagado_por);
+    const estado=g.pagado_por==='caja_empresa'
+      ?'<span class="pill ok">caja</span>'
+      :(g.reembolsado?'<span class="pill ok">devuelto</span>':'<span class="pill pend" style="cursor:pointer" onclick="marcarReembolsado('+g.id+',1)">pendiente — marcar</span>');
+    return '<tr><td>'+(g.fecha||'—')+'</td><td>'+esc(g.comercio||'—')+'</td><td>'+(CAT_LABEL[g.categoria]||g.categoria)+'</td>'+
+      '<td class="num">'+clp(g.monto)+'</td><td>'+quien+'</td><td>'+estado+'</td>'+
+      '<td><button class="btn-x" onclick="eliminarGasto('+g.id+')">✕</button></td></tr>';
+  }).join('');
+}
+
+async function marcarReembolsado(id,val){
+  try{
+    await fetch(API_URL+'/admin/gastos/'+id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({reembolsado:val})});
+    cargarGastos();
+  }catch(e){}
+}
+
+async function eliminarGasto(id){
+  if(!confirm('¿Eliminar este gasto?'))return;
+  try{
+    await fetch(API_URL+'/admin/gastos/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    cargarGastos();
+  }catch(e){}
+}
+
+function exportarCSV(){
+  if(!ultimosGastos.length){alert('No hay gastos para exportar.');return;}
+  const filas=[['Fecha','Evento','Comercio','Categoría','Monto','Pagó','Reembolsado','Nota']];
+  ultimosGastos.forEach(g=>filas.push([g.fecha||'',g.evento_txt||'',g.comercio||'',CAT_LABEL[g.categoria]||g.categoria,g.monto,g.pagado_por==='caja_empresa'?'Caja de la empresa':g.pagado_por,g.pagado_por==='caja_empresa'?'—':(g.reembolsado?'Sí':'No'),g.nota||'']));
+  const csv=filas.map(f=>f.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='gastos-comando-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+// ---------- Login / inicio ----------
+async function hacerLogin(){
+  const email=document.getElementById('log-email').value.trim();
+  const pass=document.getElementById('log-pass').value;
+  const msg=document.getElementById('log-msg');
+  if(!email||!pass){msg.textContent='Completa correo y contraseña.';return;}
+  msg.textContent='';
+  try{
+    const r=await fetch(API_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const d=await r.json();
+    if(!r.ok||!d.token){msg.textContent=d.error||'No se pudo iniciar sesión.';return;}
+    CYC_TOKEN=d.token; localStorage.setItem('cyc_token',CYC_TOKEN);
+    iniciar();
+  }catch(e){msg.textContent='Error de conexión. Intenta de nuevo.';}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login').style.display==='block')hacerLogin();});
+
+async function iniciar(){
+  if(!CYC_TOKEN){mostrar('login');return;}
+  mostrar('cargando');
+  try{
+    const r=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(r.status===401){localStorage.removeItem('cyc_token');CYC_TOKEN=null;mostrar('login');return;}
+    const d=await r.json();
+    if(!d.is_admin){document.getElementById('error-txt').textContent='Tu cuenta no es de administrador. Esta página es solo para la administración del ecosistema.';mostrar('error');return;}
+    mostrar('app');
+    cargarGastos();
+  }catch(e){
+    document.getElementById('error-txt').textContent='Error de conexión con el servidor. Revisa tu internet e intenta de nuevo.';
+    mostrar('error');
+  }
+}
+iniciar();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+</script>
+</body>
+</html>

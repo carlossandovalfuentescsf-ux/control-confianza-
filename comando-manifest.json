@@ -1,0 +1,16 @@
+{
+  "id": "./comando.html",
+  "name": "Comando de Control — Control y Confianza",
+  "short_name": "Comando",
+  "description": "Escritorio de administración: Tablero, Cotizador, Panel de Ofertas y Gastos de Evento · de Control y Confianza",
+  "start_url": "./comando.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-comando-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-comando-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
