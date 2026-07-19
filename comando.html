@@ -197,6 +197,67 @@ footer a{color:#d4a017}
   <div class="card" id="expedientes">
     <h2>📁 Expedientes de guardias</h2>
     <div class="porque">Carpeta documental que cada guardia llena en Control+ (S1 del brief de dotación de eventos). El semáforo dice si el guardia está listo para trabajar un evento: 🟢 expediente completo y OS10 vigente · 🟡 falta algo o el OS10 vence pronto · 🔴 sin OS10 vigente — no puede trabajar (Ley 21.659).</div>
+
+    <button class="btn btn-borde btn-full" onclick="toggleAltaRapida()" style="margin-bottom:10px">+ Alta rápida de guardia (reclutado por WhatsApp, sin cuenta)</button>
+    <div id="altaRapidaWrap" style="display:none;margin-bottom:14px">
+
+      <div id="altaPaso1">
+        <div class="porque">Para un guardia que nunca usó Control+. Le pides estos datos por WhatsApp o teléfono, los cargas tú — no necesita instalar nada para que lo puedas convocar.</div>
+        <div class="fila">
+          <div><label>Nombre completo</label><input type="text" id="ar-nombre"></div>
+          <div><label>Email</label><input type="text" id="ar-email" placeholder="Para poder avisarle e invitarlo a entrar él mismo"></div>
+        </div>
+        <div class="fila">
+          <div><label>Teléfono</label><input type="text" id="ar-telefono" placeholder="+56912345678"></div>
+          <div><label>Comuna</label><input type="text" id="ar-comuna"></div>
+        </div>
+        <label>Acreditación OS.10</label>
+        <select id="ar-acreditacion"><option value="si">Sí, vigente</option><option value="tramite">En trámite</option><option value="no">No</option></select>
+        <label class="chk"><input type="checkbox" id="ar-consentimiento"> Confirmo que el guardia aceptó (por WhatsApp, teléfono o en persona) que usemos sus datos para dotarlo en eventos y pagarle.</label>
+        <button class="btn btn-oro btn-full" onclick="crearAltaRapida()">Crear cuenta y continuar →</button>
+        <div class="msg" id="msgAltaPaso1"></div>
+      </div>
+
+      <div id="altaPaso2" style="display:none">
+        <div class="porque">Cuenta creada. Ahora sube sus documentos y datos de pago — igual que si él mismo llenara su carpeta.</div>
+        <div id="arDocRow-os10" class="doc-row">
+          <div class="dr-t">Certificado OS.10</div>
+          <label style="margin-top:8px">Fecha de vencimiento del curso</label>
+          <input type="date" id="ar-fecha-os10">
+          <input type="file" accept="image/jpeg,image/png,application/pdf" onchange="arSubirDoc('os10',this)">
+          <div class="form-msg" id="arDocMsg-os10"></div>
+        </div>
+        <div id="arDocRow-cedula_frente" class="doc-row">
+          <div class="dr-t">Cédula — frente</div>
+          <input type="file" accept="image/jpeg,image/png,application/pdf" onchange="arSubirDoc('cedula_frente',this)">
+          <div class="form-msg" id="arDocMsg-cedula_frente"></div>
+        </div>
+        <div id="arDocRow-cedula_dorso" class="doc-row">
+          <div class="dr-t">Cédula — dorso</div>
+          <input type="file" accept="image/jpeg,image/png,application/pdf" onchange="arSubirDoc('cedula_dorso',this)">
+          <div class="form-msg" id="arDocMsg-cedula_dorso"></div>
+        </div>
+        <div id="arDocRow-cv" class="doc-row">
+          <div class="dr-t">Curriculum (CV)</div>
+          <input type="file" accept="image/jpeg,image/png,application/pdf" onchange="arSubirDoc('cv',this)">
+          <div class="form-msg" id="arDocMsg-cv"></div>
+        </div>
+
+        <h3 style="margin-top:14px;color:#d4a017;font-size:.86rem">Datos de pago</h3>
+        <label>RUT</label><input type="text" id="ar-rut" placeholder="12345678-9">
+        <label>Banco</label><select id="ar-banco"></select>
+        <label>Tipo de cuenta</label>
+        <select id="ar-tipoCuenta"><option value="corriente">Corriente</option><option value="vista">Vista</option><option value="ahorro">Ahorro</option><option value="rut">Cuenta RUT</option></select>
+        <label>N° de cuenta</label><input type="text" id="ar-numCuenta">
+        <label>AFP</label><select id="ar-afp"></select>
+        <label>Sistema de salud</label><input type="text" id="ar-salud" placeholder="Fonasa, o el nombre de su Isapre">
+        <button class="btn btn-oro btn-full" onclick="arGuardarPago()">Guardar datos de pago</button>
+        <div class="msg" id="msgAltaPago"></div>
+
+        <button class="btn btn-gris btn-full" onclick="cerrarAltaRapida()" style="margin-top:10px">✔ Listo, cerrar</button>
+      </div>
+    </div>
+
     <input type="text" id="f-filtroExpediente" placeholder="Buscar por nombre o comuna…" oninput="filtrarExpedientes()" style="margin-bottom:10px">
     <div id="expedientesLista"><div class="vacio">Cargando…</div></div>
   </div>
@@ -584,6 +645,100 @@ async function verDocGuardia(id){
     const blob=await resp.blob();
     window.open(URL.createObjectURL(blob),'_blank');
   }catch(e){alert('Sin conexión.');}
+}
+
+// ---------- Alta rápida de guardia (el reclutado por WhatsApp sin cuenta) ----------
+let arUserId=null;
+const BANCOS_LISTA=['Banco de Chile','BancoEstado','Banco Santander','Banco BCI','Scotiabank','Banco Itaú','Banco Security','Banco Falabella','Banco Ripley','Banco Consorcio','Coopeuch','Tenpo','MACH','Otro'];
+const AFP_LISTA=['Capital','Cuprum','Habitat','Modelo','Planvital','Provida','Uno'];
+
+function toggleAltaRapida(){
+  const wrap=document.getElementById('altaRapidaWrap');
+  const abrir=wrap.style.display==='none';
+  wrap.style.display=abrir?'block':'none';
+  if(abrir){
+    document.getElementById('altaPaso1').style.display='block';
+    document.getElementById('altaPaso2').style.display='none';
+    ['ar-nombre','ar-email','ar-telefono','ar-comuna'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('ar-consentimiento').checked=false;
+    document.getElementById('msgAltaPaso1').className='msg';
+    document.getElementById('ar-banco').innerHTML='<option value="">— Elige el banco —</option>'+BANCOS_LISTA.map(b=>'<option value="'+esc(b)+'">'+esc(b)+'</option>').join('');
+    document.getElementById('ar-afp').innerHTML='<option value="">— Elige la AFP —</option>'+AFP_LISTA.map(a=>'<option value="'+esc(a)+'">'+esc(a)+'</option>').join('');
+  }
+}
+function cerrarAltaRapida(){
+  document.getElementById('altaRapidaWrap').style.display='none';
+  arUserId=null;
+  cargarExpedientes();
+}
+
+async function crearAltaRapida(){
+  const msg=document.getElementById('msgAltaPaso1');
+  msg.className='msg';msg.textContent='';
+  const nombre=document.getElementById('ar-nombre').value.trim();
+  const email=document.getElementById('ar-email').value.trim();
+  const telefono=document.getElementById('ar-telefono').value.trim();
+  const comuna=document.getElementById('ar-comuna').value.trim();
+  const acreditacion=document.getElementById('ar-acreditacion').value;
+  const consentimiento=document.getElementById('ar-consentimiento').checked;
+  if(!nombre){msg.className='msg err';msg.textContent='Escribe el nombre.';return;}
+  if(!email){msg.className='msg err';msg.textContent='Escribe el email.';return;}
+  if(!telefono){msg.className='msg err';msg.textContent='Escribe el teléfono.';return;}
+  if(!comuna){msg.className='msg err';msg.textContent='Escribe la comuna.';return;}
+  if(!consentimiento){msg.className='msg err';msg.textContent='Debes confirmar el consentimiento del guardia.';return;}
+  try{
+    const resp=await fetch(API_URL+'/admin/guardias/alta',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({nombre,email,telefono,comuna,acreditacion,consentimiento_confirmado:true})});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo crear.';return;}
+    arUserId=d.user_id;
+    msg.className='msg ok';msg.textContent=d.ya_existia?'Ya tenía cuenta — se actualizó su perfil.':'Cuenta creada.';
+    document.getElementById('altaPaso1').style.display='none';
+    document.getElementById('altaPaso2').style.display='block';
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
+async function arSubirDoc(tipo,input){
+  const file=input.files[0];
+  if(!file||!arUserId)return;
+  const msg=document.getElementById('arDocMsg-'+tipo);
+  msg.className='form-msg';msg.textContent='';
+  if(file.size>6*1024*1024){msg.className='form-msg err';msg.textContent='El archivo pesa demasiado (máx. 6MB).';return;}
+  let vencimiento=null;
+  if(tipo==='os10'){
+    vencimiento=document.getElementById('ar-fecha-os10').value;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(vencimiento)){msg.className='form-msg err';msg.textContent='Indica la fecha de vencimiento primero.';return;}
+  }
+  msg.className='form-msg ok';msg.textContent='Subiendo…';
+  try{
+    const data=await fileToBase64(file);
+    const body={tipo,data,media_type:file.type};
+    if(vencimiento)body.vencimiento=vencimiento;
+    const resp=await fetch(API_URL+'/admin/guardias/'+arUserId+'/doc',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo subir.';return;}
+    msg.className='form-msg ok';msg.textContent='Guardado.';
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
+}
+
+async function arGuardarPago(){
+  const msg=document.getElementById('msgAltaPago');
+  msg.className='msg';msg.textContent='';
+  if(!arUserId)return;
+  const body={
+    rut:document.getElementById('ar-rut').value.trim(),
+    banco:document.getElementById('ar-banco').value,
+    tipo_cuenta:document.getElementById('ar-tipoCuenta').value,
+    num_cuenta:document.getElementById('ar-numCuenta').value.trim(),
+    afp:document.getElementById('ar-afp').value,
+    salud_sistema:document.getElementById('ar-salud').value.trim()
+  };
+  try{
+    const resp=await fetch(API_URL+'/admin/guardias/'+arUserId+'/pago',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo guardar.';return;}
+    msg.className='msg ok';msg.textContent='Datos de pago guardados.';
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
 }
 
 // ---------- Eventos y roster (S2 dotación de eventos) ----------
