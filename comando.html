@@ -198,25 +198,31 @@ function fileToBase64(file){
   });
 }
 
+let fotoActual=null; // {data, media_type} de la última foto subida — se adjunta al guardar el gasto
+
 async function leerBoleta(input){
   const file=input.files[0];
+  fotoActual=null;
   if(!file)return;
   const msg=document.getElementById('msgExtraer');
   msg.className='msg';msg.textContent='';
   if(file.size>6*1024*1024){msg.className='msg err';msg.textContent='La foto pesa demasiado (máx. 6MB).';return;}
+  const MEDIA_TYPES_OK=['image/jpeg','image/png','image/webp'];
+  const mediaType=MEDIA_TYPES_OK.includes(file.type)?file.type:'image/jpeg';
   msg.className='msg ok';msg.textContent='Leyendo la boleta…';msg.style.display='block';
   try{
     const data=await fileToBase64(file);
+    fotoActual={data,media_type:mediaType}; // se guarda ya — la extracción puede fallar y aun así queda la foto para guardar
     const resp=await fetch(API_URL+'/admin/gastos/extraer',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
-      body:JSON.stringify({imagen:{data,media_type:file.type||'image/jpeg'}})});
+      body:JSON.stringify({imagen:{data,media_type:mediaType}})});
     const d=await resp.json();
-    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo leer la boleta.';return;}
+    if(!resp.ok){msg.className='msg err';msg.textContent=(d.error||'No se pudo leer la boleta.')+' La foto igual se guardará con el gasto.';return;}
     if(d.fecha)document.getElementById('g-fecha').value=d.fecha;
     if(d.comercio)document.getElementById('g-comercio').value=d.comercio;
     if(d.monto)document.getElementById('g-monto').value=d.monto;
     if(d.categoria)document.getElementById('g-categoria').value=d.categoria;
     msg.className='msg ok';msg.textContent='Boleta leída — revisa y corrige si hace falta antes de guardar.';
-  }catch(e){msg.className='msg err';msg.textContent='Sin conexión. Puedes llenar los datos a mano.';}
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión. Puedes llenar los datos a mano (la foto no se pudo leer ni guardar).';fotoActual=null;}
 }
 
 async function guardarGasto(){
@@ -235,14 +241,16 @@ async function guardarGasto(){
         fecha:document.getElementById('g-fecha').value||null,
         comercio:document.getElementById('g-comercio').value.trim(),
         monto, categoria:document.getElementById('g-categoria').value,
-        pagado_por:pagadoPor, nota:document.getElementById('g-nota').value.trim()
+        pagado_por:pagadoPor, nota:document.getElementById('g-nota').value.trim(),
+        imagen:fotoActual
       })});
     const d=await resp.json();
     if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo guardar.';return;}
-    msg.className='msg ok';msg.textContent='Gasto guardado.';
+    msg.className='msg ok';msg.textContent='Gasto guardado.'+(fotoActual&&!d.foto_guardada?' (la foto no se pudo guardar, pero los datos quedaron registrados)':'');
     document.getElementById('g-comercio').value='';document.getElementById('g-monto').value='';
     document.getElementById('g-nombre').value='';document.getElementById('g-nota').value='';
     document.getElementById('g-foto').value='';
+    fotoActual=null;
     document.getElementById('msgExtraer').className='msg';
     cargarGastos();
   }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
@@ -296,10 +304,20 @@ function pintarTabla(){
     const estado=g.pagado_por==='caja_empresa'
       ?'<span class="pill ok">caja</span>'
       :(g.reembolsado?'<span class="pill ok">devuelto</span>':'<span class="pill pend" style="cursor:pointer" onclick="marcarReembolsado('+g.id+',1)">pendiente — marcar</span>');
-    return '<tr><td>'+(g.fecha||'—')+'</td><td>'+esc(g.comercio||'—')+'</td><td>'+(CAT_LABEL[g.categoria]||g.categoria)+'</td>'+
+    const foto=g.foto_r2?' <span style="cursor:pointer" title="Ver foto de la boleta" onclick="verFoto('+g.id+')">📷</span>':'';
+    return '<tr><td>'+(g.fecha||'—')+'</td><td>'+esc(g.comercio||'—')+foto+'</td><td>'+(CAT_LABEL[g.categoria]||g.categoria)+'</td>'+
       '<td class="num">'+clp(g.monto)+'</td><td>'+quien+'</td><td>'+estado+'</td>'+
       '<td><button class="btn-x" onclick="eliminarGasto('+g.id+')">✕</button></td></tr>';
   }).join('');
+}
+
+async function verFoto(id){
+  try{
+    const resp=await fetch(API_URL+'/admin/gastos/'+id+'/foto',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!resp.ok){alert('No se pudo cargar la foto.');return;}
+    const blob=await resp.blob();
+    window.open(URL.createObjectURL(blob),'_blank');
+  }catch(e){alert('Sin conexión.');}
 }
 
 async function marcarReembolsado(id,val){
