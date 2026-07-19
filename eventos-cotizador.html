@@ -166,6 +166,7 @@ footer a{color:#d4a017}
     <div class="fila">
       <div><label>% Imprevistos (sugerido 5–10%)</label><input type="number" id="f-imprevistos" value="7" min="0" max="50" step="0.5"></div>
       <div><label>% Margen deseado (sobre el precio de venta)</label><input type="number" id="f-margen" value="20" min="0" max="90" step="1"></div>
+      <div><label>Horas por turno (chequeo piso IMM)</label><input type="number" id="f-horasTurno" value="12" min="1" max="24" step="0.5"></div>
     </div>
     <div class="tasa-nota">El margen se calcula sobre el PRECIO de venta (ej: 20% significa que el costo real es el 80% del precio). IVA 19% se agrega siempre — los servicios de seguridad son afectos.</div>
   </div>
@@ -193,6 +194,8 @@ footer a{color:#d4a017}
         <div><label>SIS — empleador (vigente desde abril 2026)</label><input type="number" id="t-sis" value="1.62" step="0.01"></div>
         <div><label>Mutual — base Ley 16.744</label><input type="number" id="t-mutualBase" value="0.90" step="0.01"></div>
         <div><label>Mutual — adicional diferenciada ⚠️</label><input type="number" id="t-mutualAdicional" value="0" step="0.01"></div>
+        <div><label>Reforma previsional — aporte empleador (Ley 21.735)</label><input type="number" id="t-reforma" value="1.0" step="0.01"><div class="tasa-nota">1% vigente hasta la remuneración de julio 2026; el escalón SUBE con la de agosto — confirmar % del mes en Previred</div></div>
+        <div><label>Ingreso Mínimo Mensual (piso legal, CLP)</label><input type="number" id="t-imm" value="553553" step="1"><div class="tasa-nota">$553.553 desde 01-05-2026 — para el chequeo de piso por hora</div></div>
         <div style="grid-column:1/-1"><label>Retención BTE (modo honorarios, 2026)</label><input type="number" id="t-bte" value="15.25" step="0.01"></div>
       </div>
       <div class="aviso" style="margin-top:10px">⚠️ La tasa adicional diferenciada de mutual depende de la actividad económica y del siniestro/contrato específico de C&C con su mutualidad (ACHS/IST/Mutual CChC) — <b>no viene precargada</b>: revisa la última liquidación de cotizaciones antes de cotizar un evento grande.</div>
@@ -319,6 +322,8 @@ function leerTasas(){
     sis:Number(document.getElementById('t-sis').value)||0,
     mutualBase:Number(document.getElementById('t-mutualBase').value)||0,
     mutualAdicional:Number(document.getElementById('t-mutualAdicional').value)||0,
+    reforma:Number(document.getElementById('t-reforma').value)||0,
+    imm:Number(document.getElementById('t-imm').value)||553553,
     bte:Number(document.getElementById('t-bte').value)||0
   };
 }
@@ -331,8 +336,12 @@ function calcular(){
   const margenPct=Number(document.getElementById('f-margen').value)||0;
 
   const descTrabajador=(0.10+t.afpComision/100+t.salud/100); // AFP 10% fijo + comisión + salud
-  const cargasEmpresa=(t.afc+t.sis+t.mutualBase+t.mutualAdicional)/100;
+  const cargasEmpresa=(t.afc+t.sis+t.mutualBase+t.mutualAdicional+t.reforma)/100; // + aporte empleador Ley 21.735
 
+  const horasTurno=Number(document.getElementById('f-horasTurno').value)||12;
+  // Piso IMM por hora: IMM mensual / 180 h (jornada 42 h/sem mensualizada, criterio conservador)
+  const immHora=t.imm/180;
+  const avisos=[];
   let costoPersonal=0, turnosPersonaTotal=0;
   const detalleLineas=est.lineas.map(l=>{
     const cant=l.cant||0, turnos=l.turnos||0, monto=l.monto||0;
@@ -341,6 +350,11 @@ function calcular(){
     if(modo==='obra'){
       bruto = l.tipo==='liquido' ? pactadoTotal/(1-descTrabajador) : pactadoTotal;
       costoLinea = bruto*(1+cargasEmpresa);
+      // Gate piso IMM (obs. del asesor): el bruto por hora no puede quedar bajo el mínimo proporcional
+      const brutoUnitario = (cant*turnos)>0 ? bruto/(cant*turnos) : 0;
+      if(brutoUnitario>0 && brutoUnitario/horasTurno < immHora){
+        avisos.push('«'+(l.rol||'(sin nombre)')+'»: bruto por hora ≈ '+clp(brutoUnitario/horasTurno)+' queda BAJO el mínimo proporcional ('+clp(immHora)+'/h con IMM '+clp(t.imm)+'). Sube el monto del turno o baja las horas.');
+      }
     } else {
       bruto = l.tipo==='liquido' ? pactadoTotal/(1-t.bte/100) : pactadoTotal;
       costoLinea = bruto; // honorarios: sin cargas de empleador, solo retención al prestador
@@ -365,7 +379,7 @@ function calcular(){
   const porTurnoIva=turnosPersonaTotal>0?precioConIva/turnosPersonaTotal:0;
 
   return {modo,t,detalleLineas,costoPersonal,costoDirectos,imprevistosPct,imprevistos,costoTotal,
-    margenPct,precioNeto,iva,precioConIva,margenReal:margenReal$,margenRealPct,turnosPersonaTotal,porTurnoNeto,porTurnoIva};
+    margenPct,precioNeto,iva,precioConIva,margenReal:margenReal$,margenRealPct,turnosPersonaTotal,porTurnoNeto,porTurnoIva,avisos,horasTurno};
 }
 
 function pintarTodo(){
@@ -373,7 +387,10 @@ function pintarTodo(){
   renderLineas();renderDirectos();
   const r=calcular();
   const d=document.getElementById('resDesglose');
-  d.innerHTML=r.detalleLineas.map(l=>
+  const avisosHtml=r.avisos&&r.avisos.length
+    ?'<div class="aviso">⚠️ <b>Piso legal:</b><br>'+r.avisos.map(esc).join('<br>')+'</div>'
+    :'';
+  d.innerHTML=avisosHtml+r.detalleLineas.map(l=>
     '<div class="res-linea"><span>'+esc(l.rol)+' ('+l.cant+'× '+l.turnos+' turnos)</span><b>'+clp(l.costoLinea)+'</b></div>').join('')+
     '<div class="res-linea"><span>Costos directos</span><b>'+clp(r.costoDirectos)+'</b></div>'+
     '<div class="res-linea"><span>Imprevistos ('+r.imprevistosPct+'%)</span><b>'+clp(r.imprevistos)+'</b></div>'+
@@ -433,6 +450,7 @@ function estadoActualParaGuardar(){
       lineas:est.lineas, directos:est.directos,
       imprevistosPct:Number(document.getElementById('f-imprevistos').value)||0,
       margenPct:Number(document.getElementById('f-margen').value)||0,
+      horasTurno:Number(document.getElementById('f-horasTurno').value)||12,
       tasas:leerTasas(),
       tipoPdf:document.getElementById('f-tipoPdf').value,
       validezDias:Number(document.getElementById('f-validez').value)||15,
@@ -516,6 +534,7 @@ async function abrirPresupuesto(folio){
     est.directos=e.directos||[];
     document.getElementById('f-imprevistos').value=e.imprevistosPct??7;
     document.getElementById('f-margen').value=e.margenPct??20;
+    document.getElementById('f-horasTurno').value=e.horasTurno??12;
     document.getElementById('f-tipoPdf').value=e.tipoPdf||'lineas';
     document.getElementById('f-validez').value=e.validezDias||15;
     document.getElementById('f-anticipo').value=e.anticipoPct||50;
@@ -526,6 +545,8 @@ async function abrirPresupuesto(folio){
       document.getElementById('t-sis').value=e.tasas.sis??1.62;
       document.getElementById('t-mutualBase').value=e.tasas.mutualBase??0.90;
       document.getElementById('t-mutualAdicional').value=e.tasas.mutualAdicional??0;
+      document.getElementById('t-reforma').value=e.tasas.reforma??1.0;
+      document.getElementById('t-imm').value=e.tasas.imm??553553;
       document.getElementById('t-bte').value=e.tasas.bte??15.25;
     }
     document.getElementById('folioZona').innerHTML='<span class="folio-badge">Folio '+esc(est.folio)+'</span>';
