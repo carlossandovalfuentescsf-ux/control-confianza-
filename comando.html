@@ -46,6 +46,15 @@ tr:last-child td{border-bottom:none}
 .pill{display:inline-block;background:#111;border:1px solid #333;border-radius:99px;padding:3px 10px;font-size:0.7rem;color:#ccc}
 .pill.pend{border-color:#7d2e2e;color:#ef9a9a}
 .pill.ok{border-color:#2e7d32;color:#a5d6a7}
+.pill.warn{border-color:#7d5e2e;color:#e8c98a}
+.exp-item{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-top:8px}
+.exp-item .ex-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.exp-item .ex-n{font-size:.84rem;font-weight:700}
+.exp-item .ex-c{font-size:.7rem;color:#888}
+.exp-item .ex-docs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.exp-item .ex-doc{font-size:.68rem;background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:4px 8px;cursor:pointer}
+.exp-item .ex-doc:hover{border-color:#d4a017}
+.exp-item .ex-doc.falta{color:#666;cursor:default;border-style:dashed}
 .btn-x{background:none;border:none;color:#e74c3c;font-size:0.95rem;cursor:pointer;padding:2px 6px}
 .msg{margin-top:10px;font-size:0.78rem;line-height:1.5;display:none;border-radius:8px;padding:10px}
 .msg.ok{display:block;background:#15301a;border:1px solid #2e7d32;color:#a5d6a7}
@@ -103,8 +112,16 @@ footer a{color:#d4a017}
       <a class="tarjeta" href="tablero.html"><div class="ic">📊</div><div class="t">Tablero de Mando</div><div class="d">Métricas del negocio en una pantalla</div></a>
       <a class="tarjeta" href="eventos-cotizador.html"><div class="ic">🧮</div><div class="t">Cotizador de Eventos</div><div class="d">Presupuestos de dotación de guardias</div></a>
       <a class="tarjeta" href="guardias.html#admin"><div class="ic">💼</div><div class="t">Panel de Ofertas</div><div class="d">Publicar y gestionar ofertas de Control+</div></a>
+      <a class="tarjeta" href="#expedientes"><div class="ic">📁</div><div class="t">Expedientes</div><div class="d">Documentos y datos de pago de cada guardia</div></a>
       <a class="tarjeta" href="#gastos"><div class="ic">🧾</div><div class="t">Gastos de Evento</div><div class="d">Rendición de plata propia por foto de boleta</div></a>
     </div>
+  </div>
+
+  <div class="card" id="expedientes">
+    <h2>📁 Expedientes de guardias</h2>
+    <div class="porque">Carpeta documental que cada guardia llena en Control+ (S1 del brief de dotación de eventos). El semáforo dice si el guardia está listo para trabajar un evento: 🟢 expediente completo y OS10 vigente · 🟡 falta algo o el OS10 vence pronto · 🔴 sin OS10 vigente — no puede trabajar (Ley 21.659).</div>
+    <input type="text" id="f-filtroExpediente" placeholder="Buscar por nombre o comuna…" oninput="filtrarExpedientes()" style="margin-bottom:10px">
+    <div id="expedientesLista"><div class="vacio">Cargando…</div></div>
   </div>
 
   <div class="card" id="gastos">
@@ -365,6 +382,56 @@ async function hacerLogin(){
 }
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login').style.display==='block')hacerLogin();});
 
+// ---------- Expedientes de guardias (S1 dotación de eventos) ----------
+let ultimosExpedientes=[];
+const DOC_LABEL_CMD={os10:'OS10',cedula_frente:'Cédula frente',cedula_dorso:'Cédula dorso',cv:'CV'};
+
+async function cargarExpedientes(){
+  const el=document.getElementById('expedientesLista');
+  try{
+    const resp=await fetch(API_URL+'/guardias/admin/carpetas',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok){el.innerHTML='<div class="vacio">No se pudo cargar.</div>';return;}
+    ultimosExpedientes=d.guardias||[];
+    pintarExpedientes(ultimosExpedientes);
+  }catch(e){el.innerHTML='<div class="vacio">Sin conexión.</div>';}
+}
+
+function filtrarExpedientes(){
+  const q=document.getElementById('f-filtroExpediente').value.trim().toLowerCase();
+  if(!q){pintarExpedientes(ultimosExpedientes);return;}
+  pintarExpedientes(ultimosExpedientes.filter(g=>(g.nombre||'').toLowerCase().includes(q)||(g.comuna||'').toLowerCase().includes(q)));
+}
+
+function pintarExpedientes(lista){
+  const el=document.getElementById('expedientesLista');
+  if(!lista.length){el.innerHTML='<div class="vacio">Sin guardias con perfil todavía.</div>';return;}
+  const SEM_PILL={verde:'<span class="pill ok">🟢 completo</span>',amarillo:'<span class="pill warn">🟡 revisar</span>',rojo:'<span class="pill pend">🔴 sin OS10 vigente</span>'};
+  const TIPOS=['os10','cedula_frente','cedula_dorso','cv'];
+  el.innerHTML=lista.map(g=>{
+    const docsPorTipo={};
+    (g.docs||[]).forEach(d=>{docsPorTipo[d.tipo]=d;});
+    const docsHtml=TIPOS.map(t=>{
+      const d=docsPorTipo[t];
+      if(!d)return '<span class="ex-doc falta">'+DOC_LABEL_CMD[t]+' — falta</span>';
+      return '<span class="ex-doc" onclick="verDocGuardia('+d.id+')">'+DOC_LABEL_CMD[t]+(d.verificado?' ✔':' 👁 ver')+'</span>';
+    }).join('');
+    const pago=g.datos_pago_ok?'<span class="ex-doc">💰 datos de pago ok</span>':'<span class="ex-doc falta">💰 datos de pago — falta</span>';
+    return '<div class="exp-item"><div class="ex-top"><div><div class="ex-n">'+esc(g.nombre)+'</div><div class="ex-c">'+esc(g.comuna||'')+
+      (g.os10_vencimiento?' · OS10 vence '+g.os10_vencimiento:'')+'</div></div>'+(SEM_PILL[g.semaforo]||'')+'</div>'+
+      '<div class="ex-docs">'+docsHtml+pago+'</div></div>';
+  }).join('');
+}
+
+async function verDocGuardia(id){
+  try{
+    const resp=await fetch(API_URL+'/guardias/admin/doc/'+id,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!resp.ok){alert('No se pudo cargar el documento.');return;}
+    const blob=await resp.blob();
+    window.open(URL.createObjectURL(blob),'_blank');
+  }catch(e){alert('Sin conexión.');}
+}
+
 async function iniciar(){
   if(!CYC_TOKEN){mostrar('login');return;}
   mostrar('cargando');
@@ -375,6 +442,7 @@ async function iniciar(){
     if(!d.is_admin){document.getElementById('error-txt').textContent='Tu cuenta no es de administrador. Esta página es solo para la administración del ecosistema.';mostrar('error');return;}
     mostrar('app');
     cargarGastos();
+    cargarExpedientes();
   }catch(e){
     document.getElementById('error-txt').textContent='Error de conexión con el servidor. Revisa tu internet e intenta de nuevo.';
     mostrar('error');

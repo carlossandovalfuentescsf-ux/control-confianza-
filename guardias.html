@@ -194,6 +194,19 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 #ofertasList{min-height:55vh}
 .premium,.eco{display:none}
 body.extras-listas .premium,body.extras-listas .eco{display:block}
+
+/* Mi Carpeta (S1 dotación de eventos) */
+.doc-row{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-bottom:10px}
+.doc-row .dr-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.doc-row .dr-t{font-size:.82rem;font-weight:800}
+.doc-row .dr-s{font-size:.68rem;color:#888;margin-top:2px}
+.doc-row input[type=file]{width:100%;font-size:.72rem;color:#999;margin-top:8px}
+.doc-row input[type=date]{margin-top:8px}
+.sem{font-size:.64rem;font-weight:800;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.sem-verde{background:#0d2210;color:#7dc800}
+.sem-amarillo{background:#2a1a00;color:#d4a017}
+.sem-rojo{background:#2a0a00;color:#e05000}
+.carpeta-aviso{background:#0d0d0d;border:1px solid #222;border-radius:10px;padding:12px;font-size:.72rem;color:#999;line-height:1.6;margin-bottom:14px}
 </style>
 </head>
 <body>
@@ -218,6 +231,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <a class="tab" id="tabTestOS10" href="test-os10.html?f=controlmas" style="color:#d4a017">🎓 Test OS10</a>
   <a class="tab" href="#sueldo" data-tab="sueldo">Sueldo</a>
   <a class="tab" href="#perfil" data-tab="perfil">Mi Perfil</a>
+  <a class="tab" href="#carpeta" data-tab="carpeta">Mi Carpeta</a>
   <a class="tab" href="#mis-postulaciones" data-tab="mis-postulaciones">Postulaciones</a>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
 </nav>
@@ -268,6 +282,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <!-- PERFIL -->
   <section class="view" id="view-perfil">
     <div id="perfilContent"></div>
+  </section>
+
+  <!-- MI CARPETA (S1 dotación de eventos) -->
+  <section class="view" id="view-carpeta">
+    <div id="carpetaContent"></div>
   </section>
 
   <!-- MIS POSTULACIONES -->
@@ -379,7 +398,7 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','guia','sueldo','perfil','mis-postulaciones','admin'];
+var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-postulaciones','admin'];
 function vistaActual(){
   var h=(location.hash||'#ofertas').replace('#','');
   if(h.indexOf('guia')===0) return 'guia'; // #guia-g23 abre la ficha g23 (links compartibles)
@@ -398,6 +417,7 @@ function renderView(){
   else if(v==='guia') renderGuia();
   else if(v==='sueldo') renderSueldo();
   else if(v==='perfil') renderPerfil();
+  else if(v==='carpeta') renderCarpeta();
   else if(v==='mis-postulaciones') renderMisPostulaciones();
   else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
@@ -703,6 +723,164 @@ async function renderMisPostulaciones(){
 }
 function labelEstado(e){
   return {postulado:'Postulado',aceptado:'Aceptado',rechazado:'No seleccionado',espera:'Lista de espera'}[e]||e;
+}
+
+/* ---------- Vista: Mi Carpeta (S1 dotación de eventos) ---------- */
+var CYC_CARPETA_DOCS=[];
+var DOC_LABEL={os10:'Certificado OS.10',cedula_frente:'Cédula — frente',cedula_dorso:'Cédula — dorso',cv:'Curriculum (CV)'};
+
+function docPorTipo(tipo){
+  return CYC_CARPETA_DOCS.find(function(d){return d.tipo===tipo;});
+}
+
+async function renderCarpeta(){
+  var el=document.getElementById('carpetaContent');
+  if(!CYC_TOKEN){ el.innerHTML=formAuth(); return; }
+  if(CYC_PERFIL===null){ el.innerHTML='<div class="spinner">Cargando…</div>'; return; }
+  if(!CYC_PERFIL){
+    el.innerHTML='<div class="card"><div class="auth-title">Completa tu perfil primero</div><div class="auth-sub">Antes de abrir tu carpeta, completa tus datos básicos en Mi Perfil.</div><button class="btn-guardar" onclick="location.hash=\'#perfil\'">Ir a Mi Perfil</button></div>';
+    return;
+  }
+  el.innerHTML='<div class="spinner">Cargando tu carpeta…</div>';
+  try{
+    var res=await fetch(API_URL+'/guardias/carpeta',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    var data=await res.json();
+    CYC_CARPETA_DOCS=data.docs||[];
+  }catch(e){ CYC_CARPETA_DOCS=[]; }
+  pintarCarpeta();
+}
+
+function pintarCarpeta(){
+  var el=document.getElementById('carpetaContent');
+  var p=CYC_PERFIL;
+  var os10=docPorTipo('os10');
+  var semOs10='';
+  if(os10 && os10.vencimiento){
+    var dias=Math.round((new Date(os10.vencimiento+'T00:00:00')-new Date())/86400000);
+    if(dias<0) semOs10='<span class="sem sem-rojo">vencido</span>';
+    else if(dias<=40) semOs10='<span class="sem sem-amarillo">vence en '+dias+' días</span>';
+    else semOs10='<span class="sem sem-verde">vigente</span>';
+  }
+  var html='<div class="card">'+
+    '<div class="auth-title">Mi Carpeta</div>'+
+    '<div class="auth-sub">Sube tus documentos UNA vez — se usan para dotarte en eventos de Control y Confianza. Gratis, sin costo para ti.</div>'+
+    docRowHTML('os10',os10,semOs10)+
+    docRowHTML('cedula_frente',docPorTipo('cedula_frente'))+
+    docRowHTML('cedula_dorso',docPorTipo('cedula_dorso'))+
+    docRowHTML('cv',docPorTipo('cv'))+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="auth-title">Datos de pago</div>'+
+    '<div class="auth-sub">Para pagarte cuando trabajes en un evento. Solo los ve la administración.</div>'+
+    '<label for="cRut">RUT</label>'+
+    '<input id="cRut" type="text" value="'+esc(p.rut||'')+'" placeholder="12345678-9">'+
+    '<label for="cBanco">Banco</label>'+
+    '<select id="cBanco">'+bancosOptions(p.banco)+'</select>'+
+    '<label>Tipo de cuenta</label>'+
+    '<div class="opts-row" id="cTipoCtaRow">'+
+      opt('tipocta','corriente','Corriente',p.tipo_cuenta)+opt('tipocta','vista','Vista',p.tipo_cuenta)+opt('tipocta','ahorro','Ahorro',p.tipo_cuenta)+opt('tipocta','rut','Cuenta RUT',p.tipo_cuenta)+
+    '</div>'+
+    '<label for="cNumCta">Número de cuenta</label>'+
+    '<input id="cNumCta" type="text" value="'+esc(p.num_cuenta||'')+'" placeholder="000000000">'+
+    (p.consentimiento_carpeta_at?'':
+      '<div class="consent-row"><input type="checkbox" id="cConsent"><label for="cConsent">Acepto que Control &amp; Confianza use estos datos para dotarme en eventos y pagarme. <a href="terminos.html" target="_blank" rel="noopener noreferrer">Ver política de privacidad</a>.</label></div>'
+    )+
+    '<button class="btn-guardar" onclick="guardarDatosPago()">Guardar datos de pago</button>'+
+    '<div class="form-msg" id="pagoMsg"></div>'+
+  '</div>'+
+  '<div class="carpeta-aviso">Tus documentos y datos de pago se guardan de forma privada y se purgan automáticamente a los 2 años. Solo la administración de Control y Confianza puede verlos.</div>';
+  el.innerHTML=html;
+}
+
+function docRowHTML(tipo, doc, semExtra){
+  var estado = doc ? ('<span class="sem sem-verde">subido</span>' + (doc.verificado?'':' <span class="sem sem-amarillo">por revisar</span>')) : '<span class="sem sem-rojo">falta</span>';
+  var fechaInput = tipo==='os10' ? '<label style="margin-top:8px">Fecha de vencimiento del curso</label><input type="date" id="fecha-os10" value="'+(doc&&doc.vencimiento?doc.vencimiento:'')+'">' : '';
+  return '<div class="doc-row">'+
+    '<div class="dr-top"><div><div class="dr-t">'+esc(DOC_LABEL[tipo])+'</div>'+
+    '<div class="dr-s">'+(doc?('subido '+fmtFecha(doc.subido_at.slice(0,10))):'aún no subes este documento')+'</div></div>'+
+    '<div>'+(tipo==='os10'&&semExtra?semExtra:estado)+'</div></div>'+
+    fechaInput+
+    '<input type="file" accept="image/jpeg,image/png,application/pdf" onchange="subirDoc(\''+tipo+'\',this)">'+
+    '<div class="form-msg" id="docMsg-'+tipo+'"></div>'+
+  '</div>';
+}
+
+function bancosOptions(actual){
+  var bancos=['Banco de Chile','BancoEstado','Banco Santander','Banco BCI','Scotiabank','Banco Itaú','Banco Security','Banco Falabella','Banco Ripley','Banco Consorcio','Coopeuch','Tenpo','MACH','Otro'];
+  return '<option value="">— Elige tu banco —</option>'+bancos.map(function(b){return '<option value="'+esc(b)+'"'+(b===actual?' selected':'')+'>'+esc(b)+'</option>';}).join('');
+}
+
+function fileToBase64Carpeta(file){
+  return new Promise(function(resolve,reject){
+    var r=new FileReader();
+    r.onload=function(){resolve(r.result.split(',')[1]);};
+    r.onerror=reject;
+    r.readAsDataURL(file);
+  });
+}
+
+async function subirDoc(tipo, input){
+  var file=input.files[0];
+  if(!file)return;
+  var msg=document.getElementById('docMsg-'+tipo);
+  msg.className='form-msg';msg.textContent='';
+  if(file.size>6*1024*1024){msg.className='form-msg err';msg.textContent='El archivo pesa demasiado (máx. 6MB).';return;}
+  var tiposOk={'image/jpeg':1,'image/png':1,'application/pdf':1};
+  if(!tiposOk[file.type]){msg.className='form-msg err';msg.textContent='Formato no soportado (usa foto o PDF).';return;}
+  var vencimiento=null;
+  if(tipo==='os10'){
+    vencimiento=document.getElementById('fecha-os10').value;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(vencimiento)){msg.className='form-msg err';msg.textContent='Indica la fecha de vencimiento del curso antes de subir el archivo.';return;}
+  }
+  msg.className='form-msg ok';msg.textContent='Subiendo…';
+  try{
+    var data=await fileToBase64Carpeta(file);
+    var body={tipo:tipo,data:data,media_type:file.type};
+    if(vencimiento)body.vencimiento=vencimiento;
+    var res=await fetch(API_URL+'/guardias/carpeta',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
+    var d=await res.json();
+    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo subir.';return;}
+    msg.className='form-msg ok';msg.textContent='Guardado.';
+    renderCarpeta();
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
+}
+
+function validarRutCliente(rutRaw){
+  var rut=String(rutRaw||'').replace(/[.\-\s]/g,'').toUpperCase();
+  if(!/^\d{7,8}[0-9K]$/.test(rut))return false;
+  var cuerpo=rut.slice(0,-1), dv=rut.slice(-1);
+  var suma=0, mult=2;
+  for(var i=cuerpo.length-1;i>=0;i--){ suma+=parseInt(cuerpo[i],10)*mult; mult=mult===7?2:mult+1; }
+  var resto=11-(suma%11);
+  var dvCalc = resto===11?'0':resto===10?'K':String(resto);
+  return dvCalc===dv;
+}
+
+async function guardarDatosPago(){
+  var msg=document.getElementById('pagoMsg');
+  msg.className='form-msg';msg.textContent='';
+  var rut=document.getElementById('cRut').value.trim();
+  var banco=document.getElementById('cBanco').value;
+  var tipoEl=document.querySelector('.opt-btn[data-grupo="tipocta"].sel');
+  var tipoCuenta=tipoEl?tipoEl.dataset.val:'';
+  var numCuenta=document.getElementById('cNumCta').value.trim();
+  var consentEl=document.getElementById('cConsent');
+
+  if(!validarRutCliente(rut)){msg.className='form-msg err';msg.textContent='RUT inválido — revisa el dígito verificador.';return;}
+  if(!banco){msg.className='form-msg err';msg.textContent='Elige tu banco.';return;}
+  if(!tipoCuenta){msg.className='form-msg err';msg.textContent='Elige el tipo de cuenta.';return;}
+  if(!numCuenta){msg.className='form-msg err';msg.textContent='Escribe tu número de cuenta.';return;}
+  if(!CYC_PERFIL.consentimiento_carpeta_at && (!consentEl||!consentEl.checked)){msg.className='form-msg err';msg.textContent='Debes aceptar el uso de tus datos para continuar.';return;}
+
+  try{
+    var res=await fetch(API_URL+'/guardias/carpeta/pago',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({rut:rut,banco:banco,tipo_cuenta:tipoCuenta,num_cuenta:numCuenta,consentimiento:true})});
+    var d=await res.json();
+    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo guardar.';return;}
+    msg.className='form-msg ok';msg.textContent='Datos de pago guardados.';
+    CYC_PERFIL.rut=rut; CYC_PERFIL.banco=banco; CYC_PERFIL.tipo_cuenta=tipoCuenta; CYC_PERFIL.num_cuenta=numCuenta; CYC_PERFIL.consentimiento_carpeta_at=CYC_PERFIL.consentimiento_carpeta_at||new Date().toISOString();
+    pintarCarpeta();
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
 }
 
 /* ---------- Vista: Admin (F4) ---------- */
