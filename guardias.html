@@ -232,6 +232,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <a class="tab" href="#sueldo" data-tab="sueldo">Sueldo</a>
   <a class="tab" href="#perfil" data-tab="perfil">Mi Perfil</a>
   <a class="tab" href="#carpeta" data-tab="carpeta">Mi Carpeta</a>
+  <a class="tab" href="#mis-eventos" data-tab="mis-eventos">Mis Eventos</a>
   <a class="tab" href="#mis-postulaciones" data-tab="mis-postulaciones">Postulaciones</a>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
 </nav>
@@ -287,6 +288,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <!-- MI CARPETA (S1 dotación de eventos) -->
   <section class="view" id="view-carpeta">
     <div id="carpetaContent"></div>
+  </section>
+
+  <!-- MIS EVENTOS (S2 dotación de eventos) -->
+  <section class="view" id="view-mis-eventos">
+    <div id="misEventosContent"></div>
   </section>
 
   <!-- MIS POSTULACIONES -->
@@ -398,7 +404,7 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-postulaciones','admin'];
+var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','admin'];
 function vistaActual(){
   var h=(location.hash||'#ofertas').replace('#','');
   if(h.indexOf('guia')===0) return 'guia'; // #guia-g23 abre la ficha g23 (links compartibles)
@@ -418,6 +424,7 @@ function renderView(){
   else if(v==='sueldo') renderSueldo();
   else if(v==='perfil') renderPerfil();
   else if(v==='carpeta') renderCarpeta();
+  else if(v==='mis-eventos') renderMisEventos();
   else if(v==='mis-postulaciones') renderMisPostulaciones();
   else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
@@ -691,6 +698,53 @@ function editarPerfil(){
 }
 
 /* ---------- Vista: Mis Postulaciones (F3) ---------- */
+/* ---------- Vista: Mis Eventos (S2 dotación de eventos) ---------- */
+var EVENTO_ESTADO_LABEL={convocado:'Te convocaron',confirmado:'Confirmaste',asistio:'Asististe',desistio:'Desististe',no_show:'No llegaste'};
+
+async function renderMisEventos(){
+  var el=document.getElementById('misEventosContent');
+  if(!CYC_TOKEN){
+    el.innerHTML='<div class="card"><div class="auth-title">Inicia sesión</div><div class="auth-sub">Crea tu cuenta o inicia sesión para ver tus convocatorias a eventos.</div><button class="btn-guardar" onclick="location.hash=\'#perfil\'">Ir a Mi Perfil</button></div>';
+    return;
+  }
+  el.innerHTML='<div class="spinner">Cargando tus eventos…</div>';
+  try{
+    var res=await fetch(API_URL+'/guardias/mis-eventos',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    var data=await res.json();
+    var lista=data.eventos||[];
+    if(!lista.length){
+      el.innerHTML='<div class="empty">📅<br><br>Aún no te han convocado a ningún evento.</div>';
+      return;
+    }
+    var html='';
+    lista.forEach(function(e){
+      var pendiente = e.estado==='convocado';
+      html+='<div class="post-card">'+
+        '<div class="post-top"><div class="post-titulo">'+esc(e.nombre)+'</div><span class="badge '+(e.estado==='asistio'?'aceptado':e.estado==='desistio'||e.estado==='no_show'?'rechazado':e.estado==='confirmado'?'aceptado':'postulado')+'">'+EVENTO_ESTADO_LABEL[e.estado]+'</span></div>'+
+        '<div class="post-meta">📍 '+esc(e.comuna||'')+(e.lugar?' — '+esc(e.lugar):'')+' · 📅 '+fmtFecha(e.fecha_inicio)+(e.fecha_fin?' a '+fmtFecha(e.fecha_fin):'')+(e.pago_monto?' · '+fmtCLP(e.pago_monto)+'/turno':'')+'</div>'+
+        (pendiente?
+          '<div class="admin-actions" style="margin-top:10px">'+
+            '<button class="btn-sm" style="background:#0d2210;color:#7dc800" onclick="responderEvento('+e.evento_id+',\'confirmar\')">✔ Confirmar asistencia</button>'+
+            '<button class="btn-sm btn-sm-danger" onclick="responderEvento('+e.evento_id+',\'desistir\')">✕ No puedo ir</button>'+
+          '</div>' : '')+
+      '</div>';
+    });
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div class="empty">No se pudieron cargar tus eventos. Intenta de nuevo.</div>';
+  }
+}
+
+async function responderEvento(eventoId, accion){
+  if(accion==='desistir' && !confirm('¿Confirmas que no podrás asistir a este evento?'))return;
+  try{
+    var res=await fetch(API_URL+'/guardias/mis-eventos/'+eventoId,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({accion:accion})});
+    var d=await res.json();
+    if(!res.ok){alert(d.error||'No se pudo registrar tu respuesta.');return;}
+    renderMisEventos();
+  }catch(e){alert('Sin conexión. Intenta de nuevo.');}
+}
+
 async function renderMisPostulaciones(){
   var el=document.getElementById('misPostContent');
   if(!CYC_TOKEN){

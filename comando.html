@@ -55,6 +55,18 @@ tr:last-child td{border-bottom:none}
 .exp-item .ex-doc{font-size:.68rem;background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:4px 8px;cursor:pointer}
 .exp-item .ex-doc:hover{border-color:#d4a017}
 .exp-item .ex-doc.falta{color:#666;cursor:default;border-style:dashed}
+.ev-item{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-top:8px;cursor:pointer}
+.ev-item:hover{border-color:#d4a017}
+.ev-item .ev-n{font-size:.84rem;font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.ev-item .ev-s{font-size:.7rem;color:#888;margin-top:2px}
+.roster-row{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px;margin-top:8px}
+.roster-row .rr-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.roster-row .rr-n{font-size:.82rem;font-weight:700}
+.roster-row .rr-meta{font-size:.68rem;color:#888;margin-top:2px}
+.roster-row .rr-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.roster-row select{width:auto;padding:5px 7px;font-size:.72rem}
+.conv-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #1a1a1a;font-size:.8rem}
+.conv-item input{width:auto}
 .btn-x{background:none;border:none;color:#e74c3c;font-size:0.95rem;cursor:pointer;padding:2px 6px}
 .msg{margin-top:10px;font-size:0.78rem;line-height:1.5;display:none;border-radius:8px;padding:10px}
 .msg.ok{display:block;background:#15301a;border:1px solid #2e7d32;color:#a5d6a7}
@@ -113,7 +125,38 @@ footer a{color:#d4a017}
       <a class="tarjeta" href="eventos-cotizador.html"><div class="ic">🧮</div><div class="t">Cotizador de Eventos</div><div class="d">Presupuestos de dotación de guardias</div></a>
       <a class="tarjeta" href="guardias.html#admin"><div class="ic">💼</div><div class="t">Panel de Ofertas</div><div class="d">Publicar y gestionar ofertas de Control+</div></a>
       <a class="tarjeta" href="#expedientes"><div class="ic">📁</div><div class="t">Expedientes</div><div class="d">Documentos y datos de pago de cada guardia</div></a>
+      <a class="tarjeta" href="#eventos"><div class="ic">📅</div><div class="t">Eventos</div><div class="d">Roster, convocatoria y confirmaciones</div></a>
       <a class="tarjeta" href="#gastos"><div class="ic">🧾</div><div class="t">Gastos de Evento</div><div class="d">Rendición de plata propia por foto de boleta</div></a>
+    </div>
+  </div>
+
+  <div class="card" id="eventos">
+    <h2>📅 Eventos</h2>
+    <div class="porque">Crea el evento, convoca guardias desde Expedientes y sigue el roster con semáforo + % de confiabilidad histórica. El guardia confirma o desiste desde Control+ («Mis eventos») — aquí se ve todo en vivo.</div>
+
+    <div id="eventosListaWrap">
+      <div class="fila">
+        <div><label>Nombre del evento</label><input type="text" id="ev-nombre" placeholder="Ej: Festival Limache"></div>
+        <div><label>Comuna</label><input type="text" id="ev-comuna"></div>
+      </div>
+      <div class="fila">
+        <div><label>Lugar</label><input type="text" id="ev-lugar"></div>
+        <div><label>Pago por turno (CLP)</label><input type="number" id="ev-pago" min="0"></div>
+      </div>
+      <div class="fila">
+        <div><label>Fecha inicio</label><input type="date" id="ev-inicio"></div>
+        <div><label>Fecha fin (opcional)</label><input type="date" id="ev-fin"></div>
+      </div>
+      <label>Requisitos (opcional)</label>
+      <textarea id="ev-requisitos"></textarea>
+      <button class="btn btn-oro btn-full" onclick="crearEvento()">+ Crear evento</button>
+      <div class="msg" id="msgEvento"></div>
+      <div id="listaEventos" style="margin-top:14px"><div class="vacio">Cargando…</div></div>
+    </div>
+
+    <div id="eventoDetalleWrap" style="display:none">
+      <button class="btn btn-gris" onclick="volverListaEventos()" style="margin-bottom:10px">← Volver a Eventos</button>
+      <div id="eventoDetalleContent"></div>
     </div>
   </div>
 
@@ -432,6 +475,151 @@ async function verDocGuardia(id){
   }catch(e){alert('Sin conexión.');}
 }
 
+// ---------- Eventos y roster (S2 dotación de eventos) ----------
+let ultimosEventos=[];
+let eventoActualId=null;
+const SEM_PILL_EV={verde:'<span class="pill ok">🟢</span>',amarillo:'<span class="pill warn">🟡</span>',rojo:'<span class="pill pend">🔴</span>'};
+const ROSTER_ESTADO_LABEL={convocado:'Convocado',confirmado:'Confirmado',asistio:'Asistió',desistio:'Desistió',no_show:'No llegó'};
+
+async function cargarEventos(){
+  const el=document.getElementById('listaEventos');
+  try{
+    const resp=await fetch(API_URL+'/admin/eventos',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok){el.innerHTML='<div class="vacio">No se pudo cargar.</div>';return;}
+    ultimosEventos=d.eventos||[];
+    pintarListaEventos();
+  }catch(e){el.innerHTML='<div class="vacio">Sin conexión.</div>';}
+}
+
+function pintarListaEventos(){
+  const el=document.getElementById('listaEventos');
+  if(!ultimosEventos.length){el.innerHTML='<div class="vacio">Sin eventos creados todavía.</div>';return;}
+  const ESTADO_LABEL={preparacion:'Preparación',activo:'Activo',cerrado:'Cerrado'};
+  el.innerHTML=ultimosEventos.map(e=>
+    '<div class="ev-item" onclick="abrirEvento('+e.id+')">'+
+    '<div class="ev-n"><span>'+esc(e.nombre)+'</span><span class="pill">'+ESTADO_LABEL[e.estado]+'</span></div>'+
+    '<div class="ev-s">'+esc(e.comuna||'')+' · '+e.fecha_inicio+(e.fecha_fin?' a '+e.fecha_fin:'')+' · '+e.dotados+' convocado(s), '+e.confirmados+' confirmado(s)</div>'+
+    '</div>').join('');
+}
+
+async function crearEvento(){
+  const msg=document.getElementById('msgEvento');
+  msg.className='msg';msg.textContent='';
+  const nombre=document.getElementById('ev-nombre').value.trim();
+  const inicio=document.getElementById('ev-inicio').value;
+  if(!nombre){msg.className='msg err';msg.textContent='Escribe el nombre del evento.';return;}
+  if(!inicio){msg.className='msg err';msg.textContent='Elige la fecha de inicio.';return;}
+  try{
+    const resp=await fetch(API_URL+'/admin/eventos',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({nombre,comuna:document.getElementById('ev-comuna').value.trim(),lugar:document.getElementById('ev-lugar').value.trim(),
+        pago_turno:document.getElementById('ev-pago').value||null,fecha_inicio:inicio,fecha_fin:document.getElementById('ev-fin').value||null,
+        requisitos:document.getElementById('ev-requisitos').value.trim()})});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo crear.';return;}
+    msg.className='msg ok';msg.textContent='Evento creado.';
+    ['ev-nombre','ev-comuna','ev-lugar','ev-pago','ev-inicio','ev-fin','ev-requisitos'].forEach(id=>document.getElementById(id).value='');
+    cargarEventos();
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
+async function abrirEvento(id){
+  eventoActualId=id;
+  document.getElementById('eventosListaWrap').style.display='none';
+  document.getElementById('eventoDetalleWrap').style.display='block';
+  document.getElementById('eventoDetalleContent').innerHTML='<div class="vacio">Cargando…</div>';
+  await recargarEventoDetalle();
+}
+
+function volverListaEventos(){
+  eventoActualId=null;
+  document.getElementById('eventoDetalleWrap').style.display='none';
+  document.getElementById('eventosListaWrap').style.display='block';
+  cargarEventos();
+}
+
+async function recargarEventoDetalle(){
+  try{
+    const resp=await fetch(API_URL+'/admin/eventos/'+eventoActualId,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok){document.getElementById('eventoDetalleContent').innerHTML='<div class="vacio">No se pudo cargar.</div>';return;}
+    pintarDetalleEvento(d.evento,d.roster);
+  }catch(e){document.getElementById('eventoDetalleContent').innerHTML='<div class="vacio">Sin conexión.</div>';}
+}
+
+function pintarDetalleEvento(ev,roster){
+  const ESTADO_LABEL={preparacion:'Preparación',activo:'Activo',cerrado:'Cerrado'};
+  const PAGO_LABEL={pendiente:'Pendiente',nomina:'En nómina',pagado:'Pagado'};
+  let html='<div class="card" style="padding:0;border:none;background:none">'+
+    '<h2 style="margin-bottom:2px">'+esc(ev.nombre)+'</h2>'+
+    '<div class="porque">'+esc(ev.comuna||'')+(ev.lugar?' · '+esc(ev.lugar):'')+' · '+ev.fecha_inicio+(ev.fecha_fin?' a '+ev.fecha_fin:'')+(ev.pago_turno?' · '+clp(ev.pago_turno)+'/turno':'')+'</div>'+
+    '<label>Estado del evento</label>'+
+    '<select onchange="cambiarEstadoEvento(this.value)">'+
+      ['preparacion','activo','cerrado'].map(s=>'<option value="'+s+'"'+(s===ev.estado?' selected':'')+'>'+ESTADO_LABEL[s]+'</option>').join('')+
+    '</select>'+
+    '<button class="btn btn-oro btn-full" onclick="mostrarConvocar()" style="margin-top:12px">+ Convocar guardias</button>'+
+    '<div id="convocarWrap" style="display:none;margin-top:10px"></div>'+
+    '</div>'+
+    '<h3 style="margin-top:16px;color:#d4a017;font-size:.86rem">Roster ('+roster.length+')</h3>';
+  if(!roster.length){
+    html+='<div class="vacio">Aún no convocas guardias.</div>';
+  }else{
+    html+=roster.map(r=>{
+      const conf=r.confiabilidad_pct!=null?('· confiabilidad '+r.confiabilidad_pct+'%'):'';
+      return '<div class="roster-row">'+
+        '<div class="rr-top"><div><div class="rr-n">'+(SEM_PILL_EV[r.semaforo]||'')+' '+esc(r.nombre)+'</div>'+
+        '<div class="rr-meta">'+esc(r.comuna||'')+' '+conf+'</div></div>'+
+        '<span class="pill">'+ROSTER_ESTADO_LABEL[r.estado]+'</span></div>'+
+        '<div class="rr-acts">'+
+          (r.estado==='confirmado'?'<button class="btn-mini" onclick="marcarAsistencia('+r.user_id+',\'asistio\')">✔ Marcar asistió</button><button class="btn-mini" onclick="marcarAsistencia('+r.user_id+',\'no_show\')">✕ No llegó</button>':'')+
+          '<select onchange="cambiarPagoEstado('+r.user_id+',this.value)">'+
+            ['pendiente','nomina','pagado'].map(s=>'<option value="'+s+'"'+(s===r.pago_estado?' selected':'')+'>'+PAGO_LABEL[s]+'</option>').join('')+
+          '</select>'+
+        '</div></div>';
+    }).join('');
+  }
+  document.getElementById('eventoDetalleContent').innerHTML=html;
+}
+
+async function cambiarEstadoEvento(estado){
+  await fetch(API_URL+'/admin/eventos/'+eventoActualId,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({estado})});
+}
+
+async function marcarAsistencia(userId,estado){
+  await fetch(API_URL+'/admin/eventos/'+eventoActualId+'/dotacion/'+userId,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({estado})});
+  recargarEventoDetalle();
+}
+
+async function cambiarPagoEstado(userId,pago_estado){
+  await fetch(API_URL+'/admin/eventos/'+eventoActualId+'/dotacion/'+userId,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({pago_estado})});
+}
+
+function mostrarConvocar(){
+  const wrap=document.getElementById('convocarWrap');
+  if(wrap.style.display==='block'){wrap.style.display='none';return;}
+  const disponibles=(ultimosExpedientes||[]).filter(g=>g.semaforo!=='rojo');
+  if(!disponibles.length){wrap.innerHTML='<div class="vacio">No hay guardias con OS10 vigente en Expedientes todavía.</div>';wrap.style.display='block';return;}
+  wrap.innerHTML='<div style="max-height:260px;overflow-y:auto">'+disponibles.map(g=>
+    '<label class="conv-item"><input type="checkbox" value="'+g.user_id+'">'+(SEM_PILL_EV[g.semaforo]||'')+' '+esc(g.nombre)+' — '+esc(g.comuna||'')+'</label>'
+  ).join('')+'</div>'+
+  '<button class="btn btn-oro btn-full" onclick="convocarSeleccionados()" style="margin-top:8px">Convocar seleccionados</button>'+
+  '<div class="msg" id="msgConvocar"></div>';
+  wrap.style.display='block';
+}
+
+async function convocarSeleccionados(){
+  const ids=Array.from(document.querySelectorAll('#convocarWrap input[type=checkbox]:checked')).map(i=>Number(i.value));
+  const msg=document.getElementById('msgConvocar');
+  if(!ids.length){msg.className='msg err';msg.textContent='Selecciona al menos un guardia.';return;}
+  try{
+    const resp=await fetch(API_URL+'/admin/eventos/'+eventoActualId+'/convocar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({user_ids:ids})});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo convocar.';return;}
+    document.getElementById('convocarWrap').style.display='none';
+    recargarEventoDetalle();
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
 async function iniciar(){
   if(!CYC_TOKEN){mostrar('login');return;}
   mostrar('cargando');
@@ -443,6 +631,7 @@ async function iniciar(){
     mostrar('app');
     cargarGastos();
     cargarExpedientes();
+    cargarEventos();
   }catch(e){
     document.getElementById('error-txt').textContent='Error de conexión con el servidor. Revisa tu internet e intenta de nuevo.';
     mostrar('error');
