@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Cotizador de Eventos — Control y Confianza</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh;padding-bottom:60px}
+header{background:#1a1a1a;border-bottom:2px solid #d4a017;padding:18px 20px;text-align:center}
+header h1{font-size:1.15rem;font-weight:800;color:#d4a017}
+header .sub{font-size:0.76rem;color:#888;margin-top:4px}
+.wrap{max-width:760px;margin:0 auto;padding:16px 14px 110px}
+.intro{background:#1a1200;border:1px solid #3a2e00;border-left:4px solid #d4a017;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:0.82rem;line-height:1.6;color:#e8c98a}
+.intro b{color:#f0e8d0}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:14px}
+.card h2{font-size:1rem;font-weight:800;color:#d4a017;margin-bottom:4px}
+.card .porque{font-size:0.76rem;color:#888;margin-bottom:12px;line-height:1.45}
+label{display:block;font-size:0.74rem;font-weight:700;color:#ccc;margin:10px 0 4px}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:9px 10px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:0.85rem;font-family:inherit}
+textarea{min-height:60px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#d4a017}
+.fila{display:flex;gap:8px;flex-wrap:wrap}
+.fila>div{flex:1;min-width:110px}
+.chk{display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#ccc;padding:6px 0;cursor:pointer}
+.chk input{width:auto;accent-color:#d4a017}
+.btn{border:none;border-radius:10px;font-size:0.86rem;font-weight:800;cursor:pointer;padding:11px 16px}
+.btn-oro{background:#d4a017;color:#111}
+.btn-gris{background:#111;color:#999;border:1px solid #333}
+.btn-borde{background:transparent;color:#d4a017;border:1px solid #d4a017}
+.btn-full{display:block;width:100%;text-align:center;margin-top:8px}
+.btn-mini{background:#111;border:1px dashed #444;color:#d4a017;border-radius:8px;padding:7px 10px;font-size:0.74rem;cursor:pointer}
+.btn-x{background:none;border:none;color:#e74c3c;font-size:1rem;cursor:pointer;padding:4px 8px}
+table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:6px}
+th{text-align:left;color:#888;font-weight:700;padding:6px 4px;border-bottom:1px solid #333;font-size:0.7rem;text-transform:uppercase}
+td{padding:5px 4px;border-bottom:1px solid #222;vertical-align:middle}
+td input,td select{padding:6px 7px;font-size:0.78rem}
+tr:last-child td{border-bottom:none}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;background:#111;border:1px solid #333;border-radius:99px;padding:3px 11px;font-size:0.72rem;color:#ccc;margin:2px 4px 2px 0;cursor:pointer}
+.pill:hover{border-color:#d4a017;color:#d4a017}
+.aviso{background:#301515;border:1px solid #7d2e2e;border-radius:10px;padding:12px;font-size:0.78rem;color:#ef9a9a;line-height:1.5;margin:10px 0}
+.msg{margin-top:10px;font-size:0.78rem;line-height:1.5;display:none;border-radius:8px;padding:10px}
+.msg.ok{display:block;background:#15301a;border:1px solid #2e7d32;color:#a5d6a7}
+.msg.err{display:block;background:#301515;border:1px solid #7d2e2e;color:#ef9a9a}
+.big{font-size:1.7rem;font-weight:900}
+.big small{font-size:0.85rem;font-weight:400;color:#888}
+.res-linea{display:flex;justify-content:space-between;font-size:0.84rem;padding:6px 0;border-bottom:1px solid #222}
+.res-linea b{color:#f0e8d0}
+.res-linea.tot{border-top:1.5px solid #d4a017;border-bottom:none;margin-top:4px;padding-top:10px;font-size:0.95rem}
+.folio-badge{display:inline-block;background:#1a1200;border:1px solid #d4a017;color:#d4a017;font-weight:800;font-size:0.78rem;padding:4px 12px;border-radius:99px;margin-bottom:6px}
+details{margin-top:6px}
+summary{cursor:pointer;font-size:0.8rem;color:#d4a017;font-weight:700;padding:6px 0}
+.tasas-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.tasa-nota{font-size:0.68rem;color:#777;margin-top:2px;line-height:1.4}
+.hist-item{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px;margin-top:8px;cursor:pointer}
+.hist-item:hover{border-color:#d4a017}
+.hist-item .h-t{font-size:0.82rem;font-weight:700;color:#f0e8d0;display:flex;justify-content:space-between}
+.hist-item .h-s{font-size:0.7rem;color:#888;margin-top:2px}
+.vacio{color:#888;font-size:0.78rem;font-style:italic}
+#login,#cargando,#error{max-width:420px;margin:60px auto;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:28px;text-align:center}
+#login input{margin-bottom:10px}
+#login button{width:100%}
+#login .msg{margin-top:8px}
+footer{text-align:center;font-size:0.72rem;color:#666;margin-top:24px;line-height:1.6}
+footer a{color:#d4a017}
+#docPrint{display:none}
+#marcaAgua{display:none}
+@media print{
+  body{background:#fff!important;color:#111!important}
+  header,.wrap>*{display:none!important}
+  #docPrint{display:block!important;color:#111;font-family:Georgia,'Times New Roman',serif;font-size:12px;line-height:1.55;padding:0 8px}
+  #docPrint .d-portada{text-align:center;border-bottom:3px double #333;padding-bottom:14px;margin-bottom:16px}
+  #docPrint .d-portada img{height:56px}
+  #docPrint .d-form{font-size:10px;letter-spacing:2px;color:#555;text-transform:uppercase}
+  #docPrint h1{font-size:17px;margin:8px 0 2px}
+  #docPrint .d-sub{font-size:11px;color:#444}
+  #docPrint .d-folio{margin-top:8px;font-size:12px;font-weight:bold;border:1.5px solid #333;display:inline-block;padding:3px 14px;border-radius:4px}
+  #docPrint .d-sec{margin-bottom:12px;page-break-inside:avoid}
+  #docPrint .d-tit{font-size:12.5px;font-weight:bold;border-bottom:1px solid #999;padding-bottom:2px;margin-bottom:5px;text-transform:uppercase}
+  #docPrint .d-cont{white-space:pre-line}
+  #docPrint table{width:100%;border-collapse:collapse;font-size:11px;margin:4px 0}
+  #docPrint th,#docPrint td{border:1px solid #999;padding:4px 6px;text-align:left;color:#111}
+  #docPrint th{background:#eee}
+  #docPrint .d-firma{margin-top:44px;text-align:center;page-break-inside:avoid}
+  #docPrint .d-firma .linea{border-top:1px solid #333;width:260px;margin:0 auto;padding-top:4px;font-size:11px}
+  #docPrint .d-pie{margin-top:18px;font-size:9.5px;color:#555;border-top:1px solid #ccc;padding-top:6px;text-align:center}
+  #marcaAgua{display:block!important;position:fixed;top:42%;left:-5%;right:-5%;text-align:center;transform:rotate(-24deg);font-size:30px;font-weight:900;letter-spacing:2px;color:rgba(212,160,23,.22);z-index:999}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧮 Cotizador de Eventos</h1>
+  <div class="sub">Control y Confianza · solo administración · pricing RESERVADO</div>
+</header>
+
+<div class="wrap">
+
+<div id="login" style="display:none">
+  <h2 style="color:#d4a017;margin-bottom:6px">Acceso de administración</h2>
+  <p style="font-size:13px;color:#aaa;margin-bottom:16px">Esta herramienta calcula costos y márgenes internos. Inicia sesión con la cuenta de administrador.</p>
+  <input type="text" id="log-email" placeholder="Correo" autocomplete="username">
+  <input type="text" id="log-pass" placeholder="Contraseña" autocomplete="current-password" style="-webkit-text-security:disc">
+  <button class="btn btn-oro" onclick="hacerLogin()">Entrar</button>
+  <div class="msg" id="log-msg"></div>
+</div>
+
+<div id="cargando" style="display:none"><p>Cargando…</p></div>
+<div id="error" style="display:none"><p id="error-txt" style="color:#e57373"></p></div>
+
+<div id="app" style="display:none">
+
+  <div class="intro">
+    <b>¿Para qué sirve esto?</b> En el festival de Limache se prometió pago líquido a los guardias sin presupuestar antes los descuentos legales del trabajador ni las cargas del empleador — la plata faltante se absorbió a última hora. Este cotizador hace <b>toda la matemática antes de cotizar a un cliente</b>: convierte líquido↔bruto, suma AFP/salud/AFC/SIS/mutual (o la retención de honorarios), agrega costos directos e imprevistos, y entrega el precio de venta con el margen que definas — neto y con IVA. Cada presupuesto queda guardado con folio; si pierdes una licitación y sabes el precio del rival, regístralo abajo — con el tiempo se arma solo el precio real de mercado.
+  </div>
+
+  <div class="card">
+    <h2>📋 Datos del presupuesto</h2>
+    <div id="folioZona"></div>
+    <div class="fila">
+      <div><label>Cliente</label><input type="text" id="f-cliente" placeholder="Nombre del cliente/productora"></div>
+      <div><label>Evento</label><input type="text" id="f-evento" placeholder="Nombre del evento"></div>
+    </div>
+    <div class="fila">
+      <div><label>Fecha del evento</label><input type="date" id="f-fecha"></div>
+      <div><label>Figura de contratación</label>
+        <select id="f-modo" onchange="pintarTodo()">
+          <option value="obra">Contrato por obra con cotizaciones (D1 — recomendado)</option>
+          <option value="honorarios">Honorarios / BTE (excepcional)</option>
+        </select>
+      </div>
+    </div>
+    <div id="avisoHonorarios" class="aviso" style="display:none">⚠️ Honorarios con subordinación real (turnos fijos, órdenes del empleador) = riesgo de recalificación laboral ante la DT. Usar solo cuando de verdad no hay subordinación. La figura por defecto de Control y Confianza es el contrato por obra (D1, resuelta 19-07-2026).</div>
+  </div>
+
+  <div class="card">
+    <h2>👥 Dotación</h2>
+    <div class="porque">Una línea por rol/tarifa (ej. «Guardia» y «Jefe de turno» pagan distinto). El monto puede pactarse líquido (lo que se promete al guardia) o bruto — el cotizador convierte.</div>
+    <table>
+      <thead><tr><th>Rol</th><th>Cant.</th><th>Turnos</th><th>Monto</th><th>Tipo</th><th></th></tr></thead>
+      <tbody id="tbLineas"></tbody>
+    </table>
+    <button class="btn-mini" onclick="agregarLinea()">+ agregar línea</button>
+  </div>
+
+  <div class="card">
+    <h2>🎒 Costos directos</h2>
+    <div class="porque">Lo que en Limache se sumó tarde: colación, radios, transporte, uniformes. Ingresa el monto TOTAL de cada ítem para todo el evento.</div>
+    <table>
+      <thead><tr><th>Ítem</th><th>Monto total</th><th></th></tr></thead>
+      <tbody id="tbDirectos"></tbody>
+    </table>
+    <div style="margin-top:8px">
+      <span class="pill" onclick="agregarDirecto('Colación')">+ Colación</span>
+      <span class="pill" onclick="agregarDirecto('Radios (arriendo)')">+ Radios</span>
+      <span class="pill" onclick="agregarDirecto('Transporte')">+ Transporte</span>
+      <span class="pill" onclick="agregarDirecto('Uniformes/credenciales')">+ Uniformes</span>
+      <span class="pill" onclick="agregarDirecto('Otros')">+ Otro</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📈 Imprevistos y margen</h2>
+    <div class="fila">
+      <div><label>% Imprevistos (sugerido 5–10%)</label><input type="number" id="f-imprevistos" value="7" min="0" max="50" step="0.5"></div>
+      <div><label>% Margen deseado (sobre el precio de venta)</label><input type="number" id="f-margen" value="20" min="0" max="90" step="1"></div>
+    </div>
+    <div class="tasa-nota">El margen se calcula sobre el PRECIO de venta (ej: 20% significa que el costo real es el 80% del precio). IVA 19% se agrega siempre — los servicios de seguridad son afectos.</div>
+  </div>
+
+  <div class="card">
+    <details id="detTasas">
+      <summary>⚙️ Configuración de tasas legales (editable — verificar antes de cotizar)</summary>
+      <div class="tasa-nota" style="margin-top:6px">Última verificación de estas cifras: <b>19-07-2026</b> (SII, Superintendencia de Pensiones, AFC Chile). Las tasas cambian — revisa antes de cotizar algo importante.</div>
+      <div class="tasas-grid">
+        <div>
+          <label>AFP — comisión</label>
+          <select id="t-afpSel" onchange="cambiarAfp()">
+            <option value="0.46">Uno — 0,46%</option>
+            <option value="0.58">Modelo — 0,58%</option>
+            <option value="1.16">Planvital — 1,16%</option>
+            <option value="1.27">Habitat — 1,27%</option>
+            <option value="1.44" selected>Capital / Cuprum — 1,44%</option>
+            <option value="1.45">Provida — 1,45%</option>
+            <option value="otra">Otra (ingresar manual)</option>
+          </select>
+          <input type="number" id="t-afpComision" value="1.44" step="0.01" style="margin-top:4px">
+        </div>
+        <div><label>Salud (7% legal mínimo)</label><input type="number" id="t-salud" value="7" step="0.1"></div>
+        <div><label>AFC — aporte empleador (obra/plazo fijo, 3,0% íntegro)</label><input type="number" id="t-afc" value="3.0" step="0.01"></div>
+        <div><label>SIS — empleador (vigente desde abril 2026)</label><input type="number" id="t-sis" value="1.62" step="0.01"></div>
+        <div><label>Mutual — base Ley 16.744</label><input type="number" id="t-mutualBase" value="0.90" step="0.01"></div>
+        <div><label>Mutual — adicional diferenciada ⚠️</label><input type="number" id="t-mutualAdicional" value="0" step="0.01"></div>
+        <div style="grid-column:1/-1"><label>Retención BTE (modo honorarios, 2026)</label><input type="number" id="t-bte" value="15.25" step="0.01"></div>
+      </div>
+      <div class="aviso" style="margin-top:10px">⚠️ La tasa adicional diferenciada de mutual depende de la actividad económica y del siniestro/contrato específico de C&C con su mutualidad (ACHS/IST/Mutual CChC) — <b>no viene precargada</b>: revisa la última liquidación de cotizaciones antes de cotizar un evento grande.</div>
+    </details>
+  </div>
+
+  <div style="text-align:center;margin:14px 0">
+    <button class="btn btn-oro" style="padding:13px 26px" onclick="pintarTodo()">🧮 Calcular</button>
+  </div>
+
+  <div class="card" id="cardResultado">
+    <h2>💰 Resultado (interno — RESERVADO)</h2>
+    <div class="porque">Este desglose es solo para uso interno. El PDF para el cliente nunca muestra costos ni margen.</div>
+    <div id="resDesglose"></div>
+    <div class="res-linea tot"><span>Precio de venta neto</span><b id="resNeto">—</b></div>
+    <div class="res-linea"><span>+ IVA 19%</span><b id="resIva">—</b></div>
+    <div class="res-linea tot"><span>Precio de venta con IVA</span><b id="resConIva">—</b></div>
+    <div class="res-linea"><span>Precio por guardia-turno (neto / con IVA)</span><b id="resPorTurno">—</b></div>
+    <div class="res-linea"><span>Margen real</span><b id="resMargen">—</b></div>
+  </div>
+
+  <div class="card">
+    <h2>📄 Presupuesto para el cliente</h2>
+    <div class="fila">
+      <div><label>Formato del PDF</label>
+        <select id="f-tipoPdf"><option value="lineas">Por líneas de servicio</option><option value="total">Total único</option></select>
+      </div>
+      <div><label>Validez (días)</label><input type="number" id="f-validez" value="15" min="1"></div>
+      <div><label>% Anticipo</label><input type="number" id="f-anticipo" value="50" min="0" max="100"></div>
+    </div>
+    <button class="btn btn-borde btn-full" onclick="generarPDF()">📄 Descargar presupuesto en PDF</button>
+  </div>
+
+  <div class="card">
+    <h2>💾 Guardar y seguimiento</h2>
+    <button class="btn btn-oro btn-full" onclick="guardarPresupuesto()">Guardar presupuesto</button>
+    <div id="zonaLicitacion" style="display:none;margin-top:14px;border-top:1px solid #222;padding-top:12px">
+      <label>Resultado de la licitación</label>
+      <select id="f-resultadoLic">
+        <option value="pendiente">Pendiente</option>
+        <option value="ganada">Ganada</option>
+        <option value="perdida">Perdida</option>
+      </select>
+      <label>Precio del rival (si se conoce — arma el ancla de mercado)</label>
+      <input type="number" id="f-precioRival" min="0">
+      <label>Notas</label>
+      <textarea id="f-notasLic"></textarea>
+      <button class="btn btn-borde btn-full" onclick="guardarLicitacion()">Guardar seguimiento</button>
+    </div>
+    <div class="msg" id="msgGuardar"></div>
+  </div>
+
+  <div class="card">
+    <h2>🗂️ Historial de presupuestos</h2>
+    <button class="btn btn-gris btn-full" onclick="nuevoPresupuesto()" style="margin-bottom:10px">+ Nuevo presupuesto en blanco</button>
+    <div id="historial"><div class="vacio">Cargando historial…</div></div>
+  </div>
+
+  <footer>
+    Presupuestos guardados vía Worker/D1 (solo administrador). Fórmulas y tasas: brief interno «Dotación de Eventos», base legal art. 44/177/9 CT, Ley 21.133 (BTE) — <a href="tablero.html">volver al Tablero</a>
+  </footer>
+
+</div>
+</div>
+
+<div id="docPrint"></div>
+<div id="marcaAgua">PRESUPUESTO — SUJETO A CONFIRMACIÓN<br>NO ES FACTURA NI BOLETA</div>
+
+<script>
+const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+let CYC_TOKEN=localStorage.getItem('cyc_token')||null;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function mostrar(id){['login','cargando','error','app'].forEach(x=>document.getElementById(x).style.display=x===id?'block':'none');}
+function clp(n){return '$'+Math.round(n||0).toLocaleString('es-CL');}
+function num(n){return Number(n||0).toLocaleString('es-CL');}
+
+// ---------- Estado ----------
+let est={
+  folio:null,
+  lineas:[{rol:'Guardia',cant:4,turnos:2,monto:50000,tipo:'liquido'},{rol:'Jefe de turno',cant:1,turnos:2,monto:70000,tipo:'liquido'}],
+  directos:[]
+};
+
+function agregarLinea(){est.lineas.push({rol:'',cant:1,turnos:1,monto:0,tipo:'liquido'});renderLineas();}
+function quitarLinea(i){est.lineas.splice(i,1);renderLineas();}
+function actualizarLinea(i,campo,v){est.lineas[i][campo]=(campo==='rol'||campo==='tipo')?v:Number(v);}
+function renderLineas(){
+  document.getElementById('tbLineas').innerHTML=est.lineas.map((l,i)=>
+    '<tr>'+
+    '<td><input type="text" value="'+esc(l.rol)+'" placeholder="Guardia" oninput="actualizarLinea('+i+',\'rol\',this.value)"></td>'+
+    '<td><input type="number" value="'+l.cant+'" min="0" style="width:60px" oninput="actualizarLinea('+i+',\'cant\',this.value)"></td>'+
+    '<td><input type="number" value="'+l.turnos+'" min="0" style="width:60px" oninput="actualizarLinea('+i+',\'turnos\',this.value)"></td>'+
+    '<td><input type="number" value="'+l.monto+'" min="0" style="width:90px" oninput="actualizarLinea('+i+',\'monto\',this.value)"></td>'+
+    '<td><select onchange="actualizarLinea('+i+',\'tipo\',this.value)"><option value="liquido"'+(l.tipo==='liquido'?' selected':'')+'>Líquido</option><option value="bruto"'+(l.tipo==='bruto'?' selected':'')+'>Bruto</option></select></td>'+
+    '<td><button class="btn-x" onclick="quitarLinea('+i+')">✕</button></td>'+
+    '</tr>').join('');
+}
+
+function agregarDirecto(nombre){est.directos.push({item:nombre||'',monto:0});renderDirectos();}
+function quitarDirecto(i){est.directos.splice(i,1);renderDirectos();}
+function actualizarDirecto(i,campo,v){est.directos[i][campo]=campo==='monto'?Number(v):v;}
+function renderDirectos(){
+  const tb=document.getElementById('tbDirectos');
+  if(!est.directos.length){tb.innerHTML='<tr><td colspan="3" class="vacio">Sin costos directos agregados.</td></tr>';return;}
+  tb.innerHTML=est.directos.map((d,i)=>
+    '<tr>'+
+    '<td><input type="text" value="'+esc(d.item)+'" oninput="actualizarDirecto('+i+',\'item\',this.value)"></td>'+
+    '<td><input type="number" value="'+d.monto+'" min="0" style="width:100px" oninput="actualizarDirecto('+i+',\'monto\',this.value)"></td>'+
+    '<td><button class="btn-x" onclick="quitarDirecto('+i+')">✕</button></td>'+
+    '</tr>').join('');
+}
+
+function cambiarAfp(){
+  const sel=document.getElementById('t-afpSel').value;
+  if(sel!=='otra')document.getElementById('t-afpComision').value=sel;
+}
+
+function leerTasas(){
+  return {
+    afpComision:Number(document.getElementById('t-afpComision').value)||0,
+    salud:Number(document.getElementById('t-salud').value)||0,
+    afc:Number(document.getElementById('t-afc').value)||0,
+    sis:Number(document.getElementById('t-sis').value)||0,
+    mutualBase:Number(document.getElementById('t-mutualBase').value)||0,
+    mutualAdicional:Number(document.getElementById('t-mutualAdicional').value)||0,
+    bte:Number(document.getElementById('t-bte').value)||0
+  };
+}
+
+// ---------- Cálculo (S0.1 del brief: gross-up líquido→bruto→costo empresa) ----------
+function calcular(){
+  const modo=document.getElementById('f-modo').value;
+  const t=leerTasas();
+  const imprevistosPct=Number(document.getElementById('f-imprevistos').value)||0;
+  const margenPct=Number(document.getElementById('f-margen').value)||0;
+
+  const descTrabajador=(0.10+t.afpComision/100+t.salud/100); // AFP 10% fijo + comisión + salud
+  const cargasEmpresa=(t.afc+t.sis+t.mutualBase+t.mutualAdicional)/100;
+
+  let costoPersonal=0, turnosPersonaTotal=0;
+  const detalleLineas=est.lineas.map(l=>{
+    const cant=l.cant||0, turnos=l.turnos||0, monto=l.monto||0;
+    const pactadoTotal=cant*turnos*monto;
+    let bruto, costoLinea;
+    if(modo==='obra'){
+      bruto = l.tipo==='liquido' ? pactadoTotal/(1-descTrabajador) : pactadoTotal;
+      costoLinea = bruto*(1+cargasEmpresa);
+    } else {
+      bruto = l.tipo==='liquido' ? pactadoTotal/(1-t.bte/100) : pactadoTotal;
+      costoLinea = bruto; // honorarios: sin cargas de empleador, solo retención al prestador
+    }
+    costoPersonal+=costoLinea;
+    turnosPersonaTotal+=cant*turnos;
+    return {rol:l.rol||'(sin nombre)',cant,turnos,pactadoTotal,bruto,costoLinea};
+  });
+
+  const costoDirectos=est.directos.reduce((s,d)=>s+(d.monto||0),0);
+  const subtotal=costoPersonal+costoDirectos;
+  const imprevistos=subtotal*imprevistosPct/100;
+  const costoTotal=subtotal+imprevistos;
+
+  const margenFrac=Math.min(0.95,Math.max(0,margenPct/100));
+  const precioNeto=margenFrac<1?costoTotal/(1-margenFrac):costoTotal;
+  const iva=precioNeto*0.19;
+  const precioConIva=precioNeto+iva;
+  const margenReal$=precioNeto-costoTotal;
+  const margenRealPct=precioNeto>0?(margenReal$/precioNeto*100):0;
+  const porTurnoNeto=turnosPersonaTotal>0?precioNeto/turnosPersonaTotal:0;
+  const porTurnoIva=turnosPersonaTotal>0?precioConIva/turnosPersonaTotal:0;
+
+  return {modo,t,detalleLineas,costoPersonal,costoDirectos,imprevistosPct,imprevistos,costoTotal,
+    margenPct,precioNeto,iva,precioConIva,margenReal:margenReal$,margenRealPct,turnosPersonaTotal,porTurnoNeto,porTurnoIva};
+}
+
+function pintarTodo(){
+  document.getElementById('avisoHonorarios').style.display=document.getElementById('f-modo').value==='honorarios'?'block':'none';
+  renderLineas();renderDirectos();
+  const r=calcular();
+  const d=document.getElementById('resDesglose');
+  d.innerHTML=r.detalleLineas.map(l=>
+    '<div class="res-linea"><span>'+esc(l.rol)+' ('+l.cant+'× '+l.turnos+' turnos)</span><b>'+clp(l.costoLinea)+'</b></div>').join('')+
+    '<div class="res-linea"><span>Costos directos</span><b>'+clp(r.costoDirectos)+'</b></div>'+
+    '<div class="res-linea"><span>Imprevistos ('+r.imprevistosPct+'%)</span><b>'+clp(r.imprevistos)+'</b></div>'+
+    '<div class="res-linea tot"><span>Costo total real</span><b>'+clp(r.costoTotal)+'</b></div>';
+  document.getElementById('resNeto').textContent=clp(r.precioNeto);
+  document.getElementById('resIva').textContent=clp(r.iva);
+  document.getElementById('resConIva').textContent=clp(r.precioConIva);
+  document.getElementById('resPorTurno').textContent=clp(r.porTurnoNeto)+' / '+clp(r.porTurnoIva);
+  document.getElementById('resMargen').textContent=clp(r.margenReal)+' ('+r.margenRealPct.toFixed(1)+'%)';
+  return r;
+}
+
+// ---------- PDF cliente (patrón directiva.html: print + marca de agua) ----------
+function generarPDF(){
+  const r=pintarTodo();
+  const cliente=document.getElementById('f-cliente').value.trim();
+  const evento=document.getElementById('f-evento').value.trim();
+  const fecha=document.getElementById('f-fecha').value;
+  const tipoPdf=document.getElementById('f-tipoPdf').value;
+  const validez=document.getElementById('f-validez').value||15;
+  const anticipo=document.getElementById('f-anticipo').value||50;
+  const hoy=new Date().toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
+  const folioTxt=est.folio||'BORRADOR (guarda el presupuesto para asignar folio)';
+
+  let html='<div class="d-portada"><img src="icon-192.png" alt="Control y Confianza"><div class="d-form">Presupuesto de servicios de seguridad</div>'+
+    '<h1>PRESUPUESTO — DOTACIÓN DE GUARDIAS</h1>'+
+    '<div class="d-sub">'+esc(cliente||'Cliente')+(evento?' · '+esc(evento):'')+(fecha?' · '+esc(fecha):'')+'</div>'+
+    '<div class="d-folio">Folio '+esc(folioTxt)+' · '+hoy+'</div></div>';
+
+  if(tipoPdf==='lineas'){
+    let filas='<table><tr><th>Servicio</th><th>Cantidad</th><th>Precio (neto)</th></tr>';
+    r.detalleLineas.forEach(l=>{
+      const participacion=r.turnosPersonaTotal>0?(l.cant*l.turnos)/r.turnosPersonaTotal:0;
+      const precioLinea=r.precioNeto*participacion;
+      filas+='<tr><td>'+esc(l.rol)+'</td><td>'+l.cant+' persona(s) × '+l.turnos+' turno(s)</td><td>'+clp(precioLinea)+'</td></tr>';
+    });
+    filas+='</table>';
+    html+='<div class="d-sec"><div class="d-tit">Detalle del servicio</div><div class="d-cont">'+filas+'</div></div>';
+  }
+  html+='<div class="d-sec"><div class="d-tit">Precio total</div><div class="d-cont">'+
+    'Neto: <b>'+clp(r.precioNeto)+'</b><br>IVA (19%): '+clp(r.iva)+'<br><b>Total: '+clp(r.precioConIva)+'</b></div></div>';
+  html+='<div class="d-sec"><div class="d-tit">Condiciones</div><div class="d-cont">Validez de este presupuesto: '+validez+' días desde la fecha de emisión.\nCondiciones de pago: '+anticipo+'% de anticipo, saldo contra servicio prestado.\nEl personal asignado cuenta con acreditación OS.10 vigente conforme a la Ley 21.659.</div></div>';
+  html+='<div class="d-firma"><div class="linea">Control y Confianza CSF SpA</div></div>';
+  html+='<div class="d-pie">Documento generado por Control y Confianza CSF SpA — controlyconfianza.cl. Folio '+esc(folioTxt)+' · '+hoy+'. Este documento no es factura ni boleta.</div>';
+  document.getElementById('docPrint').innerHTML=html;
+  window.print();
+}
+
+// ---------- Guardar / historial ----------
+function estadoActualParaGuardar(){
+  return {
+    cliente:document.getElementById('f-cliente').value.trim(),
+    evento:document.getElementById('f-evento').value.trim(),
+    fecha_evento:document.getElementById('f-fecha').value||null,
+    modo:document.getElementById('f-modo').value,
+    entradas:{
+      lineas:est.lineas, directos:est.directos,
+      imprevistosPct:Number(document.getElementById('f-imprevistos').value)||0,
+      margenPct:Number(document.getElementById('f-margen').value)||0,
+      tasas:leerTasas(),
+      tipoPdf:document.getElementById('f-tipoPdf').value,
+      validezDias:Number(document.getElementById('f-validez').value)||15,
+      anticipoPct:Number(document.getElementById('f-anticipo').value)||50
+    }
+  };
+}
+
+async function guardarPresupuesto(){
+  const r=pintarTodo();
+  const base=estadoActualParaGuardar();
+  const msg=document.getElementById('msgGuardar');
+  msg.className='msg';msg.textContent='';
+  try{
+    const resp=await fetch(API_URL+'/admin/cotizador/guardar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({folio:est.folio,...base,resultado:r})});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo guardar.';return;}
+    est.folio=d.folio;
+    document.getElementById('folioZona').innerHTML='<span class="folio-badge">Folio '+esc(est.folio)+'</span>';
+    document.getElementById('zonaLicitacion').style.display='block';
+    msg.className='msg ok';msg.textContent='Presupuesto guardado.';
+    cargarHistorial();
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión. Intenta de nuevo.';}
+}
+
+async function guardarLicitacion(){
+  if(!est.folio){return;}
+  const msg=document.getElementById('msgGuardar');
+  try{
+    const resp=await fetch(API_URL+'/admin/cotizador/licitacion?folio='+encodeURIComponent(est.folio),{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({resultado_licitacion:document.getElementById('f-resultadoLic').value,
+        precio_rival:document.getElementById('f-precioRival').value||null,
+        notas:document.getElementById('f-notasLic').value})});
+    const d=await resp.json();
+    msg.className='msg '+(resp.ok?'ok':'err');
+    msg.textContent=resp.ok?'Seguimiento guardado.':(d.error||'No se pudo guardar.');
+    if(resp.ok)cargarHistorial();
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
+function nuevoPresupuesto(){
+  est={folio:null,lineas:[{rol:'Guardia',cant:4,turnos:2,monto:50000,tipo:'liquido'}],directos:[]};
+  document.getElementById('f-cliente').value='';document.getElementById('f-evento').value='';document.getElementById('f-fecha').value='';
+  document.getElementById('folioZona').innerHTML='';
+  document.getElementById('zonaLicitacion').style.display='none';
+  document.getElementById('msgGuardar').className='msg';
+  pintarTodo();
+}
+
+async function cargarHistorial(){
+  const el=document.getElementById('historial');
+  try{
+    const resp=await fetch(API_URL+'/admin/cotizador/mias',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok){el.innerHTML='<div class="vacio">No se pudo cargar el historial.</div>';return;}
+    const lista=d.cotizaciones||[];
+    if(!lista.length){el.innerHTML='<div class="vacio">Aún no hay presupuestos guardados.</div>';return;}
+    el.innerHTML=lista.map(c=>{
+      const lic=c.resultado_licitacion==='ganada'?'✅ Ganada':c.resultado_licitacion==='perdida'?'❌ Perdida':'⏳ Pendiente';
+      return '<div class="hist-item" onclick="abrirPresupuesto(\''+c.folio+'\')">'+
+        '<div class="h-t"><span>'+esc(c.cliente||'(sin cliente)')+(c.evento?' — '+esc(c.evento):'')+'</span><span>'+clp(c.precio_venta)+'</span></div>'+
+        '<div class="h-s">Folio '+esc(c.folio)+' · margen '+(c.margen_pct||0).toFixed(1)+'% · '+lic+' · '+new Date(c.updated_at).toLocaleDateString('es-CL')+'</div>'+
+        '</div>';
+    }).join('');
+  }catch(e){el.innerHTML='<div class="vacio">Sin conexión.</div>';}
+}
+
+async function abrirPresupuesto(folio){
+  try{
+    const resp=await fetch(API_URL+'/admin/cotizador/una?folio='+encodeURIComponent(folio),{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok){alert(d.error||'No se pudo abrir.');return;}
+    est.folio=d.folio;
+    document.getElementById('f-cliente').value=d.cliente||'';
+    document.getElementById('f-evento').value=d.evento||'';
+    document.getElementById('f-fecha').value=d.fecha_evento||'';
+    document.getElementById('f-modo').value=d.modo||'obra';
+    const e=d.entradas||{};
+    est.lineas=e.lineas&&e.lineas.length?e.lineas:[{rol:'Guardia',cant:1,turnos:1,monto:0,tipo:'liquido'}];
+    est.directos=e.directos||[];
+    document.getElementById('f-imprevistos').value=e.imprevistosPct??7;
+    document.getElementById('f-margen').value=e.margenPct??20;
+    document.getElementById('f-tipoPdf').value=e.tipoPdf||'lineas';
+    document.getElementById('f-validez').value=e.validezDias||15;
+    document.getElementById('f-anticipo').value=e.anticipoPct||50;
+    if(e.tasas){
+      document.getElementById('t-afpComision').value=e.tasas.afpComision??1.44;
+      document.getElementById('t-salud').value=e.tasas.salud??7;
+      document.getElementById('t-afc').value=e.tasas.afc??3.0;
+      document.getElementById('t-sis').value=e.tasas.sis??1.62;
+      document.getElementById('t-mutualBase').value=e.tasas.mutualBase??0.90;
+      document.getElementById('t-mutualAdicional').value=e.tasas.mutualAdicional??0;
+      document.getElementById('t-bte').value=e.tasas.bte??15.25;
+    }
+    document.getElementById('folioZona').innerHTML='<span class="folio-badge">Folio '+esc(est.folio)+'</span>';
+    document.getElementById('zonaLicitacion').style.display='block';
+    document.getElementById('f-resultadoLic').value=d.resultado_licitacion||'pendiente';
+    document.getElementById('f-precioRival').value=d.precio_rival||'';
+    document.getElementById('f-notasLic').value=d.notas||'';
+    pintarTodo();
+    window.scrollTo(0,0);
+  }catch(e){alert('Sin conexión.');}
+}
+
+// ---------- Login / inicio ----------
+async function hacerLogin(){
+  const email=document.getElementById('log-email').value.trim();
+  const pass=document.getElementById('log-pass').value;
+  const msg=document.getElementById('log-msg');
+  if(!email||!pass){msg.textContent='Completa correo y contraseña.';return;}
+  msg.textContent='';
+  try{
+    const r=await fetch(API_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const d=await r.json();
+    if(!r.ok||!d.token){msg.textContent=d.error||'No se pudo iniciar sesión.';return;}
+    CYC_TOKEN=d.token; localStorage.setItem('cyc_token',CYC_TOKEN);
+    iniciar();
+  }catch(e){msg.textContent='Error de conexión. Intenta de nuevo.';}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login').style.display==='block')hacerLogin();});
+
+async function iniciar(){
+  if(!CYC_TOKEN){mostrar('login');return;}
+  mostrar('cargando');
+  try{
+    const r=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(r.status===401){localStorage.removeItem('cyc_token');CYC_TOKEN=null;mostrar('login');return;}
+    const d=await r.json();
+    if(!d.is_admin){document.getElementById('error-txt').textContent='Tu cuenta no es de administrador. Esta página es solo para la administración del ecosistema.';mostrar('error');return;}
+    mostrar('app');
+    renderLineas();renderDirectos();pintarTodo();
+    cargarHistorial();
+  }catch(e){
+    document.getElementById('error-txt').textContent='Error de conexión con el servidor. Revisa tu internet e intenta de nuevo.';
+    mostrar('error');
+  }
+}
+iniciar();
+</script>
+</body>
+</html>
