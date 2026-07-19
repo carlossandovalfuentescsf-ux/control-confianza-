@@ -727,12 +727,29 @@ async function renderMisEventos(){
             '<button class="btn-sm" style="background:#0d2210;color:#7dc800" onclick="responderEvento('+e.evento_id+',\'confirmar\')">✔ Confirmar asistencia</button>'+
             '<button class="btn-sm btn-sm-danger" onclick="responderEvento('+e.evento_id+',\'desistir\')">✕ No puedo ir</button>'+
           '</div>' : '')+
+        (e.documentos_generados_at?
+          '<div class="admin-actions" style="margin-top:10px">'+
+            '<button class="btn-sm" onclick="verMiDocumento('+e.evento_id+',\'contrato\')">📄 Contrato</button>'+
+            '<button class="btn-sm" onclick="verMiDocumento('+e.evento_id+',\'finiquito\')">📄 Finiquito</button>'+
+            '<button class="btn-sm" onclick="verMiDocumento('+e.evento_id+',\'comprobante\')">📄 Comprobante</button>'+
+          '</div>' : '')+
       '</div>';
     });
     el.innerHTML=html;
   }catch(e){
     el.innerHTML='<div class="empty">No se pudieron cargar tus eventos. Intenta de nuevo.</div>';
   }
+}
+
+async function verMiDocumento(eventoId, tipo){
+  try{
+    var res=await fetch(API_URL+'/guardias/mis-eventos/'+eventoId+'/documentos/'+tipo,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!res.ok){alert('No se pudo cargar el documento.');return;}
+    var html=await res.text();
+    var w=window.open('','_blank');
+    w.document.write(html);
+    w.document.close();
+  }catch(e){alert('Sin conexión.');}
 }
 
 async function responderEvento(eventoId, accion){
@@ -836,6 +853,10 @@ function pintarCarpeta(){
     '</div>'+
     '<label for="cNumCta">Número de cuenta</label>'+
     '<input id="cNumCta" type="text" value="'+esc(p.num_cuenta||'')+'" placeholder="000000000">'+
+    '<label for="cAfp">AFP</label>'+
+    '<select id="cAfp">'+afpOptions(p.afp)+'</select>'+
+    '<label for="cSalud">Sistema de salud</label>'+
+    '<input id="cSalud" type="text" value="'+esc(p.salud_sistema||'')+'" placeholder="Fonasa, o el nombre de tu Isapre">'+
     (p.consentimiento_carpeta_at?'':
       '<div class="consent-row"><input type="checkbox" id="cConsent"><label for="cConsent">Acepto que Control &amp; Confianza use estos datos para dotarme en eventos y pagarme. <a href="terminos.html" target="_blank" rel="noopener noreferrer">Ver política de privacidad</a>.</label></div>'
     )+
@@ -862,6 +883,11 @@ function docRowHTML(tipo, doc, semExtra){
 function bancosOptions(actual){
   var bancos=['Banco de Chile','BancoEstado','Banco Santander','Banco BCI','Scotiabank','Banco Itaú','Banco Security','Banco Falabella','Banco Ripley','Banco Consorcio','Coopeuch','Tenpo','MACH','Otro'];
   return '<option value="">— Elige tu banco —</option>'+bancos.map(function(b){return '<option value="'+esc(b)+'"'+(b===actual?' selected':'')+'>'+esc(b)+'</option>';}).join('');
+}
+
+function afpOptions(actual){
+  var afps=['Capital','Cuprum','Habitat','Modelo','Planvital','Provida','Uno'];
+  return '<option value="">— Elige tu AFP —</option>'+afps.map(function(a){return '<option value="'+esc(a)+'"'+(a===actual?' selected':'')+'>'+esc(a)+'</option>';}).join('');
 }
 
 function fileToBase64Carpeta(file){
@@ -918,21 +944,26 @@ async function guardarDatosPago(){
   var tipoEl=document.querySelector('.opt-btn[data-grupo="tipocta"].sel');
   var tipoCuenta=tipoEl?tipoEl.dataset.val:'';
   var numCuenta=document.getElementById('cNumCta').value.trim();
+  var afp=document.getElementById('cAfp').value;
+  var saludSistema=document.getElementById('cSalud').value.trim();
   var consentEl=document.getElementById('cConsent');
 
   if(!validarRutCliente(rut)){msg.className='form-msg err';msg.textContent='RUT inválido — revisa el dígito verificador.';return;}
   if(!banco){msg.className='form-msg err';msg.textContent='Elige tu banco.';return;}
   if(!tipoCuenta){msg.className='form-msg err';msg.textContent='Elige el tipo de cuenta.';return;}
   if(!numCuenta){msg.className='form-msg err';msg.textContent='Escribe tu número de cuenta.';return;}
+  if(!afp){msg.className='form-msg err';msg.textContent='Elige tu AFP.';return;}
+  if(!saludSistema){msg.className='form-msg err';msg.textContent='Indica tu sistema de salud.';return;}
   if(!CYC_PERFIL.consentimiento_carpeta_at && (!consentEl||!consentEl.checked)){msg.className='form-msg err';msg.textContent='Debes aceptar el uso de tus datos para continuar.';return;}
 
   try{
     var res=await fetch(API_URL+'/guardias/carpeta/pago',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
-      body:JSON.stringify({rut:rut,banco:banco,tipo_cuenta:tipoCuenta,num_cuenta:numCuenta,consentimiento:true})});
+      body:JSON.stringify({rut:rut,banco:banco,tipo_cuenta:tipoCuenta,num_cuenta:numCuenta,afp:afp,salud_sistema:saludSistema,consentimiento:true})});
     var d=await res.json();
     if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo guardar.';return;}
     msg.className='form-msg ok';msg.textContent='Datos de pago guardados.';
-    CYC_PERFIL.rut=rut; CYC_PERFIL.banco=banco; CYC_PERFIL.tipo_cuenta=tipoCuenta; CYC_PERFIL.num_cuenta=numCuenta; CYC_PERFIL.consentimiento_carpeta_at=CYC_PERFIL.consentimiento_carpeta_at||new Date().toISOString();
+    CYC_PERFIL.rut=rut; CYC_PERFIL.banco=banco; CYC_PERFIL.tipo_cuenta=tipoCuenta; CYC_PERFIL.num_cuenta=numCuenta;
+    CYC_PERFIL.afp=afp; CYC_PERFIL.salud_sistema=saludSistema; CYC_PERFIL.consentimiento_carpeta_at=CYC_PERFIL.consentimiento_carpeta_at||new Date().toISOString();
     pintarCarpeta();
   }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
 }

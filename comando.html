@@ -67,6 +67,20 @@ tr:last-child td{border-bottom:none}
 .roster-row select{width:auto;padding:5px 7px;font-size:.72rem}
 .conv-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #1a1a1a;font-size:.8rem}
 .conv-item input{width:auto}
+.firma-preview{max-width:220px;max-height:100px;background:#fff;border-radius:8px;padding:6px;margin-top:8px}
+#mesaFirmas{display:none;position:fixed;inset:0;background:#0a0a0a;z-index:999;overflow-y:auto}
+#mesaFirmas .mf-wrap{max-width:640px;margin:0 auto;padding:16px 14px 60px}
+#mesaFirmas .mf-head{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #2a2a2a;margin-bottom:14px}
+#mesaFirmas .mf-head h2{color:#d4a017;font-size:1.05rem}
+.mf-paso{display:none}
+.mf-paso.activo{display:block}
+.mf-doc-preview{background:#fff;color:#111;border-radius:10px;padding:18px;font-size:.78rem;line-height:1.6;max-height:50vh;overflow-y:auto;margin-top:10px}
+.mf-doc-preview b{color:#111}
+canvas#firmaCanvas{width:100%;height:200px;background:#fff;border-radius:10px;touch-action:none;display:block}
+.mf-firma-wrap{border:1px solid #333;border-radius:10px;overflow:hidden;margin-top:8px}
+.mf-tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.mf-tab{background:#111;border:1px solid #333;border-radius:8px;padding:6px 12px;font-size:.74rem;cursor:pointer;color:#999}
+.mf-tab.activo{border-color:#d4a017;color:#d4a017}
 .btn-x{background:none;border:none;color:#e74c3c;font-size:0.95rem;cursor:pointer;padding:2px 6px}
 .msg{margin-top:10px;font-size:0.78rem;line-height:1.5;display:none;border-radius:8px;padding:10px}
 .msg.ok{display:block;background:#15301a;border:1px solid #2e7d32;color:#a5d6a7}
@@ -127,6 +141,26 @@ footer a{color:#d4a017}
       <a class="tarjeta" href="#expedientes"><div class="ic">📁</div><div class="t">Expedientes</div><div class="d">Documentos y datos de pago de cada guardia</div></a>
       <a class="tarjeta" href="#eventos"><div class="ic">📅</div><div class="t">Eventos</div><div class="d">Roster, convocatoria y confirmaciones</div></a>
       <a class="tarjeta" href="#gastos"><div class="ic">🧾</div><div class="t">Gastos de Evento</div><div class="d">Rendición de plata propia por foto de boleta</div></a>
+      <a class="tarjeta" href="#config-empresa"><div class="ic">⚙️</div><div class="t">Configuración</div><div class="d">Datos legales y firma para los contratos</div></a>
+    </div>
+  </div>
+
+  <div class="card" id="config-empresa">
+    <h2>⚙️ Configuración de la empresa</h2>
+    <div class="porque">Estos datos rellenan automáticamente el encabezado y la firma de cada contrato, finiquito y comprobante que genera la Mesa de Firmas (S3). Solo hay que llenarlo una vez.</div>
+    <label>Domicilio legal de la empresa</label>
+    <input type="text" id="ce-domicilio" placeholder="Calle, número, comuna">
+    <label>Representante legal — nombre completo</label>
+    <input type="text" id="ce-repNombre" placeholder="Nombre y apellidos">
+    <label>Representante legal — RUT</label>
+    <input type="text" id="ce-repRut" placeholder="12345678-9">
+    <button class="btn btn-oro btn-full" onclick="guardarConfigEmpresa()">Guardar datos</button>
+    <div class="msg" id="msgConfigEmpresa"></div>
+    <div style="margin-top:16px;border-top:1px solid #222;padding-top:12px">
+      <label>Firma del representante legal (imagen)</label>
+      <input type="file" id="ce-firmaFile" accept="image/png,image/jpeg" onchange="subirFirmaEmpresa(this)">
+      <div class="msg" id="msgFirmaEmpresa"></div>
+      <img id="ce-firmaPreview" class="firma-preview" style="display:none">
     </div>
   </div>
 
@@ -227,6 +261,83 @@ footer a{color:#d4a017}
   </footer>
 
 </div>
+</div>
+
+<!-- Mesa de Firmas (S3 dotación de eventos) — pantalla completa, guardia por guardia -->
+<div id="mesaFirmas">
+  <div class="mf-wrap">
+    <div class="mf-head"><h2>📝 Mesa de firmas</h2><button class="btn btn-gris" onclick="cerrarMesaFirmas()">✕ Cerrar</button></div>
+
+    <div class="mf-paso activo" id="mfPaso1">
+      <div class="card">
+        <h2 id="mfNombreGuardia">—</h2>
+        <div class="porque">Completa los datos que faltan para generar el contrato, finiquito y comprobante. Los datos de pago (RUT, banco, AFP, salud) ya vienen de su carpeta.</div>
+        <div class="fila">
+          <div><label>Nacionalidad</label><input type="text" id="mf-nacionalidad" value="Chilena"></div>
+          <div><label>Fecha de nacimiento</label><input type="date" id="mf-fechaNac"></div>
+        </div>
+        <label>Domicilio (calle y número)</label>
+        <input type="text" id="mf-domicilio" placeholder="Calle, número">
+        <div class="fila">
+          <div><label>Monto pactado por turno</label><input type="number" id="mf-monto" min="0"></div>
+          <div><label>Tipo de monto</label>
+            <select id="mf-tipoMonto"><option value="liquido">Líquido</option><option value="bruto">Bruto</option></select>
+          </div>
+        </div>
+        <div class="fila">
+          <div><label>Comisión AFP (%)</label><input type="number" id="mf-afpComision" step="0.01" min="0"></div>
+          <div><label>Salud (%, 7% o el plan pactado)</label><input type="number" id="mf-saludPct" step="0.01" value="7" min="0"></div>
+        </div>
+        <div class="fila">
+          <div><label>N° de turnos trabajados</label><input type="number" id="mf-turnos" min="1" value="1"></div>
+          <div><label>Horas por turno</label><input type="number" id="mf-horasTurno" min="1" value="12"></div>
+        </div>
+        <label>Detalle de turnos (se incrusta tal cual en el contrato — art. 10 N°5 CT)</label>
+        <textarea id="mf-turnoDetalle" placeholder="Ej: Sábado 15-08-2026 de 20:00 a 08:00 hrs; domingo 16-08-2026 de 20:00 a 08:00 hrs."></textarea>
+        <div class="fila">
+          <div><label>Horas extraordinarias trabajadas (si hubo)</label><input type="number" id="mf-horasExtra" min="0" value="0"></div>
+          <div><label>Régimen de colación</label>
+            <select id="mf-colacion">
+              <option value="no será imputable a la jornada">No imputable a la jornada</option>
+              <option value="será imputado y pagado por permanecer el Trabajador a disposición en su puesto">Imputable (a disposición en el puesto)</option>
+            </select>
+          </div>
+        </div>
+        <label>Sumas pendientes de pago (si las hay)</label>
+        <input type="text" id="mf-sumasPendientes" value="Ninguna">
+        <label>Reserva de derechos del trabajador (si la formula)</label>
+        <input type="text" id="mf-reserva" value="El Trabajador no formula reserva de derechos">
+        <button class="btn btn-oro btn-full" onclick="mfGenerarPreview()">Generar documentos →</button>
+        <div class="msg" id="mfMsgPaso1"></div>
+      </div>
+    </div>
+
+    <div class="mf-paso" id="mfPaso2">
+      <div class="card">
+        <h2>Revisar antes de firmar</h2>
+        <div class="porque">Este es el contenido final. Si algo está mal, vuelve atrás y corrígelo — una vez firmado, el documento queda con hash de integridad.</div>
+        <div class="mf-tabs">
+          <span class="mf-tab activo" data-doc="contrato" onclick="mfVerTab('contrato')">Contrato</span>
+          <span class="mf-tab" data-doc="finiquito" onclick="mfVerTab('finiquito')">Finiquito</span>
+          <span class="mf-tab" data-doc="comprobante" onclick="mfVerTab('comprobante')">Comprobante</span>
+        </div>
+        <div class="mf-doc-preview" id="mfDocPreview"></div>
+        <button class="btn btn-gris btn-full" onclick="mfVolverPaso1()" style="margin-top:10px">← Corregir datos</button>
+        <button class="btn btn-oro btn-full" onclick="mfIrAFirma()">Continuar a la firma →</button>
+      </div>
+    </div>
+
+    <div class="mf-paso" id="mfPaso3">
+      <div class="card">
+        <h2>Firma del guardia</h2>
+        <div class="porque">Pásale el dispositivo al guardia — que firme con el dedo sobre el recuadro blanco.</div>
+        <div class="mf-firma-wrap"><canvas id="firmaCanvas"></canvas></div>
+        <button class="btn btn-gris btn-full" onclick="mfLimpiarFirma()" style="margin-top:8px">Limpiar</button>
+        <button class="btn btn-oro btn-full" onclick="mfConfirmarFirma()">✔ Confirmar firma y guardar</button>
+        <div class="msg" id="mfMsgFirma"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -547,7 +658,10 @@ async function recargarEventoDetalle(){
   }catch(e){document.getElementById('eventoDetalleContent').innerHTML='<div class="vacio">Sin conexión.</div>';}
 }
 
+let eventoActualData=null, rosterActualData=[];
+
 function pintarDetalleEvento(ev,roster){
+  eventoActualData=ev; rosterActualData=roster;
   const ESTADO_LABEL={preparacion:'Preparación',activo:'Activo',cerrado:'Cerrado'};
   const PAGO_LABEL={pendiente:'Pendiente',nomina:'En nómina',pagado:'Pagado'};
   let html='<div class="card" style="padding:0;border:none;background:none">'+
@@ -572,6 +686,8 @@ function pintarDetalleEvento(ev,roster){
         '<span class="pill">'+ROSTER_ESTADO_LABEL[r.estado]+'</span></div>'+
         '<div class="rr-acts">'+
           (r.estado==='confirmado'?'<button class="btn-mini" onclick="marcarAsistencia('+r.user_id+',\'asistio\')">✔ Marcar asistió</button><button class="btn-mini" onclick="marcarAsistencia('+r.user_id+',\'no_show\')">✕ No llegó</button>':'')+
+          (r.estado==='asistio'&&!r.documentos_generados_at?'<button class="btn-mini" onclick="abrirMesaFirmas('+r.user_id+')">📝 Firmar documentos</button>':'')+
+          (r.documentos_generados_at?'<span class="pill ok">✔ documentos firmados</span>':'')+
           '<select onchange="cambiarPagoEstado('+r.user_id+',this.value)">'+
             ['pendiente','nomina','pagado'].map(s=>'<option value="'+s+'"'+(s===r.pago_estado?' selected':'')+'>'+PAGO_LABEL[s]+'</option>').join('')+
           '</select>'+
@@ -620,6 +736,255 @@ async function convocarSeleccionados(){
   }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
 }
 
+// ---------- Configuración de empresa (S3) ----------
+async function cargarConfigEmpresa(){
+  try{
+    const resp=await fetch(API_URL+'/admin/config-empresa',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok)return;
+    document.getElementById('ce-domicilio').value=d.domicilio||'';
+    document.getElementById('ce-repNombre').value=d.representante_nombre||'Cinthia Andrea González Maturana';
+    document.getElementById('ce-repRut').value=d.representante_rut||'16.556.789-7';
+    if(d.tiene_firma)verFirmaEmpresaPreview();
+  }catch(e){}
+}
+async function verFirmaEmpresaPreview(){
+  try{
+    const resp=await fetch(API_URL+'/admin/config-empresa/firma',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!resp.ok)return;
+    const blob=await resp.blob();
+    const img=document.getElementById('ce-firmaPreview');
+    img.src=URL.createObjectURL(blob);
+    img.style.display='block';
+  }catch(e){}
+}
+async function guardarConfigEmpresa(){
+  const msg=document.getElementById('msgConfigEmpresa');
+  msg.className='msg';msg.textContent='';
+  try{
+    const resp=await fetch(API_URL+'/admin/config-empresa',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({domicilio:document.getElementById('ce-domicilio').value.trim(),representante_nombre:document.getElementById('ce-repNombre').value.trim(),representante_rut:document.getElementById('ce-repRut').value.trim()})});
+    const d=await resp.json();
+    msg.className='msg '+(resp.ok?'ok':'err');
+    msg.textContent=resp.ok?'Guardado.':(d.error||'No se pudo guardar.');
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+async function subirFirmaEmpresa(input){
+  const file=input.files[0];
+  if(!file)return;
+  const msg=document.getElementById('msgFirmaEmpresa');
+  msg.className='msg ok';msg.textContent='Subiendo…';msg.style.display='block';
+  try{
+    const data=await fileToBase64(file);
+    const resp=await fetch(API_URL+'/admin/config-empresa/firma',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({data,media_type:file.type})});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo subir.';return;}
+    msg.className='msg ok';msg.textContent='Firma guardada.';
+    verFirmaEmpresaPreview();
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
+// ---------- Mesa de Firmas (S3 dotación de eventos) ----------
+const AFP_TABLA={'Uno':0.46,'Modelo':0.58,'Planvital':1.16,'Habitat':1.27,'Capital':1.44,'Cuprum':1.44,'Provida':1.45};
+const TASAS_FIJAS={afc:3.0,sis:1.62,mutualBase:0.90,mutualAdicional:0,reforma:1.0};
+const EMAIL_EMPRESA_DATOS='contacto@controlyconfianza.cl';
+let mfEventoId=null, mfUserId=null, mfGuardia=null, mfDocsHtml={contrato:'',finiquito:'',comprobante:''}, mfFirmaGuardiaDataUrl=null, mfFirmaEmpresaDataUrl=null;
+
+function mfIrPaso(n){
+  document.querySelectorAll('.mf-paso').forEach(p=>p.classList.remove('activo'));
+  document.getElementById('mfPaso'+n).classList.add('activo');
+  window.scrollTo(0,0);
+}
+function cerrarMesaFirmas(){document.getElementById('mesaFirmas').style.display='none';mfIrPaso(1);}
+
+function abrirMesaFirmas(userId){
+  const r=rosterActualData.find(x=>x.user_id===userId);
+  if(!r){alert('Guardia no encontrado en el roster.');return;}
+  mfEventoId=eventoActualId; mfUserId=userId; mfGuardia=r;
+  document.getElementById('mfNombreGuardia').textContent=r.nombre;
+  document.getElementById('mf-fechaNac').value='';
+  document.getElementById('mf-domicilio').value='';
+  document.getElementById('mf-monto').value=r.pago_monto||(eventoActualData&&eventoActualData.pago_turno)||'';
+  document.getElementById('mf-afpComision').value=AFP_TABLA[r.afp]!=null?AFP_TABLA[r.afp]:1.44;
+  document.getElementById('mf-turnos').value=1;
+  document.getElementById('mf-turnoDetalle').value='';
+  document.getElementById('mf-horasExtra').value=0;
+  document.getElementById('mfMsgPaso1').className='msg';
+  document.getElementById('mesaFirmas').style.display='block';
+  mfIrPaso(1);
+}
+
+function mfCalcular(){
+  const monto=Number(document.getElementById('mf-monto').value)||0;
+  const tipoMonto=document.getElementById('mf-tipoMonto').value;
+  const turnos=Number(document.getElementById('mf-turnos').value)||1;
+  const afpComision=Number(document.getElementById('mf-afpComision').value)||0;
+  const saludPct=Number(document.getElementById('mf-saludPct').value)||7;
+  const horasExtra=Number(document.getElementById('mf-horasExtra').value)||0;
+  const pactadoTotal=monto*turnos;
+  const descTrabajador=(0.10+afpComision/100+saludPct/100);
+  const bruto = tipoMonto==='liquido' ? pactadoTotal/(1-descTrabajador) : pactadoTotal;
+  const descAfp = bruto*(0.10+afpComision/100);
+  const descSalud = bruto*(saludPct/100);
+  const liquido = bruto-descAfp-descSalud;
+  return {pactadoTotal,bruto,descAfp,descSalud,liquido,horasExtra,turnos,afpComision,saludPct};
+}
+
+function mfDocShell(titulo,folio,cuerpo){
+  return '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+esc(titulo)+' — '+esc(folio)+'</title>'+
+    '<style>body{font-family:Georgia,\'Times New Roman\',serif;max-width:720px;margin:30px auto;padding:0 20px 60px;line-height:1.65;color:#111;background:#fff}'+
+    'h1{font-size:1.25rem;text-align:center;margin-bottom:4px}.sub{text-align:center;font-size:.82rem;color:#444;margin-bottom:4px}'+
+    '.folio{text-align:center;font-size:.78rem;color:#555;border:1px solid #999;display:inline-block;padding:3px 14px;border-radius:4px;margin:10px auto 24px;display:block;width:fit-content}'+
+    'p{margin-bottom:12px;text-align:justify}table{width:100%;border-collapse:collapse;margin:10px 0}th,td{border:1px solid #999;padding:6px 8px;text-align:left;font-size:.85rem}th{background:#eee}'+
+    '.firmas{display:flex;justify-content:space-between;margin-top:60px;gap:24px}.firma-box{text-align:center;flex:1}.firma-box img{max-height:70px;max-width:220px}'+
+    '.firma-linea{border-top:1px solid #333;margin-top:6px;padding-top:4px;font-size:.76rem}'+
+    '.pie{margin-top:36px;font-size:.68rem;color:#777;border-top:1px solid #ccc;padding-top:8px}</style></head><body>'+
+    '<h1>'+esc(titulo)+'</h1><div class="folio">Folio '+esc(folio)+'</div>'+cuerpo+'</body></html>';
+}
+
+function mfConstruirDocumentos(firmaGuardiaImg, firmaEmpresaImg){
+  const r=mfGuardia, ev=eventoActualData, c=mfCalcular();
+  const domicilioEmpresa=document.getElementById('ce-domicilio').value.trim()||'⟦domicilio de la empresa no configurado⟧';
+  const repNombre=document.getElementById('ce-repNombre').value.trim()||'⟦representante legal no configurado⟧';
+  const repRut=document.getElementById('ce-repRut').value.trim()||'';
+  const nombre=r.nombre, rut=r.rut||'', comuna=r.comuna||'', email=r.email||'';
+  const nacionalidad=document.getElementById('mf-nacionalidad').value.trim()||'Chilena';
+  const fechaNac=document.getElementById('mf-fechaNac').value||'';
+  const domicilio=document.getElementById('mf-domicilio').value.trim()||'';
+  const turnoDetalle=document.getElementById('mf-turnoDetalle').value.trim()||'⟦sin detalle de turnos⟧';
+  const colacionRegimen=document.getElementById('mf-colacion').value;
+  const sumasPendientes=document.getElementById('mf-sumasPendientes').value.trim()||'Ninguna';
+  const reserva=document.getElementById('mf-reserva').value.trim()||'El Trabajador no formula reserva de derechos';
+  const folio='DOC-'+ev.id+'-'+r.user_id+'-'+Date.now().toString(36).toUpperCase();
+  const hoy=new Date().toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
+  const horasExtraTxt=c.horasExtra>0?clp(c.horasExtra):'No hubo horas extraordinarias en este período.';
+
+  const firmasHtml='<div class="firmas">'+
+    '<div class="firma-box">'+(firmaGuardiaImg?'<img src="'+firmaGuardiaImg+'">':'')+'<div class="firma-linea">FIRMA DEL TRABAJADOR<br>'+esc(nombre)+' · RUT '+esc(rut)+'</div></div>'+
+    '<div class="firma-box">'+(firmaEmpresaImg?'<img src="'+firmaEmpresaImg+'">':'')+'<div class="firma-linea">FIRMA DEL EMPLEADOR<br>'+esc(repNombre)+' · RUT '+esc(repRut)+'<br>Control y Confianza CSF SpA</div></div>'+
+  '</div>';
+  const pieIntegridad='<div class="pie">Documento firmado electrónicamente (Ley 19.799) el '+hoy+' desde el panel de administración de Control y Confianza CSF SpA. Identidad del Trabajador verificada contra su cédula registrada en su carpeta de Control+. El código de integridad (hash SHA-256) de este documento queda registrado en el sistema al momento de la firma. Folio '+esc(folio)+'.</div>';
+
+  const contrato=mfDocShell('CONTRATO DE TRABAJO POR OBRA O FAENA DETERMINADA',folio,
+    '<p>En '+esc(comuna)+', a '+hoy+', entre <b>CONTROL Y CONFIANZA CSF SpA</b>, RUT 78.043.129-6, representada por '+esc(repNombre)+', RUT '+esc(repRut)+', en su calidad de representante legal, ambos domiciliados para estos efectos en '+esc(domicilioEmpresa)+', en adelante «el Empleador»; y don/doña <b>'+esc(nombre)+'</b>, cédula de identidad N° '+esc(rut)+', nacionalidad '+esc(nacionalidad)+(fechaNac?', nacido/a el '+fechaNac:'')+', domiciliado/a en '+esc(domicilio||comuna)+', comuna de '+esc(comuna)+', en adelante «el Trabajador», se conviene el siguiente contrato de trabajo:</p>'+
+    '<p><b>PRIMERO — Naturaleza y lugar de los servicios.</b> El Trabajador se obliga a desempeñarse como guardia de seguridad privada en el evento «'+esc(ev.nombre)+'», a realizarse en '+esc(ev.lugar||'')+', comuna de '+esc(ev.comuna||'')+', ejecutando las funciones propias de la vigilancia y protección de personas y bienes conforme a la Ley 21.659, su reglamento (D.S. 209, de 2025) y la Directiva de Funcionamiento del evento, así como las instrucciones del jefe de turno o supervisor designado por el Empleador.</p>'+
+    '<p><b>SEGUNDO — Acreditación (Ley 21.659).</b> El Trabajador declara contar con acreditación vigente como guardia de seguridad privada otorgada conforme a la Ley 21.659. El Empleador, por su parte, declara haber verificado dicha acreditación y su vigencia contra el certificado incorporado al expediente documental que el propio Trabajador aportó. Es obligación del Trabajador portar su credencial durante todo el servicio y mantener su acreditación vigente. Queda expresamente prohibido el porte y uso de armas de cualquier naturaleza.</p>'+
+    '<p><b>TERCERO — Jornada y su distribución.</b> La jornada del Trabajador queda determinada en la programación de turnos que se detalla a continuación y que forma parte integrante de este contrato, individualizando los días y la hora de inicio y término de cada turno: '+esc(turnoDetalle)+'. Dicha distribución no excede la jornada ordinaria máxima legal vigente (42 horas semanales, Ley 21.561) ni los máximos diarios, y se ejecuta al amparo del artículo 38 del Código del Trabajo por tratarse de labores de vigilancia que exigen continuidad de servicio. El Trabajador gozará de un descanso para colación de a lo menos treinta minutos por turno, el que '+esc(colacionRegimen)+'. Las partes dejan constancia de que la remuneración pactada en la cláusula CUARTA retribuye exclusivamente la jornada ordinaria aquí distribuida y <b>no comprende horas extraordinarias</b>. En caso de que, por necesidad calificada del evento y previo acuerdo escrito, el Trabajador ejecute trabajo en exceso de la jornada pactada, dichas horas se pagarán en forma separada como extraordinarias, con el recargo legal del cincuenta por ciento (50%) sobre el valor de la hora ordinaria (artículo 32 del Código del Trabajo), adicionándose al pago de la faena.</p>'+
+    '<p><b>CUARTO — Remuneración.</b> El Empleador pagará al Trabajador una remuneración bruta total de <b>'+clp(c.bruto)+'</b> por la faena completa ('+c.turnos+' turno/s), pagadera al término de la faena mediante transferencia electrónica a la cuenta '+esc(r.tipo_cuenta||'')+' N° '+esc(r.num_cuenta||'')+' del banco '+esc(r.banco||'')+', de titularidad del Trabajador. Conforme al artículo 44 inciso final del Código del Trabajo, por tratarse de un contrato de duración no superior a treinta días, la remuneración convenida incluye todo lo que deba pagarse por feriado proporcional y demás derechos que se devengan en proporción al tiempo servido. Incluye asimismo, en forma expresa, la gratificación legal proporcional conforme al artículo 50 del Código del Trabajo (25% de lo devengado, con el tope proporcional de 4,75 ingresos mínimos mensuales anuales). Las horas extraordinarias, si las hubiere, se pagan por separado según la cláusula TERCERA.</p>'+
+    '<p><b>QUINTO — Cotizaciones.</b> El Empleador declarará y pagará las cotizaciones previsionales en los organismos que correspondan: AFP '+esc(r.afp||'')+' y salud ('+esc(r.salud_sistema||'')+') de cargo del Trabajador según las tasas legales; y de cargo del Empleador, el seguro de cesantía (AFC, aporte íntegro por tratarse de contrato por obra), el seguro de invalidez y sobrevivencia, el seguro de la Ley 16.744 y el aporte del empleador establecido por la Ley 21.735, según las tasas vigentes al período.</p>'+
+    '<p><b>SEXTO — Elementos de trabajo.</b> El Empleador proporcionará la tenida conforme al artículo 90 del D.S. 209 (2025) y los implementos exigidos por la normativa vigente para la función y el tipo de evento, incluido el chaleco anticorte cuando corresponda. El Trabajador se obliga a usarlos, cuidarlos y devolverlos al término de la faena.</p>'+
+    '<p><b>SÉPTIMO — Obligaciones esenciales.</b> El Trabajador se obliga especialmente a: (a) desempeñar sus funciones con respeto irrestricto a los derechos de las personas; (b) actuar ante incidentes conforme al protocolo del evento y la ley, sin exceder las facultades que el ordenamiento reconoce a los particulares; (c) no abandonar su puesto sin relevo autorizado; (d) guardar reserva de la información del evento y de sus asistentes.</p>'+
+    '<p><b>OCTAVO — Duración.</b> El presente contrato es por obra o faena determinada: rige desde el '+esc(ev.fecha_inicio)+' y termina, sin necesidad de aviso previo, al concluir el evento y las labores convenidas, a más tardar el '+esc(ev.fecha_fin||ev.fecha_inicio)+', conforme al artículo 159 N° 5 del Código del Trabajo. Su duración total no excede de treinta días.</p>'+
+    '<p><b>NOVENO — Tratamiento de datos personales (Ley 21.719).</b> El Empleador tratará los datos personales del Trabajador y los documentos que este aporte sobre las siguientes bases de licitud: (i) la ejecución de este contrato y de la relación laboral, y (ii) el cumplimiento de las obligaciones legales, previsionales, tributarias y de seguridad privada que pesan sobre el Empleador; para dichas finalidades el tratamiento no requiere consentimiento. Adicionalmente, el Trabajador consiente de manera libre e informada que el Empleador conserve su expediente con el fin de convocarlo a futuros eventos, consentimiento revocable en cualquier momento sin afectar la licitud del tratamiento previo. El Empleador conservará los datos y documentos por el plazo que la normativa laboral, previsional y tributaria exija para cada uno —que en materia tributaria alcanza al menos seis años— y, cumplidos esos plazos y la finalidad que los justificó, los eliminará o anonimizará. El Trabajador podrá ejercer sus derechos de acceso, rectificación, supresión, oposición y portabilidad ante el Empleador en '+esc(EMAIL_EMPRESA_DATOS)+'.</p>'+
+    '<p><b>DÉCIMO — Firma electrónica.</b> Las partes acuerdan suscribir este contrato mediante firma electrónica conforme a la Ley 19.799, estampada en el dispositivo dispuesto por el Empleador. El Trabajador recibe copia íntegra en su correo '+esc(email)+', lo que las partes aceptan como ejemplar de su cargo.</p>'+
+    firmasHtml+pieIntegridad);
+
+  const finiquito=mfDocShell('FINIQUITO DE CONTRATO DE TRABAJO',folio,
+    '<p>En '+esc(comuna)+', a '+hoy+', entre <b>CONTROL Y CONFIANZA CSF SpA</b>, RUT 78.043.129-6, «el Empleador», y don/doña <b>'+esc(nombre)+'</b>, cédula de identidad N° '+esc(rut)+', «el Trabajador», se deja constancia y se conviene lo siguiente:</p>'+
+    '<p><b>1. Relación laboral.</b> El Trabajador prestó servicios al Empleador como guardia de seguridad privada en el evento «'+esc(ev.nombre)+'» ('+esc(ev.lugar||'')+', comuna de '+esc(ev.comuna||'')+'), en virtud de contrato por obra o faena determinada de fecha '+esc(ev.fecha_inicio)+', cuya duración total no excedió de treinta días.</p>'+
+    '<p><b>2. Causal de término.</b> La relación laboral terminó el '+esc(ev.fecha_fin||ev.fecha_inicio)+' por la causal del artículo 159 N° 5 del Código del Trabajo: conclusión del trabajo o servicio que dio origen al contrato.</p>'+
+    '<p><b>3. Pagos.</b> El Trabajador declara recibir en este acto, mediante transferencia a su cuenta bancaria registrada, la suma bruta de <b>'+clp(c.bruto)+'</b> (líquido: '+clp(c.liquido)+', según liquidación adjunta), que comprende la remuneración pactada por la faena —la que conforme al artículo 44 inciso final del Código del Trabajo incluye el feriado proporcional, la gratificación legal proporcional del artículo 50 y demás derechos proporcionales al tiempo servido— más las horas extraordinarias efectivamente trabajadas, si las hubo: '+horasExtraTxt+'. Sumas pendientes de pago: '+esc(sumasPendientes)+'.</p>'+
+    '<p><b>4. Cotizaciones.</b> El Empleador declara que las cotizaciones previsionales correspondientes al período trabajado serán declaradas y pagadas en los organismos respectivos dentro del plazo legal.</p>'+
+    '<p><b>5. Declaración y renuncia de acciones.</b> El Trabajador declara que, recibido el pago indicado, nada se le adeuda por concepto alguno derivado de la relación laboral que por este acto finiquita, renunciando a toda acción que pudiere emanar de ella, con la siguiente reserva de derechos que formula expresamente: '+esc(reserva)+'.</p>'+
+    '<p><b>6. Formalidad.</b> Por tratarse de un contrato de duración no superior a treinta días, este finiquito no requiere ratificación ante ministro de fe, conforme al artículo 177 del Código del Trabajo. Se otorga electrónicamente según la Ley 19.799, previa verificación de la identidad del Trabajador mediante exhibición de su cédula y cotejo con la registrada en su expediente, dejándose constancia de RUT, fecha, hora y dispositivo de firma. El Trabajador recibe copia en '+esc(email)+'.</p>'+
+    firmasHtml+pieIntegridad);
+
+  const comprobante=mfDocShell('COMPROBANTE DE REMUNERACIÓN',folio,
+    '<p><b>'+esc(ev.nombre)+'</b><br>Trabajador: '+esc(nombre)+', RUT '+esc(rut)+'<br>Período: '+esc(ev.fecha_inicio)+' a '+esc(ev.fecha_fin||ev.fecha_inicio)+' ('+c.turnos+' turno/s)</p>'+
+    '<table><tr><th colspan="2">Haberes</th></tr>'+
+    '<tr><td>Remuneración pactada por la faena (incluye proporcionales arts. 44 y 50 CT)</td><td>'+clp(c.pactadoTotal===c.bruto?c.bruto:c.bruto)+'</td></tr>'+
+    (c.horasExtra>0?'<tr><td>Horas extraordinarias (recargo 50%, art. 32 CT)</td><td>'+clp(c.horasExtra)+'</td></tr>':'')+
+    '<tr><th colspan="2">Descuentos legales</th></tr>'+
+    '<tr><td>AFP '+esc(r.afp||'')+' ('+(10+c.afpComision).toFixed(2)+'%)</td><td>'+clp(c.descAfp)+'</td></tr>'+
+    '<tr><td>Salud '+esc(r.salud_sistema||'')+' ('+c.saludPct+'%)</td><td>'+clp(c.descSalud)+'</td></tr>'+
+    '<tr><th>Líquido a pagar</th><th>'+clp(c.liquido+c.horasExtra)+'</th></tr></table>'+
+    '<p>Pagado por transferencia a cuenta '+esc(r.tipo_cuenta||'')+' N° '+esc(r.num_cuenta||'')+', banco '+esc(r.banco||'')+'. De cargo del Empleador (no descontado): AFC 3%, SIS, seguro Ley 16.744 y aporte del empleador Ley 21.735, según tasas del período. Copia enviada a '+esc(email)+'.</p>'+
+    pieIntegridad);
+
+  return {contrato,finiquito,comprobante,folio};
+}
+
+function mfGenerarPreview(){
+  const msg=document.getElementById('mfMsgPaso1');
+  if(!(Number(document.getElementById('mf-monto').value)>0)){msg.className='msg err';msg.textContent='Ingresa el monto pactado por turno.';return;}
+  if(!document.getElementById('mf-turnoDetalle').value.trim()){msg.className='msg err';msg.textContent='Describe el detalle de los turnos (se incrusta en el contrato).';return;}
+  msg.className='msg';
+  const docs=mfConstruirDocumentos(null,null);
+  mfDocsFolio=docs.folio;
+  mfIrPaso(2);
+  mfVerTab('contrato');
+}
+
+let mfDocsFolio=null;
+function mfVerTab(tipo){
+  document.querySelectorAll('.mf-tab').forEach(t=>t.classList.toggle('activo',t.dataset.doc===tipo));
+  const docs=mfConstruirDocumentos(null,null);
+  const map={contrato:docs.contrato,finiquito:docs.finiquito,comprobante:docs.comprobante};
+  // Muestra solo el <body> renderizado dentro de la vista previa (sin volver a abrir <html>)
+  const tmp=document.createElement('div');
+  tmp.innerHTML=map[tipo].replace(/^[\s\S]*<body>/,'').replace(/<\/body>[\s\S]*$/,'');
+  document.getElementById('mfDocPreview').innerHTML=tmp.innerHTML;
+}
+
+function mfVolverPaso1(){mfIrPaso(1);}
+
+function mfIrAFirma(){
+  mfIrPaso(3);
+  setTimeout(mfPrepararCanvas,50);
+}
+
+let mfCtx=null, mfDibujando=false, mfTieneTrazo=false;
+function mfPrepararCanvas(){
+  const canvas=document.getElementById('firmaCanvas');
+  const rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*2; canvas.height=rect.height*2;
+  mfCtx=canvas.getContext('2d');
+  mfCtx.scale(2,2);
+  mfCtx.strokeStyle='#111'; mfCtx.lineWidth=2; mfCtx.lineCap='round';
+  mfTieneTrazo=false;
+  function pos(e){
+    const r=canvas.getBoundingClientRect();
+    const p=e.touches?e.touches[0]:e;
+    return {x:p.clientX-r.left,y:p.clientY-r.top};
+  }
+  function empezar(e){mfDibujando=true;mfTieneTrazo=true;const p=pos(e);mfCtx.beginPath();mfCtx.moveTo(p.x,p.y);e.preventDefault();}
+  function mover(e){if(!mfDibujando)return;const p=pos(e);mfCtx.lineTo(p.x,p.y);mfCtx.stroke();e.preventDefault();}
+  function terminar(){mfDibujando=false;}
+  canvas.onmousedown=empezar; canvas.onmousemove=mover; canvas.onmouseup=terminar; canvas.onmouseleave=terminar;
+  canvas.ontouchstart=empezar; canvas.ontouchmove=mover; canvas.ontouchend=terminar;
+}
+function mfLimpiarFirma(){
+  const canvas=document.getElementById('firmaCanvas');
+  mfCtx.clearRect(0,0,canvas.width,canvas.height);
+  mfTieneTrazo=false;
+}
+
+async function mfConfirmarFirma(){
+  const msg=document.getElementById('mfMsgFirma');
+  msg.className='msg';msg.textContent='';
+  if(!mfTieneTrazo){msg.className='msg err';msg.textContent='El guardia debe firmar antes de continuar.';return;}
+  msg.className='msg ok';msg.textContent='Guardando…';
+  try{
+    const firmaGuardia=document.getElementById('firmaCanvas').toDataURL('image/png');
+    let firmaEmpresa=null;
+    try{
+      const respFirma=await fetch(API_URL+'/admin/config-empresa/firma',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+      if(respFirma.ok){
+        const blob=await respFirma.blob();
+        firmaEmpresa=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(blob);});
+      }
+    }catch(e){}
+    const docs=mfConstruirDocumentos(firmaGuardia,firmaEmpresa);
+    const resp=await fetch(API_URL+'/admin/eventos/'+mfEventoId+'/dotacion/'+mfUserId+'/documentos',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({contrato_html:docs.contrato,finiquito_html:docs.finiquito,comprobante_html:docs.comprobante})});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo guardar.';return;}
+    msg.className='msg ok';msg.textContent='Documentos firmados y enviados por correo.';
+    setTimeout(()=>{cerrarMesaFirmas();recargarEventoDetalle();},1200);
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
 async function iniciar(){
   if(!CYC_TOKEN){mostrar('login');return;}
   mostrar('cargando');
@@ -632,6 +997,7 @@ async function iniciar(){
     cargarGastos();
     cargarExpedientes();
     cargarEventos();
+    cargarConfigEmpresa();
   }catch(e){
     document.getElementById('error-txt').textContent='Error de conexión con el servidor. Revisa tu internet e intenta de nuevo.';
     mostrar('error');
