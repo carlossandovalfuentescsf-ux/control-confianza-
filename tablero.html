@@ -130,6 +130,20 @@ footer a{color:#d4a017}
     </div>
 
     <div class="card">
+      <h2>📅 Dotación de eventos</h2>
+      <div class="porque">El brief que mató el dolor de Limache — S0 a S4 en producción. Solo lo operativo: qué eventos hay y cuánto se ha pagado.</div>
+      <table>
+        <tbody>
+        <tr><td>Eventos activos</td><td class="num" id="ev-activos">—</td></tr>
+        <tr><td>Eventos cerrados</td><td class="num" id="ev-cerrados">—</td></tr>
+        <tr><td>Guardias dotados (histórico, asistieron)</td><td class="num" id="ev-dotados">—</td></tr>
+        <tr><td>Total pagado (histórico)</td><td class="num" id="ev-pagado">—</td></tr>
+        </tbody>
+      </table>
+      <div class="links" style="margin-top:10px"><a href="comando.html#eventos">Abrir Eventos en Comando de Control</a></div>
+    </div>
+
+    <div class="card">
       <h2>🧱 Base del ecosistema</h2>
       <div class="porque">Volumen general — contexto, no veredicto.</div>
       <table>
@@ -266,6 +280,14 @@ function pintar(d){
   }else{
     document.getElementById('uso-tabla').style.display='none';
     document.getElementById('uso-vacio').style.display='block';
+  }
+
+  // Dotación de eventos
+  if(d.eventos){
+    document.getElementById('ev-activos').textContent=num(d.eventos.activos);
+    document.getElementById('ev-cerrados').textContent=num(d.eventos.cerrados);
+    document.getElementById('ev-dotados').textContent=num(d.eventos.dotados_historico);
+    document.getElementById('ev-pagado').textContent='$'+num(d.eventos.total_pagado_historico);
   }
 
   // Base

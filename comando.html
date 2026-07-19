@@ -654,14 +654,14 @@ async function recargarEventoDetalle(){
     const resp=await fetch(API_URL+'/admin/eventos/'+eventoActualId,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
     const d=await resp.json();
     if(!resp.ok){document.getElementById('eventoDetalleContent').innerHTML='<div class="vacio">No se pudo cargar.</div>';return;}
-    pintarDetalleEvento(d.evento,d.roster);
+    pintarDetalleEvento(d.evento,d.roster,d.resumen);
   }catch(e){document.getElementById('eventoDetalleContent').innerHTML='<div class="vacio">Sin conexión.</div>';}
 }
 
-let eventoActualData=null, rosterActualData=[];
+let eventoActualData=null, rosterActualData=[], resumenActualData=null;
 
-function pintarDetalleEvento(ev,roster){
-  eventoActualData=ev; rosterActualData=roster;
+function pintarDetalleEvento(ev,roster,resumen){
+  eventoActualData=ev; rosterActualData=roster; resumenActualData=resumen;
   const ESTADO_LABEL={preparacion:'Preparación',activo:'Activo',cerrado:'Cerrado'};
   const PAGO_LABEL={pendiente:'Pendiente',nomina:'En nómina',pagado:'Pagado'};
   let html='<div class="card" style="padding:0;border:none;background:none">'+
@@ -673,8 +673,28 @@ function pintarDetalleEvento(ev,roster){
     '</select>'+
     '<button class="btn btn-oro btn-full" onclick="mostrarConvocar()" style="margin-top:12px">+ Convocar guardias</button>'+
     '<div id="convocarWrap" style="display:none;margin-top:10px"></div>'+
-    '</div>'+
-    '<h3 style="margin-top:16px;color:#d4a017;font-size:.86rem">Roster ('+roster.length+')</h3>';
+    '</div>';
+  if(resumen){
+    html+='<h3 style="margin-top:16px;color:#d4a017;font-size:.86rem">Resumen y cierre</h3>'+
+      '<div class="resumen-grid">'+
+        '<div class="resumen-box"><h3>Dotación</h3>'+
+          '<div class="resumen-linea"><span>Convocados</span><b>'+resumen.dotados+'</b></div>'+
+          '<div class="resumen-linea"><span>Confirmados</span><b>'+resumen.confirmados+'</b></div>'+
+          '<div class="resumen-linea"><span>Asistieron</span><b>'+resumen.asistieron+'</b></div>'+
+          '<div class="resumen-linea"><span>Desistieron</span><b>'+resumen.desistieron+'</b></div>'+
+          '<div class="resumen-linea"><span>No llegaron</span><b>'+resumen.no_show+'</b></div>'+
+        '</div>'+
+        '<div class="resumen-box"><h3>Pago</h3>'+
+          '<div class="resumen-linea"><span>Pagado</span><b>'+clp(resumen.total_pagado)+'</b></div>'+
+          '<div class="resumen-linea"><span>Pendiente</span><b>'+clp(resumen.total_pendiente)+'</b></div>'+
+        '</div>'+
+      '</div>'+
+      '<button class="btn btn-borde btn-full" onclick="generarNomina()" style="margin-top:10px">⬇️ Generar nómina (CSV)</button>'+
+      (resumen.total_pendiente>0?'<button class="btn btn-oro btn-full" onclick="marcarTodosPagados()">✔ Marcar todos como pagados</button>':'')+
+      '<div class="msg" id="msgNomina"></div>'+
+      '<div class="tasa-nota" style="margin-top:6px">El CSV trae RUT/Nombre/Banco/Tipo de cuenta/N° cuenta/Monto — formato genérico. Verifica las columnas exactas que pide el portal de nómina de BancoEstado la primera vez que lo uses.</div>';
+  }
+  html+='<h3 style="margin-top:16px;color:#d4a017;font-size:.86rem">Roster ('+roster.length+')</h3>';
   if(!roster.length){
     html+='<div class="vacio">Aún no convocas guardias.</div>';
   }else{
@@ -706,8 +726,34 @@ async function marcarAsistencia(userId,estado){
   recargarEventoDetalle();
 }
 
+function generarNomina(){
+  const pendientes=rosterActualData.filter(r=>r.estado==='asistio');
+  if(!pendientes.length){alert('No hay guardias que hayan asistido para incluir en la nómina.');return;}
+  const filas=[['RUT','Nombre','Banco','Tipo de cuenta','N° cuenta','Monto']];
+  pendientes.forEach(r=>filas.push([r.rut||'',r.nombre||'',r.banco||'',r.tipo_cuenta||'',r.num_cuenta||'',r.pago_monto||0]));
+  const csv=filas.map(f=>f.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='nomina-'+(eventoActualData?eventoActualData.nombre.replace(/[^a-z0-9]+/gi,'-'):'evento')+'-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+async function marcarTodosPagados(){
+  const msg=document.getElementById('msgNomina');
+  if(!confirm('¿Ya cargaste la nómina en el portal del banco y se pagó? Esto marca a todos los que asistieron como pagados.'))return;
+  try{
+    const resp=await fetch(API_URL+'/admin/eventos/'+eventoActualId+'/marcar-pagados',{method:'POST',headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo marcar.';return;}
+    msg.className='msg ok';msg.textContent=d.actualizados+' guardia(s) marcados como pagados.';
+    recargarEventoDetalle();
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
 async function cambiarPagoEstado(userId,pago_estado){
   await fetch(API_URL+'/admin/eventos/'+eventoActualId+'/dotacion/'+userId,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({pago_estado})});
+  recargarEventoDetalle();
 }
 
 function mostrarConvocar(){
