@@ -352,7 +352,8 @@ footer a{color:#d4a017}
   </div>
 
   <footer>
-    Comando de Control · datos vía Worker/D1 (solo administrador) — <a href="index.html">volver a la App C&C</a>
+    <button class="btn btn-gris" onclick="cerrarSesion()" style="display:inline-block;width:auto;padding:9px 22px;margin-bottom:12px">🔒 Cerrar sesión</button>
+    <div>Comando de Control · datos vía Worker/D1 (solo administrador) — <a href="index.html">volver a la App C&C</a></div>
   </footer>
 
 </div>
@@ -630,6 +631,14 @@ async function hacerLogin(){
   }catch(e){msg.textContent='Error de conexión. Intenta de nuevo.';}
 }
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login').style.display==='block')hacerLogin();});
+
+function cerrarSesion(){
+  if(!confirm('¿Cerrar sesión? Tendrás que volver a ingresar tu correo y contraseña.'))return;
+  localStorage.removeItem('cyc_token'); CYC_TOKEN=null;
+  document.getElementById('log-email').value=''; document.getElementById('log-pass').value='';
+  document.getElementById('log-msg').textContent='';
+  mostrar('login');
+}
 
 // ---------- Expedientes de guardias (S1 dotación de eventos) ----------
 let ultimosExpedientes=[];
