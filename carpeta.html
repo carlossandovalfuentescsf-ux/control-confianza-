@@ -43,6 +43,13 @@ input:focus,select:focus{outline:2px solid #d4a017;border-color:#d4a017}
 .sem-verde{background:#0d2210;color:#7dc800}
 .sem-rojo{background:#2a0a00;color:#e05000}
 .spinner{text-align:center;padding:50px 20px;color:#666;font-size:.85rem}
+details.aviso-full{background:#0d0d0d;border:1px solid #222;border-radius:10px;margin:10px 0;overflow:hidden}
+details.aviso-full summary{cursor:pointer;padding:10px 12px;font-size:.72rem;font-weight:700;color:#d4a017;list-style:none}
+details.aviso-full summary::-webkit-details-marker{display:none}
+details.aviso-full summary::before{content:'▸ ';color:#d4a017}
+details.aviso-full[open] summary::before{content:'▾ '}
+details.aviso-full .cuerpo{padding:0 12px 12px;font-size:.7rem;color:#999;line-height:1.6}
+details.aviso-full .cuerpo a{color:#998a55}
 .centro{text-align:center;padding:20px 10px}
 .centro .ic{font-size:2.4rem;margin-bottom:10px}
 .aviso{font-size:.68rem;color:#777;line-height:1.6;margin-top:14px}
@@ -114,9 +121,19 @@ async function iniciar(){
   }catch(e){ pantallaError('Sin conexión. Intenta de nuevo en un momento.'); }
 }
 
+function avisoPrivacidadHTML(){
+  return '<details class="aviso-full"><summary>Ver aviso de privacidad completo</summary><div class="cuerpo">'+
+    'Control y Confianza CSF SpA (RUT 78.043.129-6) usa tus datos y documentos para contratarte, pagarte y cumplir sus obligaciones legales (laborales, previsionales, tributarias y de seguridad privada de la Ley 21.659). '+
+    'Si nos autorizas, guardamos tu ficha para convocarte a futuros eventos; puedes retirar esa autorización cuando quieras. '+
+    'Para el pago y las cotizaciones compartimos los datos mínimos necesarios con tu AFP, tu sistema de salud, el seguro de cesantía, el SII, tu banco y, cuando la normativa de seguridad privada lo exige, la autoridad competente; no los usamos para otros fines ni los vendemos. '+
+    'Tus datos se almacenan cifrados y solo accede personal autorizado. Conservamos cada documento por el tiempo que la ley exige (por ejemplo, la documentación tributaria al menos 6 años) y luego lo eliminamos o anonimizamos. '+
+    'Puedes pedir acceso, rectificación, supresión, oposición o portabilidad escribiendo a <a href="mailto:contacto@controlyconfianza.cl">contacto@controlyconfianza.cl</a>, y reclamar ante la Agencia de Protección de Datos Personales.'+
+  '</div></details>';
+}
+
 function pintarInicio(){
   app().innerHTML=
-  '<div class="intro"><b>¿Para qué es esto?</b> Control y Confianza usa este enlace para reunir en un solo lugar los documentos de todos los guardias convocados a «'+esc(CONV.nombre)+'» — así evitamos el ida y vuelta de fotos sueltas por WhatsApp. Tus datos se guardan de forma privada, solo los ve la administración, y se eliminan automáticamente a los 2 años (Ley 21.719).</div>'+
+  '<div class="intro"><b>¿Para qué es esto?</b> Control y Confianza usa este enlace para reunir en un solo lugar los documentos de todos los guardias convocados a «'+esc(CONV.nombre)+'» — así evitamos el ida y vuelta de fotos sueltas por WhatsApp. Tus datos se guardan de forma privada y solo los ve la administración.</div>'+
   '<div class="card">'+
     '<h2>'+esc(CONV.nombre)+'</h2>'+
     '<div class="sub">Escribe tu RUN para ver si ya tienes una carpeta con nosotros.</div>'+
@@ -124,6 +141,7 @@ function pintarInicio(){
     '<input type="text" id="inRut" placeholder="12345678-9" autocomplete="off">'+
     '<button class="btn" onclick="buscarRut()">Continuar →</button>'+
     '<div class="form-msg" id="msgInicio"></div>'+
+    avisoPrivacidadHTML()+
   '</div>';
 }
 
@@ -183,7 +201,8 @@ function pintarNuevo(rut){
     '<label for="nComuna">Comuna</label><input type="text" id="nComuna">'+
     '<label>Acreditación OS.10</label>'+
     '<select id="nAcreditacion"><option value="si">Sí, vigente</option><option value="tramite">En trámite</option><option value="no">No</option></select>'+
-    '<div class="consent-row"><input type="checkbox" id="nConsent"><label for="nConsent">Acepto que Control y Confianza use mis datos para dotarme en eventos y pagarme. <a href="terminos.html" target="_blank" rel="noopener">Ver política de privacidad</a>.</label></div>'+
+    avisoPrivacidadHTML()+
+    '<div class="consent-row"><input type="checkbox" id="nConsent"><label for="nConsent">Acepto que Control y Confianza use mis datos según el aviso de privacidad de arriba.</label></div>'+
     '<button class="btn" onclick="crearNuevo(\''+esc(rut)+'\')">Crear mi carpeta →</button>'+
     '<button class="link-sm" onclick="pintarInicio()">← Volver</button>'+
     '<div class="form-msg" id="msgNuevo"></div>'+
@@ -331,7 +350,8 @@ function pintarListo(nombreEnmascarado){
   app().innerHTML='<div class="card centro"><div class="ic">✅</div><h2>¡Listo, '+(nombreEnmascarado?esc(nombreEnmascarado):'quedaste postulado')+'!</h2>'+
     '<div class="sub">Tu postulación a «'+esc(CONV?CONV.nombre:'')+'» quedó registrada. La administración revisará tu carpeta y te avisaremos si quedas convocado.</div>'+
     '<a class="wa" href="https://wa.me/56984600273" target="_blank" rel="noopener">Dudas — escríbenos por WhatsApp</a>'+
-    '<div class="aviso">Tus documentos y datos de pago se guardan de forma privada y se eliminan automáticamente a los 2 años (Ley 21.719). Solo la administración de Control y Confianza puede verlos. <a href="terminos.html" target="_blank" rel="noopener">Ver política de privacidad</a>.</div>'+
+    '<div class="aviso">Tus documentos y datos de pago se guardan de forma privada. Solo la administración de Control y Confianza puede verlos.</div>'+
+    avisoPrivacidadHTML()+
   '</div>';
 }
 
