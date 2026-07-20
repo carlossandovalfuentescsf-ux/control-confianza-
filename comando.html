@@ -926,6 +926,10 @@ function pintarDetalleEvento(ev,roster,resumen){
       '<div class="tasa-nota" style="margin-top:6px">El CSV trae RUT/Nombre/Banco/Tipo de cuenta/N° cuenta/Monto — formato genérico. Verifica las columnas exactas que pide el portal de nómina de BancoEstado la primera vez que lo uses.</div>';
   }
   html+='<h3 style="margin-top:16px;color:#d4a017;font-size:.86rem">Roster ('+roster.length+')</h3>';
+  if(roster.length){
+    html+='<button class="btn btn-borde btn-full" onclick="descargarNominaOS10()" style="margin-bottom:10px">🛡️ Descargar nómina para fiscalización (OS-10)</button>'+
+      '<div class="tasa-nota" style="margin:-4px 0 10px">Lista para mostrar o entregar a Carabineros (OS-10) si fiscalizan el evento: nombre, RUN, acreditación y vigencia OS-10. No incluye datos bancarios (Ley 21.719).</div>';
+  }
   if(!roster.length){
     html+='<div class="vacio">Aún no convocas guardias.</div>';
   }else{
@@ -955,6 +959,59 @@ async function cambiarEstadoEvento(estado){
 async function marcarAsistencia(userId,estado){
   await fetch(API_URL+'/admin/eventos/'+eventoActualId+'/dotacion/'+userId,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({estado})});
   recargarEventoDetalle();
+}
+
+// Nómina de dotación para fiscalización OS-10 (Carabineros). Campos mínimos que
+// acreditan habilitación (Ley 21.659, D.S. 209/2025): nombre, RUN, acreditación y
+// vigencia del OS-10. NO incluye datos bancarios/AFP/salud/contacto (minimización,
+// Ley 21.719). Documento de apoyo — no reemplaza la credencial individual ni la
+// Directiva de Funcionamiento del evento.
+function descargarNominaOS10(){
+  const ev=eventoActualData||{};
+  const ACRE={si:'Sí',tramite:'En trámite',no:'No'};
+  const hoy=new Date();
+  // Dotación real: excluye a quienes desistieron o no llegaron.
+  const dot=(rosterActualData||[]).filter(r=>r.estado!=='desistio'&&r.estado!=='no_show');
+  if(!dot.length){alert('No hay personal en la dotación para listar.');return;}
+  const filas=dot.map((r,i)=>{
+    const vig = r.os10_vencimiento && new Date(r.os10_vencimiento+'T00:00:00')>=hoy;
+    const estado = vig ? '<b style="color:#1e7d32">Vigente</b>' : '<b style="color:#c0392b">NO VIGENTE</b>';
+    const verif = r.verif_os10 ? ' ✓' : '';
+    return '<tr><td>'+(i+1)+'</td><td>'+esc(r.nombre||'')+'</td><td>'+esc(r.rut||'—')+'</td><td>'+
+      (ACRE[r.acreditacion]||'—')+'</td><td>'+(r.os10_vencimiento||'—')+verif+'</td><td>'+estado+'</td></tr>';
+  }).join('');
+  const fechaTxt=(ev.fecha_inicio||'')+(ev.fecha_fin&&ev.fecha_fin!==ev.fecha_inicio?' al '+ev.fecha_fin:'');
+  const lugarTxt=[ev.lugar,ev.comuna].filter(Boolean).map(esc).join(', ');
+  const ahora=new Date().toLocaleString('es-CL');
+  const doc='<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Nómina de dotación OS-10 — '+esc(ev.nombre||'')+'</title>'+
+    '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,Segoe UI,Arial,sans-serif;color:#111;padding:26px;font-size:13px}'+
+    '.hd{border-bottom:3px solid #d4a017;padding-bottom:12px;margin-bottom:16px}'+
+    '.emp{font-size:12px;color:#555}.tit{font-size:19px;font-weight:900;margin:6px 0 2px}'+
+    '.meta{font-size:12.5px;color:#333;line-height:1.7;margin-top:8px}.meta b{color:#111}'+
+    'table{width:100%;border-collapse:collapse;margin-top:16px;font-size:12px}'+
+    'th{background:#111;color:#d4a017;text-align:left;padding:8px 9px;font-size:11px;text-transform:uppercase}'+
+    'td{padding:7px 9px;border-bottom:1px solid #ddd}tr:nth-child(even) td{background:#faf8f2}'+
+    '.foot{margin-top:20px;font-size:10.5px;color:#666;line-height:1.6;border-top:1px solid #ccc;padding-top:10px}'+
+    '.firma{margin-top:34px;font-size:12px}.firma .l{border-top:1px solid #111;width:230px;padding-top:5px;margin-top:40px}'+
+    '@media print{body{padding:12px}.noprint{display:none}}</style></head><body>'+
+    '<div class="hd"><div class="emp">Control y Confianza CSF SpA · RUT 78.043.129-6 · Seguridad Privada acreditada OS-10</div>'+
+    '<div class="tit">Nómina de dotación de personal de seguridad</div>'+
+    '<div class="meta"><b>Evento:</b> '+esc(ev.nombre||'')+(lugarTxt?' &nbsp;·&nbsp; <b>Lugar:</b> '+lugarTxt:'')+
+    (fechaTxt?' &nbsp;·&nbsp; <b>Fecha:</b> '+esc(fechaTxt):'')+
+    (ev.punto_reunion?'<br><b>Punto de reunión:</b> '+esc(ev.punto_reunion):'')+
+    '<br><b>Total de personal:</b> '+dot.length+' &nbsp;·&nbsp; <b>Emitido:</b> '+esc(ahora)+'</div></div>'+
+    '<table><thead><tr><th>N°</th><th>Nombre completo</th><th>RUN</th><th>Acreditación OS-10</th><th>Curso OS-10 vence</th><th>Estado</th></tr></thead>'+
+    '<tbody>'+filas+'</tbody></table>'+
+    '<div class="firma"><div class="l">Firma y timbre — Representante / Asesor OS-10</div></div>'+
+    '<div class="foot">Documento de apoyo emitido por Control y Confianza CSF SpA para efectos de fiscalización. '+
+    'No reemplaza la credencial individual que cada guardia debe portar ni la Directiva de Funcionamiento del evento (Ley 21.659; D.S. 209/2025). '+
+    'El símbolo ✓ junto al vencimiento indica que la vigencia del curso fue verificada por la administración en la fuente oficial. '+
+    'Datos limitados a los necesarios para acreditar la habilitación del personal (Ley 21.719).</div>'+
+    '<div class="noprint" style="margin-top:20px;text-align:center"><button onclick="window.print()" style="background:#d4a017;border:none;padding:11px 26px;border-radius:8px;font-weight:800;cursor:pointer">🖨️ Imprimir o guardar como PDF</button></div>'+
+    '</body></html>';
+  const w=window.open('','_blank');
+  if(!w){alert('Permite las ventanas emergentes para abrir la nómina.');return;}
+  w.document.write(doc); w.document.close();
 }
 
 function generarNomina(){
