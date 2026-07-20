@@ -217,9 +217,16 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <script>
   // Control+ instalada = producto aparte: sin puente a C&C. Cubre Android (display-mode)
   // e iOS (navigator.standalone); el CSS de display-mode queda como primera línea.
-  if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true){
-    document.getElementById('linkVolverCyC').style.display='none';
-  }
+  // 20-07-2026: además, ocultar el puente para quien llega de fuera (link de WhatsApp,
+  // redes, etc.) — "Volver a la App" no tiene sentido si nunca estuvo en la App C&C, y
+  // solo arriesga sacarlo por accidente en su primera visita a Control+. Se muestra
+  // SOLO si el referrer real es seguridad-chile.html (navegación interna genuina).
+  try{
+    var vieneDeAppCyC=/seguridad-chile\.html/.test(document.referrer||'');
+    if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true || !vieneDeAppCyC){
+      document.getElementById('linkVolverCyC').style.display='none';
+    }
+  }catch(e){ document.getElementById('linkVolverCyC').style.display='none'; }
   </script>
   <h1>Control<span>+</span></h1>
   <p>Bolsa de trabajo del gremio · Control &amp; Confianza</p>
