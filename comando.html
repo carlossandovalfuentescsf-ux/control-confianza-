@@ -188,8 +188,13 @@ footer a{color:#d4a017}
         <div><label>Fecha inicio</label><input type="date" id="ev-inicio"></div>
         <div><label>Fecha fin (opcional)</label><input type="date" id="ev-fin"></div>
       </div>
+      <label>Punto de reunión</label>
+      <input type="text" id="ev-punto" placeholder="Ej: Puerta 3, 18:00 hrs">
+      <label>Tenida (uniforme / credencial)</label>
+      <input type="text" id="ev-tenida" placeholder="Ej: Uniforme negro, chaleco reflectante, credencial">
       <label>Requisitos (opcional)</label>
       <textarea id="ev-requisitos"></textarea>
+      <div class="porque" style="margin-top:8px">💡 El <b>punto de reunión</b> y la <b>tenida</b> salen automáticamente en el correo de comprobante que le llega a cada guardia cuando lo apruebas en una convocatoria ligada a este evento.</div>
       <button class="btn btn-oro btn-full" onclick="crearEvento()">+ Crear evento</button>
       <div class="msg" id="msgEvento"></div>
       <div id="listaEventos" style="margin-top:14px"><div class="vacio">Cargando…</div></div>
@@ -849,11 +854,12 @@ async function crearEvento(){
     const resp=await fetch(API_URL+'/admin/eventos',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
       body:JSON.stringify({nombre,comuna:document.getElementById('ev-comuna').value.trim(),lugar:document.getElementById('ev-lugar').value.trim(),
         pago_turno:document.getElementById('ev-pago').value||null,fecha_inicio:inicio,fecha_fin:document.getElementById('ev-fin').value||null,
+        punto_reunion:document.getElementById('ev-punto').value.trim(),tenida:document.getElementById('ev-tenida').value.trim(),
         requisitos:document.getElementById('ev-requisitos').value.trim()})});
     const d=await resp.json();
     if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo crear.';return;}
     msg.className='msg ok';msg.textContent='Evento creado.';
-    ['ev-nombre','ev-comuna','ev-lugar','ev-pago','ev-inicio','ev-fin','ev-requisitos'].forEach(id=>document.getElementById(id).value='');
+    ['ev-nombre','ev-comuna','ev-lugar','ev-pago','ev-inicio','ev-fin','ev-punto','ev-tenida','ev-requisitos'].forEach(id=>document.getElementById(id).value='');
     cargarEventos();
   }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
 }
@@ -891,6 +897,7 @@ function pintarDetalleEvento(ev,roster,resumen){
   let html='<div class="card" style="padding:0;border:none;background:none">'+
     '<h2 style="margin-bottom:2px">'+esc(ev.nombre)+'</h2>'+
     '<div class="porque">'+esc(ev.comuna||'')+(ev.lugar?' · '+esc(ev.lugar):'')+' · '+ev.fecha_inicio+(ev.fecha_fin?' a '+ev.fecha_fin:'')+(ev.pago_turno?' · '+clp(ev.pago_turno)+'/turno':'')+'</div>'+
+    ((ev.punto_reunion||ev.tenida)?'<div class="porque" style="border-left:3px solid #d4a017;padding-left:10px">'+(ev.punto_reunion?'📍 <b>Punto de reunión:</b> '+esc(ev.punto_reunion):'')+(ev.punto_reunion&&ev.tenida?'<br>':'')+(ev.tenida?'👕 <b>Tenida:</b> '+esc(ev.tenida):'')+'<br><span style="color:#777">Estos datos salen en el comprobante que recibe cada guardia al ser aprobado.</span></div>':'')+
     '<label>Estado del evento</label>'+
     '<select onchange="cambiarEstadoEvento(this.value)">'+
       ['preparacion','activo','cerrado'].map(s=>'<option value="'+s+'"'+(s===ev.estado?' selected':'')+'>'+ESTADO_LABEL[s]+'</option>').join('')+
@@ -1134,7 +1141,7 @@ async function aprobarSeleccionadosConvocatoria(){
     const resp=await fetch(API_URL+'/admin/convocatorias/'+convocatoriaActualId+'/aprobar-lote',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({user_ids:ids})});
     const d=await resp.json();
     if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo aprobar.';return;}
-    msg.className='msg ok';msg.textContent=d.aprobados+' postulante(s) aprobado(s).';
+    msg.className='msg ok';msg.textContent=d.aprobados+' postulante(s) aprobado(s).'+(d.comprobantes?' Se envió el comprobante por correo a '+d.comprobantes+'.':'');
     abrirConvocatoria(convocatoriaActualId);
     cargarConvocatorias();
   }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
