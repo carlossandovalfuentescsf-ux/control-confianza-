@@ -666,8 +666,29 @@ function pintarExpedientes(lista){
     const pago=g.datos_pago_ok?'<span class="ex-doc">💰 datos de pago ok</span>':'<span class="ex-doc falta">💰 datos de pago — falta</span>';
     return '<div class="exp-item"><div class="ex-top"><div><div class="ex-n">'+esc(g.nombre)+'</div><div class="ex-c">'+esc(g.comuna||'')+
       (g.os10_vencimiento?' · OS10 vence '+g.os10_vencimiento:'')+'</div></div>'+(SEM_PILL[g.semaforo]||'')+'</div>'+
-      '<div class="ex-docs">'+docsHtml+pago+'</div></div>';
+      '<div class="ex-docs">'+docsHtml+pago+'</div>'+
+      '<button class="btn-x" style="margin-top:8px;font-size:.68rem" onclick="eliminarCarpetaGuardia('+g.user_id+',\''+esc(g.nombre).replace(/'/g,"\\'")+'\')">🗑 Eliminar carpeta (derecho de supresión)</button>'+
+      '</div>';
   }).join('');
+}
+
+// Derecho de supresión ARCO (BRIEF-S5 §10, 20-07-2026) — borra documentos R2 +
+// guardia_doc + datos de pago/verificación de UN guardia, mismo alcance del
+// cron de 2 años pero disparado a mano cuando llega una solicitud real por
+// contacto@controlyconfianza.cl. Irreversible: doble confirmación + motivo
+// obligatorio que queda en el registro de auditoría (nunca los datos borrados).
+async function eliminarCarpetaGuardia(userId, nombre){
+  const motivo=prompt('¿Por qué se elimina la carpeta de '+nombre+'? (ej: solicitud ARCO del propio guardia por correo del '+new Date().toLocaleDateString('es-CL')+')');
+  if(motivo===null)return;
+  if(!motivo.trim()){alert('Debes indicar un motivo — queda en el registro de auditoría.');return;}
+  if(!confirm('Esto borrará PERMANENTEMENTE los documentos (OS10, cédula, CV) y los datos de pago de '+nombre+'. No se puede deshacer. ¿Confirmas?'))return;
+  try{
+    const resp=await fetch(API_URL+'/admin/guardias/'+userId+'/eliminar-carpeta',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({motivo:motivo.trim()})});
+    const d=await resp.json();
+    if(!resp.ok){alert(d.error||'No se pudo eliminar.');return;}
+    alert('Carpeta de '+nombre+' eliminada.');
+    cargarExpedientes();
+  }catch(e){alert('Sin conexión.');}
 }
 
 async function verDocGuardia(id){
