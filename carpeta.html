@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Sube tu carpeta — Control y Confianza</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh;padding-bottom:50px}
+header{background:linear-gradient(135deg,#1a1a1a,#111);padding:20px 20px 16px;text-align:center;border-bottom:1px solid #222}
+header h1{font-size:1.05rem;font-weight:800}
+header h1 span{color:#d4a017}
+header p{font-size:.74rem;color:#888;margin-top:4px}
+.wrap{max-width:480px;margin:0 auto;padding:16px 14px 40px}
+.intro{background:#1a1200;border:1px solid #3a2e00;border-left:4px solid #d4a017;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:.8rem;line-height:1.6;color:#e8c98a}
+.intro b{color:#f0e8d0}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:14px}
+.card h2{font-size:.95rem;font-weight:800;color:#d4a017;margin-bottom:4px}
+.card .sub{font-size:.76rem;color:#999;margin-bottom:12px;line-height:1.5}
+label{display:block;font-size:.75rem;font-weight:700;color:#ccc;margin:10px 0 4px}
+input[type=text],input[type=date],input[type=email],select{width:100%;padding:11px 12px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:.86rem;font-family:inherit}
+input:focus,select:focus{outline:2px solid #d4a017;border-color:#d4a017}
+.opts-row{display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.opt-btn{flex:1;min-width:80px;padding:10px 6px;border:1px solid #333;border-radius:8px;background:#111;color:#888;font-size:.78rem;font-weight:700;cursor:pointer;text-align:center}
+.opt-btn.sel{background:#1a1200;border-color:#d4a017;color:#d4a017}
+.consent-row{display:flex;gap:10px;align-items:flex-start;background:#0d0d0d;border:1px solid #222;border-radius:10px;padding:12px;margin:14px 0}
+.consent-row input{width:auto;margin:2px 0 0}
+.consent-row label{font-size:.72rem;color:#999;font-weight:400;margin:0;line-height:1.5}
+.btn{width:100%;padding:13px;background:#d4a017;color:#111;border:none;border-radius:10px;font-size:.88rem;font-weight:800;cursor:pointer;margin-top:10px}
+.btn:disabled{background:#333;color:#777;cursor:default}
+.btn-sec{background:none;color:#999;border:1px solid #333}
+.link-sm{font-size:.72rem;color:#d4a017;text-decoration:underline;display:inline-block;margin-top:10px;cursor:pointer;background:none;border:none}
+.form-msg{font-size:.78rem;min-height:1em;margin-top:8px;line-height:1.5}
+.form-msg.err{color:#e74c3c}
+.form-msg.ok{color:#7dc800}
+.doc-row{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-bottom:10px}
+.doc-row .dr-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.doc-row .dr-t{font-size:.82rem;font-weight:800}
+.doc-row input[type=file]{width:100%;font-size:.72rem;color:#999;margin-top:8px}
+.doc-row input[type=date]{margin-top:8px}
+.sem{font-size:.64rem;font-weight:800;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.sem-verde{background:#0d2210;color:#7dc800}
+.sem-rojo{background:#2a0a00;color:#e05000}
+.spinner{text-align:center;padding:50px 20px;color:#666;font-size:.85rem}
+.centro{text-align:center;padding:20px 10px}
+.centro .ic{font-size:2.4rem;margin-bottom:10px}
+.aviso{font-size:.68rem;color:#777;line-height:1.6;margin-top:14px}
+.aviso a{color:#998a55}
+.wa{display:block;width:100%;box-sizing:border-box;text-align:center;padding:11px;background:#25d366;color:#0b1f14;border-radius:8px;font-size:.82rem;font-weight:800;text-decoration:none;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛡️ Control<span> y Confianza</span></h1>
+  <p>Carpeta de guardia — para trabajar en el evento</p>
+</header>
+<div class="wrap" id="app">
+  <div class="spinner">Cargando…</div>
+</div>
+
+<script>
+var API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+var CODIGO=new URLSearchParams(location.search).get('c')||'';
+var CONV=null;
+var SESION_TOKEN=null;
+var FALTANTES=null; // null = todo falta (carpeta nueva); objeto = solo lo marcado en true
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function app(){return document.getElementById('app');}
+
+function fileToBase64(file){
+  return new Promise(function(resolve,reject){
+    var r=new FileReader();
+    r.onload=function(){resolve(r.result.split(',')[1]);};
+    r.onerror=reject;
+    r.readAsDataURL(file);
+  });
+}
+
+function validarRutCliente(rutRaw){
+  var rut=String(rutRaw||'').replace(/[.\-\s]/g,'').toUpperCase();
+  if(!/^\d{7,8}[0-9K]$/.test(rut))return false;
+  var cuerpo=rut.slice(0,-1), dv=rut.slice(-1);
+  var suma=0, mult=2;
+  for(var i=cuerpo.length-1;i>=0;i--){ suma+=parseInt(cuerpo[i],10)*mult; mult=mult===7?2:mult+1; }
+  var resto=11-(suma%11);
+  var dvCalc = resto===11?'0':resto===10?'K':String(resto);
+  return dvCalc===dv;
+}
+
+function bancosOptions(){
+  var bancos=['Banco de Chile','BancoEstado','Banco Santander','Banco BCI','Scotiabank','Banco Itaú','Banco Security','Banco Falabella','Banco Ripley','Banco Consorcio','Coopeuch','Tenpo','MACH','Otro'];
+  return '<option value="">— Elige tu banco —</option>'+bancos.map(function(b){return '<option value="'+esc(b)+'">'+esc(b)+'</option>';}).join('');
+}
+function afpOptions(){
+  var afps=['Capital','Cuprum','Habitat','Modelo','Planvital','Provida','Uno'];
+  return '<option value="">— Elige tu AFP —</option>'+afps.map(function(a){return '<option value="'+esc(a)+'">'+esc(a)+'</option>';}).join('');
+}
+
+function pantallaError(msg){
+  app().innerHTML='<div class="card centro"><div class="ic">🚫</div><h2>No disponible</h2><div class="sub">'+esc(msg)+'</div>' +
+    '<a class="wa" href="https://wa.me/56984600273" target="_blank" rel="noopener">Escribir por WhatsApp</a></div>';
+}
+
+async function iniciar(){
+  if(!CODIGO){ pantallaError('Falta el código de la convocatoria en el enlace. Pide que te reenvíen el link correcto.'); return; }
+  try{
+    var res=await fetch(API_URL+'/convocatoria/'+encodeURIComponent(CODIGO));
+    var d=await res.json();
+    if(!d.activa){ pantallaError('Esta convocatoria ya cerró o el enlace venció. Escríbenos por WhatsApp si crees que es un error.'); return; }
+    CONV=d;
+    pintarInicio();
+  }catch(e){ pantallaError('Sin conexión. Intenta de nuevo en un momento.'); }
+}
+
+function pintarInicio(){
+  app().innerHTML=
+  '<div class="intro"><b>¿Para qué es esto?</b> Control y Confianza usa este enlace para reunir en un solo lugar los documentos de todos los guardias convocados a «'+esc(CONV.nombre)+'» — así evitamos el ida y vuelta de fotos sueltas por WhatsApp. Tus datos se guardan de forma privada, solo los ve la administración, y se eliminan automáticamente a los 2 años (Ley 21.719).</div>'+
+  '<div class="card">'+
+    '<h2>'+esc(CONV.nombre)+'</h2>'+
+    '<div class="sub">Escribe tu RUN para ver si ya tienes una carpeta con nosotros.</div>'+
+    '<label for="inRut">Tu RUN</label>'+
+    '<input type="text" id="inRut" placeholder="12345678-9" autocomplete="off">'+
+    '<button class="btn" onclick="buscarRut()">Continuar →</button>'+
+    '<div class="form-msg" id="msgInicio"></div>'+
+  '</div>';
+}
+
+async function buscarRut(){
+  var msg=document.getElementById('msgInicio');
+  msg.className='form-msg';msg.textContent='';
+  var rut=document.getElementById('inRut').value.trim();
+  if(!validarRutCliente(rut)){msg.className='form-msg err';msg.textContent='RUT inválido — revisa el dígito verificador.';return;}
+  msg.className='form-msg ok';msg.textContent='Buscando…';
+  try{
+    var res=await fetch(API_URL+'/convocatoria/'+encodeURIComponent(CODIGO)+'/buscar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rut:rut})});
+    var d=await res.json();
+    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo buscar.';return;}
+    if(d.existe) pintarConfirmar(rut, d.nombre_enmascarado);
+    else pintarNuevo(rut);
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
+}
+
+function pintarConfirmar(rut, nombreEnmascarado){
+  app().innerHTML=
+  '<div class="card">'+
+    '<h2>¿Eres '+esc(nombreEnmascarado)+'?</h2>'+
+    '<div class="sub">Ya tienes una carpeta con ese RUN. Para confirmar que eres tú, escribe los <b>últimos 4 dígitos</b> de tu teléfono registrado.</div>'+
+    '<label for="inUlt4">Últimos 4 dígitos de tu teléfono</label>'+
+    '<input type="text" id="inUlt4" maxlength="4" inputmode="numeric" placeholder="1234">'+
+    '<button class="btn" onclick="confirmarIdentidad(\''+esc(rut)+'\')">Confirmar →</button>'+
+    '<button class="link-sm" onclick="pintarInicio()">No soy yo / usar otro RUN</button>'+
+    '<div class="form-msg" id="msgConfirmar"></div>'+
+  '</div>';
+}
+
+async function confirmarIdentidad(rut){
+  var msg=document.getElementById('msgConfirmar');
+  msg.className='form-msg';msg.textContent='';
+  var ult4=document.getElementById('inUlt4').value.trim();
+  if(!/^\d{4}$/.test(ult4)){msg.className='form-msg err';msg.textContent='Escribe los 4 dígitos.';return;}
+  msg.className='form-msg ok';msg.textContent='Verificando…';
+  try{
+    var res=await fetch(API_URL+'/convocatoria/'+encodeURIComponent(CODIGO)+'/verificar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rut:rut,telefono_ultimos4:ult4})});
+    var d=await res.json();
+    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo verificar.';return;}
+    if(d.modo==='confirmado'){ pintarListo(d.nombre_enmascarado); return; }
+    SESION_TOKEN=d.sesion_token;
+    FALTANTES=d.faltantes;
+    pintarCompletar('Encontramos tu carpeta, pero falta completar algunos datos antes de postularte.');
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
+}
+
+function pintarNuevo(rut){
+  app().innerHTML=
+  '<div class="card">'+
+    '<h2>Carpeta nueva</h2>'+
+    '<div class="sub">No encontramos una carpeta con ese RUN — vamos a crear la tuya. Te toma unos 3 minutos.</div>'+
+    '<label for="nNombre">Nombre completo</label><input type="text" id="nNombre">'+
+    '<label for="nEmail">Email</label><input type="email" id="nEmail" placeholder="Para avisarte y que puedas entrar a Control+">'+
+    '<label for="nTelefono">Teléfono</label><input type="text" id="nTelefono" placeholder="+56912345678">'+
+    '<label for="nComuna">Comuna</label><input type="text" id="nComuna">'+
+    '<label>Acreditación OS.10</label>'+
+    '<select id="nAcreditacion"><option value="si">Sí, vigente</option><option value="tramite">En trámite</option><option value="no">No</option></select>'+
+    '<div class="consent-row"><input type="checkbox" id="nConsent"><label for="nConsent">Acepto que Control y Confianza use mis datos para dotarme en eventos y pagarme. <a href="terminos.html" target="_blank" rel="noopener">Ver política de privacidad</a>.</label></div>'+
+    '<button class="btn" onclick="crearNuevo(\''+esc(rut)+'\')">Crear mi carpeta →</button>'+
+    '<button class="link-sm" onclick="pintarInicio()">← Volver</button>'+
+    '<div class="form-msg" id="msgNuevo"></div>'+
+  '</div>';
+}
+
+async function crearNuevo(rut){
+  var msg=document.getElementById('msgNuevo');
+  msg.className='form-msg';msg.textContent='';
+  var body={
+    rut:rut,
+    nombre:document.getElementById('nNombre').value.trim(),
+    email:document.getElementById('nEmail').value.trim(),
+    telefono:document.getElementById('nTelefono').value.trim(),
+    comuna:document.getElementById('nComuna').value.trim(),
+    acreditacion:document.getElementById('nAcreditacion').value,
+    consentimiento:document.getElementById('nConsent').checked
+  };
+  if(!body.nombre){msg.className='form-msg err';msg.textContent='Escribe tu nombre.';return;}
+  if(!body.email){msg.className='form-msg err';msg.textContent='Escribe tu email.';return;}
+  if(!body.telefono){msg.className='form-msg err';msg.textContent='Escribe tu teléfono.';return;}
+  if(!body.comuna){msg.className='form-msg err';msg.textContent='Escribe tu comuna.';return;}
+  if(!body.consentimiento){msg.className='form-msg err';msg.textContent='Debes aceptar el uso de tus datos para continuar.';return;}
+  msg.className='form-msg ok';msg.textContent='Creando tu carpeta…';
+  try{
+    var res=await fetch(API_URL+'/convocatoria/'+encodeURIComponent(CODIGO)+'/nuevo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var d=await res.json();
+    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo crear tu carpeta.';return;}
+    SESION_TOKEN=d.sesion_token;
+    FALTANTES=null;
+    pintarCompletar('Cuenta creada. Ahora sube tus documentos y datos de pago.');
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
+}
+
+function falta(clave){ return !FALTANTES || FALTANTES[clave]; }
+
+function docRow(tipo, label){
+  return '<div class="doc-row">'+
+    '<div class="dr-top"><div class="dr-t">'+esc(label)+'</div></div>'+
+    (tipo==='os10'?'<label>Fecha de vencimiento del curso</label><input type="date" id="fecha-os10">':'')+
+    '<input type="file" accept="image/jpeg,image/png,application/pdf" onchange="subirDoc(\''+tipo+'\',this)">'+
+    '<div class="form-msg" id="docMsg-'+tipo+'"></div>'+
+  '</div>';
+}
+
+function pintarCompletar(aviso){
+  var html='<div class="card"><div class="sub">'+esc(aviso)+'</div></div>';
+  html+='<div class="card"><h2>Documentos</h2><div class="sub">Foto o PDF, máx. 6MB cada uno.</div>';
+  if(falta('os10')) html+=docRow('os10','Certificado OS.10');
+  if(falta('cedula_frente')) html+=docRow('cedula_frente','Cédula — frente');
+  if(falta('cedula_dorso')) html+=docRow('cedula_dorso','Cédula — dorso');
+  if(!FALTANTES || FALTANTES.cv) html+=docRow('cv','Curriculum (CV) — opcional');
+  html+='</div>';
+  if(falta('datos_pago')){
+    html+='<div class="card"><h2>Datos de pago</h2><div class="sub">Para pagarte cuando trabajes en el evento. Solo los ve la administración.</div>'+
+      '<label for="pBanco">Banco</label><select id="pBanco">'+bancosOptions()+'</select>'+
+      '<label>Tipo de cuenta</label>'+
+      '<div class="opts-row" id="tipoCtaRow">'+
+        '<button type="button" class="opt-btn" data-val="corriente" onclick="elegirTipoCta(this)">Corriente</button>'+
+        '<button type="button" class="opt-btn" data-val="vista" onclick="elegirTipoCta(this)">Vista</button>'+
+        '<button type="button" class="opt-btn" data-val="ahorro" onclick="elegirTipoCta(this)">Ahorro</button>'+
+        '<button type="button" class="opt-btn" data-val="rut" onclick="elegirTipoCta(this)">Cuenta RUT</button>'+
+      '</div>'+
+      '<label for="pNumCta">Número de cuenta</label><input type="text" id="pNumCta">'+
+      '<label for="pAfp">AFP</label><select id="pAfp">'+afpOptions()+'</select>'+
+      '<label for="pSalud">Sistema de salud</label><input type="text" id="pSalud" placeholder="Fonasa, o el nombre de tu Isapre">'+
+      '<button class="btn" onclick="guardarPago()">Guardar datos de pago</button>'+
+      '<div class="form-msg" id="msgPago"></div>'+
+    '</div>';
+  }
+  html+='<button class="btn" onclick="finalizarPostulacion()">✔ Postular con mi carpeta</button>'+
+    '<div class="form-msg" id="msgFinal"></div>';
+  app().innerHTML=html;
+}
+
+function elegirTipoCta(btn){
+  document.querySelectorAll('#tipoCtaRow .opt-btn').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+}
+
+async function subirDoc(tipo, input){
+  var file=input.files[0];
+  if(!file)return;
+  var msg=document.getElementById('docMsg-'+tipo);
+  msg.className='form-msg';msg.textContent='';
+  if(file.size>6*1024*1024){msg.className='form-msg err';msg.textContent='El archivo pesa demasiado (máx. 6MB).';return;}
+  var tiposOk={'image/jpeg':1,'image/png':1,'application/pdf':1};
+  if(!tiposOk[file.type]){msg.className='form-msg err';msg.textContent='Formato no soportado (usa foto o PDF).';return;}
+  var vencimiento=null;
+  if(tipo==='os10'){
+    vencimiento=document.getElementById('fecha-os10').value;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(vencimiento)){msg.className='form-msg err';msg.textContent='Indica la fecha de vencimiento del curso antes de subir el archivo.';return;}
+  }
+  msg.className='form-msg ok';msg.textContent='Subiendo…';
+  try{
+    var data=await fileToBase64(file);
+    var body={sesion_token:SESION_TOKEN,tipo:tipo,data:data,media_type:file.type};
+    if(vencimiento)body.vencimiento=vencimiento;
+    var res=await fetch(API_URL+'/convocatoria/'+encodeURIComponent(CODIGO)+'/subir-doc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var d=await res.json();
+    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo subir.';return;}
+    msg.className='form-msg ok';msg.textContent='✔ Guardado.';
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
+}
+
+async function guardarPago(){
+  var msg=document.getElementById('msgPago');
+  msg.className='form-msg';msg.textContent='';
+  var tipoEl=document.querySelector('#tipoCtaRow .opt-btn.sel');
+  var body={
+    sesion_token:SESION_TOKEN,
+    banco:document.getElementById('pBanco').value,
+    tipo_cuenta:tipoEl?tipoEl.dataset.val:'',
+    num_cuenta:document.getElementById('pNumCta').value.trim(),
+    afp:document.getElementById('pAfp').value,
+    salud_sistema:document.getElementById('pSalud').value.trim()
+  };
+  if(!body.banco){msg.className='form-msg err';msg.textContent='Elige tu banco.';return;}
+  if(!body.tipo_cuenta){msg.className='form-msg err';msg.textContent='Elige el tipo de cuenta.';return;}
+  if(!body.num_cuenta){msg.className='form-msg err';msg.textContent='Escribe tu número de cuenta.';return;}
+  if(!body.afp){msg.className='form-msg err';msg.textContent='Elige tu AFP.';return;}
+  if(!body.salud_sistema){msg.className='form-msg err';msg.textContent='Indica tu sistema de salud.';return;}
+  msg.className='form-msg ok';msg.textContent='Guardando…';
+  try{
+    var res=await fetch(API_URL+'/convocatoria/'+encodeURIComponent(CODIGO)+'/completar-pago',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var d=await res.json();
+    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo guardar.';return;}
+    msg.className='form-msg ok';msg.textContent='✔ Datos de pago guardados.';
+    FALTANTES=Object.assign({},FALTANTES,{datos_pago:false});
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
+}
+
+async function finalizarPostulacion(){
+  var msg=document.getElementById('msgFinal');
+  msg.className='form-msg ok';msg.textContent='Enviando postulación…';
+  try{
+    var res=await fetch(API_URL+'/convocatoria/'+encodeURIComponent(CODIGO)+'/postular',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sesion_token:SESION_TOKEN})});
+    var d=await res.json();
+    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'Aún falta algo en tu carpeta — revisa arriba.';return;}
+    pintarListo();
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
+}
+
+function pintarListo(nombreEnmascarado){
+  app().innerHTML='<div class="card centro"><div class="ic">✅</div><h2>¡Listo, '+(nombreEnmascarado?esc(nombreEnmascarado):'quedaste postulado')+'!</h2>'+
+    '<div class="sub">Tu postulación a «'+esc(CONV?CONV.nombre:'')+'» quedó registrada. La administración revisará tu carpeta y te avisaremos si quedas convocado.</div>'+
+    '<a class="wa" href="https://wa.me/56984600273" target="_blank" rel="noopener">Dudas — escríbenos por WhatsApp</a>'+
+    '<div class="aviso">Tus documentos y datos de pago se guardan de forma privada y se eliminan automáticamente a los 2 años (Ley 21.719). Solo la administración de Control y Confianza puede verlos. <a href="terminos.html" target="_blank" rel="noopener">Ver política de privacidad</a>.</div>'+
+  '</div>';
+}
+
+iniciar();
+</script>
+</body>
+</html>

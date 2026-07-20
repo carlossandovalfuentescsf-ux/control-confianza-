@@ -140,6 +140,7 @@ footer a{color:#d4a017}
       <a class="tarjeta" href="guardias.html#admin"><div class="ic">💼</div><div class="t">Panel de Ofertas</div><div class="d">Publicar y gestionar ofertas de Control+</div></a>
       <a class="tarjeta" href="#expedientes"><div class="ic">📁</div><div class="t">Expedientes</div><div class="d">Documentos y datos de pago de cada guardia</div></a>
       <a class="tarjeta" href="#eventos"><div class="ic">📅</div><div class="t">Eventos</div><div class="d">Roster, convocatoria y confirmaciones</div></a>
+      <a class="tarjeta" href="#convocatorias"><div class="ic">📢</div><div class="t">Convocatorias</div><div class="d">Un enlace público para 250 guardias, no 250 WhatsApp</div></a>
       <a class="tarjeta" href="#gastos"><div class="ic">🧾</div><div class="t">Gastos de Evento</div><div class="d">Rendición de plata propia por foto de boleta</div></a>
       <a class="tarjeta" href="#config-empresa"><div class="ic">⚙️</div><div class="t">Configuración</div><div class="d">Datos legales y firma para los contratos</div></a>
     </div>
@@ -191,6 +192,37 @@ footer a{color:#d4a017}
     <div id="eventoDetalleWrap" style="display:none">
       <button class="btn btn-gris" onclick="volverListaEventos()" style="margin-bottom:10px">← Volver a Eventos</button>
       <div id="eventoDetalleContent"></div>
+    </div>
+  </div>
+
+  <div class="card" id="convocatorias">
+    <h2>📢 Convocatorias</h2>
+    <div class="porque">El problema de Limache: con 250 guardias, un enlace por persona es 250 WhatsApp. Aquí publicas <b>un solo enlace</b> por evento — cada guardia se identifica con su RUN: si ya tiene carpeta aprobada, confirma en 1 toque; si es nuevo o le falta algo, completa su carpeta ahí mismo. Tú solo revisas la cola y apruebas en lote.</div>
+
+    <div class="fila">
+      <div><label>Nombre de la convocatoria</label><input type="text" id="cv-nombre" placeholder="Ej: Festival Limache — Agosto"></div>
+      <div><label>Código para la URL</label><input type="text" id="cv-codigo" placeholder="Ej: LIMACHE-AGO" style="text-transform:uppercase"></div>
+    </div>
+    <div class="fila">
+      <div><label>Evento asociado (opcional)</label><select id="cv-evento"><option value="">— Sin evento asociado —</option></select></div>
+      <div><label>Cupos estimados (opcional)</label><input type="number" id="cv-cupos" min="1" placeholder="Ej: 250"></div>
+    </div>
+    <label>Cierre automático (opcional)</label>
+    <input type="date" id="cv-cierre">
+    <button class="btn btn-oro btn-full" onclick="crearConvocatoria()">+ Crear convocatoria</button>
+    <div class="msg" id="msgConvocatoria"></div>
+
+    <div id="convocatoriaLinkWrap" style="display:none;margin-top:12px;background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px">
+      <div style="font-size:.78rem;color:#ccc;margin-bottom:6px">Enlace público — publícalo UNA vez en el grupo de WhatsApp del evento:</div>
+      <input type="text" id="convocatoriaLinkTxt" readonly style="margin-bottom:8px">
+      <button class="btn btn-borde btn-full" onclick="copiarEnlaceConvocatoria()">📋 Copiar enlace</button>
+      <button class="btn btn-gris btn-full" onclick="copiarMensajeConvocatoria()">📋 Copiar mensaje para WhatsApp</button>
+    </div>
+
+    <div id="listaConvocatorias" style="margin-top:16px"><div class="vacio">Cargando…</div></div>
+    <div id="convocatoriaDetalleWrap" style="display:none;margin-top:14px">
+      <button class="btn btn-gris" onclick="volverListaConvocatorias()" style="margin-bottom:10px">← Volver a Convocatorias</button>
+      <div id="convocatoriaDetalleContent"></div>
     </div>
   </div>
 
@@ -755,6 +787,7 @@ async function cargarEventos(){
     if(!resp.ok){el.innerHTML='<div class="vacio">No se pudo cargar.</div>';return;}
     ultimosEventos=d.eventos||[];
     pintarListaEventos();
+    actualizarSelectEventosConvocatoria();
   }catch(e){el.innerHTML='<div class="vacio">Sin conexión.</div>';}
 }
 
@@ -935,6 +968,166 @@ async function convocarSeleccionados(){
     document.getElementById('convocarWrap').style.display='none';
     recargarEventoDetalle();
   }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
+// ---------- Convocatorias (BRIEF-S5-recoleccion-antecedentes.md) ----------
+let ultimasConvocatorias=[];
+let convocatoriaActualId=null;
+const SEM_PILL_CV={verde:'<span class="pill ok">🟢</span>',amarillo:'<span class="pill warn">🟡</span>',rojo:'<span class="pill pend">🔴</span>'};
+
+function actualizarSelectEventosConvocatoria(){
+  const sel=document.getElementById('cv-evento');
+  const actual=sel.value;
+  sel.innerHTML='<option value="">— Sin evento asociado —</option>'+
+    (ultimosEventos||[]).map(e=>'<option value="'+e.id+'">'+esc(e.nombre)+'</option>').join('');
+  sel.value=actual;
+}
+
+async function crearConvocatoria(){
+  const msg=document.getElementById('msgConvocatoria');
+  msg.className='msg';msg.textContent='';
+  const nombre=document.getElementById('cv-nombre').value.trim();
+  const codigo=document.getElementById('cv-codigo').value.trim().toUpperCase();
+  const eventoId=document.getElementById('cv-evento').value;
+  const cupos=document.getElementById('cv-cupos').value;
+  const cierre=document.getElementById('cv-cierre').value;
+  if(!nombre){msg.className='msg err';msg.textContent='Escribe el nombre de la convocatoria.';return;}
+  if(!codigo){msg.className='msg err';msg.textContent='Escribe un código para la URL.';return;}
+  try{
+    const resp=await fetch(API_URL+'/admin/convocatorias',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({nombre,codigo,evento_id:eventoId||null,cupos_estimado:cupos||null,fecha_cierre:cierre||null})});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo crear.';return;}
+    msg.className='msg ok';msg.textContent='Convocatoria creada.';
+    const url='https://app.controlyconfianza.cl/carpeta.html?c='+encodeURIComponent(d.codigo);
+    document.getElementById('convocatoriaLinkTxt').value=url;
+    document.getElementById('convocatoriaLinkWrap').style.display='block';
+    document.getElementById('convocatoriaLinkWrap').dataset.nombre=nombre;
+    document.getElementById('cv-nombre').value='';document.getElementById('cv-codigo').value='';
+    document.getElementById('cv-cupos').value='';document.getElementById('cv-cierre').value='';
+    cargarConvocatorias();
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
+function copiarEnlaceConvocatoria(){
+  const txt=document.getElementById('convocatoriaLinkTxt').value;
+  navigator.clipboard.writeText(txt).then(()=>alert('Enlace copiado.')).catch(()=>alert('No se pudo copiar — selecciona y copia a mano.'));
+}
+
+function copiarMensajeConvocatoria(){
+  const url=document.getElementById('convocatoriaLinkTxt').value;
+  const nombre=document.getElementById('convocatoriaLinkWrap').dataset.nombre||'el evento';
+  const msg='Hola, soy de Control y Confianza. Para postular a «'+nombre+'» sube tu carpeta aquí (toma ~3 min, no requiere instalar nada): '+url+'\n\n⚠️ Por tu seguridad, NO envíes fotos de tu cédula por WhatsApp — solo por el enlace.';
+  navigator.clipboard.writeText(msg).then(()=>alert('Mensaje copiado — pégalo en el grupo de WhatsApp.')).catch(()=>alert('No se pudo copiar.'));
+}
+
+async function cargarConvocatorias(){
+  const el=document.getElementById('listaConvocatorias');
+  try{
+    const resp=await fetch(API_URL+'/admin/convocatorias',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok){el.innerHTML='<div class="vacio">No se pudo cargar.</div>';return;}
+    ultimasConvocatorias=d.convocatorias||[];
+    pintarListaConvocatorias();
+  }catch(e){el.innerHTML='<div class="vacio">Sin conexión.</div>';}
+}
+
+function pintarListaConvocatorias(){
+  const el=document.getElementById('listaConvocatorias');
+  if(!ultimasConvocatorias.length){el.innerHTML='<div class="vacio">Sin convocatorias todavía.</div>';return;}
+  el.innerHTML=ultimasConvocatorias.map(c=>
+    '<div class="ev-item" onclick="abrirConvocatoria('+c.id+')"><div class="ev-n"><span>'+esc(c.nombre)+'</span>'+
+    '<span class="pill '+(c.estado==='activa'?'ok':'pend')+'">'+(c.estado==='activa'?'activa':'cerrada')+'</span></div>'+
+    '<div class="ev-s">'+esc(c.codigo)+' · '+c.postulantes+' postulante(s) · '+c.pendientes+' por revisar · '+c.aprobados+' aprobado(s)'+
+    (c.fecha_cierre?' · cierra '+c.fecha_cierre:'')+'</div></div>'
+  ).join('');
+}
+
+function volverListaConvocatorias(){
+  document.getElementById('convocatoriaDetalleWrap').style.display='none';
+  document.getElementById('listaConvocatorias').style.display='block';
+  convocatoriaActualId=null;
+}
+
+async function abrirConvocatoria(id){
+  convocatoriaActualId=id;
+  document.getElementById('listaConvocatorias').style.display='none';
+  document.getElementById('convocatoriaDetalleWrap').style.display='block';
+  document.getElementById('convocatoriaDetalleContent').innerHTML='<div class="vacio">Cargando postulantes…</div>';
+  try{
+    const resp=await fetch(API_URL+'/admin/convocatorias/'+id+'/postulantes',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    const d=await resp.json();
+    if(!resp.ok){document.getElementById('convocatoriaDetalleContent').innerHTML='<div class="vacio">No se pudo cargar.</div>';return;}
+    pintarPostulantes(d.postulantes||[]);
+  }catch(e){document.getElementById('convocatoriaDetalleContent').innerHTML='<div class="vacio">Sin conexión.</div>';}
+}
+
+function pintarPostulantes(lista){
+  const el=document.getElementById('convocatoriaDetalleContent');
+  if(!lista.length){el.innerHTML='<div class="vacio">Nadie ha postulado todavía.</div>';return;}
+  const ESTADO_LABEL={pendiente:'Por revisar',aprobada:'✔ Aprobado',rechazada:'✖ Rechazado'};
+  el.innerHTML=
+    '<button class="btn btn-borde btn-full" onclick="seleccionarVerdesConvocatoria()" style="margin-bottom:8px">Seleccionar todos los 🟢</button>'+
+    '<button class="btn btn-oro btn-full" onclick="aprobarSeleccionadosConvocatoria()" style="margin-bottom:10px">✔ Aprobar seleccionados</button>'+
+    '<div class="msg" id="msgPostulantes"></div>'+
+    lista.map(p=>
+      '<div class="roster-row"><div class="rr-top">'+
+      (p.estado==='pendiente'?'<input type="checkbox" class="cv-post-chk" value="'+p.user_id+'" data-sem="'+p.semaforo+'">':'')+
+      '<div style="flex:1"><div class="rr-n">'+esc(p.nombre)+' '+(SEM_PILL_CV[p.semaforo]||'')+'</div>'+
+      '<div class="rr-meta">'+esc(p.comuna||'')+' · '+ESTADO_LABEL[p.estado]+
+      (p.os10_vencimiento?' · OS10 vence '+p.os10_vencimiento:'')+
+      (p.motivo_rechazo?' · motivo: '+esc(p.motivo_rechazo):'')+'</div></div></div>'+
+      '<div class="rr-acts">'+
+      (p.docs||[]).map(d=>'<button class="btn-sm" onclick="verDocGuardia('+d.id+')">'+(DOC_LABEL_CMD[d.tipo]||d.tipo)+'</button>').join('')+
+      (p.estado==='pendiente'?'<button class="btn-sm btn-sm-danger" onclick="rechazarPostulante('+p.postulacion_id+')">Rechazar</button>':'')+
+      (!p.verif_cedula?'<button class="btn-sm" onclick="verificarCedula('+p.user_id+')">Marcar cédula vigente</button>':'<span class="pill ok">cédula ✔</span>')+
+      (!p.verif_os10?'<button class="btn-sm" onclick="verificarOs10('+p.user_id+')">Marcar OS10 vigente</button>':'<span class="pill ok">OS10 ✔</span>')+
+      '</div></div>'
+    ).join('');
+}
+
+function seleccionarVerdesConvocatoria(){
+  document.querySelectorAll('.cv-post-chk').forEach(c=>{c.checked=(c.dataset.sem==='verde');});
+}
+
+async function aprobarSeleccionadosConvocatoria(){
+  const msg=document.getElementById('msgPostulantes');
+  const ids=Array.from(document.querySelectorAll('.cv-post-chk:checked')).map(c=>Number(c.value));
+  if(!ids.length){msg.className='msg err';msg.textContent='Selecciona al menos un postulante.';return;}
+  try{
+    const resp=await fetch(API_URL+'/admin/convocatorias/'+convocatoriaActualId+'/aprobar-lote',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({user_ids:ids})});
+    const d=await resp.json();
+    if(!resp.ok){msg.className='msg err';msg.textContent=d.error||'No se pudo aprobar.';return;}
+    msg.className='msg ok';msg.textContent=d.aprobados+' postulante(s) aprobado(s).';
+    abrirConvocatoria(convocatoriaActualId);
+    cargarConvocatorias();
+  }catch(e){msg.className='msg err';msg.textContent='Sin conexión.';}
+}
+
+async function rechazarPostulante(postulacionId){
+  const motivo=prompt('¿Por qué se rechaza? (se le puede avisar por WhatsApp)');
+  if(motivo===null)return;
+  try{
+    const resp=await fetch(API_URL+'/admin/convocatorias/postulantes/'+postulacionId+'/rechazar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({motivo})});
+    if(!resp.ok){alert('No se pudo rechazar.');return;}
+    abrirConvocatoria(convocatoriaActualId);
+  }catch(e){alert('Sin conexión.');}
+}
+
+async function verificarCedula(userId){
+  try{
+    const resp=await fetch(API_URL+'/admin/guardias/'+userId+'/verificar-cedula',{method:'POST',headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!resp.ok){alert('No se pudo marcar.');return;}
+    abrirConvocatoria(convocatoriaActualId);
+  }catch(e){alert('Sin conexión.');}
+}
+
+async function verificarOs10(userId){
+  try{
+    const resp=await fetch(API_URL+'/admin/guardias/'+userId+'/verificar-os10',{method:'POST',headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!resp.ok){alert('No se pudo marcar.');return;}
+    abrirConvocatoria(convocatoriaActualId);
+  }catch(e){alert('Sin conexión.');}
 }
 
 // ---------- Configuración de empresa (S3) ----------
@@ -1198,6 +1391,7 @@ async function iniciar(){
     cargarGastos();
     cargarExpedientes();
     cargarEventos();
+    cargarConvocatorias();
     cargarConfigEmpresa();
   }catch(e){
     document.getElementById('error-txt').textContent='Error de conexión con el servidor. Revisa tu internet e intenta de nuevo.';
