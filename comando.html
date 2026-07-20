@@ -976,7 +976,7 @@ function descargarNominaOS10(){
   const filas=dot.map((r,i)=>{
     const vig = r.os10_vencimiento && new Date(r.os10_vencimiento+'T00:00:00')>=hoy;
     const estado = vig ? '<b style="color:#1e7d32">Vigente</b>' : '<b style="color:#c0392b">NO VIGENTE</b>';
-    const verif = r.verif_os10 ? ' ✓' : '';
+    const verif = r.verif_os10_at ? ' ✓' : '';
     return '<tr><td>'+(i+1)+'</td><td>'+esc(r.nombre||'')+'</td><td>'+esc(r.rut||'—')+'</td><td>'+
       (ACRE[r.acreditacion]||'—')+'</td><td>'+(r.os10_vencimiento||'—')+verif+'</td><td>'+estado+'</td></tr>';
   }).join('');
