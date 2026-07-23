@@ -424,11 +424,30 @@ var CPLUS_F=(function(){
   }catch(e){}
   try{ return localStorage.getItem('cplus_fuente')||''; }catch(e){ return ''; }
 })();
+/* Identificador ANÓNIMO de dispositivo (23-07-2026). Antes la telemetría solo
+   permitía contar "aperturas": era imposible saber cuántas PERSONAS distintas
+   usan la app o cuántas vuelven (una persona que abre 5 veces contaba como 5).
+   Privacidad — esto NO es dato personal bajo la Ley 21.719: es un número
+   ALEATORIO generado en el navegador, no se deriva del equipo, del teléfono ni
+   de la IP, no se cruza con la cuenta ni el correo del usuario, y desaparece si
+   el usuario limpia su navegador. Sirve solo para contar y no identifica a nadie. */
+var CPLUS_VIS=(function(){
+  try{
+    var v=localStorage.getItem('cplus_vis');
+    if(!v){
+      v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID()
+        :'v-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+      localStorage.setItem('cplus_vis',v);
+    }
+    return v;
+  }catch(e){ return null; }  // navegador sin localStorage: se mide igual, sin visitante
+})();
 function cycTelemetria(herramienta,accion,ok,detalle){
   try{
     fetch(API_URL+'/telemetria',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({herramienta:herramienta,accion:accion,ok:ok!==false,
-        detalle:detalle?String(detalle).slice(0,300):undefined,fuente:CPLUS_F||undefined})}).catch(function(){});
+        detalle:detalle?String(detalle).slice(0,300):undefined,fuente:CPLUS_F||undefined,
+        visitante:CPLUS_VIS||undefined})}).catch(function(){});
   }catch(e){}
 }
 cycTelemetria('guardias','carga_pagina',true);

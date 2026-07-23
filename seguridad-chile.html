@@ -1865,12 +1865,27 @@ document.getElementById('ctlModal').addEventListener('click',function(e){if(e.ta
 <script>
 // Telemetría técnica anónima: solo herramienta/acción/éxito, nunca datos personales
 var CYC_API = (typeof API_URL !== 'undefined') ? API_URL : 'https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+/* Identificador ANÓNIMO de dispositivo (23-07-2026) — mismo criterio que Control+.
+   Permite contar personas distintas y recurrencia, no solo aperturas. NO es dato
+   personal: número aleatorio del navegador, sin relación con el equipo, la IP ni
+   la cuenta del usuario, y se borra al limpiar el navegador. */
+var CYC_VIS=(function(){
+  try{
+    var v=localStorage.getItem('cyc_vis');
+    if(!v){
+      v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID()
+        :'v-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+      localStorage.setItem('cyc_vis',v);
+    }
+    return v;
+  }catch(e){ return null; }
+})();
 function cycTelemetria(herramienta, accion, ok, detalle){
   try{
     fetch(CYC_API + '/telemetria', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({herramienta: herramienta, accion: accion, ok: ok !== false, detalle: detalle ? String(detalle).slice(0,300) : undefined})
+      body: JSON.stringify({herramienta: herramienta, accion: accion, ok: ok !== false, detalle: detalle ? String(detalle).slice(0,300) : undefined, visitante: CYC_VIS || undefined})
     }).catch(function(){});
   }catch(e){}
 }
