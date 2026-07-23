@@ -195,6 +195,53 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .premium,.eco{display:none}
 body.extras-listas .premium,body.extras-listas .eco{display:block}
 
+/* ── Atajo flotante a Premium (23-07-2026) ────────────────────────────────
+   Por qué existe: el teaser Premium vive al 91% del fondo de la página (12.051px
+   = ~15 pantallas, tras 28 ofertas) y no había ningún otro acceso — las 9 pestañas
+   ya desbordan el ancho del teléfono (575px de contenido en 375px), así que una
+   décima pestaña nacería fuera de pantalla. Medición 22-07: 144 visitas → 2 inscritos.
+   Respeta "las ofertas mandan": NO aparece al cargar, sino recién tras ~2 pantallas
+   de scroll (la persona ya demostró interés en trabajo). Se oculta al bajar para no
+   tapar el botón "Contactar por WhatsApp" de cada oferta, y vuelve al detenerse. */
+#fabPrem{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:900;
+  display:none;align-items:center;gap:8px;background:linear-gradient(135deg,#d4a017,#b8860b);color:#111;
+  border:none;border-radius:99px;padding:12px 16px;font-size:13.5px;font-weight:800;font-family:inherit;
+  cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.55),0 0 0 3px rgba(212,160,23,.15);
+  transition:transform .25s ease,opacity .25s ease}
+#fabPrem.activo{display:flex}
+#fabPrem.oculto{transform:translateY(90px);opacity:0;pointer-events:none}
+#fabPrem .fab-x{opacity:.5;font-weight:900;font-size:16px;line-height:1;padding:2px 3px;margin-left:1px}
+#modPrem{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.75);display:none;
+  align-items:center;justify-content:center;padding:14px}
+#modPrem.abierto{display:flex}
+#modPrem .mp-caja{background:#141414;border:1px solid #3a2f14;border-radius:16px;max-width:340px;width:100%;
+  padding:18px 16px;box-shadow:0 20px 60px rgba(0,0,0,.7);max-height:92vh;overflow-y:auto}
+#modPrem .mp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+#modPrem .mp-kicker{font-size:10.5px;font-weight:800;color:#d4a017;letter-spacing:.5px}
+#modPrem .mp-cerrar{background:none;border:none;color:#777;font-size:20px;font-weight:900;line-height:1;
+  cursor:pointer;padding:0 2px}
+#modPrem h3{margin:6px 0 5px;font-size:18px;color:#f0f0f0;line-height:1.25;font-weight:800}
+#modPrem .mp-sub{margin:0 0 12px;font-size:13px;color:#aaa;line-height:1.5}
+#modPrem .mp-sub b{color:#e8e8e8}
+#modPrem .mp-lbl{font-size:10.5px;color:#777;font-weight:800;letter-spacing:.4px;margin-bottom:7px}
+#modPrem .mp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:13px}
+#modPrem .mp-t{border-radius:8px;padding:7px 8px;font-size:11px;font-weight:700;
+  background:rgba(212,160,23,.10);border:1px solid rgba(212,160,23,.32);color:#e0c078}
+#modPrem .mp-t.alt{background:rgba(90,120,160,.12);border-color:rgba(90,120,160,.38);color:#9fb8d4}
+#modPrem .mp-gratis{background:#0d0d0d;border:1px solid #262626;border-radius:9px;padding:9px 11px;margin-bottom:12px}
+#modPrem .mp-gratis .g1{font-size:11.5px;color:#8fce8f;font-weight:700}
+#modPrem .mp-gratis .g2{font-size:11px;color:#888;margin-top:2px}
+#modPrem input{width:100%;box-sizing:border-box;padding:11px;border-radius:9px;border:1px solid #333;
+  background:#0d0d0d;color:#fff;font-size:14px;margin-bottom:8px}
+#modPrem .mp-cta{width:100%;padding:13px;border:none;border-radius:9px;
+  background:linear-gradient(135deg,#d4a017,#b8860b);color:#111;font-size:15px;font-weight:800;cursor:pointer}
+#modPrem .mp-msg{font-size:12.5px;margin-top:9px;text-align:center;min-height:16px}
+#modPrem .mp-msg.ok{color:#8fce8f} #modPrem .mp-msg.err{color:#e08a8a}
+#modPrem .mp-legal{margin:9px 0 0;font-size:10.5px;color:#666;text-align:center;line-height:1.5}
+#modPrem .mp-legal a{color:#8a7a45}
+#modPrem .mp-vertodo{display:block;width:100%;background:none;border:none;color:#8a7a45;font-size:11.5px;
+  margin-top:8px;cursor:pointer;text-decoration:underline;font-family:inherit}
+
 /* Mi Carpeta (S1 dotación de eventos) */
 .doc-row{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-bottom:10px}
 .doc-row .dr-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -257,10 +304,10 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
         <span class="p-precio">$2.500<small> /mes</small></span>
       </div>
       <h3>Control+ Premium</h3>
-      <p class="p-sub">Estamos construyendo 8 herramientas para el gremio. Inscríbete y sé de los primeros — los inscritos entran con precio preferente.</p>
+      <p class="p-sub">Herramientas para defender tu trabajo y tu plata. <b>La bolsa de trabajo y los avisos de ofertas siguen gratis para todos.</b> Inscríbete y sé de los primeros — los inscritos entran con precio preferente.</p>
       <div class="p-grid">
-        <div class="p-tool"><div class="t">⚡ Bolsa Premium</div><p>Te avisamos primero de cada oferta nueva y tu perfil destaca ante el reclutador.</p></div>
         <div class="p-tool"><div class="t">🤖 Asistente Gremial IA</div><p>Consultas ilimitadas sobre tus leyes, dictámenes y procedimientos.</p></div>
+        <div class="p-tool"><div class="t">⭐ Perfil destacado + alertas a tu medida</div><p>Tu perfil aparece resaltado ante el reclutador, y eliges qué ofertas te llegan: tu comuna, tu tipo de turno, tu renta mínima.</p></div>
         <div class="p-tool"><div class="t">🧾 Verificador de Liquidación</div><p>Detecta recargos mal pagados y descuentos ilegales en tu liquidación.</p></div>
         <div class="p-tool"><div class="t">📁 Carpeta Documental</div><p>Contratos, finiquitos y certificados respaldados y exportables.</p></div>
         <div class="p-tool"><div class="t">🔒 Bitácora Blindada</div><p>Registro personal de incidentes, inalterable y con export PDF.</p></div>
@@ -327,6 +374,40 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   </div>
   <p class="e-firma">Control+ es de <strong>Control y Confianza</strong> — seguridad privada acreditada OS.10 · <a href="verificacion.html?de=controlmas" target="_blank" rel="noopener">Verificación</a> · <a href="terminos.html" target="_blank" rel="noopener">Términos y Privacidad</a></p>
 </footer>
+
+<!-- Atajo flotante a Premium + su ventana (ver comentario en el CSS #fabPrem) -->
+<button id="fabPrem" aria-label="Revisa si te están pagando bien">
+  <span>🧾 ¿Te están pagando bien?</span><span class="fab-x" role="button" aria-label="Cerrar">×</span>
+</button>
+<div id="modPrem" role="dialog" aria-modal="true" aria-labelledby="mpTitulo">
+  <div class="mp-caja">
+    <div class="mp-top">
+      <div class="mp-kicker">PRÓXIMAMENTE</div>
+      <button class="mp-cerrar" id="mpCerrar" aria-label="Cerrar">×</button>
+    </div>
+    <h3 id="mpTitulo">¿Seguro que te pagan<br>lo que corresponde?</h3>
+    <p class="mp-sub">Estamos construyendo un <b>verificador de liquidación</b>: le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p>
+    <div class="mp-lbl">Y 7 HERRAMIENTAS MÁS</div>
+    <div class="mp-grid">
+      <div class="mp-t">🤖 Asistente Gremial IA</div>
+      <div class="mp-t alt">⭐ Perfil destacado</div>
+      <div class="mp-t">📁 Carpeta documental</div>
+      <div class="mp-t alt">🔒 Bitácora blindada</div>
+      <div class="mp-t">📅 Turnos + Familia</div>
+      <div class="mp-t alt">🚑 Después del incidente</div>
+      <div class="mp-t">🎓 Mi Carrera</div>
+    </div>
+    <div class="mp-gratis">
+      <div class="g1">✅ La bolsa de trabajo sigue gratis</div>
+      <div class="g2">Los avisos de ofertas son gratis para todos, siempre. Esto es aparte: herramientas para defender tu trabajo ($2.500/mes cuando esté listo).</div>
+    </div>
+    <input id="mpEmail" type="email" placeholder="tucorreo@ejemplo.cl" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false">
+    <button class="mp-cta" id="mpEnviar">Avísenme cuando esté listo</button>
+    <div class="mp-msg" id="mpMsg"></div>
+    <button class="mp-vertodo" id="mpVerTodo">Ver el detalle de cada herramienta</button>
+    <p class="mp-legal">Solo usaremos tu correo para avisarte de Control+ Premium. <a href="terminos.html" target="_blank" rel="noopener">Términos y Privacidad</a>.</p>
+  </div>
+</div>
 
 <script src="config.js"></script>
 <script src="cuadrante.js"></script>
@@ -1553,6 +1634,111 @@ async function inscribirPremium(){
     else{ msg.textContent=data.error||'No se pudo inscribir. Intenta de nuevo.'; msg.className='p-msg err'; }
   }catch(e){ msg.textContent='Error de conexión. Intenta de nuevo.'; msg.className='p-msg err'; }
 }
+
+/* ── Atajo flotante a Premium (23-07-2026) ──────────────────────────────────
+   Diagnóstico que lo motivó: el teaser Premium quedaba al 91% del fondo (≈15
+   pantallas de scroll) y era el ÚNICO acceso → 144 visitas produjeron 2 inscritos.
+   No se podía saber si la gente lo veía y no convencía, o si nunca lo veía: no
+   había telemetría. Por eso este bloque agrega el atajo Y su medición.
+   Reglas de aparición (acordadas con Carlos): NO al cargar —"las ofertas mandan"—
+   sino tras ~2 pantallas de scroll; se oculta al bajar para no tapar el botón
+   "Contactar por WhatsApp"; si el usuario lo cierra con la ×, no vuelve a salir. */
+(function(){
+  var fab=document.getElementById('fabPrem'), mod=document.getElementById('modPrem');
+  if(!fab||!mod) return;
+  var CERRADO='cplus_fab_cerrado';
+  try{ if(localStorage.getItem(CERRADO)==='1') return; }catch(e){}
+
+  /* Umbral adaptativo. Al principio era fijo (2 pantallas), pero se detectó en
+     pruebas que si hay pocas ofertas —o ninguna— la página no alcanza esa altura
+     y el botón NO aparecía nunca... justo cuando el mensaje "te avisamos cuando
+     salga un turno" es más pertinente. Ahora se toma lo que ocurra primero:
+     2 pantallas, o la mitad del recorrido disponible. Si la página no scrollea
+     (sin ofertas), aparece por tiempo a los 6 s. */
+  function umbral(){
+    var maxScroll=Math.max(0,document.body.scrollHeight-window.innerHeight);
+    if(maxScroll<200) return -1;               // página sin scroll útil
+    return Math.min(2*window.innerHeight, Math.max(280, maxScroll*0.5));
+  }
+  var activado=false, medidoVisible=false, ultY=window.scrollY, t=null;
+
+  function activar(){
+    if(activado) return;
+    activado=true;
+    fab.classList.add('activo');
+    if(!medidoVisible){ medidoVisible=true; cycTelemetria('guardias','premium_fab_visible',true); }
+  }
+  /* Revisión periódica además del scroll. Necesaria porque las ofertas cargan de
+     forma asíncrona: si el usuario desplaza mientras la página todavía es corta,
+     el umbral se evalúa contra una altura que aún no es la definitiva y, si luego
+     no vuelve a desplazar, no llega ningún evento nuevo que reactive el cálculo.
+     También cubre el caso sin ofertas (página sin scroll): a los 6 s aparece igual. */
+  var nacio=Date.now();
+  var reloj=setInterval(function(){
+    if(activado){ clearInterval(reloj); return; }
+    var u=umbral();
+    if(u===-1){ if(Date.now()-nacio>6000){ activar(); clearInterval(reloj); } return; }
+    if(window.scrollY>=u){ activar(); clearInterval(reloj); }
+  },1200);
+
+  window.addEventListener('scroll',function(){
+    var y=window.scrollY;
+    if(!activado){ var u=umbral(); if(u>=0 && y>=u) activar(); ultY=y; return; }
+    if(y>ultY+6) fab.classList.add('oculto');
+    else if(y<ultY-6) fab.classList.remove('oculto');
+    ultY=y;
+    clearTimeout(t); t=setTimeout(function(){ fab.classList.remove('oculto'); },450);
+  },{passive:true});
+
+  fab.addEventListener('click',function(ev){
+    if(ev.target.classList.contains('fab-x')){
+      fab.classList.remove('activo');
+      try{ localStorage.setItem(CERRADO,'1'); }catch(e){}
+      cycTelemetria('guardias','premium_fab_cerrado',true);
+      return;
+    }
+    mod.classList.add('abierto');
+    cycTelemetria('guardias','premium_modal_abierto',true);
+  });
+
+  function cerrar(){ mod.classList.remove('abierto'); }
+  document.getElementById('mpCerrar').addEventListener('click',cerrar);
+  mod.addEventListener('click',function(e){ if(e.target===mod) cerrar(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') cerrar(); });
+
+  // "Ver el detalle" lleva al teaser completo (que sigue existiendo abajo)
+  document.getElementById('mpVerTodo').addEventListener('click',function(){
+    cerrar();
+    cycTelemetria('guardias','premium_ver_detalle',true);
+    var teaser=document.querySelector('.premium');
+    if(teaser) teaser.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  // Inscripción — mismo endpoint y misma convención de fuente que inscribirPremium()
+  document.getElementById('mpEnviar').addEventListener('click',async function(){
+    var msg=document.getElementById('mpMsg'), campo=document.getElementById('mpEmail');
+    var email=(campo.value||'').trim().toLowerCase();
+    if(!email||email.indexOf('@')<1){ msg.textContent='Escribe un email válido.'; msg.className='mp-msg err'; return; }
+    msg.textContent='Enviando…'; msg.className='mp-msg';
+    try{
+      var res=await fetch(API_URL+'/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({email:email,fuente:'cplus-'+(CPLUS_F||'app')})});
+      var data=await res.json();
+      if(res.ok){
+        msg.textContent=data.mensaje||'¡Listo! Te avisaremos primero.';
+        msg.className='mp-msg ok'; campo.value='';
+        cycTelemetria('guardias','premium_inscrito',true);
+        setTimeout(function(){ cerrar(); fab.classList.remove('activo'); },1800);
+      } else {
+        msg.textContent=data.error||'No se pudo inscribir. Intenta de nuevo.'; msg.className='mp-msg err';
+        cycTelemetria('guardias','premium_inscrito',false,data.error||'error');
+      }
+    }catch(e){
+      msg.textContent='Error de conexión. Intenta de nuevo.'; msg.className='mp-msg err';
+      cycTelemetria('guardias','premium_inscrito',false,'red');
+    }
+  });
+})();
 
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
