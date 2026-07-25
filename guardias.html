@@ -295,6 +295,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
 
   <!-- OFERTAS -->
   <section class="view" id="view-ofertas">
+    <div id="filtroComunaWrap" style="margin-bottom:14px"></div>
     <div id="ofertasList" class="spinner">Cargando ofertas…</div>
 
     <!-- Próximamente: Control+ Premium (validación de demanda) -->
@@ -468,6 +469,7 @@ var CYC_EMAIL=null;
 var CYC_PERFIL=null; // null=sin cargar aún, false=no tiene perfil, {..}=tiene perfil
 var CYC_OFERTAS=[];
 var CYC_IS_ADMIN=false;
+var CYC_FILTRO_COMUNA=localStorage.getItem('cyc_filtro_comuna')||'';
 
 function fmtCLP(n){ if(n==null) return 'A convenir'; return '$'+Number(n).toLocaleString('es-CL'); }
 function fmtFecha(f){
@@ -513,6 +515,22 @@ var NOMBRE_SECTOR={norte:'Norte',centro:'Centro',oriente:'Oriente',poniente:'Pon
 function sectorDeComuna(comunaTexto){
   var n=normalizarTexto(comunaTexto);
   return SECTOR_POR_COMUNA[n]||'otras';
+}
+function pintarFiltroComuna(){
+  var el=document.getElementById('filtroComunaWrap');
+  if(!el) return;
+  if(!CYC_FILTRO_COMUNA && CYC_PERFIL && CYC_PERFIL.comuna) CYC_FILTRO_COMUNA=CYC_PERFIL.comuna;
+  var comunas=comunasOrdenadas();
+  var opciones='<option value="">Todas las comunas</option>'+
+    comunas.map(function(n){return '<option value="'+esc(n)+'"'+(n===CYC_FILTRO_COMUNA?' selected':'')+'>'+esc(n)+'</option>';}).join('');
+  el.innerHTML='<label for="fComuna" style="display:block;margin-bottom:6px;font-size:14px;color:#a89454">¿Dónde buscas trabajo?</label>'+
+    '<select id="fComuna" onchange="cambiarFiltroComuna(this.value)">'+opciones+'</select>';
+}
+function cambiarFiltroComuna(v){
+  CYC_FILTRO_COMUNA=v;
+  localStorage.setItem('cyc_filtro_comuna',v);
+  localStorage.removeItem('cyc_ofertas_visibles'); // nuevo filtro = nueva lista, sin restaurar posicion vieja
+  pintarOfertas();
 }
 
 /* ---------- Sesión ---------- */
@@ -593,12 +611,39 @@ function renderOfertas(){
 setTimeout(function(){ document.body.classList.add('extras-listas'); },3000);
 function pintarOfertas(){
   var el=document.getElementById('ofertasList');
+  pintarFiltroComuna();
   if(!CYC_OFERTAS.length){
     el.innerHTML='<div class="empty">🗓️<br><br>No hay ofertas abiertas por ahora.<br>Vuelve pronto — publicamos nuevas apenas hay turnos disponibles.</div>';
     return;
   }
-  var html='';
+  var lista=ofertasFiltradas();
+  var avisoDegradacion='';
+  if(CYC_FILTRO_COMUNA && !lista.length){
+    // Degradacion elegante: nunca un callejon sin salida.
+    avisoDegradacion='<div class="empty" style="margin-bottom:14px">No hay ofertas en tu zona por ahora — hay '+CYC_OFERTAS.length+' en el resto de la RM.<br>'+
+      '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroComuna(\'\')">Ver todas</button></div>';
+    lista=CYC_OFERTAS;
+  }
+  html_pintarOfertasLista(el, lista, avisoDegradacion);
+}
+function ofertasFiltradas(){
+  if(!CYC_FILTRO_COMUNA) return CYC_OFERTAS;
+  var sectorObjetivo=sectorDeComuna(CYC_FILTRO_COMUNA);
+  var comunaNorm=normalizarTexto(CYC_FILTRO_COMUNA);
+  var mismaComuna=[], mismoSector=[];
   CYC_OFERTAS.forEach(function(o){
+    if(normalizarTexto(o.comuna)===comunaNorm) mismaComuna.push(o);
+    else if(sectorDeComuna(o.comuna)===sectorObjetivo) mismoSector.push(o);
+  });
+  return mismaComuna.concat(mismoSector);
+}
+function html_pintarOfertasLista(el, lista, prefijoHtml){
+  var html=prefijoHtml||'';
+  if(!lista.length && !prefijoHtml){
+    el.innerHTML='<div class="empty">No hay ofertas que mostrar.</div>';
+    return;
+  }
+  lista.forEach(function(o){
     var yaPostulado = CYC_PERFIL_POSTULADAS && CYC_PERFIL_POSTULADAS.indexOf(o.id)>=0;
     var esEmpleo = o.tipo==='empleo';
     var esComunidad = o.origen==='comunidad';
@@ -618,6 +663,10 @@ function pintarOfertas(){
       meta+='<span class="chip">📅 '+fmtFecha(o.fecha_inicio)+(o.fecha_fin?' → '+fmtFecha(o.fecha_fin):'')+'</span>';
     }
     meta+='<span class="chip">👥 '+o.cupos+' cupo'+(o.cupos==1?'':'s')+'</span>';
+    // Bloque C1: chips de requiere_os10 y especialidad (solo si estan seteados).
+    if(o.requiere_os10===1) meta+='<span class="chip">🪪 Requiere OS-10</span>';
+    else if(o.requiere_os10===0) meta+='<span class="chip">🪪 Sin OS-10 (¡oportunidad!)</span>';
+    if(o.especialidad) meta+='<span class="chip">🏷️ '+esc(NOMBRE_ESPECIALIDAD[o.especialidad]||o.especialidad)+'</span>';
     // Cap. 13: en ofertas de la comunidad el guardia contacta ÉL al reclutador — jamás entregamos sus datos.
     var accion = esComunidad
       ? '<a class="btn-postular btn-contactar" href="'+esc(waLink(o.contacto_whatsapp||''))+'" target="_blank" rel="noopener noreferrer">💬 Contactar por WhatsApp</a>'
@@ -636,6 +685,7 @@ function pintarOfertas(){
   });
   el.innerHTML=html;
 }
+var NOMBRE_ESPECIALIDAD={'cctv-monitoreo':'CCTV/Monitoreo','eventos':'Eventos','retail':'Retail','industrial':'Industrial','condominio':'Condominio','escolta-vip':'Escolta VIP','porteria':'Portería','mineria':'Minería','otro':'Otra especialidad'};
 
 async function reportarOferta(id){
   var motivo=prompt('¿Qué tiene de malo esta oferta? (ej: ya se llenó, datos falsos, sospechosa)');
