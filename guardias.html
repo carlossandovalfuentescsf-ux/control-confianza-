@@ -549,9 +549,10 @@ function pintarFiltroComuna(){
   var opcionesEsp='<option value="">Todas las especialidades</option>'+
     Object.keys(NOMBRE_ESPECIALIDAD).filter(function(k){return conteoEsp[k]||k===CYC_FILTRO_ESP;})
       .map(function(k){return '<option value="'+k+'"'+(k===CYC_FILTRO_ESP?' selected':'')+'>'+esc(NOMBRE_ESPECIALIDAD[k])+' ('+(conteoEsp[k]||0)+')</option>';}).join('');
-  el.innerHTML='<label for="fComuna" style="display:block;margin-bottom:6px;font-size:14px;color:#a89454">¿Dónde buscas trabajo?</label>'+
+  el.innerHTML='<label for="fComuna" style="display:block;margin-bottom:4px;font-size:14px;color:#a89454">¿Dónde buscas trabajo?</label>'+
     '<select id="fComuna" onchange="cambiarFiltroComuna(this.value)">'+opciones+'</select>'+
-    '<label for="fEsp" style="display:block;margin:10px 0 6px;font-size:14px;color:#a89454">¿Qué tipo de trabajo?</label>'+
+    '<p style="font-size:12px;color:#8a8a80;margin:6px 0 12px;line-height:1.4">Mostramos primero tu comuna, y las cercanas si hay pocas.</p>'+
+    '<label for="fEsp" style="display:block;margin-bottom:6px;font-size:14px;color:#a89454">¿Qué tipo de trabajo?</label>'+
     '<select id="fEsp" onchange="cambiarFiltroEsp(this.value)">'+opcionesEsp+'</select>';
 }
 function cambiarFiltroEsp(v){
@@ -688,7 +689,11 @@ function pintarOfertas(){
   if(restantes>0){
     sufijoHtml='<button class="btn-guardar" style="margin-top:14px" onclick="verMasOfertas()">Ver más ofertas (quedan '+restantes+')</button>';
   }
-  html_pintarOfertasLista(el, lista, avisoDegradacion, sufijoHtml);
+  // Encabezados "En [comuna] / Cerca de ti" (mejora tras confusión real de Carlos:
+  // ver "Estación Central" pero salir Ñuñoa parecía un error sin este corte visual).
+  // Solo con filtro de comuna activo y SIN degradación (la degradación ya trae su propio aviso).
+  var encabezados = (CYC_FILTRO_COMUNA && !avisoDegradacion) ? {comuna:CYC_FILTRO_COMUNA, sector:NOMBRE_SECTOR[sectorDeComuna(CYC_FILTRO_COMUNA)]} : null;
+  html_pintarOfertasLista(el, lista, avisoDegradacion, sufijoHtml, encabezados);
 }
 function verMasOfertas(){
   CYC_OFERTAS_VISIBLES+=8;
@@ -706,13 +711,31 @@ function ofertasFiltradas(){
   });
   return mismaComuna.concat(mismoSector);
 }
-function html_pintarOfertasLista(el, lista, prefijoHtml, sufijoHtml){
+function html_pintarOfertasLista(el, lista, prefijoHtml, sufijoHtml, encabezados){
   var html=prefijoHtml||'';
   if(!lista.length && !prefijoHtml){
     el.innerHTML='<div class="empty">No hay ofertas que mostrar.</div>';
     return;
   }
+  var comunaNorm = encabezados ? normalizarTexto(encabezados.comuna) : null;
+  var grupoAnterior = null, huboComuna = false;
   lista.forEach(function(o){
+    if(encabezados){
+      var esComunaExacta = normalizarTexto(o.comuna)===comunaNorm;
+      var grupoActual = esComunaExacta ? 'comuna' : 'sector';
+      if(grupoActual!==grupoAnterior){
+        if(grupoActual==='comuna'){
+          html+='<div style="font-size:12px;font-weight:500;color:#d4a017;margin:14px 0 8px;display:flex;align-items:center;gap:6px">📍 En '+esc(encabezados.comuna)+'</div>';
+          huboComuna=true;
+        }else{
+          var texto = huboComuna
+            ? 'Cerca de ti (sector '+esc(encabezados.sector)+')'
+            : 'No hay ofertas exactas en '+esc(encabezados.comuna)+' — cerca de ti (sector '+esc(encabezados.sector)+')';
+          html+='<div style="font-size:12px;font-weight:500;color:#a89454;margin:14px 0 8px;display:flex;align-items:center;gap:6px">📍 '+texto+'</div>';
+        }
+        grupoAnterior=grupoActual;
+      }
+    }
     var yaPostulado = CYC_PERFIL_POSTULADAS && CYC_PERFIL_POSTULADAS.indexOf(o.id)>=0;
     var esEmpleo = o.tipo==='empleo';
     var esComunidad = o.origen==='comunidad';
