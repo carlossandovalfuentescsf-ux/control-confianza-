@@ -517,13 +517,29 @@ function sectorDeComuna(comunaTexto){
   var n=normalizarTexto(comunaTexto);
   return SECTOR_POR_COMUNA[n]||'otras';
 }
+// Tarea 12 (24-07-2026): agrupar el selector de comunas por región — la lista plana
+// de 105 comunas mezclaba RM con ciudades de todo Chile en orden alfabético puro.
+// V Región aparte porque hay público cautivo real (evento de Limache) — no meterlo
+// en "Otras regiones" desaprovecharía esa audiencia.
+var COMUNAS_VALPARAISO=['valparaiso','vina del mar','concon','quilpue','quillota','san antonio','limache','villa alemana','olmue','casablanca'];
+function regionDeComuna(comunaTexto){
+  var n=normalizarTexto(comunaTexto);
+  if(SECTOR_POR_COMUNA[n]) return 'rm';
+  if(COMUNAS_VALPARAISO.indexOf(n)>=0) return 'valparaiso';
+  return 'otras';
+}
 function pintarFiltroComuna(){
   var el=document.getElementById('filtroComunaWrap');
   if(!el) return;
   if(!CYC_FILTRO_COMUNA && CYC_PERFIL && CYC_PERFIL.comuna) CYC_FILTRO_COMUNA=CYC_PERFIL.comuna;
   var comunas=comunasOrdenadas();
+  var grupos={rm:[],valparaiso:[],otras:[]};
+  comunas.forEach(function(n){ grupos[regionDeComuna(n)].push(n); });
+  function opt(n){ return '<option value="'+esc(n)+'"'+(n===CYC_FILTRO_COMUNA?' selected':'')+'>'+esc(n)+'</option>'; }
   var opciones='<option value="">Todas las comunas</option>'+
-    comunas.map(function(n){return '<option value="'+esc(n)+'"'+(n===CYC_FILTRO_COMUNA?' selected':'')+'>'+esc(n)+'</option>';}).join('');
+    '<optgroup label="Región Metropolitana">'+grupos.rm.map(opt).join('')+'</optgroup>'+
+    (grupos.valparaiso.length?'<optgroup label="Región de Valparaíso">'+grupos.valparaiso.map(opt).join('')+'</optgroup>':'')+
+    '<optgroup label="Otras regiones">'+grupos.otras.map(opt).join('')+'</optgroup>';
   el.innerHTML='<label for="fComuna" style="display:block;margin-bottom:6px;font-size:14px;color:#a89454">¿Dónde buscas trabajo?</label>'+
     '<select id="fComuna" onchange="cambiarFiltroComuna(this.value)">'+opciones+'</select>';
 }
