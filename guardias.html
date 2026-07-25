@@ -480,6 +480,40 @@ function comunasOrdenadas(){
   if(typeof CYC_COMUNAS==='undefined') return [];
   return Object.keys(CYC_COMUNAS).map(function(k){return CYC_COMUNAS[k];}).sort(function(a,b){return a.localeCompare(b);});
 }
+// Bloque A (bolsa SEEK vuelta 1, 24-07-2026): sector interno — el guardia elige
+// SU comuna, el sector es solo agrupador invisible para él. Normaliza tildes
+// porque el extractor IA guarda comunas CON tilde ("Estación Central") mientras
+// CYC_COMUNAS las tiene SIN tilde ("Estacion Central") — verificado por Fable 24-07.
+function normalizarTexto(s){
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+}
+// Agrupación geográfica de las 52 comunas de la RM — constante editable, no oficial.
+var SECTOR_POR_COMUNA={
+  // Norte
+  'independencia':'norte','recoleta':'norte','conchali':'norte','huechuraba':'norte',
+  'quilicura':'norte','renca':'norte','colina':'norte','lampa':'norte','til til':'norte',
+  // Centro
+  'santiago':'centro','santiago centro':'centro','providencia':'centro','nunoa':'centro',
+  'estacion central':'centro','quinta normal':'centro',
+  // Oriente
+  'las condes':'oriente','vitacura':'oriente','lo barnechea':'oriente','la reina':'oriente',
+  'penalolen':'oriente','macul':'oriente',
+  // Poniente
+  'pudahuel':'poniente','cerro navia':'poniente','lo prado':'poniente','maipu':'poniente',
+  'cerrillos':'poniente','padre hurtado':'poniente','el monte':'poniente','isla de maipo':'poniente',
+  'penaflor':'poniente','talagante':'poniente','curacavi':'poniente','maria pinto':'poniente',
+  'melipilla':'poniente','alhue':'poniente','san pedro':'poniente',
+  // Sur
+  'la florida':'sur','puente alto':'sur','la pintana':'sur','san ramon':'sur','la granja':'sur',
+  'la cisterna':'sur','san miguel':'sur','pedro aguirre cerda':'sur','lo espejo':'sur',
+  'el bosque':'sur','san joaquin':'sur','san bernardo':'sur','buin':'sur','paine':'sur',
+  'calera de tango':'sur','pirque':'sur','san jose de maipo':'sur'
+};
+var NOMBRE_SECTOR={norte:'Norte',centro:'Centro',oriente:'Oriente',poniente:'Poniente',sur:'Sur',otras:'Otras regiones'};
+function sectorDeComuna(comunaTexto){
+  var n=normalizarTexto(comunaTexto);
+  return SECTOR_POR_COMUNA[n]||'otras';
+}
 
 /* ---------- Sesión ---------- */
 async function cycCargarSesion(){
