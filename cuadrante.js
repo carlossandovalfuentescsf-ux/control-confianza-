@@ -109,7 +109,26 @@ coihaique:"Coyhaique",
 aysen_c:"Aysen",
 punta_arenas:"Punta Arenas",
 puerto_natales:"Puerto Natales",
-la_serena:"La Serena"
+la_serena:"La Serena",
+cerrillos:"Cerrillos",
+independencia:"Independencia",
+penalolen:"Penalolen",
+quinta_normal:"Quinta Normal",
+san_joaquin:"San Joaquin",
+pirque:"Pirque",
+san_jose_de_maipo:"San Jose de Maipo",
+til_til:"Til Til",
+buin:"Buin",
+calera_de_tango:"Calera de Tango",
+paine:"Paine",
+alhue:"Alhue",
+curacavi:"Curacavi",
+maria_pinto:"Maria Pinto",
+san_pedro:"San Pedro",
+el_monte:"El Monte",
+isla_de_maipo:"Isla de Maipo",
+padre_hurtado:"Padre Hurtado",
+penaflor:"Penaflor"
 };
 
 // Resumen de riesgo por comuna (nivel c/a/m/b, iluminación 0-100, franjas horarias de mayor riesgo)
