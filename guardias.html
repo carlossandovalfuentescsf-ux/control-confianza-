@@ -565,7 +565,7 @@ function pintarFiltroComuna(){
       .map(function(k){return '<option value="'+k+'"'+(k===CYC_FILTRO_ESP?' selected':'')+'>'+esc(NOMBRE_ESPECIALIDAD[k])+' ('+(conteoEsp[k]||0)+')</option>';}).join('');
   el.innerHTML='<label for="fComuna" style="display:block;margin-bottom:4px;font-size:14px;color:#a89454">¿Dónde buscas trabajo?</label>'+
     '<select id="fComuna" onchange="cambiarFiltroComuna(this.value)">'+opciones+'</select>'+
-    '<p style="font-size:12px;color:#8a8a80;margin:6px 0 12px;line-height:1.4">Mostramos primero tu comuna, y las cercanas si hay pocas.</p>'+
+    '<p style="font-size:12px;color:#8a8a80;margin:6px 0 12px;line-height:1.4">Ordenamos primero tu comuna, después tu sector, y más abajo el resto. Ninguna oferta se esconde.</p>'+
     '<label for="fEsp" style="display:block;margin-bottom:6px;font-size:14px;color:#a89454">¿Qué tipo de trabajo?</label>'+
     '<select id="fEsp" onchange="cambiarFiltroEsp(this.value)">'+opcionesEsp+'</select>';
 }
@@ -754,7 +754,7 @@ function pintarOfertas(){
   // Encabezados "En [comuna] / Cerca de ti" (mejora tras confusión real de Carlos:
   // ver "Estación Central" pero salir Ñuñoa parecía un error sin este corte visual).
   // Solo con filtro de comuna activo y SIN degradación (la degradación ya trae su propio aviso).
-  var encabezados = (CYC_FILTRO_COMUNA && !avisoDegradacion) ? {comuna:CYC_FILTRO_COMUNA, sector:NOMBRE_SECTOR[sectorDeComuna(CYC_FILTRO_COMUNA)]} : null;
+  var encabezados = (CYC_FILTRO_COMUNA && !avisoDegradacion) ? {comuna:CYC_FILTRO_COMUNA, sectorKey:sectorDeComuna(CYC_FILTRO_COMUNA), sector:NOMBRE_SECTOR[sectorDeComuna(CYC_FILTRO_COMUNA)]} : null;
   html_pintarOfertasLista(el, lista, avisoDegradacion, sufijoHtml, encabezados);
 }
 function verMasOfertas(){
@@ -762,16 +762,22 @@ function verMasOfertas(){
   localStorage.setItem('cyc_ofertas_visibles', String(CYC_OFERTAS_VISIBLES));
   pintarOfertas();
 }
+// La comuna ORDENA, no descarta (bug real 25-07-2026: Carlos veia 15 de 78 ofertas y
+// creyo que el sistema las habia borrado solo). Antes esta funcion soltaba todo lo que
+// caia fuera del sector: un guardia de Las Condes veia 5 de 78. Y la degradacion elegante
+// no lo tapaba porque solo salta cuando el resultado es CERO — 15 ofertas parecen un feed
+// sano. Ahora el resto del pais va al final, detras de su propio encabezado.
 function ofertasFiltradas(){
   if(!CYC_FILTRO_COMUNA) return CYC_OFERTAS;
   var sectorObjetivo=sectorDeComuna(CYC_FILTRO_COMUNA);
   var comunaNorm=normalizarTexto(CYC_FILTRO_COMUNA);
-  var mismaComuna=[], mismoSector=[];
+  var mismaComuna=[], mismoSector=[], resto=[];
   CYC_OFERTAS.forEach(function(o){
     if(normalizarTexto(o.comuna)===comunaNorm) mismaComuna.push(o);
     else if(sectorDeComuna(o.comuna)===sectorObjetivo) mismoSector.push(o);
+    else resto.push(o);
   });
-  return mismaComuna.concat(mismoSector);
+  return mismaComuna.concat(mismoSector, resto);
 }
 function html_pintarOfertasLista(el, lista, prefijoHtml, sufijoHtml, encabezados){
   var html=prefijoHtml||'';
@@ -780,20 +786,27 @@ function html_pintarOfertasLista(el, lista, prefijoHtml, sufijoHtml, encabezados
     return;
   }
   var comunaNorm = encabezados ? normalizarTexto(encabezados.comuna) : null;
-  var grupoAnterior = null, huboComuna = false;
+  var grupoAnterior = null, huboComuna = false, huboSector = false;
   lista.forEach(function(o){
     if(encabezados){
-      var esComunaExacta = normalizarTexto(o.comuna)===comunaNorm;
-      var grupoActual = esComunaExacta ? 'comuna' : 'sector';
+      var grupoActual = normalizarTexto(o.comuna)===comunaNorm ? 'comuna'
+        : (sectorDeComuna(o.comuna)===encabezados.sectorKey ? 'sector' : 'resto');
       if(grupoActual!==grupoAnterior){
         if(grupoActual==='comuna'){
           html+='<div style="font-size:12px;font-weight:500;color:#d4a017;margin:14px 0 8px;display:flex;align-items:center;gap:6px">📍 En '+esc(encabezados.comuna)+'</div>';
           huboComuna=true;
-        }else{
+        }else if(grupoActual==='sector'){
           var texto = huboComuna
             ? 'Cerca de ti (sector '+esc(encabezados.sector)+')'
             : 'No hay ofertas exactas en '+esc(encabezados.comuna)+' — cerca de ti (sector '+esc(encabezados.sector)+')';
           html+='<div style="font-size:12px;font-weight:500;color:#a89454;margin:14px 0 8px;display:flex;align-items:center;gap:6px">📍 '+texto+'</div>';
+          huboSector=true;
+        }else{
+          // Tercer grupo: lo que antes se caia en silencio. Nunca se esconde una oferta.
+          var textoResto = (huboComuna||huboSector)
+            ? 'Más lejos — resto del país'
+            : 'No hay ofertas en tu zona — estas son del resto del país';
+          html+='<div style="font-size:12px;font-weight:500;color:#8a8a80;margin:18px 0 8px;display:flex;align-items:center;gap:6px">🧭 '+textoResto+'</div>';
         }
         grupoAnterior=grupoActual;
       }
