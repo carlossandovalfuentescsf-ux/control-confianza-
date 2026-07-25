@@ -39,8 +39,18 @@ a{color:#d4a017}
 .header p{font-size:.72rem;color:#888;margin-top:2px}
 
 .tabs{display:flex;background:#1a1a1a;border-bottom:1px solid #222;position:sticky;top:0;z-index:10}
-.tab{flex:1;text-align:center;padding:13px 6px;font-size:.78rem;font-weight:700;color:#777;text-decoration:none;border-bottom:2px solid transparent}
+.tab{flex:1;text-align:center;padding:13px 6px;font-size:.78rem;font-weight:700;color:#999;text-decoration:none;border-bottom:2px solid transparent}
 .tab.active{color:#d4a017;border-bottom-color:#d4a017}
+/* Reconfiguración del menú (25-07-2026): #777 sobre #1a1a1a daba 3.9:1, bajo el
+   minimo WCAG AA (4.5:1) para texto de este tamaño — #999 da 6.1:1. Las 4 pestañas
+   de cuenta personal (Perfil/Carpeta/Eventos/Postulaciones) se agrupan en un
+   desplegable para no competir con el Test OS10, el gancho SEO real (la
+   investigacion de captacion via Test OS10 -> bolsa fue 4x mas efectiva que al reves). */
+.tab-cuenta{cursor:pointer;position:relative}
+.menu-cuenta{position:fixed;display:none;background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:6px;min-width:170px;box-shadow:0 8px 24px rgba(0,0,0,.45);z-index:50}
+.menu-cuenta.abierto{display:block}
+.menu-cuenta a{display:block;padding:10px 12px;font-size:.8rem;font-weight:700;color:#ccc;text-decoration:none;border-radius:6px}
+.menu-cuenta a.active{background:#242424;color:#d4a017}
 
 .container{max-width:600px;margin:0 auto;padding:16px 14px 40px}
 .view{display:none}
@@ -281,13 +291,17 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
 
 <nav class="tabs">
   <a class="tab" href="#ofertas" data-tab="ofertas">Ofertas</a>
+  <a class="tab" id="tabTestOS10" href="test-os10.html?f=controlmas" style="color:#d4a017;background:rgba(212,160,23,.12)">🎓 Test OS10</a>
   <a class="tab" href="#guia" data-tab="guia">Guía</a>
-  <a class="tab" id="tabTestOS10" href="test-os10.html?f=controlmas" style="color:#d4a017">🎓 Test OS10</a>
   <a class="tab" href="#sueldo" data-tab="sueldo">Sueldo</a>
-  <a class="tab" href="#perfil" data-tab="perfil">Mi Perfil</a>
-  <a class="tab" href="#carpeta" data-tab="carpeta">Mi Carpeta</a>
-  <a class="tab" href="#mis-eventos" data-tab="mis-eventos">Mis Eventos</a>
-  <a class="tab" href="#mis-postulaciones" data-tab="mis-postulaciones">Postulaciones</a>
+  <div class="tab tab-cuenta" id="tabCuenta" onclick="toggleMenuCuenta(event)">Mi cuenta <span style="font-size:.65em">▾</span>
+    <div class="menu-cuenta" id="menuCuenta">
+      <a href="#perfil" data-tab="perfil">Mi Perfil</a>
+      <a href="#carpeta" data-tab="carpeta">Mi Carpeta</a>
+      <a href="#mis-eventos" data-tab="mis-eventos">Mis Eventos</a>
+      <a href="#mis-postulaciones" data-tab="mis-postulaciones">Postulaciones</a>
+    </div>
+  </div>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
 </nav>
 
@@ -605,6 +619,25 @@ function cycCerrarSesion(silencioso){
 
 /* ---------- Navegación por hash ---------- */
 var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','admin'];
+var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones'];
+function toggleMenuCuenta(e){
+  e.preventDefault(); e.stopPropagation();
+  var menu=document.getElementById('menuCuenta');
+  var abrir=!menu.classList.contains('abierto');
+  menu.classList.toggle('abierto', abrir);
+  if(abrir){
+    var r=document.getElementById('tabCuenta').getBoundingClientRect();
+    menu.style.top=(r.bottom+4)+'px';
+    menu.style.right=(window.innerWidth-r.right)+'px';
+    menu.style.left='auto';
+  }
+}
+document.addEventListener('click', function(e){
+  var menu=document.getElementById('menuCuenta'), tc=document.getElementById('tabCuenta');
+  if(menu && menu.classList.contains('abierto') && tc && !tc.contains(e.target)){
+    menu.classList.remove('abierto');
+  }
+});
 function vistaActual(){
   var h=(location.hash||'#ofertas').replace('#','');
   if(h.indexOf('guia')===0) return 'guia'; // #guia-g23 abre la ficha g23 (links compartibles)
@@ -619,6 +652,16 @@ function renderView(){
   document.querySelectorAll('.tab').forEach(function(t){
     t.classList.toggle('active', t.dataset.tab===v);
   });
+  // Menú reconfigurado (25-07): las 4 vistas de cuenta viven en el desplegable
+  // "Mi cuenta" — se resalta el disparador y el item interno correspondiente.
+  var esVistaCuenta=VISTAS_CUENTA.indexOf(v)>=0;
+  var tc=document.getElementById('tabCuenta');
+  if(tc) tc.classList.toggle('active', esVistaCuenta);
+  document.querySelectorAll('.menu-cuenta a').forEach(function(a){
+    a.classList.toggle('active', a.dataset.tab===v);
+  });
+  var mc=document.getElementById('menuCuenta');
+  if(mc) mc.classList.remove('abierto');
   if(v==='ofertas') renderOfertas();
   else if(v==='guia') renderGuia();
   else if(v==='sueldo') renderSueldo();
