@@ -470,6 +470,7 @@ var CYC_PERFIL=null; // null=sin cargar aún, false=no tiene perfil, {..}=tiene 
 var CYC_OFERTAS=[];
 var CYC_IS_ADMIN=false;
 var CYC_FILTRO_COMUNA=localStorage.getItem('cyc_filtro_comuna')||'';
+var CYC_OFERTAS_VISIBLES=parseInt(localStorage.getItem('cyc_ofertas_visibles'),10)||8;
 
 function fmtCLP(n){ if(n==null) return 'A convenir'; return '$'+Number(n).toLocaleString('es-CL'); }
 function fmtFecha(f){
@@ -528,8 +529,9 @@ function pintarFiltroComuna(){
 }
 function cambiarFiltroComuna(v){
   CYC_FILTRO_COMUNA=v;
+  CYC_OFERTAS_VISIBLES=8;
   localStorage.setItem('cyc_filtro_comuna',v);
-  localStorage.removeItem('cyc_ofertas_visibles'); // nuevo filtro = nueva lista, sin restaurar posicion vieja
+  localStorage.setItem('cyc_ofertas_visibles','8');
   pintarOfertas();
 }
 
@@ -616,15 +618,27 @@ function pintarOfertas(){
     el.innerHTML='<div class="empty">🗓️<br><br>No hay ofertas abiertas por ahora.<br>Vuelve pronto — publicamos nuevas apenas hay turnos disponibles.</div>';
     return;
   }
-  var lista=ofertasFiltradas();
+  var listaCompleta=ofertasFiltradas();
   var avisoDegradacion='';
-  if(CYC_FILTRO_COMUNA && !lista.length){
+  if(CYC_FILTRO_COMUNA && !listaCompleta.length){
     // Degradacion elegante: nunca un callejon sin salida.
     avisoDegradacion='<div class="empty" style="margin-bottom:14px">No hay ofertas en tu zona por ahora — hay '+CYC_OFERTAS.length+' en el resto de la RM.<br>'+
       '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroComuna(\'\')">Ver todas</button></div>';
-    lista=CYC_OFERTAS;
+    listaCompleta=CYC_OFERTAS;
   }
-  html_pintarOfertasLista(el, lista, avisoDegradacion);
+  var visibles=Math.min(CYC_OFERTAS_VISIBLES, listaCompleta.length);
+  var lista=listaCompleta.slice(0, visibles);
+  var restantes=listaCompleta.length-visibles;
+  var sufijoHtml='';
+  if(restantes>0){
+    sufijoHtml='<button class="btn-guardar" style="margin-top:14px" onclick="verMasOfertas()">Ver más ofertas (quedan '+restantes+')</button>';
+  }
+  html_pintarOfertasLista(el, lista, avisoDegradacion, sufijoHtml);
+}
+function verMasOfertas(){
+  CYC_OFERTAS_VISIBLES+=8;
+  localStorage.setItem('cyc_ofertas_visibles', String(CYC_OFERTAS_VISIBLES));
+  pintarOfertas();
 }
 function ofertasFiltradas(){
   if(!CYC_FILTRO_COMUNA) return CYC_OFERTAS;
@@ -637,7 +651,7 @@ function ofertasFiltradas(){
   });
   return mismaComuna.concat(mismoSector);
 }
-function html_pintarOfertasLista(el, lista, prefijoHtml){
+function html_pintarOfertasLista(el, lista, prefijoHtml, sufijoHtml){
   var html=prefijoHtml||'';
   if(!lista.length && !prefijoHtml){
     el.innerHTML='<div class="empty">No hay ofertas que mostrar.</div>';
@@ -683,6 +697,7 @@ function html_pintarOfertasLista(el, lista, prefijoHtml){
       '<button class="btn-reportar" onclick="reportarOferta('+o.id+')">🚩 Reportar oferta</button>'+
     '</div>';
   });
+  html+=sufijoHtml||'';
   el.innerHTML=html;
 }
 var NOMBRE_ESPECIALIDAD={'cctv-monitoreo':'CCTV/Monitoreo','eventos':'Eventos','retail':'Retail','industrial':'Industrial','condominio':'Condominio','escolta-vip':'Escolta VIP','porteria':'Portería','mineria':'Minería','otro':'Otra especialidad'};
