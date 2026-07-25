@@ -1183,7 +1183,7 @@ var ADMIN_POSTULANTES=[];
 
 function renderAdmin(){
   var el=document.getElementById('adminContent');
-  if(ADMIN_VISTA==='form'){ el.innerHTML=formOferta(ADMIN_OFERTA_EDIT); return; }
+  if(ADMIN_VISTA==='form'){ el.innerHTML=formOferta(ADMIN_OFERTA_EDIT); if(ADMIN_OFERTA_EDIT&&ADMIN_OFERTA_EDIT.comuna) mostrarAvisoEquilibrio(ADMIN_OFERTA_EDIT.comuna); return; }
   if(ADMIN_VISTA==='postulantes'){ el.innerHTML='<div class="spinner">Cargando postulantes…</div>'; cargarPostulantes(); return; }
   if(ADMIN_VISTA==='pegar'){ el.innerHTML=vistaPegar(); return; }
   el.innerHTML='<div class="spinner">Cargando ofertas…</div>';
@@ -1429,7 +1429,7 @@ function formOferta(actual){
     '<label for="oTitulo">Título</label>'+
     '<input id="oTitulo" type="text" value="'+esc(actual.titulo||'')+'" placeholder="Ej: Guardia 4x4 día — Mall X">'+
     '<label for="oComuna">Comuna</label>'+
-    '<select id="oComuna">'+opciones+'</select>'+
+    '<select id="oComuna" onchange="mostrarAvisoEquilibrio(this.value)">'+opciones+'</select>'+
     '<label for="oLugar">Lugar (opcional)</label>'+
     '<input id="oLugar" type="text" value="'+esc(actual.lugar||'')+'" placeholder="Dirección o referencia">'+
     '<div id="bloqueTurno" style="display:'+(tipoSel==='turno'?'block':'none')+'">'+
@@ -1475,6 +1475,21 @@ function formOferta(actual){
     '<button class="btn-guardar" onclick="guardarOferta('+(actual.id?actual.id:'null')+')">'+(actual.id?'Guardar cambios':'Publicar oferta')+'</button>'+
     '<div class="form-msg" id="ofertaMsg"></div>'+
   '</div>';
+}
+function mostrarAvisoEquilibrio(comuna){
+  var el=document.getElementById('avisoEquilibrio');
+  if(!el || !comuna) { if(el) el.innerHTML=''; return; }
+  var sector=sectorDeComuna(comuna);
+  var conteoPorSector={norte:0,centro:0,oriente:0,poniente:0,sur:0,otras:0};
+  (ADMIN_OFERTAS||[]).filter(function(o){return o.estado==='abierta';}).forEach(function(o){
+    conteoPorSector[sectorDeComuna(o.comuna)]++;
+  });
+  var deficit=Object.keys(conteoPorSector).filter(function(s){return s!==sector && s!=='otras' && conteoPorSector[s]<conteoPorSector[sector];})
+    .sort(function(a,b){return conteoPorSector[a]-conteoPorSector[b];})
+    .map(function(s){return NOMBRE_SECTOR[s]+' ('+conteoPorSector[s]+')';});
+  var txt='Esta oferta va al sector <strong>'+NOMBRE_SECTOR[sector]+'</strong> — ya hay '+conteoPorSector[sector]+' abiertas ahí.';
+  if(deficit.length) txt+=' Sectores con déficit: '+deficit.join(', ')+'.';
+  el.innerHTML=txt;
 }
 function toggleTipoOferta(){
   var t=document.getElementById('oTipo').value;
@@ -1528,6 +1543,17 @@ async function guardarOferta(id){
       res=await fetch(API_URL+'/guardias/ofertas',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
     }
     var data=await res.json();
+    if(res.status===409 && data.duplicado){
+      var confirma=confirm('Ya existe una oferta abierta igual: "'+data.oferta_existente.titulo+'" (id '+data.oferta_existente.id+', publicada '+data.oferta_existente.created_at+').\n\n¿Publicar de todas formas?');
+      if(confirma){
+        body.forzar=true;
+        res=await fetch(API_URL+'/guardias/ofertas',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
+        data=await res.json();
+      }else{
+        msg.textContent='Publicación cancelada.'; msg.className='form-msg';
+        return;
+      }
+    }
     if(!res.ok){ msg.textContent=data.error||'No se pudo guardar.'; msg.className='form-msg err'; return; }
     ADMIN_VISTA='lista'; ADMIN_OFERTA_EDIT=null;
     renderAdmin();
