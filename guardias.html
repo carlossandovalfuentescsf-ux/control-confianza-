@@ -470,6 +470,7 @@ var CYC_PERFIL=null; // null=sin cargar aún, false=no tiene perfil, {..}=tiene 
 var CYC_OFERTAS=[];
 var CYC_IS_ADMIN=false;
 var CYC_FILTRO_COMUNA=localStorage.getItem('cyc_filtro_comuna')||'';
+var CYC_FILTRO_ESP=localStorage.getItem('cyc_filtro_especialidad')||'';
 var CYC_OFERTAS_VISIBLES=parseInt(localStorage.getItem('cyc_ofertas_visibles'),10)||8;
 
 function fmtCLP(n){ if(n==null) return 'A convenir'; return '$'+Number(n).toLocaleString('es-CL'); }
@@ -540,8 +541,29 @@ function pintarFiltroComuna(){
     '<optgroup label="Región Metropolitana">'+grupos.rm.map(opt).join('')+'</optgroup>'+
     (grupos.valparaiso.length?'<optgroup label="Región de Valparaíso">'+grupos.valparaiso.map(opt).join('')+'</optgroup>':'')+
     '<optgroup label="Otras regiones">'+grupos.otras.map(opt).join('')+'</optgroup>';
+  // Tarea 14: segundo filtro por especialidad (CCTV, táctico, nochero…) — el de CCTV no
+  // tiene por qué scrollear ofertas de otros rubros. Actúa EN CONJUNTO con la comuna
+  // (intersección). Solo se listan especialidades con ofertas reales, con su conteo.
+  var conteoEsp={};
+  CYC_OFERTAS.forEach(function(o){ if(o.especialidad) conteoEsp[o.especialidad]=(conteoEsp[o.especialidad]||0)+1; });
+  var opcionesEsp='<option value="">Todas las especialidades</option>'+
+    Object.keys(NOMBRE_ESPECIALIDAD).filter(function(k){return conteoEsp[k]||k===CYC_FILTRO_ESP;})
+      .map(function(k){return '<option value="'+k+'"'+(k===CYC_FILTRO_ESP?' selected':'')+'>'+esc(NOMBRE_ESPECIALIDAD[k])+' ('+(conteoEsp[k]||0)+')</option>';}).join('');
   el.innerHTML='<label for="fComuna" style="display:block;margin-bottom:6px;font-size:14px;color:#a89454">¿Dónde buscas trabajo?</label>'+
-    '<select id="fComuna" onchange="cambiarFiltroComuna(this.value)">'+opciones+'</select>';
+    '<select id="fComuna" onchange="cambiarFiltroComuna(this.value)">'+opciones+'</select>'+
+    '<label for="fEsp" style="display:block;margin:10px 0 6px;font-size:14px;color:#a89454">¿Qué tipo de trabajo?</label>'+
+    '<select id="fEsp" onchange="cambiarFiltroEsp(this.value)">'+opcionesEsp+'</select>';
+}
+function cambiarFiltroEsp(v){
+  CYC_FILTRO_ESP=v;
+  CYC_OFERTAS_VISIBLES=8;
+  localStorage.setItem('cyc_filtro_especialidad',v);
+  localStorage.setItem('cyc_ofertas_visibles','8');
+  pintarOfertas();
+}
+function filtrarPorEspecialidad(lista){
+  if(!CYC_FILTRO_ESP) return lista;
+  return lista.filter(function(o){ return o.especialidad===CYC_FILTRO_ESP; });
 }
 function cambiarFiltroComuna(v){
   CYC_FILTRO_COMUNA=v;
@@ -634,13 +656,30 @@ function pintarOfertas(){
     el.innerHTML='<div class="empty">🗓️<br><br>No hay ofertas abiertas por ahora.<br>Vuelve pronto — publicamos nuevas apenas hay turnos disponibles.</div>';
     return;
   }
-  var listaCompleta=ofertasFiltradas();
+  var listaCompleta=filtrarPorEspecialidad(ofertasFiltradas());
   var avisoDegradacion='';
-  if(CYC_FILTRO_COMUNA && !listaCompleta.length){
-    // Degradacion elegante: nunca un callejon sin salida.
-    avisoDegradacion='<div class="empty" style="margin-bottom:14px">No hay ofertas en tu zona por ahora — hay '+CYC_OFERTAS.length+' en el resto de la RM.<br>'+
-      '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroComuna(\'\')">Ver todas</button></div>';
-    listaCompleta=CYC_OFERTAS;
+  // Degradacion elegante en dos escalones (Tarea 14): nunca un callejon sin salida.
+  // Escalon 1: la combinacion comuna+especialidad da 0 pero la especialidad SI existe
+  // en otras comunas -> soltar la comuna, mantener la especialidad (lo que mas le importa
+  // al especialista es SU rubro). Escalon 2: la especialidad no existe en ninguna parte
+  // -> soltar tambien la especialidad y mostrar todo.
+  if(!listaCompleta.length && (CYC_FILTRO_COMUNA || CYC_FILTRO_ESP)){
+    var nombreEsp=CYC_FILTRO_ESP?(NOMBRE_ESPECIALIDAD[CYC_FILTRO_ESP]||CYC_FILTRO_ESP):'';
+    var espEnTodas=CYC_FILTRO_ESP?filtrarPorEspecialidad(CYC_OFERTAS):[];
+    if(CYC_FILTRO_ESP && CYC_FILTRO_COMUNA && espEnTodas.length){
+      avisoDegradacion='<div class="empty" style="margin-bottom:14px">No hay ofertas de '+esc(nombreEsp)+' en tu zona por ahora — te mostramos las '+espEnTodas.length+' de otras comunas.<br>'+
+        '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroComuna(\'\')">Quitar filtro de comuna</button></div>';
+      listaCompleta=espEnTodas;
+    }else if(CYC_FILTRO_ESP && !espEnTodas.length){
+      avisoDegradacion='<div class="empty" style="margin-bottom:14px">No hay ofertas de '+esc(nombreEsp)+' por ahora — te mostramos todas las disponibles.<br>'+
+        '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroEsp(\'\')">Quitar filtro de especialidad</button></div>';
+      listaCompleta=CYC_FILTRO_COMUNA?ofertasFiltradas():CYC_OFERTAS;
+      if(!listaCompleta.length) listaCompleta=CYC_OFERTAS;
+    }else{
+      avisoDegradacion='<div class="empty" style="margin-bottom:14px">No hay ofertas en tu zona por ahora — hay '+CYC_OFERTAS.length+' en el resto del país.<br>'+
+        '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroComuna(\'\')">Ver todas</button></div>';
+      listaCompleta=CYC_OFERTAS;
+    }
   }
   var visibles=Math.min(CYC_OFERTAS_VISIBLES, listaCompleta.length);
   var lista=listaCompleta.slice(0, visibles);
@@ -694,8 +733,11 @@ function html_pintarOfertasLista(el, lista, prefijoHtml, sufijoHtml){
     }
     meta+='<span class="chip">👥 '+o.cupos+' cupo'+(o.cupos==1?'':'s')+'</span>';
     // Bloque C1: chips de requiere_os10 y especialidad (solo si estan seteados).
-    if(o.requiere_os10===1) meta+='<span class="chip">🪪 Requiere OS-10</span>';
-    else if(o.requiere_os10===0) meta+='<span class="chip">🪪 Sin OS-10 (¡oportunidad!)</span>';
+    // Semántica OS-10 (Tarea 14, Carlos como asesor OS.10): 1 = exige VIGENTE (excluyente);
+    // 0 = acepta en trámite o sin curso — clave para el enorme grupo de guardias atrapados
+    // por el atraso de acreditaciones de la Subsecretaría/Carabineros.
+    if(o.requiere_os10===1) meta+='<span class="chip">🪪 OS-10 vigente excluyente</span>';
+    else if(o.requiere_os10===0) meta+='<span class="chip">🟢 Acepta OS-10 en trámite</span>';
     if(o.especialidad) meta+='<span class="chip">🏷️ '+esc(NOMBRE_ESPECIALIDAD[o.especialidad]||o.especialidad)+'</span>';
     // Cap. 13: en ofertas de la comunidad el guardia contacta ÉL al reclutador — jamás entregamos sus datos.
     var accion = esComunidad
@@ -716,7 +758,7 @@ function html_pintarOfertasLista(el, lista, prefijoHtml, sufijoHtml){
   html+=sufijoHtml||'';
   el.innerHTML=html;
 }
-var NOMBRE_ESPECIALIDAD={'cctv-monitoreo':'CCTV/Monitoreo','eventos':'Eventos','retail':'Retail','industrial':'Industrial','condominio':'Condominio','escolta-vip':'Escolta VIP','porteria':'Portería','mineria':'Minería','otro':'Otra especialidad'};
+var NOMBRE_ESPECIALIDAD={'cctv-monitoreo':'CCTV/Monitoreo','eventos':'Eventos','retail':'Retail','industrial':'Industrial','condominio':'Condominio','escolta-vip':'Escolta VIP','porteria':'Portería','mineria':'Minería','tactico':'Táctico','nochero':'Nochero','otro':'Otra especialidad'};
 
 async function reportarOferta(id){
   var motivo=prompt('¿Qué tiene de malo esta oferta? (ej: ya se llenó, datos falsos, sospechosa)');
