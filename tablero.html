@@ -125,7 +125,7 @@ footer a{color:#d4a017}
     <div class="card" style="grid-column:1/-1">
       <h2>📈 Uso por canal — últimos 7 días</h2>
       <div class="porque">Qué pieza/canal (<span class="pill">?f=</span>) trae uso real a cada herramienta. Es la palanca semanal: más de lo que funciona, menos de lo que no.</div>
-      <table id="uso-tabla"><thead><tr><th>Herramienta</th><th>Fuente (?f=)</th><th>Acción</th><th class="num">Eventos</th></tr></thead><tbody></tbody></table>
+      <table id="uso-tabla"><thead><tr><th>Herramienta</th><th>Fuente (?f=)</th><th>Acción</th><th class="num">Eventos</th><th class="num">Personas</th></tr></thead><tbody></tbody></table>
       <div class="vacio" id="uso-vacio" style="display:none;margin-top:8px">Sin eventos con atribución esta semana.</div>
     </div>
 
@@ -276,7 +276,7 @@ function pintar(d){
   const uso=d.uso_7d||[];
   const cuerpo=document.getElementById('uso-tabla').querySelector('tbody');
   if(uso.length){
-    cuerpo.innerHTML=uso.map(r=>'<tr><td>'+esc(r.herramienta)+'</td><td>'+esc(r.fuente)+'</td><td>'+esc(r.accion)+'</td><td class="num">'+num(r.n)+'</td></tr>').join('');
+    cuerpo.innerHTML=uso.map(r=>'<tr><td>'+esc(r.herramienta)+'</td><td>'+esc(r.fuente)+'</td><td>'+esc(r.accion)+'</td><td class="num">'+num(r.n)+'</td><td class="num">'+num(r.personas)+'</td></tr>').join('');
   }else{
     document.getElementById('uso-tabla').style.display='none';
     document.getElementById('uso-vacio').style.display='block';
