@@ -1460,6 +1460,18 @@ function formOferta(actual){
     '<input id="oDescripcion" type="text" value="'+esc(actual.descripcion||'')+'" placeholder="Detalles">'+
     '<label for="oRequisitos">Requisitos (opcional)</label>'+
     '<input id="oRequisitos" type="text" value="'+esc(actual.requisitos||'')+'" placeholder="Ej: OS.10 vigente">'+
+    '<label for="oOs10">¿Requiere OS-10 vigente?</label>'+
+    '<select id="oOs10">'+
+      '<option value=""'+(actual.requiere_os10==null?' selected':'')+'>No especificado</option>'+
+      '<option value="1"'+(actual.requiere_os10===1?' selected':'')+'>Sí</option>'+
+      '<option value="0"'+(actual.requiere_os10===0?' selected':'')+'>No</option>'+
+    '</select>'+
+    '<label for="oEspecialidad">Especialidad (opcional)</label>'+
+    '<select id="oEspecialidad">'+
+      '<option value="">— Sin especificar —</option>'+
+      Object.keys(NOMBRE_ESPECIALIDAD).map(function(k){return '<option value="'+k+'"'+(actual.especialidad===k?' selected':'')+'>'+esc(NOMBRE_ESPECIALIDAD[k])+'</option>';}).join('')+
+    '</select>'+
+    '<div id="avisoEquilibrio" style="margin-top:10px;font-size:13px;color:#a89454"></div>'+
     '<button class="btn-guardar" onclick="guardarOferta('+(actual.id?actual.id:'null')+')">'+(actual.id?'Guardar cambios':'Publicar oferta')+'</button>'+
     '<div class="form-msg" id="ofertaMsg"></div>'+
   '</div>';
@@ -1490,6 +1502,8 @@ async function guardarOferta(id){
   var cuposRaw=document.getElementById('oCupos').value.trim();
   var descripcion=document.getElementById('oDescripcion').value.trim();
   var requisitos=document.getElementById('oRequisitos').value.trim();
+  var os10Raw=document.getElementById('oOs10').value;
+  var especialidad=document.getElementById('oEspecialidad').value;
 
   if(!titulo){ msg.textContent='Escribe un título.'; msg.className='form-msg err'; return; }
   if(!comuna){ msg.textContent='Elige la comuna.'; msg.className='form-msg err'; return; }
@@ -1502,7 +1516,9 @@ async function guardarOferta(id){
     pago_turno:pagoRaw?parseInt(pagoRaw,10):null,
     renta_mensual:rentaRaw?parseInt(rentaRaw,10):null,
     pauta:pauta||null,horario:horario||null,empresa_nombre:empresa||null,
-    contacto_whatsapp:whatsapp||null,expira_at:expira||null};
+    contacto_whatsapp:whatsapp||null,expira_at:expira||null,
+    requiere_os10:os10Raw===''?null:parseInt(os10Raw,10),
+    especialidad:especialidad||null};
 
   try{
     var res;
