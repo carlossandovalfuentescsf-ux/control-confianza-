@@ -621,7 +621,10 @@ function cycCerrarSesion(silencioso){
 var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','admin'];
 var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones'];
 function toggleMenuCuenta(e){
-  e.preventDefault(); e.stopPropagation();
+  // OJO: sin preventDefault — el clic en "Mi Perfil"/etc burbujea desde el <a> hijo
+  // hasta este div padre, y preventDefault() aqui cancelaba tambien la navegacion
+  // del link hijo (bug real detectado en verificacion E2E, no del navegador de pruebas).
+  e.stopPropagation();
   var menu=document.getElementById('menuCuenta');
   var abrir=!menu.classList.contains('abierto');
   menu.classList.toggle('abierto', abrir);
