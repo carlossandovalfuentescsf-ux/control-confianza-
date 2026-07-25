@@ -294,7 +294,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <a class="tab" id="tabTestOS10" href="test-os10.html?f=controlmas" style="color:#d4a017;background:rgba(212,160,23,.12)">🎓 Test OS10</a>
   <a class="tab" href="#guia" data-tab="guia">Guía</a>
   <a class="tab" href="#sueldo" data-tab="sueldo">Sueldo</a>
-  <div class="tab tab-cuenta" id="tabCuenta" onclick="toggleMenuCuenta(event)">Mi cuenta <span style="font-size:.65em">▾</span>
+  <div class="tab tab-cuenta" id="tabCuenta" onclick="toggleMenuCuenta(event)"><span id="tabCuentaLabel">Mi cuenta</span> <span id="tabCuentaFlecha" style="font-size:.65em">▾</span>
     <div class="menu-cuenta" id="menuCuenta">
       <a href="#perfil" data-tab="perfil">Mi Perfil</a>
       <a href="#carpeta" data-tab="carpeta">Mi Carpeta</a>
@@ -590,7 +590,7 @@ function cambiarFiltroComuna(v){
 
 /* ---------- Sesión ---------- */
 async function cycCargarSesion(){
-  if(!CYC_TOKEN){ CYC_EMAIL=null; CYC_PERFIL=false; CYC_IS_ADMIN=false; actualizarTabAdmin(); return; }
+  if(!CYC_TOKEN){ CYC_EMAIL=null; CYC_PERFIL=false; CYC_IS_ADMIN=false; actualizarTabAdmin(); actualizarTabCuenta(); return; }
   try{
     var res=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
     if(!res.ok){ cycCerrarSesion(true); return; }
@@ -598,6 +598,7 @@ async function cycCargarSesion(){
     CYC_EMAIL=data.email||null;
     CYC_IS_ADMIN=!!data.is_admin;
     actualizarTabAdmin();
+    actualizarTabCuenta();
   }catch(e){}
   try{
     var res2=await fetch(API_URL+'/guardias/perfil',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
@@ -609,11 +610,22 @@ function actualizarTabAdmin(){
   var tab=document.getElementById('tabAdmin');
   if(tab) tab.style.display=CYC_IS_ADMIN?'':'none';
 }
+// Sin sesión: el disparador dice "Iniciar sesión" (no "Mi cuenta" — nadie sin
+// cuenta piensa en tocar algo que suena a que ya tiene una). Corrige un problema
+// real detectado por Carlos: un guardia preguntó cómo crear su cuenta porque el
+// desplegable agrupado de hoy escondió el acceso tras un rótulo que asume sesión.
+function actualizarTabCuenta(){
+  var label=document.getElementById('tabCuentaLabel'), flecha=document.getElementById('tabCuentaFlecha');
+  if(!label) return;
+  label.textContent=CYC_TOKEN?'Mi cuenta':'Iniciar sesión';
+  if(flecha) flecha.style.display=CYC_TOKEN?'':'none';
+}
 function cycCerrarSesion(silencioso){
   localStorage.removeItem('cyc_token');
   CYC_TOKEN=null; CYC_EMAIL=null; CYC_PERFIL=false; CYC_IS_ADMIN=false;
   CYC_PERFIL_POSTULADAS=null;
   actualizarTabAdmin();
+  actualizarTabCuenta();
   if(!silencioso) renderView();
 }
 
@@ -625,6 +637,10 @@ function toggleMenuCuenta(e){
   // hasta este div padre, y preventDefault() aqui cancelaba tambien la navegacion
   // del link hijo (bug real detectado en verificacion E2E, no del navegador de pruebas).
   e.stopPropagation();
+  // Sin sesión: saltar el desplegable por completo e ir directo al formulario de
+  // crear cuenta/iniciar sesión — las 4 opciones del menú (Perfil/Carpeta/Eventos/
+  // Postulaciones) asumen que ya tienes cuenta y no tienen sentido para alguien nuevo.
+  if(!CYC_TOKEN){ location.hash='#perfil'; return; }
   var menu=document.getElementById('menuCuenta');
   var abrir=!menu.classList.contains('abierto');
   menu.classList.toggle('abierto', abrir);
