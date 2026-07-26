@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "cl.controlyconfianza.app",
       "sha256_cert_fingerprints": [
-        "16:B4:B3:49:B5:BB:67:1E:42:A4:7B:AE:36:3F:24:E0:87:22:9E:E6:10:59:27:53:9D:45:8D:FC:EB:1C:7B:C5"
+        "16:B4:B3:49:B5:BB:67:1E:42:A4:7B:AE:36:3F:24:E0:87:22:9E:E6:10:59:27:53:9D:45:8D:FC:EB:1C:7B:C5",
+        "F1:D1:0C:13:5A:05:91:32:00:7C:7F:7B:A6:E0:2F:09:C3:7D:CF:72:B0:64:B1:61:BC:4C:C1:2D:65:55:AE:21"
       ]
     }
   }
