@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eliminar tu cuenta – Control y Confianza</title>
+<meta name="description" content="Elimina tu cuenta de Control y Confianza y todos tus datos personales. Qué se borra, qué se conserva y cuánto demora.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Control y Confianza">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Eliminar tu cuenta — Control y Confianza">
+<meta property="og:description" content="Elimina tu cuenta y todos tus datos personales.">
+<meta property="og:url" content="https://app.controlyconfianza.cl/eliminar-cuenta.html">
+<meta name="robots" content="index,follow">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;color:#f0e8d0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:16px 24px;display:flex;align-items:center;gap:12px}
+header img{width:44px;height:44px;object-fit:contain;border-radius:8px}
+header .hn{font-size:17px;font-weight:800;color:#f0e8d0}
+header .hs{font-size:11px;color:#d4a017;font-weight:700;letter-spacing:2px}
+main{max-width:720px;margin:0 auto;padding:36px 20px 60px}
+h1{font-size:24px;font-weight:900;margin-bottom:6px}
+.fecha{font-size:12px;color:#888;margin-bottom:24px}
+h2{font-size:19px;font-weight:900;color:#d4a017;margin:34px 0 14px;padding-top:8px;border-top:1px solid #2a2a2a}
+p,li{font-size:14px;line-height:1.75;color:#ccc;margin-bottom:10px}
+ul{margin:0 0 12px 20px}
+strong{color:#f0e8d0}
+a{color:#d4a017}
+.destacado{background:#1a1a1a;border-left:3px solid #d4a017;border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0}
+.destacado p{margin:0}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0 16px}
+th{text-align:left;color:#d4a017;font-weight:800;padding:8px;border-bottom:2px solid #2a2a2a}
+td{padding:8px;border-bottom:1px solid #222;color:#ccc;vertical-align:top;line-height:1.6}
+.caja{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:20px;margin:18px 0}
+label{display:block;font-size:13px;color:#a89454;margin-bottom:6px;font-weight:700}
+input{width:100%;padding:12px 14px;border-radius:8px;border:1px solid #333;background:#111;color:#f0e8d0;font-size:15px;margin-bottom:14px}
+input:focus{outline:none;border-color:#d4a017}
+button{width:100%;padding:14px;border-radius:8px;border:none;font-size:15px;font-weight:800;cursor:pointer}
+.btn-borrar{background:#c0392b;color:#fff}
+.btn-borrar:disabled{background:#4a2622;color:#8a8a80;cursor:not-allowed}
+.msg{font-size:13px;line-height:1.6;padding:12px 14px;border-radius:8px;margin-top:12px;display:none}
+.msg.err{display:block;background:#2a1a18;border:1px solid #c0392b;color:#e8a49c}
+.msg.ok{display:block;background:#18271c;border:1px solid #2ecc71;color:#9fe0b8}
+.volver{display:block;text-align:center;margin-top:36px;font-size:13px;color:#d4a017;text-decoration:none}
+.footer{text-align:center;padding:24px 20px;border-top:1px solid #1e1e1e;font-size:12px;color:#555;margin-top:40px}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="icon-192.png" alt="Logo Control y Confianza">
+  <div>
+    <div class="hn">Control &amp; Confianza</div>
+    <div class="hs">SEGURIDAD PRIVADA</div>
+  </div>
+</header>
+
+<main>
+  <h1>Eliminar tu cuenta</h1>
+  <div class="fecha">Aplicación: Control y Confianza: Seguridad · Última actualización: 25 de julio de 2026</div>
+
+  <p>Desde esta página puedes eliminar de forma permanente tu cuenta de Control y Confianza y los datos personales asociados a ella. No necesitas tener la aplicación instalada.</p>
+
+  <div class="destacado">
+    <p><strong>Esta acción no se puede deshacer.</strong> Una vez eliminada la cuenta, no es posible recuperarla ni recuperar tus datos. Si vuelves a usar la aplicación, tendrás que registrarte de nuevo.</p>
+  </div>
+
+  <h2>Qué se elimina</h2>
+  <p>Al confirmar, se borran de forma inmediata y definitiva:</p>
+  <table>
+    <tr><th>Dato</th><th>Qué es</th></tr>
+    <tr><td><strong>Tu cuenta</strong></td><td>El correo electrónico y la contraseña con los que ingresas.</td></tr>
+    <tr><td><strong>Tus sesiones</strong></td><td>Se cierra la sesión en todos los dispositivos donde hayas entrado.</td></tr>
+    <tr><td><strong>Tu suscripción</strong></td><td>El registro de tu Plan Personal o Plan Empresa en nuestro sistema.</td></tr>
+    <tr><td><strong>Tus tokens</strong></td><td>Enlaces pendientes de verificación de correo y de recuperación de contraseña.</td></tr>
+    <tr><td><strong>Lista de espera</strong></td><td>Tu correo y comuna, si te habías inscrito para recibir novedades.</td></tr>
+  </table>
+
+  <h2>Qué se conserva, y por qué</h2>
+  <table>
+    <tr><th>Dato</th><th>Motivo y plazo</th></tr>
+    <tr><td><strong>Comprobantes de pago</strong></td><td>Si alguna vez pagaste un plan, el comprobante queda en <a href="https://www.flow.cl" target="_blank" rel="noopener">Flow</a>, la empresa que procesa nuestros pagos. La legislación tributaria chilena obliga a conservar los respaldos de las transacciones. Ese comprobante lo guarda Flow, no nosotros, y no queda asociado a ninguna cuenta activa en nuestro sistema. Para ejercer tus derechos sobre él, escríbenos y te orientamos.</td></tr>
+    <tr><td><strong>Estadísticas de uso</strong></td><td>Registros anónimos de qué herramientas se usan (por ejemplo, «alguien abrió el mapa de riesgo»). Nunca estuvieron asociados a tu nombre ni a tu correo, así que no permiten identificarte ni antes ni después de borrar la cuenta.</td></tr>
+    <tr><td><strong>Comentarios enviados</strong></td><td>Si dejaste una sugerencia en el buzón de la aplicación, se guardó sin tus datos: no tiene tu correo ni forma de asociarlo a ti.</td></tr>
+  </table>
+
+  <h2>Cuánto demora</h2>
+  <p>El borrado es <strong>inmediato</strong>. Al confirmar, los datos se eliminan de nuestra base en el momento y la sesión se cierra sola. No hay período de espera ni de recuperación.</p>
+
+  <h2>Antes de borrar: las alertas de tu teléfono</h2>
+  <p>Las alertas push que hayas activado están guardadas en tu teléfono, no en tu cuenta. Si quieres dejar de recibirlas, desactívalas desde la propia aplicación o desde los ajustes de notificaciones de tu navegador antes de eliminar la cuenta. Si ya la eliminaste, basta con desinstalar la aplicación o bloquear las notificaciones del sitio.</p>
+
+  <h2>Eliminar ahora</h2>
+  <p>Ingresa con el correo y la contraseña de la cuenta que quieres eliminar. Solo puedes eliminar tu propia cuenta.</p>
+
+  <div class="caja">
+    <label for="email">Correo electrónico</label>
+    <input id="email" type="email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="tucorreo@ejemplo.cl">
+
+    <label for="pass">Contraseña</label>
+    <input id="pass" type="password" autocomplete="current-password" placeholder="Tu contraseña">
+
+    <label for="confirmar">Para confirmar, escribe <strong>ELIMINAR</strong></label>
+    <input id="confirmar" type="text" autocomplete="off" autocapitalize="characters" placeholder="ELIMINAR">
+
+    <button id="btn" class="btn-borrar">Eliminar mi cuenta definitivamente</button>
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <h2>¿Prefieres pedirlo por escrito?</h2>
+  <p>También puedes solicitar la eliminación escribiendo a <a href="mailto:contacto@controlyconfianza.cl">contacto@controlyconfianza.cl</a> o por WhatsApp al <a href="https://wa.me/56984600273">+56 9 8460 0273</a>, indicando el correo de tu cuenta. Respondemos dentro de los 5 días hábiles siguientes.</p>
+
+  <p>Puedes revisar el detalle de qué datos tratamos y con qué finalidad en nuestra <a href="terminos.html">política de privacidad</a>.</p>
+
+  <a href="seguridad-chile.html" class="volver">← Volver a la aplicación</a>
+</main>
+
+<div class="footer">Control &amp; Confianza Seguridad Privada — Control y Confianza CSF SpA, RUT 78.043.129-6 — Chile</div>
+
+<script>
+var API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+var btn=document.getElementById('btn'), msg=document.getElementById('msg');
+function mostrar(texto, clase){ msg.textContent=texto; msg.className='msg '+clase; }
+btn.addEventListener('click', async function(){
+  var email=document.getElementById('email').value.trim().toLowerCase();
+  var pass=document.getElementById('pass').value;
+  var conf=document.getElementById('confirmar').value.trim().toUpperCase();
+  if(!email || !pass){ mostrar('Ingresa tu correo y tu contraseña.','err'); return; }
+  if(conf!=='ELIMINAR'){ mostrar('Escribe ELIMINAR en el último campo para confirmar.','err'); return; }
+  btn.disabled=true; btn.textContent='Eliminando…'; mostrar('','');
+  try{
+    // 1) Iniciar sesión: solo el dueño de la cuenta puede borrarla.
+    var rl=await fetch(API_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email,password:pass})});
+    var dl=await rl.json();
+    if(!rl.ok || !dl.token){
+      mostrar(dl.error||'No pudimos verificar esos datos. Revisa el correo y la contraseña.','err');
+      btn.disabled=false; btn.textContent='Eliminar mi cuenta definitivamente'; return;
+    }
+    // 2) Borrar.
+    var rd=await fetch(API_URL+'/auth/eliminar-cuenta',{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+dl.token},
+      body:JSON.stringify({confirmar:'ELIMINAR'})});
+    var dd=await rd.json();
+    if(!rd.ok){
+      mostrar(dd.error||'No se pudo eliminar la cuenta. Escríbenos a contacto@controlyconfianza.cl y lo hacemos por ti.','err');
+      btn.disabled=false; btn.textContent='Eliminar mi cuenta definitivamente'; return;
+    }
+    try{ localStorage.removeItem('cyc_token'); }catch(e){}
+    document.querySelector('.caja').innerHTML=
+      '<div class="msg ok" style="display:block">Tu cuenta y tus datos personales fueron eliminados. '+
+      'Ya no queda ningún registro tuyo en nuestro sistema. Gracias por haber usado Control y Confianza.</div>';
+  }catch(e){
+    mostrar('Hubo un problema de conexión. Inténtalo de nuevo o escríbenos a contacto@controlyconfianza.cl','err');
+    btn.disabled=false; btn.textContent='Eliminar mi cuenta definitivamente';
+  }
+});
+</script>
+
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
