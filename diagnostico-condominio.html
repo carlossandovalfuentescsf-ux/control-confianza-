@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Diagnóstico de Cumplimiento para Condominios — Control &amp; Confianza</title>
-<meta name="description" content="¿Tu condominio cumple la ley? Revisa en 3 minutos tu Plan de Emergencia, la clasificación de tu personal, tu Directiva de Funcionamiento y tu preparación para la Ley 21.719. Gratis.">
+<meta name="description" content="¿Tu condominio cumple la ley? Revisa en 3 minutos tu Plan de Emergencia, la clasificación y jornada de tu personal, tu Directiva de Funcionamiento y tu preparación para la Ley 21.719. Gratis.">
 <meta name="robots" content="index,follow">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Control y Confianza">
@@ -29,6 +29,10 @@ h1{font-size:25px;font-weight:900;line-height:1.2;margin-bottom:10px}
 h1 em{color:#d4a017;font-style:normal}
 .lead{font-size:14.5px;color:#bbb;line-height:1.6;margin-bottom:8px}
 .porque{font-size:12.5px;color:#8a8a8a;background:#161616;border-left:3px solid #d4a017;padding:10px 12px;border-radius:0 8px 8px 0;margin:16px 0 24px}
+.difer{font-size:12.5px;color:#9a9a9a;background:#161616;border:1px solid #262626;border-radius:10px;padding:12px 14px;margin:0 0 24px;line-height:1.6}
+.difer strong{color:#d4a017;font-weight:800}
+.gancho{font-size:12px;color:#ccc;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:11px 13px;margin:14px 0 0;line-height:1.55}
+.gancho strong{color:#d4a017;font-weight:800}
 /* Progreso */
 .prog{display:flex;gap:5px;margin-bottom:22px}
 .prog .p{flex:1;height:5px;border-radius:99px;background:#2a2a2a;transition:background .3s}
@@ -94,6 +98,8 @@ h1 em{color:#d4a017;font-style:normal}
 .oferta li::before{content:'✓';position:absolute;left:2px;color:#d4a017;font-weight:900}
 .oferta li.of-fix{color:#f0e8d0;font-weight:700}
 .oferta li.of-fix::after{content:'resuelve tu punto rojo';display:inline-block;font-size:9.5px;font-weight:800;color:#fb7185;background:rgba(190,18,60,.15);border-radius:99px;padding:2px 8px;margin-left:8px;vertical-align:middle;letter-spacing:.5px;text-transform:uppercase}
+.oferta li.of-fixam{color:#f0e8d0;font-weight:700}
+.oferta li.of-fixam::after{content:'cubre tu punto amarillo';display:inline-block;font-size:9.5px;font-weight:800;color:#e8b520;background:rgba(212,160,23,.15);border-radius:99px;padding:2px 8px;margin-left:8px;vertical-align:middle;letter-spacing:.5px;text-transform:uppercase}
 .oferta .of-precio{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px}
 .oferta .of-desde{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:1px;font-weight:700}
 .oferta .of-monto{font-size:26px;font-weight:900;color:#d4a017}
@@ -120,14 +126,16 @@ h1 em{color:#d4a017;font-style:normal}
   <div id="wizard">
     <div class="badge">🏢 Diagnóstico gratuito</div>
     <h1>¿Tu condominio <em>cumple la ley?</em></h1>
-    <p class="lead">Cuatro leyes obligan hoy a los condominios en materia de seguridad y datos. Responde 5 preguntas y sabrás en qué estás al día y en qué estás expuesto — con el artículo exacto de cada obligación.</p>
+    <p class="lead">La ley obliga hoy a los condominios en seguridad, materia laboral y datos personales. Responde 7 preguntas y sabrás en qué estás al día y en qué estás expuesto — con la norma exacta de cada obligación.</p>
     <div class="porque">Para qué sirve: el administrador es el responsable legal ante multas. Este diagnóstico te muestra tu situación real en 3 minutos, sin registro y sin costo. No reemplaza un informe legal firmado: es un punto de partida.</div>
+
+    <div class="difer">🧩 <strong>Esto no reemplaza tu software de gastos comunes.</strong> ComunidadFeliz, EdiPro o el que uses siguen llevando cobros y contabilidad — para eso son buenos. Esto es distinto: cumplimiento de <strong>seguridad privada</strong>. La Directiva de Funcionamiento y la asesoría en esta materia exigen un asesor acreditado conforme a la Ley 21.659, algo fuera del rubro de esas plataformas.</div>
 
     <div class="prog" id="prog"></div>
 
     <!-- P1 -->
     <div class="paso act" data-paso="0">
-      <div class="step-num">Pregunta 1 de 5</div>
+      <div class="step-num">Pregunta 1 de 7</div>
       <div class="step-title">¿El condominio tiene guardias de seguridad?</div>
       <div class="step-sub">Personal contratado —propio o vía empresa— cuya función es la seguridad (control de acceso, vigilancia, rondas).</div>
       <div class="opts" data-key="guardias">
@@ -139,7 +147,7 @@ h1 em{color:#d4a017;font-style:normal}
 
     <!-- P2 -->
     <div class="paso" data-paso="1">
-      <div class="step-num">Pregunta 2 de 5</div>
+      <div class="step-num">Pregunta 2 de 7</div>
       <div class="step-title">¿Cómo figura tu personal de entrada en el contrato?</div>
       <div class="step-sub">Importa el <strong>cargo escrito en el contrato</strong>, no lo que hace en la práctica: define qué obligaciones se activan.</div>
       <div class="opts" data-key="cargo">
@@ -147,12 +155,13 @@ h1 em{color:#d4a017;font-style:normal}
         <div class="opt" data-val="portero"><span class="opt-ic">🛡️</span><span class="opt-tx">Portero, nochero o rondín<small>O un conserje que además hace seguridad</small></span></div>
         <div class="opt" data-val="ninguno"><span class="opt-ic">➖</span><span class="opt-tx">No tenemos personal de entrada<small>Acceso automatizado o sin control</small></span></div>
       </div>
+      <div class="gancho">💡 <strong>Lo que la mayoría de los administradores no sabe:</strong> la obligación no depende de lo que la persona hace en la práctica, sino del <strong>cargo escrito en el contrato</strong>. Un "conserje" que en los hechos controla el acceso y hace rondas puede estar, sin que nadie lo note, bajo el régimen obligatorio de portero/nochero/rondín — con capacitación y seguro de vida exigidos por ley.</div>
       <div class="step-law">Ley 21.659, Art. 55 — el conserje se rige por el régimen de forma voluntaria; el portero/nochero/rondín, de forma obligatoria.</div>
     </div>
 
     <!-- P3 -->
     <div class="paso" data-paso="2">
-      <div class="step-num">Pregunta 3 de 5</div>
+      <div class="step-num">Pregunta 3 de 7</div>
       <div class="step-title">¿Tu personal de seguridad tiene seguro de vida?</div>
       <div class="step-sub">La ley obliga al empleador a contratar un seguro de vida para porteros, nocheros y rondines que cumplan funciones de seguridad.</div>
       <div class="opts" data-key="seguro">
@@ -160,12 +169,42 @@ h1 em{color:#d4a017;font-style:normal}
         <div class="opt" data-val="no"><span class="opt-ic">❌</span><span class="opt-tx">No, o no lo sé<small>No estoy seguro de que exista</small></span></div>
         <div class="opt" data-val="na"><span class="opt-ic">➖</span><span class="opt-tx">No aplica<small>No tenemos ese tipo de personal</small></span></div>
       </div>
+      <div class="gancho">💡 <strong>Dato poco conocido:</strong> no es un trámite menor — la ley exige un curso de al menos 60 horas pedagógicas (una vez) y un refresco de 30 horas cada 4 años, más el seguro de vida a cargo del empleador. Es responsabilidad del administrador verificarlo, no del guardia.</div>
       <div class="step-law">Ley 21.659, Art. 55 — capacitación especializada y seguro de vida son obligatorios para este personal.</div>
     </div>
 
-    <!-- P4 -->
+    <!-- P4: vigencia del conocimiento del personal -->
     <div class="paso" data-paso="3">
-      <div class="step-num">Pregunta 4 de 5</div>
+      <div class="step-num">Pregunta 4 de 7</div>
+      <div class="step-title">¿Cuándo fue la última vez que midieron lo que realmente sabe el personal?</div>
+      <div class="step-sub">No el papel: lo que sabe hoy. Normativa que cambió, procedimientos de acceso, actuación ante emergencias.</div>
+      <div class="opts" data-key="evalper">
+        <div class="opt" data-val="periodica"><span class="opt-ic">📊</span><span class="opt-tx">Lo evaluamos periódicamente<small>Con registro de resultados</small></span></div>
+        <div class="opt" data-val="antiguo"><span class="opt-ic">🕰️</span><span class="opt-tx">Hace más de un año<small>Alguna vez, sin continuidad</small></span></div>
+        <div class="opt" data-val="nunca"><span class="opt-ic">🤷</span><span class="opt-tx">Nunca — confiamos en su acreditación<small>El curso aprobado es nuestro único respaldo</small></span></div>
+        <div class="opt" data-val="na"><span class="opt-ic">➖</span><span class="opt-tx">No tenemos personal<small>Ni conserjería ni seguridad</small></span></div>
+      </div>
+      <div class="gancho">💡 <strong>La propia ley asume que el conocimiento caduca:</strong> por eso exige cursos de refresco periódicos (para porteros y nocheros, 30 horas cada 4 años). Lo que la ley no cubre es el intermedio — entre un curso y el siguiente pasan años sin que nadie mida qué quedó. Y la normativa cambió entera en 2025: un curso rendido antes quedó, en parte, obsoleto el día que entró en vigencia.</div>
+      <div class="step-law">Ley 21.659, Art. 55 y Ord. DT N.º 3515/2014 — la capacitación del personal de seguridad es de cargo del empleador, nunca del trabajador.</div>
+    </div>
+
+    <!-- P5: jornada 42 horas -->
+    <div class="paso" data-paso="4">
+      <div class="step-num">Pregunta 5 de 7</div>
+      <div class="step-title">¿Cómo cuadraron los turnos con la jornada de 42 horas?</div>
+      <div class="step-sub">Desde el 26 de abril de 2026 la jornada ordinaria máxima bajó a 42 horas semanales. Los sistemas de turnos 24/7 son los más afectados.</div>
+      <div class="opts" data-key="jornada">
+        <div class="opt" data-val="ajustada"><span class="opt-ic">✅</span><span class="opt-tx">Replanificamos los turnos y está documentado<small>Nueva planificación y registro de asistencia al día</small></span></div>
+        <div class="opt" data-val="nose"><span class="opt-ic">🤔</span><span class="opt-tx">No lo hemos revisado<small>No sé si los turnos actuales cumplen</small></span></div>
+        <div class="opt" data-val="igual"><span class="opt-ic">❌</span><span class="opt-tx">Seguimos con los turnos de antes<small>Sin cambios desde abril de 2026</small></span></div>
+        <div class="opt" data-val="na"><span class="opt-ic">➖</span><span class="opt-tx">No tenemos personal contratado<small>Ni propio ni vía empresa</small></span></div>
+      </div>
+      <div class="step-law">Ley 21.561 — 42 horas semanales desde el 26-04-2026. Fiscaliza la Dirección del Trabajo.</div>
+    </div>
+
+    <!-- P6 -->
+    <div class="paso" data-paso="5">
+      <div class="step-num">Pregunta 6 de 7</div>
       <div class="step-title">¿El condominio tiene un Plan de Emergencia?</div>
       <div class="step-sub">Un plan escrito ante incendios, sismos, tsunamis u otros, con alerta temprana y evacuación (antes, durante y después).</div>
       <div class="opts" data-key="emergencia">
@@ -176,9 +215,9 @@ h1 em{color:#d4a017;font-style:normal}
       <div class="step-law">Ley 21.442 de Copropiedad, Art. 40 — el plan de emergencia es obligatorio para todo condominio. El administrador responde (Art. 88).</div>
     </div>
 
-    <!-- P5 -->
-    <div class="paso" data-paso="4">
-      <div class="step-num">Pregunta 5 de 5</div>
+    <!-- P7 -->
+    <div class="paso" data-paso="6">
+      <div class="step-num">Pregunta 7 de 7</div>
       <div class="step-title">¿Manejan cámaras, control de acceso o libro de visitas?</div>
       <div class="step-sub">Cualquiera de estos trata datos personales de residentes y visitantes — y el responsable legal es el administrador.</div>
       <div class="opts" data-key="datos">
@@ -204,7 +243,7 @@ h1 em{color:#d4a017;font-style:normal}
     </div>
     <div id="areas"></div>
     <div id="cierre"></div>
-    <div class="disc">⚖️ Este diagnóstico es una orientación automatizada basada en las respuestas que entregaste y en el texto vigente de las leyes 21.659, 21.442 y 21.719. No constituye un informe legal firmado ni reemplaza la asesoría de un profesional acreditado. Las obligaciones concretas dependen de la situación específica de cada condominio.</div>
+    <div class="disc">⚖️ Este diagnóstico es una orientación automatizada basada en las respuestas que entregaste y en el texto vigente de las leyes 21.659, 21.442, 21.719 y 21.561, y en dictámenes de la Dirección del Trabajo. No constituye un informe legal firmado ni reemplaza la asesoría de un profesional acreditado. Las obligaciones concretas dependen de la situación específica de cada condominio.</div>
     <a class="volver" href="#" onclick="reiniciar();return false;">↻ Hacer el diagnóstico de nuevo</a>
   </div>
 </main>
@@ -219,7 +258,7 @@ var CYC_VIS=(function(){try{var k='cyc_vis',v=localStorage.getItem(k);if(!v){v=(
 function tel(accion,detalle){try{fetch(API_URL+'/telemetria',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({herramienta:'diag-condominio',accion:accion,detalle:detalle?String(detalle).slice(0,300):undefined,fuente:CYC_FUENTE||undefined,visitante:CYC_VIS||undefined})}).catch(function(){});}catch(e){}}
 tel('carga_pagina');
 
-var TOTAL=5, paso=0, resp={};
+var TOTAL=7, paso=0, resp={};
 
 // Pinta la barra de progreso
 (function(){var p=document.getElementById('prog');for(var i=0;i<TOTAL;i++){var d=document.createElement('div');d.className='p';p.appendChild(d);}})();
@@ -287,6 +326,30 @@ function evaluar(){
     a.push({k:'seguro',ic:'✅',n:'Seguro de vida del personal',est:'verde',
       d:'Bien: tienes personal de seguridad con seguro de vida contratado, que es lo que exige la ley.',
       l:'Ley 21.659, Art. 55'});
+  }
+  // 3.bis Vigencia del conocimiento del personal — NO es infracción legal: riesgo operativo honesto (sin alarmismo)
+  if(resp.evalper==='nunca'||resp.evalper==='antiguo'){
+    a.push({k:'evalper',ic:'🎓',n:'Vigencia del conocimiento del personal',est:'amarillo',
+      d:'Tu personal tiene acreditación, pero nadie mide qué sabe hoy. No es una infracción en sí misma — aunque ojo: la propia ley asume que el conocimiento caduca y por eso exige refrescos periódicos (cada 4 años para porteros y nocheros). Entre un curso y el siguiente pasan años sin medición, y la normativa cambió completa en 2025. Ante un incidente, el respaldo es lo que el guardia hizo, no el diploma que tiene guardado.',
+      l:'Ley 21.659, Art. 55 — capacitación de cargo del empleador (Ord. DT N.º 3515/2014); refresco periódico según Res. Ex. 2.183'});
+  }else if(resp.evalper==='periodica'){
+    a.push({k:'evalper',ic:'🎓',n:'Vigencia del conocimiento del personal',est:'verde',
+      d:'Bien: evalúan periódicamente a su personal. Pocas comunidades lo hacen — mantenerlo deja respaldo documentado ante incidentes y detecta brechas antes de que cuesten caro.',
+      l:'Ley 21.659, Art. 55'});
+  }
+  // 3.ter Jornada 42 horas (Ley 21.561, vigente 26-04-2026)
+  if(resp.jornada==='igual'){
+    a.push({k:'jornada',ic:'⏱️',n:'Jornada de 42 horas del personal',est:'rojo',
+      d:'Mantienes los turnos anteriores a la rebaja de jornada. Un sistema 24/7 que cuadraba con 45 horas normalmente no cuadra con 42 sin replanificar, y la conserjería y la seguridad concentran multas frecuentes de la Dirección del Trabajo por exceso de jornada y mala distribución de turnos. Conviene auditar la planificación antes de una fiscalización.',
+      l:'Ley 21.561 — jornada máxima de 42 horas desde el 26-04-2026'});
+  }else if(resp.jornada==='nose'){
+    a.push({k:'jornada',ic:'⏱️',n:'Jornada de 42 horas del personal',est:'amarillo',
+      d:'No has contrastado los turnos contra la jornada de 42 horas vigente desde abril de 2026. Es una revisión rápida: planificación de turnos y registro de asistencia. Si los turnos vienen de antes de la rebaja, lo más probable es que necesiten ajuste.',
+      l:'Ley 21.561 — jornada máxima de 42 horas desde el 26-04-2026'});
+  }else if(resp.jornada==='ajustada'){
+    a.push({k:'jornada',ic:'⏱️',n:'Jornada de 42 horas del personal',est:'verde',
+      d:'Bien: replanificaste los turnos tras la rebaja a 42 horas y está documentado. Mantén el registro de asistencia al día — es lo primero que revisa una fiscalización.',
+      l:'Ley 21.561'});
   }
   // 4. Plan de Emergencia (aplica al 100% del mercado)
   if(resp.emergencia==='no'){
@@ -368,20 +431,22 @@ function calcular(){
 
 // ---- Oferta: paquete de asesoría propia one-time; marca qué ítem resuelve cada punto rojo ----
 function armarOferta(areas,rojos,amar){
-  var enRojo={};areas.forEach(function(x){if(x.est==='rojo')enRojo[x.k]=true;});
+  var enRojo={},enAmar={};areas.forEach(function(x){if(x.est==='rojo')enRojo[x.k]=true;if(x.est==='amarillo')enAmar[x.k]=true;});
 
-  // Ítems del paquete (todo asesoría propia de C&C — sin terceros). fix = área del diagnóstico que resuelve.
+  // Ítems del paquete (todo asesoría propia de C&C — sin terceros). fix = áreas del diagnóstico que ese ítem resuelve.
   var items=[
-    {t:'Evaluación de Seguridad en terreno: accesos, puntos ciegos y procedimientos, con informe firmado por asesor acreditado OS.10',fix:null},
-    {t:'Plan de Seguridad del condominio: protocolos de acceso, visitas, encomiendas y rondas',fix:null},
-    {t:'Auditoría de clasificación del personal y seguro de vida (Art. 55)',fix:'seguro'},
-    {t:'Kit Ley 21.719: aviso de privacidad, política de retención de grabaciones y acta de asamblea para videovigilancia',fix:'datos'}
+    {t:'Evaluación de Seguridad en terreno: accesos, puntos ciegos y procedimientos, con informe firmado por asesor acreditado OS.10',fix:[]},
+    {t:'Plan de Seguridad del condominio: protocolos de acceso, visitas, encomiendas y rondas',fix:[]},
+    {t:'Auditoría integral del personal: clasificación del cargo, capacitación y refrescos al día, jornada de 42 horas y seguro de vida (Art. 55 y Código del Trabajo)',fix:['seguro','jornada','cargo']},
+    {t:'Evaluación de conocimiento del personal en terreno, anclada al temario oficial (Res. Ex. 2.183), con informe de brechas por área para el empleador',fix:['evalper']},
+    {t:'Kit Ley 21.719: aviso de privacidad, política de retención de grabaciones y acta de asamblea para videovigilancia',fix:['datos']}
   ];
-  if(resp.guardias==='si'){items.push({t:'Directiva de Funcionamiento presentada ante la autoridad (Art. 51)',fix:'directiva'});}
+  if(resp.guardias==='si'){items.push({t:'Directiva de Funcionamiento presentada ante la autoridad (Art. 51)',fix:['directiva']});}
 
   var lis=items.map(function(it){
-    var esFix=it.fix&&enRojo[it.fix];
-    return '<li'+(esFix?' class="of-fix"':'')+'>'+it.t+'</li>';
+    var esRojo=it.fix.some(function(k){return enRojo[k];});
+    var esAmar=!esRojo&&it.fix.some(function(k){return enAmar[k];});
+    return '<li'+(esRojo?' class="of-fix"':esAmar?' class="of-fixam"':'')+'>'+it.t+'</li>';
   }).join('');
 
   // Título y bajada según gravedad — la herramienta explica para qué sirve
@@ -415,6 +480,7 @@ function armarOferta(areas,rojos,amar){
     +'<ul>'+lis+'</ul>'
     +'<div class="of-precio"><span class="of-desde">Pago único desde</span><span class="of-monto">$'+CYC_CONFIG.precioCondominioSetup+'</span><span class="of-iva">+ IVA</span></div>'
     +'<div class="of-mens">Continuidad opcional: $'+CYC_CONFIG.precioCondominioMensual+' + IVA/mes — alertas cuando cambie la ley, re-clasificación al rotar personal, informe al comité y beneficios para tus residentes.</div>'
+    +'<div class="of-mens">🧩 Convive con tu software de gastos comunes actual — no lo reemplaza. Esto es la parte de seguridad privada que esa plataforma no cubre.</div>'
     +'<a class="btn-wa" href="'+wa+'" target="_blank" rel="noopener" onclick="tel(\'click_oferta\',\'rojos:'+rojos+'\')">Quiero mi cotización por WhatsApp →</a>'
     +'<div class="of-nota">Cotización formal según tamaño del condominio. ¿Administras más de una comunidad? Pregunta por el precio de cartera.</div>'
     +deriva
