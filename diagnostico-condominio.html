@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnóstico de Cumplimiento para Condominios — Control &amp; Confianza</title>
-<meta name="description" content="¿Tu condominio cumple la ley? Revisa en 3 minutos tu Plan de Emergencia, la clasificación y jornada de tu personal, tu Directiva de Funcionamiento y tu preparación para la Ley 21.719. Gratis.">
+<title>C&amp;C Check — ¿Tu condominio cumple la ley?</title>
+<meta name="description" content="C&amp;C Check: el diagnóstico de cumplimiento para condominios. Revisa en 3 minutos tu Plan de Emergencia, la clasificación y jornada de tu personal, tu Directiva de Funcionamiento y tu preparación para la Ley 21.719. Gratis.">
 <meta name="robots" content="index,follow">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Control y Confianza">
 <meta property="og:locale" content="es_CL">
-<meta property="og:title" content="Diagnóstico de Cumplimiento para Condominios">
-<meta property="og:description" content="En 3 minutos sabes si tu condominio cumple las obligaciones legales de seguridad y datos. Gratis, sin registro.">
+<meta property="og:title" content="C&amp;C Check — Diagnóstico de Cumplimiento para Condominios">
+<meta property="og:description" content="En 3 minutos sabes si tu condominio cumple las obligaciones legales de seguridad, laborales y de datos. Gratis, sin registro.">
 <meta property="og:url" content="https://app.controlyconfianza.cl/diagnostico-condominio.html">
 <meta property="og:image" content="https://app.controlyconfianza.cl/icon-diag-512.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-diag-192.png">
@@ -109,6 +109,12 @@ h1 em{color:#d4a017;font-style:normal}
 .btn-wa:hover{background:#e8b520}
 .of-nota{font-size:11.5px;color:#8a8a8a;line-height:1.55;margin-top:12px}
 .of-deriva{background:#161616;border-left:3px solid #555;border-radius:0 8px 8px 0;padding:10px 12px;font-size:11.5px;color:#999;line-height:1.55;margin-top:12px}
+.of-com{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.of-com .ct{font-size:12.5px;font-weight:800;color:#4ade80;margin-bottom:7px}
+.of-com ul{list-style:none;margin:0}
+.of-com li{font-size:12px;color:#ccc;padding:3px 0;position:relative;line-height:1.5;border:none}
+.of-com li::before{content:none}
+.of-com .cn{font-size:11px;color:#8a8a8a;margin-top:7px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -124,7 +130,7 @@ h1 em{color:#d4a017;font-style:normal}
 <main>
   <!-- CUESTIONARIO -->
   <div id="wizard">
-    <div class="badge">🏢 Diagnóstico gratuito</div>
+    <div class="badge">🏢 C&amp;C Check — diagnóstico gratuito</div>
     <h1>¿Tu condominio <em>cumple la ley?</em></h1>
     <p class="lead">La ley obliga hoy a los condominios en seguridad, materia laboral y datos personales. Responde 8 preguntas y sabrás en qué estás al día y en qué estás expuesto — con la norma exacta de cada obligación.</p>
     <div class="porque">Para qué sirve: el administrador es el responsable legal ante multas. Este diagnóstico te muestra tu situación real en 3 minutos, sin registro y sin costo. No reemplaza un informe legal firmado: es un punto de partida.</div>
@@ -510,6 +516,15 @@ function armarOferta(areas,rojos,amar){
     +'<div class="of-precio"><span class="of-desde">Pago único desde</span><span class="of-monto">$'+CYC_CONFIG.precioCondominioSetup+'</span><span class="of-iva">+ IVA</span></div>'
     +'<div class="of-mens">Continuidad opcional: $'+CYC_CONFIG.precioCondominioMensual+' + IVA/mes — <strong style="color:#f0e8d0">calendario de cumplimiento</strong> con aviso antes de cada vencimiento (certificación de ascensores, inspección de gas, renovación de la póliza de incendio, matriz de riesgos anual, refresco de capacitación, vigencia de la Directiva), más re-clasificación al rotar personal, informe al comité y beneficios para tus residentes.</div>'
     +'<div class="of-mens">🧩 Convive con tu software de gastos comunes actual — no lo reemplaza. Esto es la parte de seguridad privada que esa plataforma no cubre.</div>'
+    +'<div class="of-com"><div class="ct">🏘️ Y esto lo ven tus residentes</div>'
+    +'<ul>'
+    +'<li>📍 Mapa de riesgo y estadísticas de seguridad de su comuna</li>'
+    +'<li>🔔 Alertas de seguridad de su comuna, directo en su teléfono</li>'
+    +'<li>📞 Teléfonos de emergencia y guía de actuación siempre a mano</li>'
+    +'<li>🏠 Plan Hogar: el diagnóstico de seguridad de su propia casa o depto</li>'
+    +'<li>🎬 Controlcito: videos breves de prevención para toda la familia</li>'
+    +'</ul>'
+    +'<div class="cn">Con la continuidad activa, dejamos a tu comunidad conectada al ecosistema gratuito de la App C&amp;C — configurado para su comuna y con material de difusión listo para tus residentes. El beneficio lo ven las familias; la gestión, la hiciste tú.</div></div>'
     +'<a class="btn-wa" href="'+wa+'" target="_blank" rel="noopener" onclick="tel(\'click_oferta\',\'rojos:'+rojos+'\')">Quiero mi cotización por WhatsApp →</a>'
     +'<div class="of-nota">Cotización formal según tamaño del condominio. ¿Administras más de una comunidad? Pregunta por el precio de cartera.</div>'
     +deriva
