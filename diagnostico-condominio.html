@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico de Cumplimiento para Condominios — Control &amp; Confianza</title>
+<meta name="description" content="¿Tu condominio cumple la ley? Revisa en 3 minutos tu Plan de Emergencia, la clasificación de tu personal, tu Directiva de Funcionamiento y tu preparación para la Ley 21.719. Gratis.">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Control y Confianza">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Diagnóstico de Cumplimiento para Condominios">
+<meta property="og:description" content="En 3 minutos sabes si tu condominio cumple las obligaciones legales de seguridad y datos. Gratis, sin registro.">
+<meta property="og:url" content="https://app.controlyconfianza.cl/diagnostico-condominio.html">
+<meta property="og:image" content="https://app.controlyconfianza.cl/icon-diag-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-diag-192.png">
+<link rel="apple-touch-icon" href="icon-diag-192.png">
+<meta name="theme-color" content="#111111">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#f0e8d0;min-height:100vh;line-height:1.5}
+.header{background:#1a1a1a;border-bottom:2px solid #d4a017;padding:14px 20px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.header img{height:36px}
+.header .hn{font-size:15px;font-weight:800}
+.header .hs{font-size:9.5px;color:#d4a017;font-weight:700;letter-spacing:2px}
+main{max-width:560px;margin:0 auto;padding:24px 16px 80px}
+.badge{display:inline-block;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.4);color:#d4a017;font-size:11px;font-weight:800;letter-spacing:1px;padding:4px 12px;border-radius:99px;text-transform:uppercase;margin-bottom:14px}
+h1{font-size:25px;font-weight:900;line-height:1.2;margin-bottom:10px}
+h1 em{color:#d4a017;font-style:normal}
+.lead{font-size:14.5px;color:#bbb;line-height:1.6;margin-bottom:8px}
+.porque{font-size:12.5px;color:#8a8a8a;background:#161616;border-left:3px solid #d4a017;padding:10px 12px;border-radius:0 8px 8px 0;margin:16px 0 24px}
+/* Progreso */
+.prog{display:flex;gap:5px;margin-bottom:22px}
+.prog .p{flex:1;height:5px;border-radius:99px;background:#2a2a2a;transition:background .3s}
+.prog .p.done{background:#d4a017}
+/* Paso */
+.paso{display:none}
+.paso.act{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.step-num{font-size:11px;font-weight:700;color:#d4a017;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.step-title{font-size:19px;font-weight:800;color:#f0e8d0;margin-bottom:6px;line-height:1.3}
+.step-sub{font-size:13px;color:#999;margin-bottom:18px;line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid #2a2a2a;border-radius:11px;cursor:pointer;transition:all .18s;background:#1a1a1a}
+.opt:hover{border-color:#555}
+.opt.sel{border-color:#d4a017;background:rgba(212,160,23,.08)}
+.opt-ic{font-size:21px;flex-shrink:0;width:26px;text-align:center}
+.opt-tx{font-size:14px;font-weight:600;color:#eee}
+.opt-tx small{display:block;font-size:11.5px;color:#8a8a8a;font-weight:400;margin-top:2px}
+.step-law{font-size:11px;color:#7a7a7a;font-style:italic;margin-top:16px;padding-top:11px;border-top:1px solid #2a2a2a}
+.nav{display:flex;gap:10px;margin-top:22px}
+.btn{border:none;border-radius:10px;font-size:14.5px;font-weight:800;cursor:pointer;padding:13px;font-family:inherit;transition:all .18s}
+.btn-oro{background:#d4a017;color:#111;flex:1}
+.btn-oro:hover{background:#e8b520}
+.btn-oro:disabled{background:#444;color:#888;cursor:default}
+.btn-borde{background:transparent;color:#aaa;border:1px solid #333;padding:13px 18px}
+.btn-borde:hover{border-color:#666;color:#ddd}
+/* Resultado */
+#resultado{display:none}
+.res-hero{text-align:center;padding:22px 16px;border-radius:14px;margin-bottom:20px;border:1px solid}
+.res-hero.rojo{background:rgba(190,18,60,.1);border-color:rgba(190,18,60,.4)}
+.res-hero.amarillo{background:rgba(212,160,23,.1);border-color:rgba(212,160,23,.4)}
+.res-hero.verde{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.4)}
+.res-hero .em{font-size:40px;display:block;margin-bottom:8px}
+.res-hero .t{font-size:20px;font-weight:900;margin-bottom:4px}
+.res-hero.rojo .t{color:#fb7185}
+.res-hero.amarillo .t{color:#e8b520}
+.res-hero.verde .t{color:#4ade80}
+.res-hero .s{font-size:13px;color:#bbb}
+.area{background:#1a1a1a;border:1px solid #2a2a2a;border-left-width:4px;border-radius:0 11px 11px 0;padding:15px 16px;margin-bottom:12px}
+.area.rojo{border-left-color:#be123c}
+.area.amarillo{border-left-color:#d4a017}
+.area.verde{border-left-color:#22c55e}
+.area .ah{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.area .ai{font-size:19px}
+.area .an{font-size:14.5px;font-weight:800;color:#f0e8d0;flex:1}
+.area .aest{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:99px}
+.area.rojo .aest{background:rgba(190,18,60,.2);color:#fb7185}
+.area.amarillo .aest{background:rgba(212,160,23,.2);color:#e8b520}
+.area.verde .aest{background:rgba(34,197,94,.2);color:#4ade80}
+.area .ad{font-size:12.5px;color:#aaa;line-height:1.55}
+.area .al{font-size:10.5px;color:#777;font-style:italic;margin-top:8px}
+.disc{font-size:11px;color:#777;line-height:1.55;background:#161616;border:1px solid #262626;border-radius:9px;padding:13px;margin-top:18px}
+.volver{display:block;text-align:center;margin-top:24px;font-size:13px;color:#d4a017;text-decoration:none}
+/* Bloque de cierre — oferta Evaluación de Seguridad (brief APP-4 §0.bis/§5.ter, 28-07-2026) */
+#cierre{margin-top:22px}
+.oferta{background:linear-gradient(160deg,#1d1a12,#1a1a1a);border:1px solid rgba(212,160,23,.45);border-radius:14px;padding:20px 18px}
+.oferta .of-eti{display:inline-block;background:rgba(212,160,23,.15);color:#d4a017;font-size:10.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:99px;margin-bottom:10px}
+.oferta .of-t{font-size:18px;font-weight:900;color:#f0e8d0;line-height:1.3;margin-bottom:8px}
+.oferta .of-p{font-size:13px;color:#bbb;line-height:1.6;margin-bottom:14px}
+.oferta ul{list-style:none;margin-bottom:14px}
+.oferta li{font-size:13px;color:#ddd;padding:7px 0 7px 26px;position:relative;line-height:1.5;border-bottom:1px solid #262626}
+.oferta li:last-child{border-bottom:none}
+.oferta li::before{content:'✓';position:absolute;left:2px;color:#d4a017;font-weight:900}
+.oferta li.of-fix{color:#f0e8d0;font-weight:700}
+.oferta li.of-fix::after{content:'resuelve tu punto rojo';display:inline-block;font-size:9.5px;font-weight:800;color:#fb7185;background:rgba(190,18,60,.15);border-radius:99px;padding:2px 8px;margin-left:8px;vertical-align:middle;letter-spacing:.5px;text-transform:uppercase}
+.oferta .of-precio{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.oferta .of-desde{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:1px;font-weight:700}
+.oferta .of-monto{font-size:26px;font-weight:900;color:#d4a017}
+.oferta .of-iva{font-size:12px;color:#999}
+.oferta .of-mens{font-size:12px;color:#999;margin-bottom:14px;line-height:1.5}
+.btn-wa{display:block;text-align:center;background:#d4a017;color:#111;border-radius:10px;font-size:15px;font-weight:800;padding:14px;text-decoration:none;transition:background .18s}
+.btn-wa:hover{background:#e8b520}
+.of-nota{font-size:11.5px;color:#8a8a8a;line-height:1.55;margin-top:12px}
+.of-deriva{background:#161616;border-left:3px solid #555;border-radius:0 8px 8px 0;padding:10px 12px;font-size:11.5px;color:#999;line-height:1.55;margin-top:12px}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <img src="icon-192.png" alt="Logo Control y Confianza">
+  <div>
+    <div class="hn">Control &amp; Confianza</div>
+    <div class="hs">SEGURIDAD PRIVADA · OS.10</div>
+  </div>
+</header>
+
+<main>
+  <!-- CUESTIONARIO -->
+  <div id="wizard">
+    <div class="badge">🏢 Diagnóstico gratuito</div>
+    <h1>¿Tu condominio <em>cumple la ley?</em></h1>
+    <p class="lead">Cuatro leyes obligan hoy a los condominios en materia de seguridad y datos. Responde 5 preguntas y sabrás en qué estás al día y en qué estás expuesto — con el artículo exacto de cada obligación.</p>
+    <div class="porque">Para qué sirve: el administrador es el responsable legal ante multas. Este diagnóstico te muestra tu situación real en 3 minutos, sin registro y sin costo. No reemplaza un informe legal firmado: es un punto de partida.</div>
+
+    <div class="prog" id="prog"></div>
+
+    <!-- P1 -->
+    <div class="paso act" data-paso="0">
+      <div class="step-num">Pregunta 1 de 5</div>
+      <div class="step-title">¿El condominio tiene guardias de seguridad?</div>
+      <div class="step-sub">Personal contratado —propio o vía empresa— cuya función es la seguridad (control de acceso, vigilancia, rondas).</div>
+      <div class="opts" data-key="guardias">
+        <div class="opt" data-val="si"><span class="opt-ic">👮</span><span class="opt-tx">Sí, tenemos guardias<small>Propios o de una empresa externa</small></span></div>
+        <div class="opt" data-val="no"><span class="opt-ic">🚫</span><span class="opt-tx">No, no tenemos guardias<small>Solo conserje/portería o nada</small></span></div>
+      </div>
+      <div class="step-law">Ley 21.659, Art. 51 — contratar guardias obliga a comunicar los servicios en una Directiva de Funcionamiento.</div>
+    </div>
+
+    <!-- P2 -->
+    <div class="paso" data-paso="1">
+      <div class="step-num">Pregunta 2 de 5</div>
+      <div class="step-title">¿Cómo figura tu personal de entrada en el contrato?</div>
+      <div class="step-sub">Importa el <strong>cargo escrito en el contrato</strong>, no lo que hace en la práctica: define qué obligaciones se activan.</div>
+      <div class="opts" data-key="cargo">
+        <div class="opt" data-val="conserje"><span class="opt-ic">🧾</span><span class="opt-tx">Conserje (funciones administrativas)<small>Recepción, encomiendas, atención a residentes</small></span></div>
+        <div class="opt" data-val="portero"><span class="opt-ic">🛡️</span><span class="opt-tx">Portero, nochero o rondín<small>O un conserje que además hace seguridad</small></span></div>
+        <div class="opt" data-val="ninguno"><span class="opt-ic">➖</span><span class="opt-tx">No tenemos personal de entrada<small>Acceso automatizado o sin control</small></span></div>
+      </div>
+      <div class="step-law">Ley 21.659, Art. 55 — el conserje se rige por el régimen de forma voluntaria; el portero/nochero/rondín, de forma obligatoria.</div>
+    </div>
+
+    <!-- P3 -->
+    <div class="paso" data-paso="2">
+      <div class="step-num">Pregunta 3 de 5</div>
+      <div class="step-title">¿Tu personal de seguridad tiene seguro de vida?</div>
+      <div class="step-sub">La ley obliga al empleador a contratar un seguro de vida para porteros, nocheros y rondines que cumplan funciones de seguridad.</div>
+      <div class="opts" data-key="seguro">
+        <div class="opt" data-val="si"><span class="opt-ic">✅</span><span class="opt-tx">Sí, está contratado<small>Vigente y a nombre del personal</small></span></div>
+        <div class="opt" data-val="no"><span class="opt-ic">❌</span><span class="opt-tx">No, o no lo sé<small>No estoy seguro de que exista</small></span></div>
+        <div class="opt" data-val="na"><span class="opt-ic">➖</span><span class="opt-tx">No aplica<small>No tenemos ese tipo de personal</small></span></div>
+      </div>
+      <div class="step-law">Ley 21.659, Art. 55 — capacitación especializada y seguro de vida son obligatorios para este personal.</div>
+    </div>
+
+    <!-- P4 -->
+    <div class="paso" data-paso="3">
+      <div class="step-num">Pregunta 4 de 5</div>
+      <div class="step-title">¿El condominio tiene un Plan de Emergencia?</div>
+      <div class="step-sub">Un plan escrito ante incendios, sismos, tsunamis u otros, con alerta temprana y evacuación (antes, durante y después).</div>
+      <div class="opts" data-key="emergencia">
+        <div class="opt" data-val="si"><span class="opt-ic">✅</span><span class="opt-tx">Sí, existe y está vigente<small>Documentado y conocido por la comunidad</small></span></div>
+        <div class="opt" data-val="viejo"><span class="opt-ic">🕰️</span><span class="opt-tx">Existe pero está desactualizado<small>Antiguo, sin simulacros recientes</small></span></div>
+        <div class="opt" data-val="no"><span class="opt-ic">❌</span><span class="opt-tx">No tenemos<small>O no sé si existe</small></span></div>
+      </div>
+      <div class="step-law">Ley 21.442 de Copropiedad, Art. 40 — el plan de emergencia es obligatorio para todo condominio. El administrador responde (Art. 88).</div>
+    </div>
+
+    <!-- P5 -->
+    <div class="paso" data-paso="4">
+      <div class="step-num">Pregunta 5 de 5</div>
+      <div class="step-title">¿Manejan cámaras, control de acceso o libro de visitas?</div>
+      <div class="step-sub">Cualquiera de estos trata datos personales de residentes y visitantes — y el responsable legal es el administrador.</div>
+      <div class="opts" data-key="datos">
+        <div class="opt" data-val="si_prep"><span class="opt-ic">🟢</span><span class="opt-tx">Sí, y tenemos aviso de privacidad y reglas<small>Acta de asamblea, política de retención</small></span></div>
+        <div class="opt" data-val="si_nada"><span class="opt-ic">🔴</span><span class="opt-tx">Sí, pero sin nada formalizado<small>Cámaras/registro sin respaldo documental</small></span></div>
+        <div class="opt" data-val="no"><span class="opt-ic">➖</span><span class="opt-tx">No manejamos ninguno<small>Sin cámaras ni registro de visitas</small></span></div>
+      </div>
+      <div class="step-law">Ley 21.719 de Datos Personales — vigencia 1 de diciembre de 2026. Multas de hasta 20.000 UTM.</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-borde" id="btnAtras" onclick="atras()" style="display:none">← Atrás</button>
+      <button class="btn btn-oro" id="btnSig" onclick="siguiente()" disabled>Siguiente</button>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="resultado">
+    <div class="res-hero" id="resHero">
+      <span class="em" id="resEm">🔎</span>
+      <div class="t" id="resT"></div>
+      <div class="s" id="resS"></div>
+    </div>
+    <div id="areas"></div>
+    <div id="cierre"></div>
+    <div class="disc">⚖️ Este diagnóstico es una orientación automatizada basada en las respuestas que entregaste y en el texto vigente de las leyes 21.659, 21.442 y 21.719. No constituye un informe legal firmado ni reemplaza la asesoría de un profesional acreditado. Las obligaciones concretas dependen de la situación específica de cada condominio.</div>
+    <a class="volver" href="#" onclick="reiniciar();return false;">↻ Hacer el diagnóstico de nuevo</a>
+  </div>
+</main>
+
+<script src="config.js"></script>
+<script>
+var API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+// Fuente de captación ?f= — mismo patrón que el resto del ecosistema
+var CYC_FUENTE=(function(){try{var f=new URLSearchParams(location.search).get('f');if(f){f=f.toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40);if(f){localStorage.setItem('mc_fuente',f);return f;}}return localStorage.getItem('mc_fuente')||'directo';}catch(e){return'directo';}})();
+// Identificador anónimo de visitante — para contar PERSONAS, no solo aperturas (mismo esquema que las otras apps)
+var CYC_VIS=(function(){try{var k='cyc_vis',v=localStorage.getItem(k);if(!v){v=(crypto&&crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2)+String(Math.random()).slice(2)).slice(0,36);localStorage.setItem(k,v);}return v;}catch(e){return null;}})();
+function tel(accion,detalle){try{fetch(API_URL+'/telemetria',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({herramienta:'diag-condominio',accion:accion,detalle:detalle?String(detalle).slice(0,300):undefined,fuente:CYC_FUENTE||undefined,visitante:CYC_VIS||undefined})}).catch(function(){});}catch(e){}}
+tel('carga_pagina');
+
+var TOTAL=5, paso=0, resp={};
+
+// Pinta la barra de progreso
+(function(){var p=document.getElementById('prog');for(var i=0;i<TOTAL;i++){var d=document.createElement('div');d.className='p';p.appendChild(d);}})();
+function pintarProg(){var ps=document.querySelectorAll('#prog .p');ps.forEach(function(el,i){el.className='p'+(i<=paso?' done':'');});}
+pintarProg();
+
+// Selección de opción
+document.querySelectorAll('.opts').forEach(function(grp){
+  grp.querySelectorAll('.opt').forEach(function(op){
+    op.addEventListener('click',function(){
+      grp.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel');});
+      op.classList.add('sel');
+      resp[grp.dataset.key]=op.dataset.val;
+      document.getElementById('btnSig').disabled=false;
+    });
+  });
+});
+
+function mostrarPaso(){
+  document.querySelectorAll('.paso').forEach(function(p){p.classList.toggle('act',+p.dataset.paso===paso);});
+  document.getElementById('btnAtras').style.display=paso>0?'block':'none';
+  document.getElementById('btnSig').textContent=paso===TOTAL-1?'Ver mi diagnóstico':'Siguiente';
+  var key=document.querySelector('.paso.act .opts').dataset.key;
+  document.getElementById('btnSig').disabled=!resp[key];
+  pintarProg();
+}
+function siguiente(){
+  if(paso<TOTAL-1){paso++;mostrarPaso();window.scrollTo({top:0,behavior:'smooth'});}
+  else{calcular();}
+}
+function atras(){if(paso>0){paso--;mostrarPaso();window.scrollTo({top:0,behavior:'smooth'});}}
+
+// ---- Motor de diagnóstico: cada área devuelve estado + texto + ley ----
+function evaluar(){
+  var a=[];
+  // 1. Directiva de Funcionamiento
+  if(resp.guardias==='si'){
+    a.push({k:'directiva',ic:'📋',n:'Directiva de Funcionamiento',est:'rojo',
+      d:'Tienes guardias, así que la ley te obliga a comunicar sus servicios en una Directiva de Funcionamiento presentada a la Subsecretaría de Prevención del Delito y a la autoridad fiscalizadora. Sin ella, el condominio está expuesto a multas.',
+      l:'Ley 21.659, Art. 51'});
+  }else{
+    a.push({k:'directiva',ic:'📋',n:'Directiva de Funcionamiento',est:'verde',
+      d:'Sin guardias de seguridad, hoy no estás obligado a tener Directiva de Funcionamiento. Si en el futuro contratas guardias —propios o vía empresa— pasa a ser obligatoria.',
+      l:'Ley 21.659, Art. 51'});
+  }
+  // 2. Clasificación del personal
+  if(resp.cargo==='portero'){
+    a.push({k:'cargo',ic:'🛡️',n:'Clasificación del personal',est:'amarillo',
+      d:'Tu personal figura como portero/nochero/rondín o hace funciones de seguridad: eso activa obligaciones específicas (capacitación especializada y seguro de vida). Conviene verificar que la clasificación en el contrato calce con lo que realmente hacen.',
+      l:'Ley 21.659, Art. 55'});
+  }else if(resp.cargo==='conserje'){
+    a.push({k:'cargo',ic:'🧾',n:'Clasificación del personal',est:'verde',
+      d:'Un conserje con funciones administrativas se somete al régimen de seguridad privada de forma voluntaria, no obligatoria. Cuida que en la práctica no termine haciendo funciones de seguridad, porque eso cambiaría su clasificación y sus obligaciones.',
+      l:'Ley 21.659, Art. 55'});
+  }else{
+    a.push({k:'cargo',ic:'➖',n:'Clasificación del personal',est:'verde',
+      d:'Sin personal de entrada, este punto no aplica hoy.',l:'Ley 21.659, Art. 55'});
+  }
+  // 3. Seguro de vida
+  if(resp.cargo==='portero' && resp.seguro==='no'){
+    a.push({k:'seguro',ic:'🚨',n:'Seguro de vida del personal',est:'rojo',
+      d:'Tienes personal de seguridad sin seguro de vida contratado (o no confirmado). La ley obliga al empleador a contratarlo. Es una de las obligaciones más ignoradas y de las que genera responsabilidad directa del administrador.',
+      l:'Ley 21.659, Art. 55'});
+  }else if(resp.cargo==='portero' && resp.seguro==='si'){
+    a.push({k:'seguro',ic:'✅',n:'Seguro de vida del personal',est:'verde',
+      d:'Bien: tienes personal de seguridad con seguro de vida contratado, que es lo que exige la ley.',
+      l:'Ley 21.659, Art. 55'});
+  }
+  // 4. Plan de Emergencia (aplica al 100% del mercado)
+  if(resp.emergencia==='no'){
+    a.push({k:'emergencia',ic:'🔥',n:'Plan de Emergencia',est:'rojo',
+      d:'Todo condominio está obligado a tener un plan de emergencia ante incendios, sismos y otras contingencias. No tenerlo expone al administrador a sanciones de la SEREMI MINVU y del Juzgado de Policía Local, además de responsabilidad civil ante un accidente. Por reglamento, debe elaborarlo y firmarlo un ingeniero en prevención de riesgos.',
+      l:'Ley 21.442 de Copropiedad, Art. 40 y 88'});
+  }else if(resp.emergencia==='viejo'){
+    a.push({k:'emergencia',ic:'🕰️',n:'Plan de Emergencia',est:'amarillo',
+      d:'Tienes plan, pero desactualizado. La obligación no es solo tenerlo escrito: debe estar vigente, ser conocido por la comunidad y practicarse — y sus actualizaciones también las firma un ingeniero en prevención de riesgos. Un plan viejo sin simulacros puede considerarse incumplimiento.',
+      l:'Ley 21.442 de Copropiedad, Art. 40'});
+  }else{
+    a.push({k:'emergencia',ic:'✅',n:'Plan de Emergencia',est:'verde',
+      d:'Bien: cuentas con un plan de emergencia vigente, que es obligatorio para todo condominio.',
+      l:'Ley 21.442 de Copropiedad, Art. 40'});
+  }
+  // 5. Ley 21.719
+  if(resp.datos==='si_nada'){
+    a.push({k:'datos',ic:'🔴',n:'Ley 21.719 de Datos Personales',est:'rojo',
+      d:'Manejas cámaras, control de acceso o libro de visitas sin respaldo documental. Eso es tratamiento de datos personales, y desde el 1 de diciembre de 2026 exige aviso de privacidad, base de licitud, política de retención de grabaciones y —para videovigilancia— acta de asamblea que la apruebe. El responsable es el administrador.',
+      l:'Ley 21.719 — vigente 01-12-2026'});
+  }else if(resp.datos==='si_prep'){
+    a.push({k:'datos',ic:'🟢',n:'Ley 21.719 de Datos Personales',est:'verde',
+      d:'Vas bien encaminado: tratas datos con aviso de privacidad y reglas. Conviene revisar antes del 1 de diciembre de 2026 que cubras retención de grabaciones y el acta de asamblea de videovigilancia.',
+      l:'Ley 21.719 — vigente 01-12-2026'});
+  }else{
+    a.push({k:'datos',ic:'➖',n:'Ley 21.719 de Datos Personales',est:'verde',
+      d:'Sin cámaras ni registro de visitas, tu exposición a la ley de datos es baja hoy. Si más adelante instalas videovigilancia, esta obligación se activa.',
+      l:'Ley 21.719 — vigente 01-12-2026'});
+  }
+  return a;
+}
+
+function calcular(){
+  var areas=evaluar();
+  var rojos=areas.filter(function(x){return x.est==='rojo';}).length;
+  var amar=areas.filter(function(x){return x.est==='amarillo';}).length;
+
+  // Hero según lo más grave
+  var hero=document.getElementById('resHero');
+  if(rojos>0){
+    hero.className='res-hero rojo';
+    document.getElementById('resEm').textContent='⚠️';
+    document.getElementById('resT').textContent=rojos+(rojos===1?' obligación sin cumplir':' obligaciones sin cumplir');
+    document.getElementById('resS').textContent='Hay puntos que exponen al administrador a sanciones. Revisa el detalle abajo.';
+  }else if(amar>0){
+    hero.className='res-hero amarillo';
+    document.getElementById('resEm').textContent='🟡';
+    document.getElementById('resT').textContent='Casi al día';
+    document.getElementById('resS').textContent='No hay incumplimientos graves, pero sí puntos que conviene actualizar.';
+  }else{
+    hero.className='res-hero verde';
+    document.getElementById('resEm').textContent='✅';
+    document.getElementById('resT').textContent='Vas bien';
+    document.getElementById('resS').textContent='Según tus respuestas, cumples las obligaciones evaluadas. Vuelve a revisar si cambia tu situación.';
+  }
+
+  // Áreas
+  var cont=document.getElementById('areas');cont.innerHTML='';
+  var orden={rojo:0,amarillo:1,verde:2};
+  areas.sort(function(a,b){return orden[a.est]-orden[b.est];});
+  areas.forEach(function(x){
+    var estTxt=x.est==='rojo'?'Acción requerida':x.est==='amarillo'?'Por revisar':'Al día';
+    var el=document.createElement('div');
+    el.className='area '+x.est;
+    el.innerHTML='<div class="ah"><span class="ai">'+x.ic+'</span><span class="an">'+x.n+'</span><span class="aest">'+estTxt+'</span></div>'
+      +'<div class="ad">'+x.d+'</div><div class="al">'+x.l+'</div>';
+    cont.appendChild(el);
+  });
+
+  // Bloque de cierre — oferta Evaluación de Seguridad (brief APP-4 §0.bis/§5.ter).
+  // Regla: C&C vende solo asesoría propia; el Plan de Emergencia se DERIVA (lo firma un prevencionista), jamás se vende aquí.
+  document.getElementById('cierre').innerHTML=armarOferta(areas,rojos,amar);
+
+  document.getElementById('wizard').style.display='none';
+  document.getElementById('resultado').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  tel('diagnostico_completo', 'rojos:'+rojos+' amarillos:'+amar);
+}
+
+// ---- Oferta: paquete de asesoría propia one-time; marca qué ítem resuelve cada punto rojo ----
+function armarOferta(areas,rojos,amar){
+  var enRojo={};areas.forEach(function(x){if(x.est==='rojo')enRojo[x.k]=true;});
+
+  // Ítems del paquete (todo asesoría propia de C&C — sin terceros). fix = área del diagnóstico que resuelve.
+  var items=[
+    {t:'Evaluación de Seguridad en terreno: accesos, puntos ciegos y procedimientos, con informe firmado por asesor acreditado OS.10',fix:null},
+    {t:'Plan de Seguridad del condominio: protocolos de acceso, visitas, encomiendas y rondas',fix:null},
+    {t:'Auditoría de clasificación del personal y seguro de vida (Art. 55)',fix:'seguro'},
+    {t:'Kit Ley 21.719: aviso de privacidad, política de retención de grabaciones y acta de asamblea para videovigilancia',fix:'datos'}
+  ];
+  if(resp.guardias==='si'){items.push({t:'Directiva de Funcionamiento presentada ante la autoridad (Art. 51)',fix:'directiva'});}
+
+  var lis=items.map(function(it){
+    var esFix=it.fix&&enRojo[it.fix];
+    return '<li'+(esFix?' class="of-fix"':'')+'>'+it.t+'</li>';
+  }).join('');
+
+  // Título y bajada según gravedad — la herramienta explica para qué sirve
+  var tit,baja;
+  if(rojos>0){
+    tit='Deja tu condominio al día, con firma de asesor acreditado';
+    baja='Los puntos en rojo son responsabilidad legal del administrador. Este servicio los resuelve en una sola pasada: visitamos el condominio, evaluamos la seguridad real (no solo el papel) y te entregamos los documentos que la ley exige, listos y firmados.';
+  }else if(amar>0){
+    tit='Pasa de «casi al día» a respaldo firmado';
+    baja='No tienes incumplimientos graves, pero los puntos amarillos suelen convertirse en rojos cuando rota el personal o llega una fiscalización. La evaluación deja todo documentado y al día de una vez.';
+  }else{
+    tit='¿Y la seguridad real, más allá del papel?';
+    baja='Cumples lo evaluado — bien. Lo que este diagnóstico no ve son los puntos ciegos físicos: por dónde entran los robos, cómo se controla el acceso, qué protocolos faltan. Eso es lo que revisa la Evaluación de Seguridad en terreno.';
+  }
+
+  // Mensaje de WhatsApp con el resultado del propio diagnóstico
+  var rojosNombres=areas.filter(function(x){return x.est==='rojo';}).map(function(x){return x.n;}).join(', ');
+  var msg='Hola, hice el diagnóstico de mi condominio'+(rojos>0?' y me salieron '+rojos+' puntos en rojo ('+rojosNombres+')':'')+'. Quiero información de la Evaluación de Seguridad.';
+  var wa='https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+encodeURIComponent(msg);
+
+  // Derivación honesta del Plan de Emergencia (no lo vendemos: lo firma un ingeniero en prevención de riesgos)
+  var deriva='';
+  if(resp.emergencia==='no'||resp.emergencia==='viejo'){
+    deriva='<div class="of-deriva">📌 <strong>Sobre tu Plan de Emergencia:</strong> por reglamento lo elabora y firma un ingeniero en prevención de riesgos — no lo vendemos nosotros. En la evaluación te dejamos el requerimiento listo para que se lo exijas a un prevencionista, sin intermediarios.</div>';
+  }
+
+  return '<div class="oferta">'
+    +'<span class="of-eti">Servicio de Control &amp; Confianza</span>'
+    +'<div class="of-t">'+tit+'</div>'
+    +'<div class="of-p">'+baja+'</div>'
+    +'<ul>'+lis+'</ul>'
+    +'<div class="of-precio"><span class="of-desde">Pago único desde</span><span class="of-monto">$'+CYC_CONFIG.precioCondominioSetup+'</span><span class="of-iva">+ IVA</span></div>'
+    +'<div class="of-mens">Continuidad opcional: $'+CYC_CONFIG.precioCondominioMensual+' + IVA/mes — alertas cuando cambie la ley, re-clasificación al rotar personal, informe al comité y beneficios para tus residentes.</div>'
+    +'<a class="btn-wa" href="'+wa+'" target="_blank" rel="noopener" onclick="tel(\'click_oferta\',\'rojos:'+rojos+'\')">Quiero mi cotización por WhatsApp →</a>'
+    +'<div class="of-nota">Cotización formal según tamaño del condominio. ¿Administras más de una comunidad? Pregunta por el precio de cartera.</div>'
+    +deriva
+    +'</div>';
+}
+
+function reiniciar(){
+  paso=0;resp={};
+  document.querySelectorAll('.opt.sel').forEach(function(o){o.classList.remove('sel');});
+  document.getElementById('resultado').style.display='none';
+  document.getElementById('wizard').style.display='block';
+  mostrarPaso();window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

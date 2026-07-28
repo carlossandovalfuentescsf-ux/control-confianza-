@@ -3,6 +3,9 @@ var CYC_CONFIG = {
   whatsapp: '56984600273',
   precioPersonal: '4.990',
   precioEmpresa: '49.990',
+  // Canal condominios (APP-4, brief §5.ter 28-07-2026) — setup one-time "desde" + continuidad mensual, netos de IVA
+  precioCondominioSetup: '249.990',
+  precioCondominioMensual: '14.990',
   // Versión de los datos delictuales — al actualizar la base, cambiar SOLO acá.
   datosPeriodo: 'Q1 2026',
   datosPeriodoLargo: 'Enero–Marzo 2026 (Q1 2026)',
