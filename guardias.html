@@ -327,7 +327,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
         <div class="p-tool"><div class="t">📁 Carpeta Documental</div><p>Contratos, finiquitos y certificados respaldados y exportables.</p></div>
         <div class="p-tool"><div class="t">🔒 Bitácora Blindada</div><p>Registro personal de incidentes, inalterable y con export PDF.</p></div>
         <div class="p-tool"><div class="t">📅 Turnos + Familia</div><p>Tu pauta 4x4/5x2 en un calendario proyectado, compartible con tu familia.</p></div>
-        <div class="p-tool"><div class="t">🚑 Después del Incidente</div><p>Protocolo guiado tras un evento violento: qué registrar y tus derechos.</p></div>
+        <div class="p-tool"><div class="t">⚖️ Después del Incidente</div><p>Protocolo legal tras un incidente: qué registrar y tus derechos.</p></div>
         <div class="p-tool"><div class="t">🎓 Mi Carrera</div><p>CV profesional en PDF y tu ruta de especializaciones.</p></div>
       </div>
       <div class="p-form">
@@ -409,7 +409,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <div class="mp-t">📁 Carpeta documental</div>
       <div class="mp-t alt">🔒 Bitácora blindada</div>
       <div class="mp-t">📅 Turnos + Familia</div>
-      <div class="mp-t alt">🚑 Después del incidente</div>
+      <div class="mp-t alt">⚖️ Después del incidente</div>
       <div class="mp-t">🎓 Mi Carrera</div>
     </div>
     <div class="mp-gratis">
@@ -1053,6 +1053,9 @@ function resumenPerfil(p){
     '<div class="perfil-row"><span class="k">Disponibilidad</span><span class="v">'+esc(disp)+'</span></div>'+
     '<button class="btn-editar" onclick="editarPerfil()">Editar perfil</button>'+
     '<button class="btn-salir" onclick="cycCerrarSesion()">Cerrar sesión</button>'+
+    // Requisito Google Play: camino de eliminación de cuenta DENTRO de la app
+    // (la URL pública ya existía; faltaba el acceso desde Control+).
+    '<a href="eliminar-cuenta.html" style="display:block;text-align:center;margin-top:12px;font-size:.7rem;color:#777;text-decoration:underline">Eliminar mi cuenta y mis datos</a>'+
   '</div>';
 }
 function editarPerfil(){
