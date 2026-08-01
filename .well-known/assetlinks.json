@@ -9,5 +9,16 @@
         "F1:D1:0C:13:5A:05:91:32:00:7C:7F:7B:A6:E0:2F:09:C3:7D:CF:72:B0:64:B1:61:BC:4C:C1:2D:65:55:AE:21"
       ]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "cl.controlyconfianza.controlplus",
+      "sha256_cert_fingerprints": [
+        "1A:48:2B:A8:94:C2:31:69:B7:04:29:54:05:74:32:29:7A:BB:E0:49:1C:D3:A5:87:D5:0C:9B:01:47:31:43:97",
+        "30:48:49:D0:65:6C:34:D2:BE:E5:57:AA:F5:EF:57:41:0D:3F:39:C2:A5:40:8C:76:7F:A0:03:6C:7E:9E:D2:57"
+      ]
+    }
   }
 ]
