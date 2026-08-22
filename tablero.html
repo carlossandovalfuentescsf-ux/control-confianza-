@@ -75,7 +75,7 @@ footer a{color:#d4a017}
 <div id="tablero" style="display:none">
 
   <div class="intro">
-    <b>¿Para qué sirve esto?</b> Reúne en una pantalla los números que el Plan Norte (Cap. 7) manda vigilar cada semana: el embudo activo OS.10/B2B, la demanda de Control+ Premium y el gate de MiCuadra. La regla del Plan: <b>el tablero se lee en minutos, no en horas</b> — se opera sobre el embudo, se responde ante el ingreso recurrente. Complementa (no reemplaza) el correo del chequeo semanal de los lunes.
+    <b>¿Para qué sirve esto?</b> Reúne en una pantalla los números que el Plan Norte (Cap. 7) manda vigilar cada semana: el embudo activo OS.10/B2B y la demanda de Control+ Premium. (MiCuadra se cerró como producto de pago el 23-07; su tarjeta queda como referencia.) La regla del Plan: <b>el tablero se lee en minutos, no en horas</b> — se opera sobre el embudo, se responde ante el ingreso recurrente. Complementa (no reemplaza) el correo del chequeo semanal de los lunes.
   </div>
 
   <div class="actualizado" id="actualizado"></div>
@@ -85,8 +85,8 @@ footer a{color:#d4a017}
   <div class="grid">
 
     <div class="card">
-      <h2>🚪 Gate de MiCuadra</h2>
-      <div class="porque">Umbral ~40–50 inscritos reales al 30-09-2026. Se lee, no se empuja: si no cruza, se congela sin culpa (Plan v1.2, Cap. 6.3).</div>
+      <h2>🚪 MiCuadra — cerrado como producto de pago</h2>
+      <div class="porque">Decisión de Carlos del 23-07-2026: el gate del 30-09 se adelantó con evidencia (la oferta duplicaba lo gratis; precios reales del mercado en la memoria). El mapa se libera gratis como imán. La lista de espera queda abajo como referencia histórica.</div>
       <div class="big" id="mi-total">—<small> / 40–50 inscritos</small></div>
       <div class="delta" id="mi-7d"></div>
       <div class="barra"><div id="mi-barra" style="width:0%"></div></div>
@@ -192,10 +192,13 @@ let CYC_TOKEN=localStorage.getItem('cyc_token')||null;
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function mostrar(id){['login','cargando','error','tablero'].forEach(x=>document.getElementById(x).style.display=x===id?'block':'none');}
 
-// Los tres hitos con fecha fija del H1 (Plan v1.2, Cap. 7.4)
+// Hitos con fecha fija (actualizado 22-08-2026):
+// - 17-08 G0 Viajeros: ya corrió, se retiró del tablero.
+// - Gate MiCuadra 30-09: MOOT — Carlos lo cerró como producto de pago el
+//   23-07 con evidencia superior a la que el gate iba a dar (ver memoria
+//   hallazgo_micuadra_oferta_duplica_gratis). No se muestra como pendiente.
 const HITOS=[
-  {fecha:'2026-08-17', que:'Punto de control fase G0 Viajeros (corre solo y te reporta)'},
-  {fecha:'2026-09-30', que:'Corte del gate de MiCuadra (¿llegó a 40–50 inscritos?)'},
+  {fecha:'2026-09-01', que:'Radar mensual de herramientas (corre solo y te reporta)'},
   {fecha:'2026-10-01', que:'Revisión de octubre: acción comercial sobre el Registro (~nov-2026)', etiqueta:'octubre'}
 ];
 function pintarHitos(){
@@ -239,9 +242,8 @@ function pintar(d){
   el7.textContent=m7>0?('+'+m7+' esta semana'):'sin inscritos nuevos esta semana';
   el7.className='delta'+(m7>0?'':' cero');
   document.getElementById('mi-barra').style.width=Math.min(100,Math.round(mt/40*100))+'%';
-  document.getElementById('mi-veredicto').innerHTML=mt>=40
-    ?'<span class="ok">✅ Umbral alcanzado — corresponde decisión GO (construir la red viva).</span>'
-    :(mt+' de 40 — '+(mt===0?'<span class="frio">la lista sigue fría; el gate decide solo el 30-09.</span>':'<span class="alerta">hay señal parcial; el gate decide el 30-09.</span>'));
+  document.getElementById('mi-veredicto').innerHTML=
+    '<span class="frio">Producto cerrado el 23-07 — este número ya no gatilla ninguna decisión.</span>';
   const comunas=d.gate_micuadra.por_comuna||[];
   if(comunas.length){
     const t=document.getElementById('mi-comunas'); t.style.display='table';
