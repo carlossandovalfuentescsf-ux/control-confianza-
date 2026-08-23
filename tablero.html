@@ -137,6 +137,31 @@ footer a{color:#d4a017}
       <div class="porque" id="no-sinleer" style="margin-top:8px"></div>
     </div>
 
+    <div class="card" style="grid-column:1/-1">
+      <h2>🗺️ Demanda insatisfecha de la bolsa — últimos 30 días</h2>
+      <div class="porque">Cada fila es gente que buscó trabajo y encontró la pantalla vacía. Las combinaciones <b>descubiertas</b> son el argumento B2B concreto: «hay N guardias buscando en X y nadie publica». Con oferta abierta hoy que calce, aparece «cubierta».</div>
+      <table id="demanda-tabla"><thead><tr><th>Comuna</th><th>Tipo de trabajo</th><th class="num">Búsquedas</th><th>¿Cubierta hoy?</th></tr></thead><tbody></tbody></table>
+      <div class="vacio" id="demanda-vacio" style="display:none;margin-top:8px">Sin búsquedas vacías en 30 días — o la bolsa cubrió todo, o falta tráfico.</div>
+    </div>
+
+    <div class="card">
+      <h2>💰 Barómetro de sueldos del guardia — 30 días</h2>
+      <div class="porque">Tramos de $50.000 desde la calculadora (anónimo). <b>Se publica afuera SOLO con 30+ cálculos</b> — con muestra chica sería inventar.</div>
+      <div id="barometro"></div>
+    </div>
+
+    <div class="card">
+      <h2>📝 Preguntas OS-10 más falladas — 90 días</h2>
+      <div class="porque">Alimenta la mejora del banco y la futura pieza «las que todos fallan» (publicar con 20+ ensayos).</div>
+      <div id="os10-fallos"></div>
+    </div>
+
+    <div class="card">
+      <h2>🏢 C&amp;C Check: lo que más sale en rojo — 90 días</h2>
+      <div class="porque">Qué obligaciones incumplen los condominios que se autodiagnostican. Argumento directo para administradores (gate D5).</div>
+      <div id="check-rojos"></div>
+    </div>
+
     <div class="card">
       <h2>📅 Dotación de eventos</h2>
       <div class="porque">El brief que mató el dolor de Limache — S0 a S4 en producción. Solo lo operativo: qué eventos hay y cuánto se ha pagado.</div>
@@ -193,6 +218,7 @@ footer a{color:#d4a017}
 </div>
 </div>
 
+<script src="banco-os10.js"></script><!-- Fase 3: para mostrar el texto real de la pregunta OS-10 fallada -->
 <script>
 const API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
 let CYC_TOKEN=localStorage.getItem('cyc_token')||null;
@@ -303,6 +329,45 @@ function pintar(d){
   }
   if(d.sin_leer){
     document.getElementById('no-sinleer').textContent='Recipientes que antes nadie leía: buzón de opinión '+num(d.sin_leer.feedback_7d)+' esta semana · denuncias de ofertas '+num(d.sin_leer.denuncias_ofertas_7d)+' · pagos iniciados y nunca terminados '+num(d.sin_leer.pagos_pendientes_total)+' en total. El detalle llega en el correo del lunes.';
+  }
+
+  // Fase 3 (23-08-2026): el registro convertido en argumento
+  const f3=d.fase3||{};
+  const dem=f3.demanda_insatisfecha_30d||[];
+  const demCuerpo=document.getElementById('demanda-tabla').querySelector('tbody');
+  if(dem.length){
+    demCuerpo.innerHTML=dem.map(r=>'<tr><td>'+esc(r.comuna)+'</td><td>'+esc(r.especialidad)+'</td><td class="num">'+num(r.busquedas_30d)+'</td><td>'+(r.cubierta_hoy?'✅ cubierta':'❌ <b>descubierta</b>')+'</td></tr>').join('');
+  }else{
+    document.getElementById('demanda-tabla').style.display='none';
+    document.getElementById('demanda-vacio').style.display='block';
+  }
+  const bar=f3.barometro_sueldos||{};
+  const barEl=document.getElementById('barometro');
+  if(bar.n_30d>0){
+    const maxN=Math.max.apply(null,(bar.tramos||[]).map(t=>t.n));
+    barEl.innerHTML='<div class="porque">'+num(bar.n_30d)+' cálculo'+(bar.n_30d===1?'':'s')+' · '+num(bar.bajo_minimo_30d)+' bajo el mínimo legal · '+(bar.publicable?'✅ muestra suficiente para publicar':'⏳ aún no publicable (n&lt;30)')+'</div>'+
+      (bar.tramos||[]).map(t=>'<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="width:110px;font-size:12px">$'+num(t.desde)+'–'+num(t.desde+50000)+'</span><div style="background:#d4a017;height:14px;border-radius:3px;width:'+Math.max(6,Math.round(t.n/maxN*160))+'px"></div><span style="font-size:12px">'+num(t.n)+'</span></div>').join('');
+  }else{
+    barEl.innerHTML='<div class="vacio">Sin cálculos de sueldo registrados aún.</div>';
+  }
+  const fallos=f3.os10_mas_falladas_90d||[];
+  const os10El=document.getElementById('os10-fallos');
+  if(fallos.length){
+    os10El.innerHTML=fallos.map(function(r){
+      var texto=r.contexto, m=/^(\S+)\s+(\S+):(\d+)$/.exec(String(r.contexto||''));
+      if(m && typeof BANCO!=='undefined' && BANCO[Number(m[3])]) texto='['+m[1]+' · '+m[2]+'] '+BANCO[Number(m[3])].q;
+      return '<div style="margin:6px 0;font-size:13px"><b>'+num(r.n)+'×</b> '+esc(texto)+'</div>';
+    }).join('');
+  }else{
+    os10El.innerHTML='<div class="vacio">Sin ensayos con fallas registradas aún.</div>';
+  }
+  const rojos=f3.check_rojos_90d||[];
+  const NOMBRE_AREA_CHECK={directiva:'Directiva de Funcionamiento',cargo:'Encargado designado',seguro:'Seguro obligatorio',evalper:'Evaluación de personal',jornada:'Jornada y descansos',karin:'Protocolo Ley Karin',emergencia:'Plan de emergencia',datos:'Datos personales (cámaras)'};
+  const rojosEl=document.getElementById('check-rojos');
+  if(rojos.length){
+    rojosEl.innerHTML=rojos.map(r=>'<div style="margin:6px 0;font-size:13px"><b>'+num(r.n)+'×</b> '+esc(NOMBRE_AREA_CHECK[r.contexto]||r.contexto)+'</div>').join('');
+  }else{
+    rojosEl.innerHTML='<div class="vacio">Sin diagnósticos con rojos registrados aún.</div>';
   }
 
   // Dotación de eventos
