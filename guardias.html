@@ -479,6 +479,25 @@ function cycNo(tipo,contexto){
   }catch(e){}
 }
 window.addEventListener('error',function(ev){ try{ cycNo('error_js',String(ev.message||'').slice(0,80)+' @'+String(ev.filename||'').split('/').pop()+':'+ev.lineno); }catch(e){} });
+/* Fase 2 «devolver al estanque» (23-08-2026): la búsqueda vacía deja de ser un callejón.
+   Si hay sesión, aparece un botón para pedir UN aviso por correo cuando llegue una oferta
+   que calce. Gratis y aditivo: jamás se cobra por acceso al trabajo. */
+function htmlBotonAviso(){
+  if(!CYC_TOKEN) return '';
+  return '<br><button class="btn-sm" style="margin-top:8px" id="btnAvisoOferta" onclick="pedirAvisoOferta()">🔔 Avísame por correo cuando haya una oferta así</button>';
+}
+async function pedirAvisoOferta(){
+  var btn=document.getElementById('btnAvisoOferta');
+  if(!btn) return;
+  btn.disabled=true; btn.textContent='Guardando…';
+  try{
+    var res=await fetch(API_URL+'/guardias/aviso-oferta',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},
+      body:JSON.stringify({comuna:CYC_FILTRO_COMUNA||undefined,especialidad:CYC_FILTRO_ESP||undefined})});
+    var d=await res.json();
+    btn.textContent=res.ok?'✅ Listo — te llegará un correo cuando aparezca':(d.error||'No se pudo guardar el aviso.');
+    if(!res.ok) btn.disabled=false;
+  }catch(e){ btn.textContent='Sin conexión — intenta de nuevo.'; btn.disabled=false; }
+}
 cycTelemetria('guardias','carga_pagina',true);
 // Propaga la fuente real al tab del Test OS10 (antes pisaba cualquier canal entrante
 // con un ?f=controlmas fijo, perdiendo la atribución) y mide el clic.
@@ -732,7 +751,7 @@ function pintarOfertas(){
   var el=document.getElementById('ofertasList');
   pintarFiltroComuna();
   if(!CYC_OFERTAS.length){
-    el.innerHTML='<div class="empty">🗓️<br><br>No hay ofertas abiertas por ahora.<br>Vuelve pronto — publicamos nuevas apenas hay turnos disponibles.</div>';
+    el.innerHTML='<div class="empty">🗓️<br><br>No hay ofertas abiertas por ahora.<br>Vuelve pronto — publicamos nuevas apenas hay turnos disponibles.'+htmlBotonAviso()+'</div>';
     if(CYC_OFERTAS_OK) cycNo('sin_ofertas',(CYC_FILTRO_COMUNA||'-')+'|'+(CYC_FILTRO_ESP||'-'));  // solo si el feed sí cargó
     return;
   }
@@ -751,16 +770,16 @@ function pintarOfertas(){
     var espEnTodas=CYC_FILTRO_ESP?filtrarPorEspecialidad(CYC_OFERTAS):[];
     if(CYC_FILTRO_ESP && CYC_FILTRO_COMUNA && espEnTodas.length){
       avisoDegradacion='<div class="empty" style="margin-bottom:14px">No hay ofertas de '+esc(nombreEsp)+' en tu zona por ahora — te mostramos las '+espEnTodas.length+' de otras comunas.<br>'+
-        '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroComuna(\'\')">Quitar filtro de comuna</button></div>';
+        '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroComuna(\'\')">Quitar filtro de comuna</button>'+htmlBotonAviso()+'</div>';
       listaCompleta=espEnTodas;
     }else if(CYC_FILTRO_ESP && !espEnTodas.length){
       avisoDegradacion='<div class="empty" style="margin-bottom:14px">No hay ofertas de '+esc(nombreEsp)+' por ahora — te mostramos todas las disponibles.<br>'+
-        '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroEsp(\'\')">Quitar filtro de especialidad</button></div>';
+        '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroEsp(\'\')">Quitar filtro de especialidad</button>'+htmlBotonAviso()+'</div>';
       listaCompleta=CYC_FILTRO_COMUNA?ofertasFiltradas():CYC_OFERTAS;
       if(!listaCompleta.length) listaCompleta=CYC_OFERTAS;
     }else{
       avisoDegradacion='<div class="empty" style="margin-bottom:14px">No hay ofertas en tu zona por ahora — hay '+CYC_OFERTAS.length+' en el resto del país.<br>'+
-        '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroComuna(\'\')">Ver todas</button></div>';
+        '<button class="btn-sm" style="margin-top:8px" onclick="cambiarFiltroComuna(\'\')">Ver todas</button>'+htmlBotonAviso()+'</div>';
       listaCompleta=CYC_OFERTAS;
     }
   }
