@@ -466,6 +466,19 @@ function cycTelemetria(herramienta,accion,ok,detalle){
         visitante:CPLUS_VIS||undefined})}).catch(function(){});
   }catch(e){}
 }
+// «Registro de los NO» (23-08-2026): cuando la app niega, falla o no ve algo, avisa al
+// servidor SIN dato personal (solo tipo + contexto corto). Lo que antes caía al suelo.
+var CYC_NO_VISTOS={};
+function cycNo(tipo,contexto){
+  try{
+    var k=tipo+'|'+(contexto||'');
+    if(CYC_NO_VISTOS[k]) return;   // una vez por sesión por contexto: señal, no ruido
+    CYC_NO_VISTOS[k]=1;
+    var cuerpo=JSON.stringify({app:'controlmas',tipo:tipo,contexto:contexto?String(contexto).slice(0,200):undefined});
+    fetch(API_URL+'/no',{method:'POST',headers:{'Content-Type':'application/json'},body:cuerpo,keepalive:true}).catch(function(){});
+  }catch(e){}
+}
+window.addEventListener('error',function(ev){ try{ cycNo('error_js',String(ev.message||'').slice(0,80)+' @'+String(ev.filename||'').split('/').pop()+':'+ev.lineno); }catch(e){} });
 cycTelemetria('guardias','carga_pagina',true);
 // Propaga la fuente real al tab del Test OS10 (antes pisaba cualquier canal entrante
 // con un ?f=controlmas fijo, perdiendo la atribución) y mide el clic.
@@ -700,8 +713,10 @@ async function cargarOfertas(){
     var res=await fetch(API_URL+'/guardias/ofertas');
     var data=await res.json();
     CYC_OFERTAS=data.ofertas||[];
-  }catch(e){ CYC_OFERTAS=[]; }
+    CYC_OFERTAS_OK=res.ok;
+  }catch(e){ CYC_OFERTAS=[]; CYC_OFERTAS_OK=false; cycNo('feed_error',String(e&&e.message||e).slice(0,80)); }
 }
+var CYC_OFERTAS_OK=false;
 function renderOfertas(){
   var el=document.getElementById('ofertasList');
   el.innerHTML='<div class="spinner">Cargando ofertas…</div>';
@@ -718,6 +733,7 @@ function pintarOfertas(){
   pintarFiltroComuna();
   if(!CYC_OFERTAS.length){
     el.innerHTML='<div class="empty">🗓️<br><br>No hay ofertas abiertas por ahora.<br>Vuelve pronto — publicamos nuevas apenas hay turnos disponibles.</div>';
+    if(CYC_OFERTAS_OK) cycNo('sin_ofertas',(CYC_FILTRO_COMUNA||'-')+'|'+(CYC_FILTRO_ESP||'-'));  // solo si el feed sí cargó
     return;
   }
   var listaCompleta=filtrarPorEspecialidad(ofertasFiltradas());
@@ -728,6 +744,9 @@ function pintarOfertas(){
   // al especialista es SU rubro). Escalon 2: la especialidad no existe en ninguna parte
   // -> soltar tambien la especialidad y mostrar todo.
   if(!listaCompleta.length && (CYC_FILTRO_COMUNA || CYC_FILTRO_ESP)){
+    // Demanda insatisfecha: esta comuna × especialidad no tiene oferta. Es el dato más
+    // valioso de la bolsa y antes se botaba (la degradación de abajo lo tapaba).
+    cycNo('busqueda_vacia',(CYC_FILTRO_COMUNA||'-')+'|'+(CYC_FILTRO_ESP||'-'));
     var nombreEsp=CYC_FILTRO_ESP?(NOMBRE_ESPECIALIDAD[CYC_FILTRO_ESP]||CYC_FILTRO_ESP):'';
     var espEnTodas=CYC_FILTRO_ESP?filtrarPorEspecialidad(CYC_OFERTAS):[];
     if(CYC_FILTRO_ESP && CYC_FILTRO_COMUNA && espEnTodas.length){
@@ -840,7 +859,7 @@ function html_pintarOfertasLista(el, lista, prefijoHtml, sufijoHtml, encabezados
     if(o.especialidad) meta+='<span class="chip">🏷️ '+esc(NOMBRE_ESPECIALIDAD[o.especialidad]||o.especialidad)+'</span>';
     // Cap. 13: en ofertas de la comunidad el guardia contacta ÉL al reclutador — jamás entregamos sus datos.
     var accion = esComunidad
-      ? '<a class="btn-postular btn-contactar" href="'+esc(waLink(o.contacto_whatsapp||''))+'" target="_blank" rel="noopener noreferrer">💬 Contactar por WhatsApp</a>'
+      ? '<a class="btn-postular btn-contactar" href="'+esc(waLink(o.contacto_whatsapp||''))+'" target="_blank" rel="noopener noreferrer" onclick="cycTelemetria(\'guardias\',\'contacto_wa\',true,\'oferta:'+o.id+'\')">💬 Contactar por WhatsApp</a>'
       : '<button class="btn-postular" id="btnPost'+o.id+'" onclick="postularA('+o.id+')"'+(yaPostulado?' disabled':'')+'>'+(yaPostulado?'Postulado ✓':'Postular')+'</button>';
     html+='<div class="oferta">'+
       '<div class="oferta-sello">'+sello+'</div>'+
@@ -953,7 +972,7 @@ async function cycAuth(modo){
     var ruta=modo==='login'?'/auth/login':'/auth/registro';
     var res=await fetch(API_URL+ruta,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:password})});
     var data=await res.json();
-    if(!res.ok){ msg.textContent=data.error||'No se pudo continuar.'; return; }
+    if(!res.ok){ msg.textContent=data.error||'No se pudo continuar.'; cycNo(modo==='login'?'login_fallo':'registro_fallo',res.status+' '+String(data.error||'').slice(0,60)); return; }
     CYC_TOKEN=data.token;
     localStorage.setItem('cyc_token',CYC_TOKEN);
     CYC_EMAIL=data.email;
@@ -1176,8 +1195,11 @@ async function renderCarpeta(){
   if(CYC_PERFIL===null){ el.innerHTML='<div class="spinner">Cargando…</div>'; return; }
   if(!CYC_PERFIL){
     el.innerHTML='<div class="card"><div class="auth-title">Completa tu perfil primero</div><div class="auth-sub">Antes de abrir tu carpeta, completa tus datos básicos en Mi Perfil.</div><button class="btn-guardar" onclick="location.hash=\'#perfil\'">Ir a Mi Perfil</button></div>';
+    cycTelemetria('guardias','carpeta_sin_perfil',true);
     return;
   }
+  // Embudo de la carpeta (antes invisible): cuántos la abren vs cuántos suben algo.
+  if(!renderCarpeta._medido){ renderCarpeta._medido=1; cycTelemetria('guardias','carpeta_abierta',true); }
   el.innerHTML='<div class="spinner">Cargando tu carpeta…</div>';
   try{
     var res=await fetch(API_URL+'/guardias/carpeta',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
@@ -1285,10 +1307,11 @@ async function subirDoc(tipo, input){
     if(vencimiento)body.vencimiento=vencimiento;
     var res=await fetch(API_URL+'/guardias/carpeta',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
     var d=await res.json();
-    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo subir.';return;}
+    if(!res.ok){msg.className='form-msg err';msg.textContent=d.error||'No se pudo subir.';cycNo('carpeta_subida_fallo',tipo+' '+res.status+' '+String(d.error||'').slice(0,60));return;}
     msg.className='form-msg ok';msg.textContent='Guardado.';
+    cycTelemetria('guardias','carpeta_doc_subido',true,tipo);
     renderCarpeta();
-  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';}
+  }catch(e){msg.className='form-msg err';msg.textContent='Sin conexión.';cycNo('carpeta_subida_fallo',tipo+' sin_conexion');}
 }
 
 function validarRutCliente(rutRaw){
@@ -1928,6 +1951,13 @@ function calcularSueldo(){
   var extra=Math.round(valorHora*1.5*horas);
   var grati=conGrati?Math.round(Math.min(sueldo*0.25,CALC_IMM*4.75/12)):0;
   var total=sueldo+extra+grati;
+  // Barómetro anónimo: solo el tramo de $50.000 (nunca el monto exacto) y si está bajo el mínimo.
+  // Ni cuenta ni comuna de la persona; la comuna es el filtro de la bolsa si lo eligió.
+  try{
+    var tramo=Math.min(Math.floor(sueldo/50000)*50000,1500000);
+    cycTelemetria('guardias','calculo_sueldo',true,'tramo:'+tramo+' horas:'+(horas>0?'si':'no')+' grati:'+(conGrati?'si':'no'));
+    if(sueldo<CALC_IMM) cycNo('sueldo_bajo_minimo','tramo:'+tramo+'|'+(CYC_FILTRO_COMUNA||'-'));
+  }catch(e){}
   function clp(n){return '$'+n.toLocaleString('es-CL');}
   out.innerHTML='<div class="cres">'+
     '<div class="fila"><span>Valor de tu hora ordinaria</span><b>'+clp(valorHora)+'</b></div>'+

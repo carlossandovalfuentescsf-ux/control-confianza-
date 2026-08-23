@@ -501,6 +501,19 @@ function mostrarResultado(){
   var examen = nivelSel==="avanzado" ? "el examen de Especialización (riesgo medio/alto)" : "el examen del curso de Formación";
   guardarStat(nivelSel, pct);
   cycTelemetria('test-os10','resultado_ensayo',aprob,nivelSel+':'+pct+'%');
+  // «Registro de los NO» (23-08-2026): qué preguntas se fallan. Solo área + posición en el
+  // banco (anónimo). Antes se calculaba y se botaba: imposible mejorar el banco o saber
+  // «las 20 que todos fallan». Una fila por pregunta fallada, máximo 30 por ensayo.
+  try{
+    var falladas=[];
+    estado.lista.forEach(function(item){
+      var idxC=-1; for(var k=0;k<item.opciones.length;k++){ if(item.opciones[k].correcta) idxC=k; }
+      if(item.elegida!==idxC) falladas.push(item.qref.a+':'+BANCO.indexOf(item.qref));
+    });
+    falladas.slice(0,30).forEach(function(ctx){
+      fetch(API_URL+'/no',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({app:'test-os10',tipo:'os10_fallo',contexto:nivelSel+' '+ctx}),keepalive:true}).catch(function(){});
+    });
+  }catch(e){}
 
   var box = document.getElementById("res-box");
   box.className = "res-score " + (aprob?"aprob":"reprob");

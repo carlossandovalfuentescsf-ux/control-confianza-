@@ -277,6 +277,11 @@ var CYC_FUENTE=(function(){try{var f=new URLSearchParams(location.search).get('f
 var CYC_VIS=(function(){try{var k='cyc_vis',v=localStorage.getItem(k);if(!v){v=(crypto&&crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2)+String(Math.random()).slice(2)).slice(0,36);localStorage.setItem(k,v);}return v;}catch(e){return null;}})();
 function tel(accion,detalle){try{fetch(API_URL+'/telemetria',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({herramienta:'diag-condominio',accion:accion,detalle:detalle?String(detalle).slice(0,300):undefined,fuente:CYC_FUENTE||undefined,visitante:CYC_VIS||undefined})}).catch(function(){});}catch(e){}}
 tel('carga_pagina');
+// «Registro de los NO» (23-08-2026): qué obligaciones salen en rojo (agregado anónimo por
+// área, sin respuestas individuales) y cuántos abandonan el cuestionario a medio camino.
+function cycNo(tipo,contexto){try{fetch(API_URL+'/no',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({app:'cyc-check',tipo:tipo,contexto:contexto?String(contexto).slice(0,200):undefined}),keepalive:true}).catch(function(){});}catch(e){}}
+var DIAG_TERMINADO=false;
+window.addEventListener('pagehide',function(){ if(paso>0 && !DIAG_TERMINADO) cycNo('diagnostico_abandonado','paso:'+paso+'/'+TOTAL); });
 
 var TOTAL=8, paso=0, resp={};
 
@@ -461,6 +466,8 @@ function calcular(){
   document.getElementById('resultado').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
   tel('diagnostico_completo', 'rojos:'+rojos+' amarillos:'+amar);
+  DIAG_TERMINADO=true;
+  try{ areas.forEach(function(x){ if(x.est==='rojo') cycNo('diagnostico_rojo',x.k); }); }catch(e){}
 }
 
 // ---- Oferta: paquete de asesoría propia one-time; marca qué ítem resuelve cada punto rojo ----
