@@ -129,6 +129,14 @@ footer a{color:#d4a017}
       <div class="vacio" id="uso-vacio" style="display:none;margin-top:8px">Sin eventos con atribución esta semana.</div>
     </div>
 
+    <div class="card" style="grid-column:1/-1">
+      <h2>🪣 Registro de los NO — últimos 7 días</h2>
+      <div class="porque">Lo que el sistema negó, falló o no vio: búsquedas de la bolsa sin oferta, pagos que no terminaron, correos que no salieron, preguntas del OS-10 que se fallan, obligaciones en rojo en C&amp;C Check. Un recipiente que nadie vacía es pantano: mirar esto cada semana.</div>
+      <table id="no-tabla"><thead><tr><th>App</th><th>Tipo</th><th>Contexto más repetido</th><th class="num">Veces</th></tr></thead><tbody></tbody></table>
+      <div class="vacio" id="no-vacio" style="display:none;margin-top:8px">Ningún «no» registrado esta semana.</div>
+      <div class="porque" id="no-sinleer" style="margin-top:8px"></div>
+    </div>
+
     <div class="card">
       <h2>📅 Dotación de eventos</h2>
       <div class="porque">El brief que mató el dolor de Limache — S0 a S4 en producción. Solo lo operativo: qué eventos hay y cuánto se ha pagado.</div>
@@ -282,6 +290,19 @@ function pintar(d){
   }else{
     document.getElementById('uso-tabla').style.display='none';
     document.getElementById('uso-vacio').style.display='block';
+  }
+
+  // Registro de los NO (23-08-2026)
+  const noc=d.no_7d_contextos||[];
+  const noCuerpo=document.getElementById('no-tabla').querySelector('tbody');
+  if(noc.length){
+    noCuerpo.innerHTML=noc.map(r=>'<tr><td>'+esc(r.app)+'</td><td>'+esc(r.tipo)+'</td><td>'+esc(r.contexto)+'</td><td class="num">'+num(r.n)+'</td></tr>').join('');
+  }else{
+    document.getElementById('no-tabla').style.display='none';
+    document.getElementById('no-vacio').style.display='block';
+  }
+  if(d.sin_leer){
+    document.getElementById('no-sinleer').textContent='Recipientes que antes nadie leía: buzón de opinión '+num(d.sin_leer.feedback_7d)+' esta semana · denuncias de ofertas '+num(d.sin_leer.denuncias_ofertas_7d)+' · pagos iniciados y nunca terminados '+num(d.sin_leer.pagos_pendientes_total)+' en total. El detalle llega en el correo del lunes.';
   }
 
   // Dotación de eventos
