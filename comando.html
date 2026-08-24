@@ -152,7 +152,7 @@ footer a{color:#d4a017}
       <a class="tarjeta" href="#expedientes"><div class="ic">📁</div><div class="t">Expedientes</div><div class="d">Documentos y datos de pago de cada guardia</div></a>
       <a class="tarjeta" href="#eventos"><div class="ic">📅</div><div class="t">Eventos</div><div class="d">Roster, convocatoria y confirmaciones</div></a>
       <a class="tarjeta" href="#convocatorias"><div class="ic">📢</div><div class="t">Convocatorias</div><div class="d">Un enlace público para 250 guardias, no 250 WhatsApp</div></a>
-      <a class="tarjeta" href="#gastos"><div class="ic">🧾</div><div class="t">Gastos de Evento</div><div class="d">Rendición de plata propia por foto de boleta</div></a>
+      <a class="tarjeta" href="#gastos"><div class="ic">🧾</div><div class="t">Gastos</div><div class="d">Rendición de plata propia por foto de boleta</div></a>
       <a class="tarjeta" href="#config-empresa"><div class="ic">⚙️</div><div class="t">Configuración</div><div class="d">Datos legales y firma para los contratos</div></a>
     </div>
   </div>
@@ -311,8 +311,14 @@ footer a{color:#d4a017}
   </div>
 
   <div class="card" id="gastos">
-    <h2>🧾 Gastos de Evento</h2>
-    <div class="porque">Sube la foto de la boleta y la IA propone monto/comercio/fecha — tú confirmas o corriges. Marca quién pagó: si fue plata propia, queda pendiente hasta que marques «devuelto».</div>
+    <h2>🧾 Gastos</h2>
+    <div class="porque">Sube la foto de la boleta y la IA propone monto/comercio/fecha — tú confirmas o corriges. Marca quién pagó: si fue plata propia, queda pendiente hasta que marques «devuelto».<br><b>Elige el tipo:</b> «Evento» es la rendición de plata de un evento; «Desarrollo» es la inversión del ecosistema (marcas, dominios, IA, tiendas), que nadie devuelve. No se mezclan.</div>
+
+    <label>Tipo de gasto</label>
+    <div class="radio-grupo">
+      <label class="radio-op"><input type="radio" name="g-tipo" value="evento" checked onchange="cambiarTipoGasto()">Evento</label>
+      <label class="radio-op"><input type="radio" name="g-tipo" value="desarrollo" onchange="cambiarTipoGasto()">Desarrollo</label>
+    </div>
 
     <label>Foto de la boleta (opcional — puedes llenar a mano)</label>
     <input type="file" id="g-foto" accept="image/*" onchange="leerBoleta(this)">
@@ -327,13 +333,7 @@ footer a{color:#d4a017}
       <div><label>Monto (CLP)</label><input type="number" id="g-monto" min="0"></div>
     </div>
     <label>Categoría</label>
-    <select id="g-categoria">
-      <option value="colacion">Colación</option>
-      <option value="transporte">Transporte</option>
-      <option value="materiales">Materiales</option>
-      <option value="radios">Radios</option>
-      <option value="otro" selected>Otro</option>
-    </select>
+    <select id="g-categoria"></select>
 
     <label>¿Quién pagó?</label>
     <div class="radio-grupo">
@@ -351,12 +351,19 @@ footer a{color:#d4a017}
     <div style="margin-top:16px;border-top:1px solid #222;padding-top:12px">
       <div class="fila">
         <div><label>Filtrar por evento/etiqueta</label><input type="text" id="f-filtroEvento" placeholder="Dejar vacío = todos" oninput="cargarGastosDebounce()"></div>
+        <div><label>Filtrar por tipo</label>
+          <select id="f-filtroTipo" onchange="cargarGastos()">
+            <option value="">Todos</option>
+            <option value="evento">Solo evento</option>
+            <option value="desarrollo">Solo desarrollo</option>
+          </select>
+        </div>
       </div>
 
       <div id="resumenGastos"></div>
 
       <table id="tablaGastos" style="margin-top:12px">
-        <thead><tr><th>Fecha</th><th>Comercio</th><th>Categoría</th><th class="num">Monto</th><th>Pagó</th><th>Estado</th><th></th></tr></thead>
+        <thead><tr><th>Fecha</th><th>Tipo</th><th>Etiqueta</th><th>Comercio</th><th>Categoría</th><th class="num">Monto</th><th>Pagó</th><th>Estado</th><th></th></tr></thead>
         <tbody id="tbGastos"></tbody>
       </table>
       <div class="vacio" id="gastosVacio" style="display:none">Sin gastos registrados.</div>
@@ -530,7 +537,7 @@ async function guardarGasto(){
         evento_txt:document.getElementById('g-evento').value.trim(),
         fecha:document.getElementById('g-fecha').value||null,
         comercio:document.getElementById('g-comercio').value.trim(),
-        monto, categoria:document.getElementById('g-categoria').value,
+        monto, categoria:document.getElementById('g-categoria').value, tipo:tipoGastoElegido(),
         pagado_por:pagadoPor, nota:document.getElementById('g-nota').value.trim(),
         imagen:fotoActual
       })});
@@ -552,8 +559,12 @@ function cargarGastosDebounce(){clearTimeout(debounceT);debounceT=setTimeout(car
 
 async function cargarGastos(){
   const evento=document.getElementById('f-filtroEvento').value.trim();
+  const tipo=document.getElementById('f-filtroTipo').value;
+  const q=[];
+  if(evento)q.push('evento='+encodeURIComponent(evento));
+  if(tipo)q.push('tipo='+encodeURIComponent(tipo));
   try{
-    const url=API_URL+'/admin/gastos'+(evento?'?evento='+encodeURIComponent(evento):'');
+    const url=API_URL+'/admin/gastos'+(q.length?'?'+q.join('&'):'');
     const resp=await fetch(url,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
     const d=await resp.json();
     if(!resp.ok)return;
@@ -563,13 +574,32 @@ async function cargarGastos(){
   }catch(e){}
 }
 
-const CAT_LABEL={colacion:'Colación',transporte:'Transporte',materiales:'Materiales',radios:'Radios',otro:'Otro'};
+// Cada tipo de gasto tiene sus propias categorías (24-08-2026): ofrecer
+// «colación» para una marca de INAPI no tiene sentido, y al revés tampoco.
+const CATS_POR_TIPO={
+  evento:[['colacion','Colación'],['transporte','Transporte'],['materiales','Materiales'],['radios','Radios'],['otro','Otro']],
+  desarrollo:[['ia','IA y modelos'],['infraestructura','Infraestructura y hosting'],['dominios','Dominios'],['marcas','Marcas y propiedad industrial'],['tiendas','Tiendas de apps'],['herramientas','Herramientas y software'],['otro','Otro']]
+};
+const CAT_LABEL={};
+Object.values(CATS_POR_TIPO).forEach(l=>l.forEach(([k,v])=>{CAT_LABEL[k]=v;}));
+const TIPO_LABEL={evento:'Evento',desarrollo:'Desarrollo'};
+
+function tipoGastoElegido(){const r=document.querySelector('input[name="g-tipo"]:checked');return r?r.value:'evento';}
+function cambiarTipoGasto(){
+  const sel=document.getElementById('g-categoria');
+  sel.innerHTML=CATS_POR_TIPO[tipoGastoElegido()].map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('');
+  sel.value='otro';
+}
 
 function pintarResumen(r){
   const el=document.getElementById('resumenGastos');
   const cats=Object.entries(r.por_categoria||{});
   const pagadores=Object.entries(r.por_pagador||{});
+  const tipos=Object.entries(r.por_tipo||{});
   el.innerHTML='<div class="total-grande">'+clp(r.total)+'</div>'+
+    (tipos.length>0?'<div class="resumen-box" style="margin-bottom:10px"><h3>Por tipo</h3>'+
+      tipos.map(([k,v])=>'<div class="resumen-linea"><span>'+(TIPO_LABEL[k]||k)+'</span><b>'+clp(v)+'</b></div>').join('')+
+    '</div>':'')+
     '<div class="resumen-grid">'+
     '<div class="resumen-box"><h3>Por categoría</h3>'+
       (cats.length?cats.map(([k,v])=>'<div class="resumen-linea"><span>'+(CAT_LABEL[k]||k)+'</span><b>'+clp(v)+'</b></div>').join(''):'<div class="vacio">Sin datos.</div>')+
@@ -595,7 +625,8 @@ function pintarTabla(){
       ?'<span class="pill ok">caja</span>'
       :(g.reembolsado?'<span class="pill ok">devuelto</span>':'<span class="pill pend" style="cursor:pointer" onclick="marcarReembolsado('+g.id+',1)">pendiente — marcar</span>');
     const foto=g.foto_r2?' <span style="cursor:pointer" title="Ver foto de la boleta" onclick="verFoto('+g.id+')">📷</span>':'';
-    return '<tr><td>'+(g.fecha||'—')+'</td><td>'+esc(g.comercio||'—')+foto+'</td><td>'+(CAT_LABEL[g.categoria]||g.categoria)+'</td>'+
+    const tipo=TIPO_LABEL[g.tipo]||'Evento';
+    return '<tr><td>'+(g.fecha||'—')+'</td><td>'+tipo+'</td><td>'+esc(g.evento_txt||'—')+'</td><td>'+esc(g.comercio||'—')+foto+'</td><td>'+(CAT_LABEL[g.categoria]||g.categoria)+'</td>'+
       '<td class="num">'+clp(g.monto)+'</td><td>'+quien+'</td><td>'+estado+'</td>'+
       '<td><button class="btn-x" onclick="eliminarGasto('+g.id+')">✕</button></td></tr>';
   }).join('');
@@ -628,8 +659,8 @@ async function eliminarGasto(id){
 
 function exportarCSV(){
   if(!ultimosGastos.length){alert('No hay gastos para exportar.');return;}
-  const filas=[['Fecha','Evento','Comercio','Categoría','Monto','Pagó','Reembolsado','Nota']];
-  ultimosGastos.forEach(g=>filas.push([g.fecha||'',g.evento_txt||'',g.comercio||'',CAT_LABEL[g.categoria]||g.categoria,g.monto,g.pagado_por==='caja_empresa'?'Caja de la empresa':g.pagado_por,g.pagado_por==='caja_empresa'?'—':(g.reembolsado?'Sí':'No'),g.nota||'']));
+  const filas=[['Fecha','Tipo','Etiqueta','Comercio','Categoría','Monto','Pagó','Reembolsado','Nota']];
+  ultimosGastos.forEach(g=>filas.push([g.fecha||'',TIPO_LABEL[g.tipo]||'Evento',g.evento_txt||'',g.comercio||'',CAT_LABEL[g.categoria]||g.categoria,g.monto,g.pagado_por==='caja_empresa'?'Caja de la empresa':g.pagado_por,g.pagado_por==='caja_empresa'?'—':(g.reembolsado?'Sí':'No'),g.nota||'']));
   const csv=filas.map(f=>f.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');
@@ -1506,6 +1537,7 @@ async function iniciar(){
     const d=await r.json();
     if(!d.is_admin){document.getElementById('error-txt').textContent='Tu cuenta no es de administrador. Esta página es solo para la administración del ecosistema.';mostrar('error');return;}
     mostrar('app');
+    cambiarTipoGasto();   // llena el selector de categorías según el tipo marcado
     cargarGastos();
     cargarExpedientes();
     cargarEventos();
