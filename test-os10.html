@@ -70,6 +70,16 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
 .feedback.ok .fl{color:#3fb950}
 .feedback.no .fl{color:#e08a2b}
 .feedback .fund{color:#bdb6a3}
+/* Repaso de falladas (25-08, nacido del Registro de los NO: la app calculaba
+   qué fallaste, lo mandaba al registro y lo botaba — el guardia quedaba con un
+   % y sin saber QUÉ repasar) */
+.repaso-item{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:10px;font-size:13px;line-height:1.55}
+.repaso-item .rq{font-weight:700;color:#f0e8d0;margin-bottom:8px}
+.repaso-item .rq .ra{font-weight:800;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:#d4a017;display:block;margin-bottom:4px}
+.repaso-item .rr{font-size:12.5px;margin-bottom:3px}
+.repaso-item .rr.mal{color:#c9503f}
+.repaso-item .rr.bien{color:#3fb950}
+.repaso-item .rf{font-size:12.5px;color:#bdb6a3;margin-top:8px;padding-top:8px;border-top:1px solid #2a2a2a}
 .feedback .fund b{color:#e6c25a}
 .acciones{margin-top:18px;display:flex;gap:10px}
 .btn{border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:800;cursor:pointer;flex:1;transition:transform .1s}
@@ -206,6 +216,11 @@ main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
     </div>
     <div class="seccion-titulo">Tu desempeño por área</div>
     <div class="res-areas" id="res-areas"></div>
+
+    <div id="res-repaso" class="hidden">
+      <div class="seccion-titulo">Repasa lo que fallaste</div>
+      <div id="res-repaso-lista"></div>
+    </div>
 
     <div id="res-estudio" class="hidden">
       <div class="seccion-titulo">Para mejorar, si te interesa</div>
@@ -487,10 +502,12 @@ function siguiente(){
 function mostrarResultado(){
   var total = estado.lista.length, correctas = 0;
   var porArea = {};
+  var falladasItems = [];
   estado.lista.forEach(function(item){
     var idxC=-1; for(var k=0;k<item.opciones.length;k++){ if(item.opciones[k].correcta) idxC=k; }
     var ok = (item.elegida===idxC);
     if(ok) correctas++;
+    else falladasItems.push({item:item, idxC:idxC});
     var a = item.qref.a;
     if(!porArea[a]) porArea[a]={ok:0,tot:0};
     porArea[a].tot++; if(ok) porArea[a].ok++;
@@ -558,6 +575,36 @@ function mostrarResultado(){
   } else {
     est.classList.add("hidden");
   }
+
+  // Repaso de falladas: pregunta, lo que respondiste, la correcta y el porqué.
+  // El fundamento (qref.f) trae <b> del banco propio → innerHTML, igual que quiz-fund.
+  // Pregunta y respuestas van con textContent.
+  var rep = document.getElementById("res-repaso");
+  var repL = document.getElementById("res-repaso-lista");
+  repL.innerHTML = "";
+  rep.classList.toggle("hidden", falladasItems.length===0);
+  falladasItems.forEach(function(fi){
+    var it = fi.item;
+    var card = document.createElement("div"); card.className = "repaso-item";
+    var rq = document.createElement("div"); rq.className = "rq";
+    var ra = document.createElement("span"); ra.className = "ra";
+    ra.textContent = areaIcono(it.qref.a) + " " + areaNombre(it.qref.a);
+    rq.appendChild(ra);
+    rq.appendChild(document.createTextNode(it.qref.q));
+    card.appendChild(rq);
+    var r1 = document.createElement("div"); r1.className = "rr mal";
+    r1.textContent = "✗ Respondiste: " + (it.elegida>=0 && it.opciones[it.elegida] ? it.opciones[it.elegida].txt : "—");
+    card.appendChild(r1);
+    var r2 = document.createElement("div"); r2.className = "rr bien";
+    r2.textContent = "✓ Correcta: " + (fi.idxC>=0 ? it.opciones[fi.idxC].txt : "—");
+    card.appendChild(r2);
+    if(it.qref.f){
+      var rf = document.createElement("div"); rf.className = "rf";
+      rf.innerHTML = it.qref.f;
+      card.appendChild(rf);
+    }
+    repL.appendChild(card);
+  });
 
   ir("pantalla-resultado");
 }
