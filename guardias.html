@@ -264,6 +264,23 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
 .sem-amarillo{background:#2a1a00;color:#d4a017}
 .sem-rojo{background:#2a0a00;color:#e05000}
 .carpeta-aviso{background:#0d0d0d;border:1px solid #222;border-radius:10px;padding:12px;font-size:.72rem;color:#999;line-height:1.6;margin-bottom:14px}
+
+/* Buzón de opinión (25-08-2026) — portado de seguridad-chile.html, mismo endpoint /feedback */
+#fbBtn{display:block;width:100%;margin-top:10px;background:none;border:1px dashed rgba(212,160,23,.4);color:#d4a017;font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:10px;cursor:pointer;font-family:inherit}
+#fbModal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px}
+#fbModal.open{display:flex}
+#fbBox{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:22px;width:100%;max-width:400px}
+#fbBox h3{color:#f0e8d0;font-size:16px;margin-bottom:4px}
+#fbBox .fb-sub{color:#888;font-size:12px;margin-bottom:16px;line-height:1.5}
+.fb-caras{display:flex;gap:10px;justify-content:center;margin-bottom:16px}
+.fb-cara{background:#111;border:2px solid #2a2a2a;border-radius:14px;font-size:28px;padding:10px 16px;cursor:pointer;flex:1;text-align:center}
+.fb-cara.sel{border-color:#d4a017;background:#241d0a}
+#fbBox textarea{width:100%;min-height:80px;background:#111;border:1px solid #2a2a2a;border-radius:10px;color:#f0e8d0;padding:10px;font-size:13px;font-family:inherit;resize:vertical;margin-bottom:6px}
+#fbBox .fb-priv{color:#777;font-size:10.5px;line-height:1.4;margin-bottom:14px}
+#fbBox .fb-enviar{width:100%;background:#d4a017;color:#111;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}
+#fbBox .fb-enviar:disabled{opacity:.5}
+#fbBox .fb-cerrar{width:100%;background:transparent;color:#888;border:none;padding:10px;font-size:12px;cursor:pointer;margin-top:6px;font-family:inherit}
+#fbMsg{text-align:center;font-size:13px;color:#8bc34a;margin-top:10px;display:none}
 </style>
 </head>
 <body>
@@ -387,6 +404,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
     <a href="https://www.facebook.com/profile.php?id=61590934035185" target="_blank" rel="noopener"><svg class="e-ic" style="color:#1877F2" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6c-.3-.04-1.3-.12-2.5-.12-2.5 0-4.2 1.5-4.2 4.3v2.1H7.3V13h2.7v8h3.5z"/></svg>Facebook</a>
     <a href="https://www.tiktok.com/@control.y.confianza" target="_blank" rel="noopener"><svg class="e-ic" style="color:#f0e8d0" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 2h-3.2v13.8a3.1 3.1 0 1 1-2.5-3.05v-3.3a6.4 6.4 0 1 0 5.7 6.35V9.1a7.6 7.6 0 0 0 4.3 1.3V7.2a4.4 4.4 0 0 1-4.3-4.3V2z"/></svg>TikTok</a>
   </div>
+  <button id="fbBtn" onclick="fbAbrir()">💬 Danos tu opinión sobre Control+</button>
   <p class="e-firma">Control+ es de <strong>Control y Confianza</strong> — seguridad privada acreditada OS.10 · <a href="verificacion.html?de=controlmas" target="_blank" rel="noopener">Verificación</a> · <a href="terminos.html" target="_blank" rel="noopener">Términos y Privacidad</a></p>
   <p class="e-firma">Control+ es una app privada y no representa a ninguna entidad de gobierno. La información legal proviene de sus fuentes oficiales: <a href="https://www.dt.gob.cl" target="_blank" rel="noopener">Dirección del Trabajo</a> y <a href="https://www.bcn.cl/leychile" target="_blank" rel="noopener">Ley Chile (BCN)</a>.</p>
 </footer>
@@ -2112,5 +2130,56 @@ async function inscribirPremium(){
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8ff601503cd94b14b74d7df740932772"}'></script><!-- End Cloudflare Web Analytics -->
+
+<!-- ===== Buzón de opinión (25-08-2026) ===== -->
+<div id="fbModal" role="dialog" aria-label="Buzón de opinión">
+  <div id="fbBox">
+    <h3>¿Cómo te fue con la app?</h3>
+    <div class="fb-sub">Tu opinión la leemos de verdad — nos ayuda a mejorar.</div>
+    <div class="fb-caras">
+      <div class="fb-cara" data-r="bien" onclick="fbElegir('bien')">😊</div>
+      <div class="fb-cara" data-r="regular" onclick="fbElegir('regular')">😐</div>
+      <div class="fb-cara" data-r="mal" onclick="fbElegir('mal')">😞</div>
+    </div>
+    <textarea id="fbTexto" placeholder="Cuéntanos qué pasó (opcional)"></textarea>
+    <div class="fb-priv">No incluyas tu nombre, teléfono ni datos de otras personas — esto es anónimo.</div>
+    <button class="fb-enviar" id="fbEnviarBtn" onclick="fbEnviar()">Enviar</button>
+    <button class="fb-cerrar" onclick="fbCerrar()">Cerrar</button>
+    <div id="fbMsg"></div>
+  </div>
+</div>
+<script>
+// Buzón de opinión — mismo flujo que seguridad-chile.html; herramienta identifica la app
+var fbReaccion = null;
+function fbAbrir(){ document.getElementById('fbModal').classList.add('open'); cycTelemetria('feedback', 'abrio_buzon', true); }
+function fbCerrar(){ document.getElementById('fbModal').classList.remove('open'); }
+document.getElementById('fbModal').addEventListener('click', function(e){ if(e.target===this) fbCerrar(); });
+function fbElegir(r){
+  fbReaccion = r;
+  document.querySelectorAll('.fb-cara').forEach(function(el){ el.classList.toggle('sel', el.dataset.r===r); });
+}
+function fbEnviar(){
+  var texto = document.getElementById('fbTexto').value.trim();
+  if(!fbReaccion && !texto){ return; }
+  var btn = document.getElementById('fbEnviarBtn');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  fetch(API_URL + '/feedback', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({herramienta: 'controlmas', reaccion: fbReaccion, comentario: texto || undefined})
+  }).then(function(r){ return r.json(); }).then(function(d){
+    var msg = document.getElementById('fbMsg');
+    msg.textContent = d.mensaje || '¡Gracias!';
+    msg.style.display = 'block';
+    setTimeout(fbCerrar, 1800);
+    btn.disabled = false; btn.textContent = 'Enviar';
+    document.getElementById('fbTexto').value = '';
+    fbReaccion = null;
+    document.querySelectorAll('.fb-cara').forEach(function(el){ el.classList.remove('sel'); });
+  }).catch(function(){
+    btn.disabled = false; btn.textContent = 'Enviar';
+  });
+}
+</script>
 </body>
 </html>
