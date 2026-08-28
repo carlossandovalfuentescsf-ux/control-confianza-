@@ -551,7 +551,7 @@ async function asignarAutoTablero(planId){
     var d=await api('/admin/planes/'+planId+'/asignar-auto',{method:'POST',body:{}});
     await refrescar();
     var el=document.getElementById('msgActivar');
-    if(el)el.innerHTML='<p class="ok-msg">'+d.asignados_nuevos+' asignado(s).'+(d.guardias_sin_puesto?' '+d.guardias_sin_puesto+' guardia(s) con rol quedaron sin puesto.':'')+((d.puestos_incompletos||[]).length?' '+d.puestos_incompletos.length+' puesto(s) siguen incompletos.':'')+'</p>';
+    if(el)el.innerHTML='<p class="ok-msg">'+d.asignados_nuevos+' asignado(s).'+(d.guardias_sin_puesto?' '+d.guardias_sin_puesto+' guardia(s) con rol quedaron sin puesto.':'')+((d.puestos_incompletos||[]).length?' '+d.puestos_incompletos.length+' puesto(s) siguen incompletos.':'')+'</p>'+(d.sin_os10_vigente?'<p class="err">⚠️ '+d.sin_os10_vigente+' asignado(s) SIN OS-10 vigente en Mi Carpeta (el art. 18 N°3 exige la credencial) — pídeles subirlo a Control+ o reemplázalos.</p>':'');
   }catch(e){alert(e.message);}
 }
 
@@ -833,7 +833,7 @@ async function crearPuesto(planId){
   try{await api('/admin/planes/'+planId+'/puestos',{method:'POST',body:b});await refrescar();}catch(e){document.getElementById('msgPuestos').innerHTML='<p class="err">'+esc(e.message)+'</p>';}
 }
 async function eliminarPuesto(id){if(!confirm('¿Eliminar este puesto? Sus asignados quedan libres.'))return;try{await api('/admin/puestos/'+id,{method:'PATCH',body:{eliminar:true}});await refrescar();}catch(e){alert(e.message);}}
-async function asignarAuto(planId){try{var d=await api('/admin/planes/'+planId+'/asignar-auto',{method:'POST',body:{}});document.getElementById('msgPuestos').innerHTML='<p class="ok-msg">'+d.asignados_nuevos+' asignados. '+(d.guardias_sin_puesto?d.guardias_sin_puesto+' guardia(s) con rol quedaron sin puesto. ':'')+(d.puestos_incompletos.length?d.puestos_incompletos.length+' puesto(s) siguen incompletos.':'')+'</p>';await refrescar();}catch(e){document.getElementById('msgPuestos').innerHTML='<p class="err">'+esc(e.message)+'</p>';}}
+async function asignarAuto(planId){try{var d=await api('/admin/planes/'+planId+'/asignar-auto',{method:'POST',body:{}});document.getElementById('msgPuestos').innerHTML='<p class="ok-msg">'+d.asignados_nuevos+' asignados. '+(d.guardias_sin_puesto?d.guardias_sin_puesto+' guardia(s) con rol quedaron sin puesto. ':'')+(d.puestos_incompletos.length?d.puestos_incompletos.length+' puesto(s) siguen incompletos.':'')+'</p>'+(d.sin_os10_vigente?'<p class="err">⚠️ '+d.sin_os10_vigente+' asignado(s) SIN OS-10 vigente en Mi Carpeta — pídeles subirlo a Control+ o reemplázalos.</p>':'');await refrescar();}catch(e){document.getElementById('msgPuestos').innerHTML='<p class="err">'+esc(e.message)+'</p>';}}
 async function asignarManual(planId,puestoId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{puesto_id:puestoId,user_id:parseInt(uid,10)}});await refrescar();}catch(e){alert(e.message);await refrescar();}}
 async function quitarAsignacion(planId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{user_id:uid,quitar:true}});await refrescar();}catch(e){alert(e.message);}}
 
