@@ -1226,7 +1226,7 @@ async function renderEventoVivo(eventoId, primeraVez){
     var esTrabajo=planActivo.tipo==='trabajo';
     html+='<div style="background:'+(esTrabajo?'#0d2210':'#2a0d0d')+';border:1px solid '+(esTrabajo?'#1f5c26':'#7a1f1f')+';border-radius:10px;padding:12px;margin:10px 0">'+
       '<div style="font-weight:800;font-size:0.95rem;color:'+(esTrabajo?'#7dc800':'#ff9a9a')+'">'+(esTrabajo?'🟢 ':'🚨 ')+esc(planActivo.plan).toUpperCase()+' ACTIVO</div>'+
-      '<div style="font-size:1rem;margin:8px 0"><strong>Tu puesto: '+esc(planActivo.puesto)+'</strong>'+(planActivo.tarea?'<br><span style="font-size:0.85rem">'+esc(planActivo.tarea)+'</span>':'')+'</div>'+
+      '<div style="font-size:1rem;margin:8px 0"><strong>Tu puesto: '+esc(planActivo.puesto)+'</strong>'+(planActivo.turno?' · 🕐 '+esc(planActivo.turno):'')+(planActivo.tarea?'<br><span style="font-size:0.85rem">'+esc(planActivo.tarea)+'</span>':'')+'</div>'+
       (d.confirmado
         ?'<div style="color:#7dc800;font-weight:800">✅ Ya confirmaste tu posición.</div>'
         :'<button class="btn-guardar" style="background:'+(esTrabajo?'#1f5c26':'#c0392b')+';color:#fff" onclick="vivoConfirmar('+eventoId+')">✅ ESTOY EN POSICIÓN</button>')+
@@ -1252,7 +1252,7 @@ async function renderEventoVivo(eventoId, primeraVez){
   (d.mis_puestos||[]).forEach(function(p){
     html+='<div style="background:#151515;border:1px solid #2a2a2a;border-radius:8px;padding:10px;margin-bottom:6px;font-size:0.82rem">'+
       '<strong>'+esc(p.plan)+'</strong>'+(p.plan_id===d.plan_activo_id?' <span style="color:#ff9a9a;font-weight:800">← ACTIVO</span>':'')+
-      '<br>Puesto: <strong>'+esc(p.puesto)+'</strong>'+(p.tarea?' — '+esc(p.tarea):'')+
+      '<br>Puesto: <strong>'+esc(p.puesto)+'</strong>'+(p.turno?' · 🕐 '+esc(p.turno):'')+(p.tarea?' — '+esc(p.tarea):'')+
       (p.instrucciones?'<br><span style="color:#888;font-size:0.75rem">'+esc(p.instrucciones)+'</span>':'')+'</div>';
   });
 

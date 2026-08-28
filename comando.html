@@ -143,6 +143,11 @@ footer a{color:#d4a017}
     <b>¿Para qué sirve?</b> Comando de Control es el panel de administración del ecosistema, separado de las aplicaciones que utilizan los clientes y los guardias. Es instalable, cuenta con su propio ícono y su acceso está reservado a la administración (hasta cuatro usuarios del equipo). Centraliza en un solo lugar el Tablero de gestión, el Cotizador de eventos, el Panel de Ofertas y la administración de la dotación (Convocatorias y Expedientes). Incorpora además el registro de gastos del evento: al adjuntar la fotografía de una boleta, el sistema extrae automáticamente el monto y mantiene el control de los reembolsos pendientes, asegurando una rendición de cuentas ordenada.
   </div>
 
+  <div class="card" id="cardHoy" style="display:none">
+    <h2>📣 HOY</h2>
+    <div id="hoyContenido"></div>
+  </div>
+
   <div class="card">
     <h2>🚀 Herramientas</h2>
     <div class="lanzador">
@@ -1539,6 +1544,7 @@ async function iniciar(){
     if(!d.is_admin){document.getElementById('error-txt').textContent='Tu cuenta no es de administrador. Esta página es solo para la administración del ecosistema.';mostrar('error');return;}
     mostrar('app');
     cambiarTipoGasto();   // llena el selector de categorías según el tipo marcado
+    cargarHoy();
     cargarGastos();
     cargarExpedientes();
     cargarEventos();
@@ -1548,6 +1554,33 @@ async function iniciar(){
     document.getElementById('error-txt').textContent='Error de conexión con el servidor. Revisa tu internet e intenta de nuevo.';
     mostrar('error');
   }
+}
+
+// 📣 HOY: el próximo evento con su semáforo de dotación y las alertas de
+// plazos legales (60 días de la solicitud, denuncia en 24 h, imágenes 120
+// días) — lo que antes dependía de la memoria, ahora recibe al abrir.
+async function cargarHoy(){
+  try{
+    const r=await fetch(API_URL+'/admin/hoy',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!r.ok)return;
+    const d=await r.json();
+    if(!d.proximo&&!(d.alertas||[]).length)return;
+    let h='';
+    if(d.proximo){
+      const p=d.proximo;
+      const pct=p.cupos?Math.min(100,Math.round(p.confirmados/p.cupos*100)):0;
+      h+='<div style="margin-bottom:8px"><strong>Próximo evento:</strong> '+p.nombre+' · '+p.fecha_inicio+(p.dias>=0?' (en '+p.dias+' día'+(p.dias===1?'':'s')+')':'')+
+        (p.cupos?'<br>Dotación: '+p.confirmados+' confirmados de '+p.cupos+' comprometidos'+
+          '<div style="background:#111;border-radius:20px;height:10px;overflow:hidden;margin-top:4px"><div style="width:'+pct+'%;height:100%;background:'+(pct>=100?'#1f8a2d':pct>=50?'#e8a817':'#c0392b')+'"></div></div>':'')+
+        '<div style="margin-top:6px"><a href="modo-evento.html" style="color:#d4a017;font-weight:800">🎪 Abrir en Modo Evento →</a></div></div>';
+    }
+    (d.alertas||[]).forEach(a=>{
+      const rojo=a.tipo==='denuncia_24h'||a.tipo==='plazo_60';
+      h+='<div style="border-left:3px solid '+(rojo?'#c0392b':'#e8a817')+';padding:6px 10px;margin-bottom:6px;font-size:0.82rem;background:#151515;border-radius:0 8px 8px 0">'+(rojo?'🚨':'⚠️')+' '+a.texto+'</div>';
+    });
+    document.getElementById('hoyContenido').innerHTML=h;
+    document.getElementById('cardHoy').style.display='block';
+  }catch(e){/* la cabecera HOY jamás rompe el hub */}
 }
 iniciar();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
