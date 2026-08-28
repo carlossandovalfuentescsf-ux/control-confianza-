@@ -1237,6 +1237,13 @@ async function renderEventoVivo(eventoId, primeraVez){
     html+='<div style="background:#151515;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:0.8rem;color:#aaa">⚪ Sin plan activado por ahora. Abajo está tu briefing: qué te toca en cada plan.</div>';
   }
 
+  // 🗺️ El croquis del recinto con MI puesto marcado (sesión 44): el mapa
+  // que en Limache se difundía en papel, ahora en el bolsillo de cada uno.
+  // Se guarda en el teléfono (Cache API) para que sirva sin señal (D3).
+  if(d.evento&&d.evento.croquis&&(d.puestos_mapa||[]).length){
+    html+='<div id="vivoCroquisZona" style="margin:10px 0"><div style="font-size:0.75rem;color:#888">🗺️ Cargando croquis…</div></div>';
+  }
+
   // Briefing: mi puesto en CADA plan (esto es lo que se estudia ANTES).
   html+='<div style="font-weight:800;margin:12px 0 6px">📋 Mi briefing — qué hago en cada plan</div>';
   if(!(d.mis_puestos||[]).length){
@@ -1259,6 +1266,52 @@ async function renderEventoVivo(eventoId, primeraVez){
   html+='<div style="margin-top:10px;font-size:0.68rem;color:#666">La confirmación registra solo hora y puesto — esta app no rastrea tu ubicación.</div>';
   html+='</div>';
   el.innerHTML=html;
+  if(d.evento&&d.evento.croquis&&(d.puestos_mapa||[]).length)vivoPintarCroquis(eventoId,d);
+}
+
+// El croquis se baja UNA vez y queda guardado en el teléfono (Cache API):
+// si el recinto queda sin señal, el mapa sigue apareciendo.
+async function vivoCroquisURL(eventoId){
+  var clave='https://cyc-croquis.local/evento-'+eventoId;
+  try{
+    var res=await fetch(API_URL+'/eventos/'+eventoId+'/croquis',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(res.ok){
+      try{var c=await caches.open('cyc-croquis');await c.put(clave,res.clone());}catch(e){}
+      return URL.createObjectURL(await res.blob());
+    }
+  }catch(e){}
+  try{var c2=await caches.open('cyc-croquis');var hit=await c2.match(clave);if(hit)return URL.createObjectURL(await hit.blob());}catch(e){}
+  return null;
+}
+
+async function vivoPintarCroquis(eventoId,d){
+  var zona=document.getElementById('vivoCroquisZona');if(!zona)return;
+  var url=await vivoCroquisURL(eventoId);
+  if(!url){zona.innerHTML='';return;}
+  // ¿Qué plan se muestra? El ACTIVO si tiene puestos en el mapa; si no, el
+  // primero de mi briefing con mapa (normalmente el plan de trabajo).
+  var mapa=d.puestos_mapa||[];
+  var planId=null;
+  if(d.plan_activo_id&&mapa.some(function(q){return q.plan_id===d.plan_activo_id;}))planId=d.plan_activo_id;
+  else{
+    for(var i=0;i<(d.mis_puestos||[]).length&&!planId;i++){if(mapa.some(function(q){return q.plan_id===d.mis_puestos[i].plan_id;}))planId=d.mis_puestos[i].plan_id;}
+    if(!planId&&mapa.length)planId=mapa[0].plan_id;
+  }
+  var puestos=mapa.filter(function(q){return q.plan_id===planId;});
+  if(!puestos.length){zona.innerHTML='';return;}
+  var mio=(d.mis_puestos||[]).find(function(p){return p.plan_id===planId;});
+  var planNombre=mio?mio.plan:'';
+  var html='<div style="font-weight:800;margin-bottom:4px">🗺️ Croquis'+(planNombre?' — '+esc(planNombre):'')+(planId===d.plan_activo_id?' <span style="color:#ff9a9a">(ACTIVO)</span>':'')+'</div>'+
+    '<div style="position:relative;display:inline-block;max-width:100%;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden">'+
+    '<img src="'+url+'" style="display:block;max-width:100%;height:auto" draggable="false">';
+  var leyenda='';
+  puestos.forEach(function(q,i){
+    var esMio=mio&&q.id===mio.puesto_id;
+    html+='<div style="position:absolute;left:'+q.pos_x+'%;top:'+q.pos_y+'%;transform:translate(-50%,-50%);width:'+(esMio?'30px':'20px')+';height:'+(esMio?'30px':'20px')+';border-radius:50%;background:'+(esMio?'#d4a017':'#555')+';border:2px solid #fff;color:'+(esMio?'#111':'#fff')+';font-weight:800;font-size:'+(esMio?'13px':'10px')+';line-height:'+(esMio?'26px':'16px')+';text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.7)'+(esMio?';z-index:2':'')+'">'+(i+1)+'</div>';
+    leyenda+='<span style="margin-right:10px;font-size:0.7rem;color:'+(esMio?'#d4a017':'#888')+(esMio?';font-weight:800':'')+'">'+(i+1)+' '+esc(q.nombre)+(esMio?' ← TU PUESTO':'')+'</span>';
+  });
+  html+='</div><div style="margin-top:4px;line-height:1.7">'+leyenda+'</div>';
+  zona.innerHTML=html;
 }
 
 async function vivoConfirmar(eventoId){

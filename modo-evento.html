@@ -124,6 +124,9 @@ a{color:#d4a017}
 var API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
 var CYC_TOKEN=localStorage.getItem('cyc_token')||null;
 var EVENTOS=[], EVENTO_ID=null, ESTADO=null, TAB='tablero', TIMER=null, PLAN_SEL=null, ES_ADMIN_LISTA=false, LICIT=null;
+// Croquis (sesión 44): un plano por evento; los puestos se ubican encima en
+// porcentaje. UBICANDO = puesto en modo «tócalo en el mapa».
+var CROQUIS_URL=null, CROQUIS_EVENTO=null, UBICANDO=null, PROPUESTA=null;
 
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmtHora(t){ if(!t)return ''; var d=new Date(t.replace(' ','T')+'Z'); return d.toLocaleString('es-CL',{timeZone:'America/Santiago',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
@@ -170,7 +173,21 @@ async function iniciar(){
     else document.getElementById('cargando').innerHTML='<p class="err">'+esc(e.message)+'</p>';
   }
 }
-function cambiarEvento(){EVENTO_ID=parseInt(document.getElementById('selEvento').value,10)||null;PLAN_SEL=null;refrescar();}
+function cambiarEvento(){EVENTO_ID=parseInt(document.getElementById('selEvento').value,10)||null;PLAN_SEL=null;if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;UBICANDO=null;PROPUESTA=null;refrescar();}
+
+// La imagen del croquis se pide UNA vez por evento (va con token, por eso
+// no puede ir directo en un <img src>): se convierte en URL local y se reusa.
+async function croquisURL(){
+  if(!ESTADO||!ESTADO.evento||!ESTADO.evento.croquis)return null;
+  if(CROQUIS_URL&&CROQUIS_EVENTO===EVENTO_ID)return CROQUIS_URL;
+  try{
+    var r=await fetch(API_URL+'/eventos/'+EVENTO_ID+'/croquis',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!r.ok)return null;
+    if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);
+    CROQUIS_URL=URL.createObjectURL(await r.blob());CROQUIS_EVENTO=EVENTO_ID;
+    return CROQUIS_URL;
+  }catch(e){return null;}
+}
 function verTab(t){TAB=t;['tablero','config','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x===t?'act':'';});render();}
 
 async function refrescar(){
@@ -221,6 +238,11 @@ function renderTablero(){
         '</div>';
     });
     html+='</div>';
+    // El mismo semáforo pero SOBRE EL CROQUIS: de un vistazo se ve qué zona
+    // del recinto está cubierta y cuál no (sesión 44).
+    if(ESTADO.evento.croquis){
+      html+='<div class="card"><h2>🗺️ Croquis del despliegue — '+esc(planActivo.nombre)+'</h2><div class="porque">Verde = todos confirmados · Rojo = nadie ha confirmado · Ámbar = parcial · Gris = sin asignados. El detalle por puesto está en la leyenda y en el semáforo de arriba.</div><div id="croTabZona"><p class="mini">Cargando croquis…</p></div></div>';
+    }
   }
 
   // Activación de planes (D4: el Worker solo deja al admin o al responsable).
@@ -243,6 +265,28 @@ function renderTablero(){
   html+='<div class="card"><h2>Dotación</h2><p class="mini">'+confirmadosRoster.length+' confirmados/presentes de '+(ESTADO.roster||[]).length+' convocados · Responsable de seguridad: <strong>'+(e.responsable_user_id?esc(nombreGuardia(e.responsable_user_id)):'⚠️ sin designar (se designa en Planes y puestos)')+'</strong></p></div>';
 
   document.getElementById('contenido').innerHTML=html;
+  if(planActivo&&ESTADO.evento.croquis)pintarCroquisTablero(planActivo);
+}
+
+async function pintarCroquisTablero(plan){
+  var zona=document.getElementById('croTabZona');if(!zona)return;
+  var url=await croquisURL();
+  if(!url){zona.innerHTML='<p class="err">No se pudo cargar el croquis.</p>';return;}
+  var puestos=(ESTADO.puestos||[]).filter(function(q){return q.plan_id===plan.id;});
+  var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===plan.id;});
+  var conf={};(ESTADO.confirmados||[]).forEach(function(u){conf[u]=true;});
+  var html='<div style="position:relative;display:inline-block;max-width:100%;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden">'+
+    '<img src="'+url+'" style="display:block;max-width:100%;height:auto" draggable="false">';
+  var leyenda='';
+  puestos.forEach(function(q,i){
+    var deEste=asig.filter(function(a){return a.puesto_id===q.id;});
+    var listos=deEste.filter(function(a){return conf[a.user_id];}).length;
+    var color=!deEste.length?'#555':(listos===deEste.length?'#1f8a2d':(listos>0?'#e8a817':'#c0392b'));
+    if(q.pos_x!=null)html+='<div title="'+esc(q.nombre)+': '+listos+'/'+deEste.length+' confirmados" style="position:absolute;left:'+q.pos_x+'%;top:'+q.pos_y+'%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:'+color+';border:2px solid #fff;color:#fff;font-weight:800;font-size:12px;line-height:24px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.6)">'+(i+1)+'</div>';
+    leyenda+='<span class="mini" style="margin-right:12px;white-space:nowrap"><strong style="color:'+color+'">'+(i+1)+'</strong> '+esc(q.nombre)+' '+listos+'/'+deEste.length+'</span>';
+  });
+  html+='</div><div style="margin-top:6px;line-height:1.8">'+leyenda+'</div>';
+  zona.innerHTML=html;
 }
 
 async function activarPlan(planId,nombre){
@@ -290,7 +334,8 @@ function renderConfig(){
   // 3) Planes.
   html+='<div class="card"><h2>3 · Planes del evento</h2><div class="porque">El catálogo mínimo sale del D.S. 208 art. 18 (evacuación + robo/asalto, múltiples víctimas, incendio, sismo). Cárgalo y ajusta puestos según el recinto y el informe del prevencionista.</div>'+
     '<div class="fila" style="margin-bottom:10px"><button onclick="cargarPlantilla()">📋 Cargar catálogo D.S. 208</button>'+
-    '<input id="planNuevoNombre" placeholder="U otro plan: nombre" style="max-width:220px"><button class="sec" onclick="crearPlan()">➕ Crear plan</button></div><div id="msgPlanes"></div><div class="fila" style="margin-bottom:8px">';
+    '<input id="planNuevoNombre" placeholder="U otro plan: nombre" style="max-width:220px"><button class="sec" onclick="crearPlan()">➕ Crear plan</button>'+
+    '<button class="sec" onclick="proponerTareasIA()">✨ Proponer tareas (IA)</button></div><div id="msgPlanes"></div><div id="propuestaZona"></div><div class="fila" style="margin-bottom:8px">';
   (ESTADO.planes||[]).forEach(function(p){
     html+='<button class="'+(PLAN_SEL===p.id?'':'sec')+'" onclick="PLAN_SEL='+p.id+';render()">'+esc(p.nombre)+'</button>';
   });
@@ -325,7 +370,130 @@ function renderConfig(){
     html+='</div>';
   }
   html+='</div>';
+
+  // 4) Croquis del recinto (sesión 44). En Limache nuestros croquis fueron
+  // los oficiales que difundió la productora: el mapa ES el producto.
+  html+='<div class="card"><h2>4 · Croquis del recinto</h2><div class="porque">Sube UNA foto o plano del recinto (sirve el plano del prevencionista o una captura del mapa). Después toca 📍 en un puesto del plan seleccionado y toca el punto del mapa donde va. El mismo mapa alimenta el tablero en vivo, el teléfono de cada guardia y los documentos para imprimir.</div>'+
+    '<div class="fila"><input type="file" id="croFile" accept="image/jpeg,image/png,image/webp" style="max-width:280px"><button class="sec" onclick="subirCroquis()">'+(ESTADO.evento.croquis?'↺ Reemplazar croquis':'⬆️ Subir croquis')+'</button>'+
+    (ESTADO.evento.croquis?'<button class="rojo" onclick="quitarCroquis()">🗑 Quitar</button>':'')+'</div><div id="msgCroquis"></div>'+
+    (ESTADO.evento.croquis?'<div id="croCfgZona" style="margin-top:10px"><p class="mini">Cargando croquis…</p></div>':'')+
+    '</div>';
+
   document.getElementById('contenido').innerHTML=html;
+  if(ESTADO.evento.croquis){
+    if(plan)pintarCroquisCfg(plan);
+    else{var z=document.getElementById('croCfgZona');if(z)z.innerHTML='<p class="mini">Crea primero los planes y sus puestos — el croquis se arma sobre el plan seleccionado.</p>';}
+  }
+  if(PROPUESTA)pintarPropuesta();
+}
+
+// ── Croquis: ubicar puestos (config) ──────────────────────────────
+async function pintarCroquisCfg(plan){
+  var zona=document.getElementById('croCfgZona');if(!zona||!plan)return;
+  var url=await croquisURL();
+  if(!url){zona.innerHTML='<p class="err">No se pudo cargar el croquis.</p>';return;}
+  var puestos=(ESTADO.puestos||[]).filter(function(q){return q.plan_id===plan.id;});
+  var html='<p class="mini" style="margin-bottom:6px">Puestos de <strong>'+esc(plan.nombre)+'</strong> — '+
+    (UBICANDO?'<span style="color:#e8c860">ahora toca el punto del mapa donde va · <a href="#" style="color:#e8c860" onclick="UBICANDO=null;render();return false">cancelar</a></span>':'toca 📍 para ubicar o mover un puesto; ✕ lo saca del mapa')+'</p>';
+  html+='<div style="margin-bottom:8px">';
+  puestos.forEach(function(q,i){
+    html+='<span class="asig'+(q.pos_x!=null?' ok':'')+'" style="cursor:pointer'+(UBICANDO===q.id?';outline:2px solid #e8c860':'')+'" onclick="UBICANDO='+(UBICANDO===q.id?'null':q.id)+';render()">'+(i+1)+' · '+esc(q.nombre)+' 📍'+(q.pos_x!=null?' <span class="x" onclick="event.stopPropagation();quitarPosicion('+q.id+')">✕</span>':'')+'</span>';
+  });
+  html+='</div>';
+  html+='<div id="croMapaCfg" onclick="croCfgClick(event)" style="position:relative;display:inline-block;max-width:100%;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden;cursor:'+(UBICANDO?'crosshair':'default')+'">'+
+    '<img src="'+url+'" style="display:block;max-width:100%;height:auto" draggable="false">';
+  puestos.forEach(function(q,i){
+    if(q.pos_x==null)return;
+    html+='<div title="'+esc(q.nombre)+'" style="position:absolute;left:'+q.pos_x+'%;top:'+q.pos_y+'%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:'+(UBICANDO===q.id?'#e8a817':'#c0392b')+';border:2px solid #fff;color:#fff;font-weight:800;font-size:12px;line-height:22px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.6);pointer-events:none">'+(i+1)+'</div>';
+  });
+  html+='</div>';
+  zona.innerHTML=html;
+}
+function croCfgClick(ev){
+  if(!UBICANDO)return;
+  var mapa=document.getElementById('croMapaCfg');
+  var r=mapa.getBoundingClientRect();
+  var x=(ev.clientX-r.left)/r.width*100, y=(ev.clientY-r.top)/r.height*100;
+  guardarPosicion(UBICANDO,Math.round(x*10)/10,Math.round(y*10)/10);
+}
+async function guardarPosicion(pid,x,y){try{await api('/admin/puestos/'+pid+'/posicion',{method:'POST',body:{x:x,y:y}});UBICANDO=null;await refrescar();}catch(e){alert(e.message);}}
+async function quitarPosicion(pid){try{await api('/admin/puestos/'+pid+'/posicion',{method:'POST',body:{x:null,y:null}});await refrescar();}catch(e){alert(e.message);}}
+
+// El navegador achica la foto a máx. 1600px ANTES de subirla: un plano de
+// 12MB del teléfono pasa a ~300KB y el mapa carga rápido en terreno.
+function achicarImagen(file,max){
+  return new Promise(function(res,rej){
+    var img=new Image();
+    img.onload=function(){
+      var f=Math.min(1,max/Math.max(img.width,img.height));
+      var c=document.createElement('canvas');c.width=Math.round(img.width*f);c.height=Math.round(img.height*f);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      res(c.toDataURL('image/jpeg',0.85).split(',')[1]);
+    };
+    img.onerror=rej;
+    img.src=URL.createObjectURL(file);
+  });
+}
+async function subirCroquis(){
+  var f=document.getElementById('croFile').files[0];
+  var msg=document.getElementById('msgCroquis');
+  if(!f){msg.innerHTML='<p class="err">Elige primero el archivo del croquis.</p>';return;}
+  msg.innerHTML='<p class="mini">⏳ Preparando y subiendo…</p>';
+  try{
+    var b64=await achicarImagen(f,1600);
+    await api('/admin/eventos/'+EVENTO_ID+'/croquis',{method:'POST',body:{media_type:'image/jpeg',data:b64}});
+    if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;
+    await refrescar();
+  }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+async function quitarCroquis(){
+  if(!confirm('¿Quitar el croquis? Las posiciones de los puestos se conservan por si subes otro.'))return;
+  try{await api('/admin/eventos/'+EVENTO_ID+'/croquis',{method:'DELETE'});if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;await refrescar();}catch(e){alert(e.message);}
+}
+
+// ── Propuesta IA de instrucciones y tareas (patrón: propone → revisas → aplicas) ──
+async function proponerTareasIA(){
+  if(!confirm('La IA propondrá el lineamiento de cada plan y la tarea de cada puesto según este evento. NADA se aplica hasta que revises y marques qué aceptar. ¿Continuar?'))return;
+  var zona=document.getElementById('propuestaZona');
+  zona.innerHTML='<p class="mini">⏳ Armando la propuesta… (15-40 segundos)</p>';
+  try{PROPUESTA=await api('/admin/eventos/'+EVENTO_ID+'/proponer-tareas',{method:'POST',body:{}});pintarPropuesta();}
+  catch(e){zona.innerHTML='<p class="err">'+esc(e.message)+'</p>';PROPUESTA=null;}
+}
+function pintarPropuesta(){
+  var zona=document.getElementById('propuestaZona');
+  if(!zona||!PROPUESTA)return;
+  var html='<div style="border:1px solid #3a3010;background:#181405;border-radius:10px;padding:12px;margin-bottom:10px">'+
+    '<p style="font-weight:800;margin-bottom:4px">✨ Propuesta de la IA — desmarca lo que no te convenza y aplica</p>'+
+    '<p class="mini" style="margin-bottom:10px">⚠️ Las vías y tiempos de EVACUACIÓN son del informe del prevencionista — esto solo organiza al personal. Lo marcado REEMPLAZA el texto actual.</p>';
+  PROPUESTA.planes.forEach(function(pl,i){
+    var plan=planPorId(pl.plan_id);if(!plan)return;
+    html+='<div style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:flex-start;font-size:0.82rem"><input type="checkbox" checked id="prop-p-'+i+'" style="width:auto;margin-top:3px"><span><strong>'+esc(plan.nombre)+'</strong> — lineamiento:<br><span style="color:#c8bd9a">'+esc(pl.instrucciones)+'</span></span></label>';
+    pl.puestos.forEach(function(q,j){
+      var pu=(ESTADO.puestos||[]).find(function(x){return x.id===q.puesto_id;});if(!pu)return;
+      html+='<label style="display:flex;gap:8px;align-items:flex-start;font-size:0.78rem;margin:6px 0 0 22px"><input type="checkbox" checked id="prop-q-'+i+'-'+j+'" style="width:auto;margin-top:3px"><span>'+esc(pu.nombre)+': <span style="color:#c8bd9a">'+esc(q.tarea)+'</span>'+(pu.tarea?'<br><span class="mini">hoy dice: '+esc(pu.tarea)+'</span>':'')+'</span></label>';
+    });
+    html+='</div>';
+  });
+  html+='<div class="fila"><button class="verde" onclick="aplicarPropuesta()">✅ Aplicar lo marcado</button><button class="sec" onclick="PROPUESTA=null;render()">Descartar</button></div><div id="msgProp"></div></div>';
+  zona.innerHTML=html;
+}
+async function aplicarPropuesta(){
+  var msg=document.getElementById('msgProp');
+  msg.innerHTML='<p class="mini">⏳ Aplicando…</p>';
+  var aplicados=0;
+  try{
+    for(var i=0;i<PROPUESTA.planes.length;i++){
+      var pl=PROPUESTA.planes[i];
+      var cb=document.getElementById('prop-p-'+i);
+      if(cb&&cb.checked&&pl.instrucciones){await api('/admin/planes/'+pl.plan_id,{method:'PATCH',body:{instrucciones:pl.instrucciones}});aplicados++;}
+      for(var j=0;j<pl.puestos.length;j++){
+        var cq=document.getElementById('prop-q-'+i+'-'+j);
+        if(cq&&cq.checked&&pl.puestos[j].tarea){await api('/admin/puestos/'+pl.puestos[j].puesto_id,{method:'PATCH',body:{tarea:pl.puestos[j].tarea}});aplicados++;}
+      }
+    }
+    PROPUESTA=null;
+    await refrescar();
+  }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+' — lo ya aplicado ('+aplicados+' cambio(s)) quedó guardado.</p>';}
 }
 
 async function ponerRol(uid,rol){try{await api('/admin/eventos/'+EVENTO_ID+'/rol',{method:'POST',body:{user_id:uid,rol:rol||null}});await refrescar();}catch(e){alert(e.message);}}
@@ -495,6 +663,16 @@ function renderDocumento(){
     '<button class="verde" onclick="generarDocumento(true)">🖨 Versión final (sin marca de agua)</button></div>'+
     '<p class="mini" style="margin-top:8px">La impresión del navegador deja elegir «Guardar como PDF».</p><div id="msgDoc"></div></div>';
 
+  // 🗺️ Croquis de despliegue: UNA página por plan, el mapa grande con los
+  // puestos numerados y su leyenda. Es el formato que en Limache terminó
+  // siendo el oficial que difundió la productora — nadie lee 15 páginas en
+  // una emergencia; el croquis se pega en el puesto de mando y se comparte.
+  html+='<div class="card"><h2>🗺️ Croquis de despliegue (para difundir)</h2>'+
+    '<div class="porque">Una página por plan: el croquis del recinto con los puestos numerados, el lineamiento del plan y la tabla de quién cubre qué. Sale del mismo croquis y puestos de «Planes y puestos» — si algo cambia (las cocinas se movieron de lado), corriges el punto ahí y vuelves a imprimir: nunca queda un papel viejo diciendo otra cosa. Se imprime o se guarda como PDF para mandárselo a la productora.</div>'+
+    '<div class="fila"><button class="sec" onclick="generarCroquis(false)">🖨 Croquis BORRADOR</button>'+
+    '<button class="verde" onclick="generarCroquis(true)">🖨 Croquis versión final</button></div>'+
+    (ESTADO.evento.croquis?'':'<p class="mini" style="margin-top:8px">⚠️ Este evento aún no tiene croquis — súbelo en «Planes y puestos», sección 4.</p>')+'</div>';
+
   // ✉️ Carta a la Delegación Presidencial — incluida la situación real más
   // frecuente: el mandante contrató tarde y NADIE pidió la autorización con
   // los 60 días del art. 17. La carta extemporánea invoca el inciso que
@@ -585,9 +763,66 @@ async function guardarDoc(){
   catch(e){document.getElementById('msgDoc').innerHTML='<p class="err">'+esc(e.message)+'</p>';}
 }
 
-function generarDocumento(final){
+// La figura del croquis para IMPRESIÓN: la imagen con los puestos numerados
+// encima. Los números calzan con la columna N° de la tabla de cada plan.
+// print-color-adjust:exact obliga al navegador a imprimir los colores.
+function croquisFiguraPrint(url,puestos,grande){
+  var pts=puestos.map(function(pu){
+    if(pu.pos_x==null)return '';
+    var s=grande?{w:22,f:11,l:18}:{w:16,f:9,l:12};
+    return '<div style="position:absolute;left:'+pu.pos_x+'%;top:'+pu.pos_y+'%;transform:translate(-50%,-50%);width:'+s.w+'px;height:'+s.w+'px;border-radius:50%;background:#c0392b;border:2px solid #fff;color:#fff;font-weight:bold;font-size:'+s.f+'px;line-height:'+s.l+'px;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:0 0 2px #000">'+pu.num+'</div>';
+  }).join('');
+  return '<div style="position:relative;display:block;width:'+(grande?'100%':'70%')+';margin:'+(grande?'6px 0':'6px auto')+';border:1px solid #999;page-break-inside:avoid"><img src="'+url+'" style="display:block;width:100%">'+pts+'</div>';
+}
+
+// Precarga la imagen antes de window.print(): si se imprime antes de que el
+// navegador la tenga, la página sale con el recuadro vacío.
+function precargarImagen(url){return new Promise(function(res){var im=new Image();im.onload=res;im.onerror=res;im.src=url;});}
+
+// 🗺️ Croquis de despliegue: UNA página por plan, formato Limache (el que la
+// productora difundió como oficial). Solo entran los planes con puestos
+// ubicados en el mapa.
+async function generarCroquis(final){
+  if(!ESTADO.evento.croquis){alert('Primero sube el croquis del recinto: pestaña «Planes y puestos», sección 4.');return;}
+  var url=await croquisURL();
+  if(!url){alert('No se pudo cargar el croquis. Revisa la conexión.');return;}
+  await precargarImagen(url);
+  var e=ESTADO.evento, roles=ESTADO.roles||{};
+  var planesConMapa=(ESTADO.planes||[]).filter(function(p){return (ESTADO.puestos||[]).some(function(q){return q.plan_id===p.id&&q.pos_x!=null;});});
+  if(!planesConMapa.length){alert('Ningún plan tiene puestos ubicados en el croquis todavía — ubícalos en «Planes y puestos», sección 4.');return;}
+  var fechaTxt=esc(e.fecha_inicio)+(e.fecha_fin&&e.fecha_fin!==e.fecha_inicio?' al '+esc(e.fecha_fin):'');
+  var html='';
+  planesConMapa.forEach(function(p,idx){
+    var puestos=(ESTADO.puestos||[]).filter(function(q){return q.plan_id===p.id;});
+    puestos.forEach(function(q,i){q.num=i+1;});
+    var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===p.id;});
+    var tipoTxt=p.tipo==='trabajo'?'Operación normal':p.tipo==='evacuacion'?'Evacuación':'Contingencia sin evacuación';
+    var filas=puestos.map(function(pu){
+      var deEste=asig.filter(function(a){return a.puesto_id===pu.id;});
+      return '<tr><td style="text-align:center;font-weight:bold">'+(pu.pos_x!=null?pu.num:'—')+'</td><td>'+esc(pu.nombre)+'</td><td>'+esc(roles[pu.rol]||pu.rol)+'</td><td>'+deEste.length+' / '+pu.cupos+'</td><td>'+esc(pu.tarea||'—')+'</td></tr>';
+    }).join('');
+    html+='<div style="'+(idx?'page-break-before:always;':'')+'">'+
+      '<div class="d-portada" style="padding-bottom:8px;margin-bottom:10px"><img src="icon-192.png" alt="Control y Confianza">'+
+      '<div class="d-form">Croquis de despliegue · '+esc(tipoTxt)+'</div>'+
+      '<h1>'+esc(p.nombre).toUpperCase()+'</h1>'+
+      '<div class="d-sub">'+esc(e.nombre)+' · '+esc([e.lugar,e.comuna].filter(Boolean).join(', '))+' · '+fechaTxt+'</div></div>'+
+      croquisFiguraPrint(url,puestos,true)+
+      (p.instrucciones?'<p style="margin:6px 0;font-size:11.5px"><strong>Lineamiento:</strong> '+esc(p.instrucciones)+'</p>':'')+
+      '<table><tr><th style="width:6%">N°</th><th>Puesto</th><th>Función</th><th>Dotación</th><th>Cometido en este plan</th></tr>'+filas+'</table>'+
+      '<div class="d-pie">Croquis preparado por Control y Confianza CSF SpA (controlyconfianza.cl) · '+(final?'Versión para difusión.':'BORRADOR — pendiente de revisión del asesor.')+'</div>'+
+      '</div>';
+  });
+  document.getElementById('docPrint').innerHTML=html;
+  document.getElementById('marcaAgua').className=final?'oculta':'';
+  window.print();
+}
+
+async function generarDocumento(final){
   var b={};DOC_CAMPOS.forEach(function(c){var el=document.getElementById('doc-'+c[0]);if(el)b[c[0]]=el.value.trim();});
   var e=ESTADO.evento, hoy=new Date().toLocaleDateString('es-CL',{timeZone:'America/Santiago'});
+  // Croquis (si existe): entra en la sección 7, plan por plan.
+  var urlCro=null;
+  if(e.croquis){urlCro=await croquisURL();if(urlCro)await precargarImagen(urlCro);}
   var v=function(x,alt){return x?esc(x):'<em style="color:#a33">[COMPLETAR: '+esc(alt)+']</em>';};
   var roster=(ESTADO.roster||[]).filter(function(r){return r.estado!=='desistio'&&r.estado!=='no_show';});
   var roles=ESTADO.roles||{};
@@ -609,18 +844,22 @@ function generarDocumento(final){
   }
   var filasNom=roster.map(function(r,i){return '<tr><td>'+(i+1)+'</td><td>'+esc(r.nombre)+'</td><td>'+esc(roles[r.rol]||r.rol||'—')+'</td><td>'+esc(puestoDe[r.user_id]||'—')+'</td><td>'+fechaTxt+'</td></tr>';}).join('');
 
-  // Planes: cada uno con instrucciones y su tabla de despliegue.
+  // Planes: cada uno con instrucciones, su croquis (si los puestos están
+  // ubicados) y su tabla de despliegue — la columna N° calza con el mapa.
   var seccionPlanes='';
   (ESTADO.planes||[]).forEach(function(p){
     var puestos=(ESTADO.puestos||[]).filter(function(x){return x.plan_id===p.id;});
+    puestos.forEach(function(q,i){q.num=i+1;});
+    var hayMapa=urlCro&&puestos.some(function(q){return q.pos_x!=null;});
     var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===p.id;});
     var filas=puestos.map(function(pu){
       var n=asig.filter(function(a){return a.puesto_id===pu.id;}).length;
-      return '<tr><td>'+esc(pu.nombre)+'</td><td>'+esc(roles[pu.rol]||pu.rol)+'</td><td>'+n+' / '+pu.cupos+'</td><td>'+esc(pu.tarea||'—')+'</td></tr>';
-    }).join('')||'<tr><td colspan="4"><em>Sin puestos definidos</em></td></tr>';
+      return '<tr>'+(hayMapa?'<td style="text-align:center;font-weight:bold">'+(pu.pos_x!=null?pu.num:'—')+'</td>':'')+'<td>'+esc(pu.nombre)+'</td><td>'+esc(roles[pu.rol]||pu.rol)+'</td><td>'+n+' / '+pu.cupos+'</td><td>'+esc(pu.tarea||'—')+'</td></tr>';
+    }).join('')||'<tr><td colspan="'+(hayMapa?5:4)+'"><em>Sin puestos definidos</em></td></tr>';
     seccionPlanes+='<p style="margin:8px 0 2px"><strong>'+esc(p.nombre)+'</strong>'+(p.tipo==='trabajo'?' (operación normal)':p.tipo==='evacuacion'?' (evacuación)':' (contingencia sin evacuación, art. 18 N°7 letra f)')+'</p>'+
       (p.instrucciones?'<p style="margin:2px 0">'+esc(p.instrucciones)+'</p>':'')+
-      '<table><tr><th>Puesto</th><th>Rol</th><th>Dotación</th><th>Cometido en este plan</th></tr>'+filas+'</table>';
+      (hayMapa?croquisFiguraPrint(urlCro,puestos,false):'')+
+      '<table><tr>'+(hayMapa?'<th style="width:6%">N°</th>':'')+'<th>Puesto</th><th>Rol</th><th>Dotación</th><th>Cometido en este plan</th></tr>'+filas+'</table>';
   });
 
   var html='<div class="d-portada"><img src="icon-192.png" alt="Control y Confianza">'+
