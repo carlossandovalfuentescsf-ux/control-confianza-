@@ -59,6 +59,32 @@ td{padding:7px 8px;border-bottom:1px solid #1f1f1f;vertical-align:middle}
 .mini{font-size:0.7rem;color:#666;line-height:1.5}
 a{color:#d4a017}
 @media(max-width:640px){td,th{padding:5px 4px}}
+/* ── Documento formal del Plan de Seguridad (art. 18 D.S. 208) ──
+   Mismo estándar de imprenta que directiva-eventos.html: en pantalla no
+   existe; al imprimir, SOLO existe él. */
+#docPrint{display:none}
+#marcaAgua{display:none}
+@media print{
+  body{background:#fff!important;color:#111!important;padding:0}
+  header,main,.tabs{display:none!important}
+  #docPrint{display:block!important;color:#111;font-family:Georgia,'Times New Roman',serif;font-size:12px;line-height:1.55;padding:0 8px}
+  #docPrint .d-portada{text-align:center;border-bottom:3px double #333;padding-bottom:14px;margin-bottom:16px}
+  #docPrint .d-portada img{height:56px}
+  #docPrint .d-form{font-size:10px;letter-spacing:2px;color:#555;text-transform:uppercase}
+  #docPrint h1{font-size:16px;margin:8px 0 2px}
+  #docPrint .d-sub{font-size:11px;color:#444}
+  #docPrint .d-folio{margin-top:8px;font-size:12px;font-weight:bold;border:1.5px solid #333;display:inline-block;padding:3px 14px;border-radius:4px}
+  #docPrint .d-sec{margin-bottom:12px;page-break-inside:avoid}
+  #docPrint .d-tit{font-size:12.5px;font-weight:bold;border-bottom:1px solid #999;padding-bottom:2px;margin-bottom:5px;text-transform:uppercase}
+  #docPrint table{width:100%;border-collapse:collapse;font-size:11px;margin:4px 0}
+  #docPrint th,#docPrint td{border:1px solid #999;padding:4px 6px;text-align:left;color:#111;background:#fff}
+  #docPrint th{background:#eee}
+  #docPrint .d-firma-fila{display:flex;justify-content:space-around;margin-top:44px;page-break-inside:avoid}
+  #docPrint .d-firma-fila .linea{border-top:1px solid #333;width:240px;text-align:center;padding-top:4px;font-size:11px}
+  #docPrint .d-pie{margin-top:18px;font-size:9.5px;color:#555;border-top:1px solid #ccc;padding-top:6px;text-align:center}
+  #marcaAgua{display:block!important;position:fixed;top:42%;left:-5%;right:-5%;text-align:center;transform:rotate(-24deg);font-size:32px;font-weight:900;letter-spacing:2px;color:rgba(192,57,43,.16);z-index:999}
+  #marcaAgua.oculta{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -85,9 +111,13 @@ a{color:#d4a017}
     <button id="tab-tablero" class="act" onclick="verTab('tablero')">🚨 Tablero en vivo</button>
     <button id="tab-config" onclick="verTab('config')">🗺️ Planes y puestos</button>
     <button id="tab-bitacora" onclick="verTab('bitacora')">📓 Bitácora</button>
+    <button id="tab-documento" onclick="verTab('documento')">📄 Documento</button>
   </div>
   <div id="contenido"></div>
 </main>
+
+<div id="marcaAgua">BORRADOR — PENDIENTE DE REVISIÓN DEL ASESOR</div>
+<div id="docPrint"></div>
 
 <script>
 var API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
@@ -138,7 +168,7 @@ async function iniciar(){
   }
 }
 function cambiarEvento(){EVENTO_ID=parseInt(document.getElementById('selEvento').value,10)||null;PLAN_SEL=null;refrescar();}
-function verTab(t){TAB=t;['tablero','config','bitacora'].forEach(function(x){document.getElementById('tab-'+x).className=x===t?'act':'';});render();}
+function verTab(t){TAB=t;['tablero','config','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x===t?'act':'';});render();}
 
 async function refrescar(){
   if(!EVENTO_ID)return;
@@ -156,6 +186,7 @@ function render(){
   if(!ESTADO)return;
   if(TAB==='tablero')renderTablero();
   else if(TAB==='config')renderConfig();
+  else if(TAB==='documento')renderDocumento();
   else renderBitacora();
 }
 
@@ -308,6 +339,150 @@ async function eliminarPuesto(id){if(!confirm('¿Eliminar este puesto? Sus asign
 async function asignarAuto(planId){try{var d=await api('/admin/planes/'+planId+'/asignar-auto',{method:'POST',body:{}});document.getElementById('msgPuestos').innerHTML='<p class="ok-msg">'+d.asignados_nuevos+' asignados. '+(d.guardias_sin_puesto?d.guardias_sin_puesto+' guardia(s) con rol quedaron sin puesto. ':'')+(d.puestos_incompletos.length?d.puestos_incompletos.length+' puesto(s) siguen incompletos.':'')+'</p>';await refrescar();}catch(e){document.getElementById('msgPuestos').innerHTML='<p class="err">'+esc(e.message)+'</p>';}}
 async function asignarManual(planId,puestoId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{puesto_id:puestoId,user_id:parseInt(uid,10)}});await refrescar();}catch(e){alert(e.message);await refrescar();}}
 async function quitarAsignacion(planId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{user_id:uid,quitar:true}});await refrescar();}catch(e){alert(e.message);}}
+
+// ── Documento formal: Plan de Seguridad (art. 18 D.S. 208) ────────
+// La estructura sigue LOS 7 NUMERALES del artículo, en su orden y con sus
+// nombres — un fiscalizador debe poder cotejar el documento contra la norma
+// numeral por numeral. Lo que la ley exige de terceros (informe del
+// prevencionista con visita y título, directiva, póliza) se declara como
+// ANEXO, jamás se genera: generarlo sería falsificar una pericia.
+var DOC_CAMPOS=[
+  ['organizador','Organizador del evento (razón social)','Control y Confianza CSF SpA'],
+  ['organizador_rut','RUT del organizador','78.043.129-6'],
+  ['aforo','Aforo de seguridad del recinto (personas)',''],
+  ['seguro','Seguro o caución (aseguradora y N° de póliza — art. 14; debe cubrir incendio)',''],
+  ['prevencionista','Prevencionista de riesgos del informe adjunto (nombre y N° de registro)',''],
+  ['alarmas','N°5 · Sistemas de alarmas para evacuación (cuáles; «No existen» si no hay)',''],
+  ['accesos','N°6 · Medidas de control e identificación de accesos',''],
+  ['valores','N°4 · Manejo de dinero y valores (empresa de transporte de valores; «No aplica» si no hay)','No aplica'],
+  ['comunicaciones','Sistemas de comunicación del equipo (radios, canal, megáfonos)',''],
+  ['tenida','Uniforme / tenida del personal',''],
+  ['equipamiento','Equipamiento y credencial del personal',''],
+  ['subrogante','Subrogante del responsable de seguridad (nombre)',''],
+  ['medidas_generales','N°1 · Medidas de seguridad específicas según el tipo de evento (párrafo general)','']
+];
+function docDatos(){try{return JSON.parse(ESTADO.evento.doc_json||'{}')||{};}catch(e){return {};}}
+
+function renderDocumento(){
+  if(!ESTADO.es_admin){document.getElementById('contenido').innerHTML='<div class="card"><p class="mini">El documento lo arma el administrador.</p></div>';return;}
+  var d=docDatos();
+  var html='<div class="card"><h2>📄 Plan de Seguridad — documento formal</h2>'+
+    '<div class="porque">Arma el documento con la estructura EXACTA del art. 18 del D.S. 208 (los 7 numerales, cotejables por el fiscalizador), tomando la dotación, los puestos y los planes ya cargados. Sale con marca de agua BORRADOR: la versión que se presenta a la Delegación la visa Carlos como asesor acreditado. El informe del prevencionista, la directiva y la póliza van como ANEXOS — esta herramienta no los reemplaza.</div>';
+  DOC_CAMPOS.forEach(function(c){
+    html+='<div style="margin-bottom:8px"><label class="mini" style="display:block;margin-bottom:2px">'+esc(c[1])+'</label>'+
+      (c[0]==='medidas_generales'||c[0]==='accesos'
+        ?'<textarea id="doc-'+c[0]+'">'+esc(d[c[0]]!=null?d[c[0]]:c[2])+'</textarea>'
+        :'<input id="doc-'+c[0]+'" value="'+esc(d[c[0]]!=null?d[c[0]]:c[2])+'">')+'</div>';
+  });
+  html+='<div class="fila" style="margin-top:10px"><button class="sec" onclick="guardarDoc()">💾 Guardar antecedentes</button>'+
+    '<button onclick="generarDocumento(false)">🖨 Generar BORRADOR</button>'+
+    '<button class="verde" onclick="generarDocumento(true)">🖨 Versión final (sin marca de agua)</button></div>'+
+    '<p class="mini" style="margin-top:8px">La impresión del navegador deja elegir «Guardar como PDF».</p><div id="msgDoc"></div></div>';
+  document.getElementById('contenido').innerHTML=html;
+}
+
+async function guardarDoc(){
+  var b={};DOC_CAMPOS.forEach(function(c){b[c[0]]=document.getElementById('doc-'+c[0]).value.trim();});
+  try{await api('/admin/eventos/'+EVENTO_ID+'/doc',{method:'POST',body:b});ESTADO.evento.doc_json=JSON.stringify(b);document.getElementById('msgDoc').innerHTML='<p class="ok-msg">Antecedentes guardados.</p>';}
+  catch(e){document.getElementById('msgDoc').innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+
+function generarDocumento(final){
+  var b={};DOC_CAMPOS.forEach(function(c){var el=document.getElementById('doc-'+c[0]);if(el)b[c[0]]=el.value.trim();});
+  var e=ESTADO.evento, hoy=new Date().toLocaleDateString('es-CL',{timeZone:'America/Santiago'});
+  var v=function(x,alt){return x?esc(x):'<em style="color:#a33">[COMPLETAR: '+esc(alt)+']</em>';};
+  var roster=(ESTADO.roster||[]).filter(function(r){return r.estado!=='desistio'&&r.estado!=='no_show';});
+  var roles=ESTADO.roles||{};
+  var planTrabajo=(ESTADO.planes||[]).find(function(p){return p.tipo==='trabajo';});
+  var fechaTxt=esc(e.fecha_inicio)+(e.fecha_fin&&e.fecha_fin!==e.fecha_inicio?' al '+esc(e.fecha_fin):'');
+  var respNombre=e.responsable_user_id?nombreGuardia(e.responsable_user_id):null;
+
+  // Conteo por rol (N°3: cantidad y distribución según criterios técnicos).
+  var porRol={};roster.forEach(function(r){if(r.rol)porRol[r.rol]=(porRol[r.rol]||0)+1;});
+  var filasRol=Object.keys(porRol).map(function(k){return '<tr><td>'+esc(roles[k]||k)+'</td><td>'+porRol[k]+'</td></tr>';}).join('')||'<tr><td colspan="2"><em>Sin roles asignados aún</em></td></tr>';
+
+  // Individualización nominal con puesto del plan de trabajo.
+  var puestoDe={};
+  if(planTrabajo){
+    (ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===planTrabajo.id;}).forEach(function(a){
+      var p=(ESTADO.puestos||[]).find(function(x){return x.id===a.puesto_id;});
+      if(p)puestoDe[a.user_id]=p.nombre;
+    });
+  }
+  var filasNom=roster.map(function(r,i){return '<tr><td>'+(i+1)+'</td><td>'+esc(r.nombre)+'</td><td>'+esc(roles[r.rol]||r.rol||'—')+'</td><td>'+esc(puestoDe[r.user_id]||'—')+'</td><td>'+fechaTxt+'</td></tr>';}).join('');
+
+  // Planes: cada uno con instrucciones y su tabla de despliegue.
+  var seccionPlanes='';
+  (ESTADO.planes||[]).forEach(function(p){
+    var puestos=(ESTADO.puestos||[]).filter(function(x){return x.plan_id===p.id;});
+    var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===p.id;});
+    var filas=puestos.map(function(pu){
+      var n=asig.filter(function(a){return a.puesto_id===pu.id;}).length;
+      return '<tr><td>'+esc(pu.nombre)+'</td><td>'+esc(roles[pu.rol]||pu.rol)+'</td><td>'+n+' / '+pu.cupos+'</td><td>'+esc(pu.tarea||'—')+'</td></tr>';
+    }).join('')||'<tr><td colspan="4"><em>Sin puestos definidos</em></td></tr>';
+    seccionPlanes+='<p style="margin:8px 0 2px"><strong>'+esc(p.nombre)+'</strong>'+(p.tipo==='trabajo'?' (operación normal)':p.tipo==='evacuacion'?' (evacuación)':' (contingencia sin evacuación, art. 18 N°7 letra f)')+'</p>'+
+      (p.instrucciones?'<p style="margin:2px 0">'+esc(p.instrucciones)+'</p>':'')+
+      '<table><tr><th>Puesto</th><th>Rol</th><th>Dotación</th><th>Cometido en este plan</th></tr>'+filas+'</table>';
+  });
+
+  var html='<div class="d-portada"><img src="icon-192.png" alt="Control y Confianza">'+
+    '<div class="d-form">'+(final?'Documento para presentación':'Borrador para revisión del asesor acreditado')+'</div>'+
+    '<h1>PLAN DE SEGURIDAD DE EVENTO MASIVO</h1>'+
+    '<div class="d-sub">Artículos 17 N°9 y 18 del D.S. N° 208, de 2025, del Ministerio del Interior y Seguridad Pública<br>Reglamento de eventos masivos de la Ley N° 21.659 sobre Seguridad Privada</div>'+
+    '<div class="d-folio">'+esc(e.nombre)+' · '+fechaTxt+'</div></div>';
+
+  html+='<div class="d-sec"><div class="d-tit">Identificación del evento y su organizador</div>'+
+    '<table><tr><th style="width:34%">Evento</th><td>'+esc(e.nombre)+'</td></tr>'+
+    '<tr><th>Lugar / recinto</th><td>'+esc([e.lugar,e.comuna].filter(Boolean).join(', ')||'')+'</td></tr>'+
+    '<tr><th>Fecha(s)</th><td>'+fechaTxt+'</td></tr>'+
+    '<tr><th>Organizador</th><td>'+v(b.organizador,'razón social')+' · RUT '+v(b.organizador_rut,'RUT')+'</td></tr>'+
+    '<tr><th>Aforo de seguridad</th><td>'+v(b.aforo,'aforo del recinto — la venta de entradas jamás puede superarlo (art. 17 N°4 y 5)')+'</td></tr>'+
+    '<tr><th>Seguro o caución (art. 14)</th><td>'+v(b.seguro,'aseguradora y póliza, con cobertura de incendio')+'</td></tr></table></div>';
+
+  html+='<div class="d-sec"><div class="d-tit">1. Medidas de seguridad específicas según el tipo de evento (art. 18 N°1)</div>'+
+    '<p>'+v(b.medidas_generales,'párrafo general de medidas según el tipo de evento')+'</p></div>';
+
+  html+='<div class="d-sec"><div class="d-tit">2. Responsable de seguridad del evento (art. 18 N°2)</div>'+
+    '<table><tr><th style="width:34%">Nombre</th><td>'+(respNombre?esc(respNombre):'<em style="color:#a33">[COMPLETAR: designar en Modo Evento]</em>')+'</td></tr>'+
+    '<tr><th>Subrogante</th><td>'+v(b.subrogante,'subrogante del responsable')+'</td></tr></table>'+
+    '<p style="font-size:10.5px;color:#444">El responsable de seguridad cumple los requisitos del artículo 46 de la Ley N° 21.659 (con excepción de su numeral 11) y tiene la calidad de trabajador dependiente del organizador o del administrador del recinto (art. 2 N°5 del reglamento). Vela por el cumplimiento del presente plan durante todo el desarrollo del evento.</p></div>';
+
+  html+='<div class="d-sec"><div class="d-tit">3. Personal de seguridad privada: cantidad, distribución y turnos (art. 18 N°3)</div>'+
+    '<p>Dotación total del evento: <strong>'+roster.length+' persona(s)</strong>, distribuidas según los criterios técnicos siguientes:</p>'+
+    '<table><tr><th>Función</th><th>Cantidad</th></tr>'+filasRol+'</table>'+
+    '<p style="margin-top:6px"><strong>Individualización del personal y su puesto de servicio:</strong></p>'+
+    '<table><tr><th>N°</th><th>Nombre</th><th>Función</th><th>Puesto (operación normal)</th><th>Turno</th></tr>'+filasNom+'</table>'+
+    '<table style="margin-top:6px"><tr><th style="width:34%">Uniforme / tenida</th><td>'+v(b.tenida,'tenida del personal')+'</td></tr>'+
+    '<tr><th>Equipamiento y credencial</th><td>'+v(b.equipamiento,'equipamiento y credencial')+'</td></tr></table>'+
+    '<p style="font-size:10.5px;color:#444">La <strong>Directiva de Funcionamiento</strong> del servicio de guardias, con el número de guardias y las modalidades de organización y funcionamiento, se acompaña como <strong>Anexo A</strong>, conforme lo exige el mismo numeral.</p></div>';
+
+  html+='<div class="d-sec"><div class="d-tit">4. Manejo de dinero y valores (art. 18 N°4)</div><p>'+v(b.valores,'empresa de transporte de valores o «No aplica»')+'</p></div>';
+  html+='<div class="d-sec"><div class="d-tit">5. Sistemas de alarmas para evacuación (art. 18 N°5)</div><p>'+v(b.alarmas,'sistemas de alarma o «No existen»')+'</p></div>';
+  html+='<div class="d-sec"><div class="d-tit">6. Control e identificación de accesos (art. 18 N°6)</div><p>'+v(b.accesos,'medidas de control e identificación para el acceso de asistentes')+'</p>'+
+    '<p style="font-size:10.5px;color:#444">El evento contempla accesos y salidas preferenciales para personas con dificultad de desplazamiento, quienes asistan con menores de edad, mujeres embarazadas, personas en situación de discapacidad y adultos mayores (art. 13 N°4).</p></div>';
+
+  html+='<div class="d-sec"><div class="d-tit">7. Prevención de riesgos y procedimientos de emergencia (art. 18 N°7)</div>'+
+    '<p>Las medidas de prevención de riesgos y accidentes constan en el <strong>informe del prevencionista de riesgos</strong> que se adjunta como <strong>Anexo B</strong>, evacuado previa visita al lugar de celebración y acompañado del certificado de título del profesional, conforme lo exige el numeral 7: '+v(b.prevencionista,'nombre y registro del prevencionista')+'.</p>'+
+    '<p><strong>Sistemas de comunicación del equipo</strong> (letra c): '+v(b.comunicaciones,'radios, canal, megáfonos')+'</p>'+
+    '<p><strong>Organigrama y procedimientos de trabajo frente a emergencias</strong> (letras d y f) — cada plan define el despliegue del personal y su cometido; su activación y las confirmaciones de puesto quedan registradas con hora en la bitácora electrónica del evento:</p>'+seccionPlanes+'</div>';
+
+  html+='<div class="d-sec"><div class="d-tit">Anexos</div><table>'+
+    '<tr><th style="width:14%">Anexo A</th><td>Directiva de Funcionamiento del servicio de guardias del evento (art. 18 N°3)</td></tr>'+
+    '<tr><th>Anexo B</th><td>Informe del prevencionista de riesgos, con plano de planta, cálculo de tiempos de evacuación, salidas, zona de seguridad y extintores (art. 18 N°7 letras a-l) y certificado de título</td></tr>'+
+    '<tr><th>Anexo C</th><td>Póliza de seguro o caución con cobertura de incendio (art. 14)</td></tr>'+
+    '<tr><th>Anexo D</th><td>Acta Descriptiva del evento — formato oficial de la plataforma de la Subsecretaría (segprivada.minsegpublica.gob.cl), art. 17 N°3</td></tr>'+
+    '<tr><th>Anexo E</th><td>Declaración jurada del organizador — formato oficial de la misma plataforma (persona jurídica o natural, según corresponda)</td></tr></table></div>';
+
+  html+='<div class="d-firma-fila"><div class="linea">'+v(b.organizador,'organizador')+'<br>Representante legal del organizador</div>'+
+    '<div class="linea">'+(respNombre?esc(respNombre):'&nbsp;')+'<br>Responsable de seguridad del evento</div></div>';
+
+  html+='<div class="d-pie">Documento elaborado con el generador de planes de Control y Confianza (controlyconfianza.cl) sobre la estructura del art. 18 del D.S. N° 208/2025 · Generado el '+hoy+' · '+
+    (final?'Versión para presentación, visada por el asesor acreditado.':'BORRADOR — requiere revisión y visación del asesor acreditado antes de presentarse a la Delegación Presidencial Regional.')+'</div>';
+
+  document.getElementById('docPrint').innerHTML=html;
+  document.getElementById('marcaAgua').className=final?'oculta':'';
+  window.print();
+}
 
 // ── Bitácora ──────────────────────────────────────────────────────
 var BIT_LABEL={activacion_plan:'🚨 Activación de plan',vuelta_normalidad:'🟢 Vuelta a la normalidad',incidente:'⚠️ Incidente',orden_autoridad:'👮 Orden de la autoridad',nota:'📝 Nota'};
