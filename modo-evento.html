@@ -341,13 +341,23 @@ function renderTablero(){
         '<button class="sec" onclick="avisoWhatsApp('+planV.id+')">📋 Copiar aviso WhatsApp</button>'+
         '<button class="sec" onclick="exportarPlan('+planV.id+')">🖨 Exportar (PDF)</button></div><div id="msgActivar"></div>';
     }else{
-      html+='<p style="font-weight:800;margin:14px 0 6px">2 · Asigna la gente a los puestos</p><div class="fila">'+
-        (planListo
-          ?'<span class="badge verde" style="padding:8px 14px">✓ Listo — todos los puestos de «'+esc(planV.nombre)+'» tienen gente</span>'
-          :(ESTADO.es_admin
-            ?'<button onclick="asignarAutoTablero('+planV.id+')">⚡ Asignar automático</button><span class="mini">(reparte a los confirmados según su rol)</span>'
-            :'<span class="mini">Hay puestos sin gente — la asignación la hace el administrador. Puedes desplegar igual.</span>'))+
-        '</div>'+
+      // La verdad del roster ANTES del botón (caso Limache: 236 cupos y 0
+      // convocados — el botón «se devolvía» sin explicar por qué).
+      var confs=(ESTADO.roster||[]).filter(function(r){return r.estado==='confirmado'||r.estado==='asistio';}).length;
+      var cupos=puestos.reduce(function(s,q){return s+q.cupos;},0);
+      html+='<p style="font-weight:800;margin:14px 0 6px">2 · Asigna la gente a los puestos</p>';
+      if(!confs){
+        html+='<div style="background:#2a230d;border:1px solid #7a5c1f;color:#e8c860;border-radius:10px;padding:12px;font-size:0.82rem;margin-bottom:6px">⚠️ Este evento tiene <strong>0 guardias confirmados</strong> — la asignación reparte personas reales, no puede inventarlas. Convócalas en <a href="comando.html" style="color:#e8c860">Comando de Control</a> → Eventos; cuando confirmen asistencia en Control+, este botón las repartirá solo. Los '+cupos+' cupo(s) de este plan ya quedaron listos esperándolas.</div>';
+      }else{
+        html+='<div class="fila">'+
+          (planListo
+            ?'<span class="badge verde" style="padding:8px 14px">✓ Listo — todos los puestos de «'+esc(planV.nombre)+'» tienen gente</span>'
+            :(ESTADO.es_admin
+              ?'<button onclick="asignarAutoTablero('+planV.id+')">⚡ Asignar automático</button><span class="mini">'+confs+' confirmado(s) para '+cupos+' cupo(s)'+(confs<cupos?' — alcanzará para los primeros '+confs+', el resto queda pendiente':'')+'</span>'
+              :'<span class="mini">Hay puestos sin gente — la asignación la hace el administrador. Puedes desplegar igual.</span>'))+
+          '</div>';
+      }
+      html+=''+
         '<p style="font-weight:800;margin:14px 0 6px">3 · Despliega</p><div class="fila">'+
         '<button class="verde" style="font-size:0.95rem;padding:14px 20px'+(planListo?'':';opacity:.45')+'" onclick="desplegarPlan('+planV.id+','+(planListo?'true':'false')+')">'+(planV.tipo==='trabajo'?'🟢':'🚨')+' DESPLEGAR: '+esc(planV.nombre).toUpperCase()+'</button>'+
         '<button class="sec" onclick="exportarPlan('+planV.id+')">🖨 Exportar (PDF)</button></div>'+
@@ -478,7 +488,12 @@ function renderConfig(){
   if(!ESTADO.es_admin){document.getElementById('contenido').innerHTML='<div class="card"><p class="mini">La configuración es solo del administrador. Como responsable de seguridad, tu lugar es el Tablero en vivo.</p></div>';return;}
 
   // 1) Roles del roster.
-  html+='<div class="card"><h2>1 · Roles del personal en ESTE evento</h2><div class="porque">El rol es la llave de la asignación automática: los puestos piden un rol y se llenan con quienes lo tienen. Solo confirmados/presentes entran al reparto.</div><table><tr><th>Guardia</th><th>Estado</th><th>Rol en este evento</th></tr>';
+  var opsMasivo=Object.keys(ESTADO.roles||{}).map(function(k){return '<option value="'+k+'">'+esc(ESTADO.roles[k])+'</option>';}).join('');
+  html+='<div class="card"><h2>1 · Roles del personal en ESTE evento</h2><div class="porque">El rol es la llave de la asignación automática: los puestos piden un rol y se llenan con quienes lo tienen. Los confirmados SIN rol también se reparten (llenan los cupos que sobren). Solo confirmados/presentes entran al reparto.</div>'+
+    ((ESTADO.roster||[]).length
+      ?'<div class="fila" style="margin-bottom:10px"><select id="rolMasivo" style="max-width:220px">'+opsMasivo+'</select><button class="sec" onclick="ponerRolMasivo()">⚡ Aplicar a todos los SIN rol</button><span class="mini">(para dotaciones grandes: los que ya tienen rol no se tocan)</span></div><div id="msgRolMasivo"></div>'
+      :'<p class="mini" style="margin-bottom:10px">⚠️ Este evento no tiene guardias convocados todavía — se convocan en <a href="comando.html">Comando de Control</a> → Eventos.</p>')+
+    '<table><tr><th>Guardia</th><th>Estado</th><th>Rol en este evento</th></tr>';
   (ESTADO.roster||[]).forEach(function(r){
     var ops='<option value="">— sin rol —</option>';
     Object.keys(ESTADO.roles||{}).forEach(function(k){ops+='<option value="'+k+'"'+(r.rol===k?' selected':'')+'>'+esc(ESTADO.roles[k])+'</option>';});
@@ -662,6 +677,16 @@ async function aplicarPropuesta(){
 }
 
 async function ponerRol(uid,rol){try{await api('/admin/eventos/'+EVENTO_ID+'/rol',{method:'POST',body:{user_id:uid,rol:rol||null}});await refrescar();}catch(e){alert(e.message);}}
+async function ponerRolMasivo(){
+  var rol=document.getElementById('rolMasivo').value;
+  var msg=document.getElementById('msgRolMasivo');
+  try{
+    var d=await api('/admin/eventos/'+EVENTO_ID+'/rol-masivo',{method:'POST',body:{rol:rol,solo_sin_rol:true}});
+    await refrescar();
+    var m2=document.getElementById('msgRolMasivo');
+    if(m2)m2.innerHTML='<p class="ok-msg">'+d.cambiados+' guardia(s) quedaron con rol «'+esc((ESTADO.roles||{})[rol]||rol)+'».</p>';
+  }catch(e){if(msg)msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
 async function ponerResponsable(v){try{await api('/admin/eventos/'+EVENTO_ID+'/responsable',{method:'POST',body:{user_id:v?parseInt(v,10):null}});await refrescar();}catch(e){alert(e.message);}}
 async function cargarPlantilla(){try{var d=await api('/admin/eventos/'+EVENTO_ID+'/planes',{method:'POST',body:{plantilla:true}});document.getElementById('msgPlanes').innerHTML='<p class="ok-msg">'+d.creados+' plan(es) del catálogo agregados.</p>';await refrescar();}catch(e){document.getElementById('msgPlanes').innerHTML='<p class="err">'+esc(e.message)+'</p>';}}
 async function crearPlan(){var n=document.getElementById('planNuevoNombre').value.trim();if(!n)return;try{await api('/admin/eventos/'+EVENTO_ID+'/planes',{method:'POST',body:{nombre:n}});await refrescar();}catch(e){alert(e.message);}}
