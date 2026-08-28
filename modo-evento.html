@@ -126,7 +126,7 @@ var CYC_TOKEN=localStorage.getItem('cyc_token')||null;
 var EVENTOS=[], EVENTO_ID=null, ESTADO=null, TAB='tablero', TIMER=null, PLAN_SEL=null, ES_ADMIN_LISTA=false, LICIT=null;
 // Croquis (sesión 44): un plano por evento; los puestos se ubican encima en
 // porcentaje. UBICANDO = puesto en modo «tócalo en el mapa».
-var CROQUIS_URL=null, CROQUIS_EVENTO=null, UBICANDO=null, PROPUESTA=null;
+var CROQUIS_URL=null, CROQUIS_EVENTO=null, UBICANDO=null, PROPUESTA=null, PLAN_VISTA=null;
 
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmtHora(t){ if(!t)return ''; var d=new Date(t.replace(' ','T')+'Z'); return d.toLocaleString('es-CL',{timeZone:'America/Santiago',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
@@ -177,7 +177,7 @@ async function iniciar(){
     else document.getElementById('cargando').innerHTML='<p class="err">'+esc(e.message)+'</p>';
   }
 }
-function cambiarEvento(){EVENTO_ID=parseInt(document.getElementById('selEvento').value,10)||null;PLAN_SEL=null;if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;UBICANDO=null;PROPUESTA=null;refrescar();}
+function cambiarEvento(){EVENTO_ID=parseInt(document.getElementById('selEvento').value,10)||null;PLAN_SEL=null;PLAN_VISTA=null;if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;UBICANDO=null;PROPUESTA=null;refrescar();}
 
 // La imagen del croquis se pide UNA vez por evento (va con token, por eso
 // no puede ir directo en un <img src>): se convierte en URL local y se reusa.
@@ -228,49 +228,72 @@ function render(){
 }
 
 // ── Tablero en vivo ───────────────────────────────────────────────
+// Rediseño 28-08 (flujo pedido por Carlos): todos los planes a la vista;
+// tocas uno, se carga completo, y UN botón verde DESPLEGAR lo activa para
+// todos. ¿Incendio? → tocas «Incendio» → DESPLEGAR → listo. ¿Pasó? → tocas
+// «Plan de trabajo» → DESPLEGAR → volvimos a la normalidad. El botón queda
+// apagado (teñido) hasta que el paso previo — la asignación — esté hecho.
 function renderTablero(){
   var e=ESTADO.evento, html='';
   var planActivo=e.plan_activo_id?planPorId(e.plan_activo_id):null;
+  if(!PLAN_VISTA||!planPorId(PLAN_VISTA)){
+    PLAN_VISTA=e.plan_activo_id||(((ESTADO.planes||[]).find(function(p){return p.tipo==='trabajo';})||{}).id)||(((ESTADO.planes||[])[0]||{}).id)||null;
+  }
   if(planActivo&&planActivo.tipo!=='trabajo'){
-    html+='<div class="banner emergencia">🚨 PLAN ACTIVO: '+esc(planActivo.nombre).toUpperCase()+' <span style="float:right;font-weight:400;font-size:0.75rem">desde '+fmtHora(ESTADO.activado_en)+'</span></div>';
+    html+='<div class="banner emergencia">🚨 PLAN DESPLEGADO: '+esc(planActivo.nombre).toUpperCase()+' <span style="float:right;font-weight:400;font-size:0.75rem">desde '+fmtHora(ESTADO.activado_en)+'</span></div>';
   }else if(planActivo){
-    html+='<div class="banner normal">🟢 Operación normal — '+esc(planActivo.nombre)+' activo desde '+fmtHora(ESTADO.activado_en)+'</div>';
+    html+='<div class="banner normal">🟢 Operación normal — '+esc(planActivo.nombre)+' desplegado desde '+fmtHora(ESTADO.activado_en)+'</div>';
   }else{
-    html+='<div class="banner normal" style="background:#1a1a1a;color:#aaa;border-color:#2a2a2a">⚪ Ningún plan activado todavía. Al iniciar el turno, activa el Plan de trabajo.</div>';
+    html+='<div class="banner normal" style="background:#1a1a1a;color:#aaa;border-color:#2a2a2a">⚪ Ningún plan desplegado todavía. Al iniciar el turno, despliega el Plan de trabajo.</div>';
   }
 
-  // Semáforo del plan activo: cada puesto con sus asignados y su confirmación.
-  if(planActivo){
-    var puestos=(ESTADO.puestos||[]).filter(function(p){return p.plan_id===planActivo.id;});
-    var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===planActivo.id;});
+  html+='<div class="card"><h2>Planes del evento</h2><div class="porque">Toca un plan para cargarlo; el botón DESPLEGAR lo activa: cada guardia recibe SU instrucción en Control+ y confirma con un toque. ¿Emergencia superada? Cargas el Plan de trabajo y lo despliegas — eso es volver a la normalidad. La radio sigue mandando la voz.</div><div class="fila" style="margin-bottom:10px">';
+  (ESTADO.planes||[]).forEach(function(p){
+    var sel=PLAN_VISTA===p.id, act=e.plan_activo_id===p.id;
+    html+='<button class="'+(sel?'':'sec')+'"'+(act?' style="box-shadow:0 0 0 2px '+(p.tipo==='trabajo'?'#7dc800':'#ff7a7a')+'"':'')+' onclick="PLAN_VISTA='+p.id+';render()">'+(act?'● ':'')+esc(p.nombre)+'</button>';
+  });
+  html+='</div>';
+
+  var planV=PLAN_VISTA?planPorId(PLAN_VISTA):null;
+  if(planV){
+    var puestos=(ESTADO.puestos||[]).filter(function(q){return q.plan_id===planV.id;});
+    var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===planV.id;});
     var conf={};(ESTADO.confirmados||[]).forEach(function(u){conf[u]=true;});
-    var total=asig.length, listos=asig.filter(function(a){return conf[a.user_id];}).length;
-    html+='<div class="card"><h2>Semáforo de puestos — '+listos+' de '+total+' en posición</h2><div class="porque">Verde = confirmó «En posición» desde la activación. La confirmación es un toque en Control+ (hora, sin ubicación).</div>';
-    if(!puestos.length)html+='<p class="mini">Este plan no tiene puestos definidos — ármalos en «Planes y puestos».</p>';
+    var esActivo=e.plan_activo_id===planV.id;
+    var planListo=puestos.length>0&&puestos.every(function(q){return asig.some(function(a){return a.puesto_id===q.id;});});
+
+    html+='<div style="border-top:1px solid #2a2a2a;padding-top:12px">';
+    if(planV.instrucciones)html+='<p class="mini" style="margin-bottom:8px">'+esc(planV.instrucciones)+'</p>';
+
+    if(esActivo){
+      var total=asig.length, listos=asig.filter(function(a){return conf[a.user_id];}).length;
+      html+='<div class="fila" style="margin-bottom:10px"><span class="badge verde" style="font-size:0.85rem;padding:8px 14px">✅ DESPLEGADO — '+listos+' de '+total+' en posición</span>'+
+        '<button class="sec" onclick="avisoWhatsApp('+planV.id+')">📋 Copiar aviso WhatsApp</button>'+
+        '<button class="sec" onclick="exportarPlan('+planV.id+')">🖨 Exportar (PDF)</button></div><div id="msgActivar"></div>';
+    }else{
+      // Secuencia guiada: 1) asignar → 2) desplegar. El botón grande queda
+      // teñido hasta que todos los puestos tengan gente — pero nunca atrapa:
+      // se puede desplegar igual (avisa) y ajustar en terreno.
+      html+='<div class="fila" style="margin-bottom:6px">'+
+        (planListo?'':'<button onclick="asignarAutoTablero('+planV.id+')">1 · ⚡ Asignar automático</button>')+
+        '<button class="verde" style="font-size:0.95rem;padding:14px 20px'+(planListo?'':';opacity:.45')+'" onclick="desplegarPlan('+planV.id+','+(planListo?'true':'false')+')">'+(planV.tipo==='trabajo'?'🟢':'🚨')+' DESPLEGAR: '+esc(planV.nombre).toUpperCase()+'</button>'+
+        '<button class="sec" onclick="exportarPlan('+planV.id+')">🖨 Exportar (PDF)</button></div>'+
+        (planListo?'':'<p class="mini" style="margin-bottom:8px">El botón se enciende cuando todos los puestos tengan gente (paso 1) — o despliega igual y ajusta en terreno.</p>')+
+        '<div id="msgActivar"></div>';
+    }
+
+    if(!puestos.length)html+='<p class="mini">Este plan no tiene puestos — ármalos en «Planes y puestos».</p>';
     puestos.forEach(function(p){
       var deEste=asig.filter(function(a){return a.puesto_id===p.id;});
       html+='<div class="puesto"><div class="t">'+esc(p.nombre)+' <span class="badge">'+esc((ESTADO.roles||{})[p.rol]||p.rol)+'</span> <span class="badge '+(deEste.length>=p.cupos?'verde':'ambar')+'">'+deEste.length+'/'+p.cupos+'</span></div>'+
         (p.tarea?'<div class="m">'+esc(p.tarea)+'</div>':'')+
-        (deEste.length?deEste.map(function(a){return '<span class="asig'+(conf[a.user_id]?' ok':'')+'">'+(conf[a.user_id]?'✅':'⌛')+' '+esc(a.nombre)+'</span>';}).join(''):'<span class="mini">Sin asignados</span>')+
+        (deEste.length?deEste.map(function(a){return '<span class="asig'+(esActivo&&conf[a.user_id]?' ok':'')+'">'+(esActivo?(conf[a.user_id]?'✅ ':'⌛ '):'')+esc(a.nombre)+'</span>';}).join(''):'<span class="mini">Sin asignados</span>')+
         '</div>';
     });
+    if(ESTADO.evento.croquis)html+='<div id="croTabZona" style="margin-top:8px"><p class="mini">Cargando croquis…</p></div>';
     html+='</div>';
-    // El mismo semáforo pero SOBRE EL CROQUIS: de un vistazo se ve qué zona
-    // del recinto está cubierta y cuál no (sesión 44).
-    if(ESTADO.evento.croquis){
-      html+='<div class="card"><h2>🗺️ Croquis del despliegue — '+esc(planActivo.nombre)+'</h2><div class="porque">Verde = todos confirmados · Rojo = nadie ha confirmado · Ámbar = parcial · Gris = sin asignados. El detalle por puesto está en la leyenda y en el semáforo de arriba.</div><div id="croTabZona"><p class="mini">Cargando croquis…</p></div></div>';
-    }
   }
-
-  // Activación de planes (D4: el Worker solo deja al admin o al responsable).
-  html+='<div class="card"><h2>Activar un plan</h2><div class="porque">Al activar, cada guardia asignado recibe la instrucción de SU puesto en su teléfono y se le pide confirmar. Queda en la bitácora con hora. La radio sigue mandando la voz.</div><div class="fila">';
-  (ESTADO.planes||[]).forEach(function(p){
-    var activo=e.plan_activo_id===p.id;
-    var cls=p.tipo==='trabajo'?'verde':(p.tipo==='evacuacion'?'rojo':'sec');
-    html+='<button class="'+cls+'" '+(activo?'disabled':'')+' onclick="activarPlan('+p.id+',\''+esc(p.nombre).replace(/'/g,'')+'\')">'+(activo?'● ':'')+esc(p.nombre)+'</button>';
-  });
-  if(e.plan_activo_id)html+='<button class="sec" onclick="activarPlan(null,null)">🟢 Volver a la normalidad</button>';
-  html+='</div><div id="msgActivar"></div></div>';
+  html+='</div>';
 
   // Registro rápido de bitácora.
   html+='<div class="card"><h2>Registrar en bitácora</h2><div class="porque">Incidentes, órdenes de Carabineros (hay que seguirlas Y conviene poder probar cuál fue y cuándo — art. 13 N°11) y notas.</div>'+
@@ -282,10 +305,14 @@ function renderTablero(){
   html+='<div class="card"><h2>Dotación</h2><p class="mini">'+confirmadosRoster.length+' confirmados/presentes de '+(ESTADO.roster||[]).length+' convocados · Responsable de seguridad: <strong>'+(e.responsable_user_id?esc(nombreGuardia(e.responsable_user_id)):'⚠️ sin designar (se designa en Planes y puestos)')+'</strong></p></div>';
 
   document.getElementById('contenido').innerHTML=html;
-  if(planActivo&&ESTADO.evento.croquis)pintarCroquisTablero(planActivo);
+  var planPintar=PLAN_VISTA?planPorId(PLAN_VISTA):null;
+  if(planPintar&&ESTADO.evento.croquis)pintarCroquisTablero(planPintar, e.plan_activo_id===planPintar.id);
 }
 
-async function pintarCroquisTablero(plan){
+// El croquis del plan CARGADO. Si está desplegado, los puntos son el semáforo
+// (verde/ámbar/rojo/gris por confirmación); si es vista previa, azul =
+// asignado, gris = sin gente.
+async function pintarCroquisTablero(plan, esActivo){
   var zona=document.getElementById('croTabZona');if(!zona)return;
   var url=await croquisURL();
   if(!url){zona.innerHTML='<p class="err">No se pudo cargar el croquis.</p>';return;}
@@ -298,24 +325,64 @@ async function pintarCroquisTablero(plan){
   puestos.forEach(function(q,i){
     var deEste=asig.filter(function(a){return a.puesto_id===q.id;});
     var listos=deEste.filter(function(a){return conf[a.user_id];}).length;
-    var color=!deEste.length?'#555':(listos===deEste.length?'#1f8a2d':(listos>0?'#e8a817':'#c0392b'));
-    if(q.pos_x!=null)html+='<div title="'+esc(q.nombre)+': '+listos+'/'+deEste.length+' confirmados" style="position:absolute;left:'+q.pos_x+'%;top:'+q.pos_y+'%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:'+color+';border:2px solid #fff;color:#fff;font-weight:800;font-size:12px;line-height:24px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.6)">'+(i+1)+'</div>';
-    leyenda+='<span class="mini" style="margin-right:12px;white-space:nowrap"><strong style="color:'+color+'">'+(i+1)+'</strong> '+esc(q.nombre)+' '+listos+'/'+deEste.length+'</span>';
+    var color;
+    if(esActivo)color=!deEste.length?'#555':(listos===deEste.length?'#1f8a2d':(listos>0?'#e8a817':'#c0392b'));
+    else color=deEste.length?'#2b6ba8':'#555';
+    var detalle=esActivo?(listos+'/'+deEste.length+' confirmados'):(deEste.length+'/'+q.cupos+' asignados');
+    if(q.pos_x!=null)html+='<div title="'+esc(q.nombre)+': '+detalle+'" style="position:absolute;left:'+q.pos_x+'%;top:'+q.pos_y+'%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:'+color+';border:2px solid #fff;color:#fff;font-weight:800;font-size:12px;line-height:24px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.6)">'+(i+1)+'</div>';
+    leyenda+='<span class="mini" style="margin-right:12px;white-space:nowrap"><strong style="color:'+color+'">'+(i+1)+'</strong> '+esc(q.nombre)+' '+(esActivo?listos+'/'+deEste.length:deEste.length+'/'+q.cupos)+'</span>';
   });
   html+='</div><div style="margin-top:6px;line-height:1.8">'+leyenda+'</div>';
   zona.innerHTML=html;
 }
 
-async function activarPlan(planId,nombre){
-  var msg=planId==null?'¿Volver a la normalidad? Se avisará a todos los guardias.':'¿ACTIVAR «'+nombre+'»? Cada guardia asignado recibirá su instrucción y deberá confirmar posición.';
+async function desplegarPlan(planId,listo){
+  var plan=planPorId(planId);if(!plan)return;
+  var msg=listo?'¿DESPLEGAR «'+plan.nombre+'»? Cada guardia asignado recibirá su instrucción en Control+ y deberá confirmar posición.':'Este plan tiene puestos SIN gente asignada. ¿Desplegar igual y ajustar en terreno?';
   if(!confirm(msg))return;
   var el=document.getElementById('msgActivar');
   try{
     var d=await api('/admin/eventos/'+EVENTO_ID+'/activar',{method:'POST',body:{plan_id:planId}});
-    el.innerHTML='<p class="ok-msg">'+(planId==null?'Vuelta a la normalidad registrada.':'Plan activado — '+(d.notificados||0)+' guardia(s) notificados por push.')+'</p>';
+    if(el)el.innerHTML='<p class="ok-msg">Plan desplegado — '+(d.notificados||0)+' guardia(s) notificados por push.</p>';
     refrescar();
-  }catch(e){el.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+  }catch(e){if(el)el.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
 }
+
+// Paso 1 de la secuencia del tablero: asignar sin salir a la otra pestaña.
+async function asignarAutoTablero(planId){
+  try{
+    var d=await api('/admin/planes/'+planId+'/asignar-auto',{method:'POST',body:{}});
+    await refrescar();
+    var el=document.getElementById('msgActivar');
+    if(el)el.innerHTML='<p class="ok-msg">'+d.asignados_nuevos+' asignado(s).'+(d.guardias_sin_puesto?' '+d.guardias_sin_puesto+' guardia(s) con rol quedaron sin puesto.':'')+((d.puestos_incompletos||[]).length?' '+d.puestos_incompletos.length+' puesto(s) siguen incompletos.':'')+'</p>';
+  }catch(e){alert(e.message);}
+}
+
+// El aviso para el grupo de WhatsApp del evento: el push de Control+ es el
+// canal principal, pero no todos tendrán la app instalada el primer día.
+// Un toque copia el texto listo para pegar (negritas con *asteriscos*).
+function avisoWhatsApp(planId){
+  var plan=planPorId(planId);if(!plan)return;
+  var puestos=(ESTADO.puestos||[]).filter(function(q){return q.plan_id===plan.id;});
+  var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===plan.id;});
+  var l=[(plan.tipo==='trabajo'?'🟢':'🚨')+' *'+plan.nombre.toUpperCase()+'* — '+ESTADO.evento.nombre];
+  if(plan.instrucciones)l.push(plan.instrucciones);
+  l.push('');
+  puestos.forEach(function(p){
+    var nombres=asig.filter(function(a){return a.puesto_id===p.id;}).map(function(a){return a.nombre;}).join(', ');
+    l.push('▪️ *'+p.nombre+'*'+(nombres?' — '+nombres:' — (sin asignar)')+(p.tarea?': '+p.tarea:''));
+  });
+  l.push('');
+  l.push('Confirma tu posición en Control+ o por radio.');
+  var texto=l.join('\n');
+  var listoMsg=function(){var el=document.getElementById('msgActivar');if(el)el.innerHTML='<p class="ok-msg">Aviso copiado — pégalo en el grupo de WhatsApp del evento.</p>';};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(texto).then(listoMsg,function(){prompt('Copia el aviso:',texto);});
+  else prompt('Copia el aviso:',texto);
+}
+
+// Exportar SOLO el plan cargado (1 página con croquis + tabla), sin marca de
+// agua: es el croquis operativo para difundir, como en Limache.
+async function exportarPlan(planId){await generarCroquis(true,planId);}
 
 async function registrarBitacora(){
   var det=document.getElementById('bitDetalle').value.trim();
@@ -798,15 +865,16 @@ function precargarImagen(url){return new Promise(function(res){var im=new Image(
 
 // 🗺️ Croquis de despliegue: UNA página por plan, formato Limache (el que la
 // productora difundió como oficial). Solo entran los planes con puestos
-// ubicados en el mapa.
-async function generarCroquis(final){
+// ubicados en el mapa. Con soloPlanId imprime únicamente ese plan (botón
+// «Exportar» del tablero).
+async function generarCroquis(final,soloPlanId){
   if(!ESTADO.evento.croquis){alert('Primero sube el croquis del recinto: pestaña «Planes y puestos», sección 4.');return;}
   var url=await croquisURL();
   if(!url){alert('No se pudo cargar el croquis. Revisa la conexión.');return;}
   await precargarImagen(url);
   var e=ESTADO.evento, roles=ESTADO.roles||{};
-  var planesConMapa=(ESTADO.planes||[]).filter(function(p){return (ESTADO.puestos||[]).some(function(q){return q.plan_id===p.id&&q.pos_x!=null;});});
-  if(!planesConMapa.length){alert('Ningún plan tiene puestos ubicados en el croquis todavía — ubícalos en «Planes y puestos», sección 4.');return;}
+  var planesConMapa=(ESTADO.planes||[]).filter(function(p){return (soloPlanId?p.id===soloPlanId:true)&&(ESTADO.puestos||[]).some(function(q){return q.plan_id===p.id&&q.pos_x!=null;});});
+  if(!planesConMapa.length){alert(soloPlanId?'Este plan no tiene puestos ubicados en el croquis — ubícalos en «Planes y puestos», sección 4.':'Ningún plan tiene puestos ubicados en el croquis todavía — ubícalos en «Planes y puestos», sección 4.');return;}
   var fechaTxt=esc(e.fecha_inicio)+(e.fecha_fin&&e.fecha_fin!==e.fecha_inicio?' al '+esc(e.fecha_fin):'');
   var html='';
   planesConMapa.forEach(function(p,idx){
