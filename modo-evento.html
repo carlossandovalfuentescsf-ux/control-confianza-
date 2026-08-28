@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Modo Evento — Comando de Control</title>
+<style>
+/* Modo Evento (BRIEF-modo-evento.md, 28-08-2026): el puesto de mando en vivo.
+   Misma paleta que comando.html — es una herramienta del mismo hub. */
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d0d;color:#f0e8d0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;padding-bottom:60px}
+header{background:#111;border-bottom:2px solid #d4a017;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+header h1{font-size:1.05rem;color:#d4a017}
+header .sub{font-size:0.7rem;color:#888;width:100%}
+main{max-width:1080px;margin:0 auto;padding:16px}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{font-size:0.95rem;font-weight:800;color:#d4a017;margin-bottom:4px}
+.porque{font-size:0.74rem;color:#888;margin-bottom:12px;line-height:1.45}
+input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#111;color:#f0e8d0;font-size:0.9rem}
+textarea{min-height:60px}
+button{background:#d4a017;color:#111;border:none;border-radius:8px;padding:10px 14px;font-weight:800;font-size:0.85rem;cursor:pointer}
+button.sec{background:#2a2a2a;color:#f0e8d0}
+button.rojo{background:#7a1f1f;color:#fff}
+button.verde{background:#1f5c26;color:#fff}
+button:disabled{opacity:0.5;cursor:default}
+.fila{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{background:#1a1a1a;color:#aaa;border:1px solid #2a2a2a}
+.tabs button.act{background:#d4a017;color:#111}
+.badge{font-size:0.66rem;font-weight:800;padding:2px 8px;border-radius:20px;background:#2a2a2a;color:#aaa}
+.badge.verde{background:#0d2210;color:#7dc800}
+.badge.rojo{background:#2a0d0d;color:#ff7a7a}
+.badge.ambar{background:#2a230d;color:#e8c860}
+table{width:100%;border-collapse:collapse;font-size:0.82rem}
+th{color:#888;text-align:left;font-size:0.68rem;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid #2a2a2a}
+td{padding:7px 8px;border-bottom:1px solid #1f1f1f;vertical-align:middle}
+.puesto{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-bottom:10px}
+.puesto .t{font-weight:800;font-size:0.88rem}
+.puesto .m{font-size:0.72rem;color:#888;margin:2px 0 8px}
+.asig{display:inline-flex;align-items:center;gap:5px;background:#1f1f1f;border-radius:20px;padding:3px 10px;font-size:0.76rem;margin:2px 3px 2px 0}
+.asig .x{cursor:pointer;color:#ff7a7a;font-weight:800}
+.asig.ok{background:#0d2210;color:#7dc800}
+.banner{border-radius:12px;padding:14px 16px;margin-bottom:14px;font-weight:800}
+.banner.normal{background:#0d2210;color:#7dc800;border:1px solid #1f5c26}
+.banner.emergencia{background:#2a0d0d;color:#ff9a9a;border:1px solid #7a1f1f;animation:lat 1.2s infinite}
+@keyframes lat{0%,100%{opacity:1}50%{opacity:0.75}}
+.bit{border-left:3px solid #2a2a2a;padding:6px 10px;margin-bottom:6px;font-size:0.8rem}
+.bit .h{color:#888;font-size:0.68rem}
+.bit.activacion_plan{border-color:#c0392b}
+.bit.vuelta_normalidad{border-color:#1f5c26}
+.bit.incidente{border-color:#e8c860}
+.bit.orden_autoridad{border-color:#4a90d9}
+#login,#cargando{max-width:420px;margin:60px auto;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:28px;text-align:center}
+#login input{margin-bottom:10px}
+#login button{width:100%}
+.err{color:#ff7a7a;font-size:0.8rem;margin-top:8px}
+.ok-msg{color:#7dc800;font-size:0.8rem;margin-top:8px}
+.mini{font-size:0.7rem;color:#666;line-height:1.5}
+a{color:#d4a017}
+@media(max-width:640px){td,th{padding:5px 4px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎪 Modo Evento</h1>
+  <select id="selEvento" style="max-width:280px;display:none" onchange="cambiarEvento()"></select>
+  <span id="btnSalir" style="display:none;margin-left:auto"><button class="sec" onclick="salir()">Salir</button></span>
+  <div class="sub">El puesto de mando en vivo: planes del D.S. 208, distribución del personal y redistribución con un botón. La radio manda la voz; esto es la memoria que no se desordena.</div>
+</header>
+
+<div id="cargando"><p>Cargando…</p></div>
+
+<div id="login" style="display:none">
+  <h2 style="color:#d4a017;margin-bottom:6px">Acceso administración</h2>
+  <p class="mini" style="margin-bottom:14px">Misma cuenta admin de Comando de Control.</p>
+  <input id="loginEmail" type="email" placeholder="Correo" autocomplete="username" autocapitalize="none">
+  <input id="loginPass" type="password" placeholder="Contraseña" autocomplete="current-password">
+  <button onclick="entrar()">Entrar</button>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<main id="app" style="display:none">
+  <div class="tabs">
+    <button id="tab-tablero" class="act" onclick="verTab('tablero')">🚨 Tablero en vivo</button>
+    <button id="tab-config" onclick="verTab('config')">🗺️ Planes y puestos</button>
+    <button id="tab-bitacora" onclick="verTab('bitacora')">📓 Bitácora</button>
+  </div>
+  <div id="contenido"></div>
+</main>
+
+<script>
+var API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
+var CYC_TOKEN=localStorage.getItem('cyc_token')||null;
+var EVENTOS=[], EVENTO_ID=null, ESTADO=null, TAB='tablero', TIMER=null, PLAN_SEL=null;
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtHora(t){ if(!t)return ''; var d=new Date(t.replace(' ','T')+'Z'); return d.toLocaleString('es-CL',{timeZone:'America/Santiago',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+function api(ruta,opts){opts=opts||{};opts.headers=Object.assign({'Authorization':'Bearer '+CYC_TOKEN},opts.body?{'Content-Type':'application/json'}:{},opts.headers||{});if(opts.body&&typeof opts.body!=='string')opts.body=JSON.stringify(opts.body);return fetch(API_URL+ruta,opts).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||('Error '+r.status));return d;});});}
+function mostrar(id){['cargando','login','app'].forEach(function(x){document.getElementById(x).style.display=x===id?(x==='app'?'block':'block'):'none';});document.getElementById('selEvento').style.display=id==='app'?'block':'none';document.getElementById('btnSalir').style.display=id==='app'?'inline':'none';}
+
+async function entrar(){
+  var err=document.getElementById('loginErr');err.textContent='';
+  try{
+    var r=await fetch(API_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:document.getElementById('loginEmail').value.trim().toLowerCase(),password:document.getElementById('loginPass').value})});
+    var d=await r.json();
+    if(!r.ok||!d.token){err.textContent=d.error||'Credenciales incorrectas.';return;}
+    CYC_TOKEN=d.token;localStorage.setItem('cyc_token',CYC_TOKEN);
+    iniciar();
+  }catch(e){err.textContent='Sin conexión.';}
+}
+function salir(){localStorage.removeItem('cyc_token');CYC_TOKEN=null;location.reload();}
+
+async function iniciar(){
+  if(!CYC_TOKEN){mostrar('login');return;}
+  try{
+    var d;
+    try{
+      d=await api('/admin/eventos');
+    }catch(errAdmin){
+      // No es admin: puede ser el RESPONSABLE DE SEGURIDAD de un evento (D4).
+      // Su lista sale de «mis eventos»; el Worker igual valida evento por
+      // evento — si no es responsable de ninguno, verá el aviso de acceso.
+      if(String(errAdmin.message).indexOf('administrador')<0)throw errAdmin;
+      var mios=await api('/guardias/mis-eventos');
+      d={eventos:(mios.eventos||[]).map(function(e){return {id:e.evento_id,nombre:e.nombre,fecha_inicio:e.fecha_inicio};})};
+    }
+    EVENTOS=d.eventos||d||[];
+    if(!Array.isArray(EVENTOS))EVENTOS=[];
+    var sel=document.getElementById('selEvento');
+    sel.innerHTML=EVENTOS.length?EVENTOS.map(function(e){return '<option value="'+e.id+'">'+esc(e.nombre)+' ('+esc(e.fecha_inicio)+')</option>';}).join(''):'<option value="">— sin eventos: crea uno en Comando de Control → Eventos —</option>';
+    mostrar('app');
+    if(EVENTOS.length){EVENTO_ID=EVENTOS[0].id;await refrescar();}
+    else document.getElementById('contenido').innerHTML='<div class="card"><h2>Sin eventos</h2><p class="porque">Primero crea el evento y su roster en <a href="comando.html">Comando de Control</a> → Eventos. Después vuelve aquí para armar los planes.</p></div>';
+  }catch(e){
+    if(String(e.message).indexOf('administrador')>=0||String(e.message).indexOf('autenticado')>=0){localStorage.removeItem('cyc_token');CYC_TOKEN=null;mostrar('login');}
+    else document.getElementById('cargando').innerHTML='<p class="err">'+esc(e.message)+'</p>';
+  }
+}
+function cambiarEvento(){EVENTO_ID=parseInt(document.getElementById('selEvento').value,10)||null;PLAN_SEL=null;refrescar();}
+function verTab(t){TAB=t;['tablero','config','bitacora'].forEach(function(x){document.getElementById('tab-'+x).className=x===t?'act':'';});render();}
+
+async function refrescar(){
+  if(!EVENTO_ID)return;
+  try{ESTADO=await api('/admin/eventos/'+EVENTO_ID+'/modo');render();}catch(e){document.getElementById('contenido').innerHTML='<div class="card"><p class="err">'+esc(e.message)+'</p></div>';}
+}
+// El tablero se refresca solo cada 15 s — es la vista que se deja abierta
+// durante el evento.
+if(TIMER)clearInterval(TIMER);
+TIMER=setInterval(function(){if(TAB==='tablero'&&EVENTO_ID&&document.visibilityState==='visible')refrescar();},15000);
+
+function planPorId(id){return (ESTADO.planes||[]).find(function(p){return p.id===id;})||null;}
+function nombreGuardia(uid){var g=(ESTADO.roster||[]).find(function(r){return r.user_id===uid;});return g?g.nombre:('#'+uid);}
+
+function render(){
+  if(!ESTADO)return;
+  if(TAB==='tablero')renderTablero();
+  else if(TAB==='config')renderConfig();
+  else renderBitacora();
+}
+
+// ── Tablero en vivo ───────────────────────────────────────────────
+function renderTablero(){
+  var e=ESTADO.evento, html='';
+  var planActivo=e.plan_activo_id?planPorId(e.plan_activo_id):null;
+  if(planActivo&&planActivo.tipo!=='trabajo'){
+    html+='<div class="banner emergencia">🚨 PLAN ACTIVO: '+esc(planActivo.nombre).toUpperCase()+' <span style="float:right;font-weight:400;font-size:0.75rem">desde '+fmtHora(ESTADO.activado_en)+'</span></div>';
+  }else if(planActivo){
+    html+='<div class="banner normal">🟢 Operación normal — '+esc(planActivo.nombre)+' activo desde '+fmtHora(ESTADO.activado_en)+'</div>';
+  }else{
+    html+='<div class="banner normal" style="background:#1a1a1a;color:#aaa;border-color:#2a2a2a">⚪ Ningún plan activado todavía. Al iniciar el turno, activa el Plan de trabajo.</div>';
+  }
+
+  // Semáforo del plan activo: cada puesto con sus asignados y su confirmación.
+  if(planActivo){
+    var puestos=(ESTADO.puestos||[]).filter(function(p){return p.plan_id===planActivo.id;});
+    var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===planActivo.id;});
+    var conf={};(ESTADO.confirmados||[]).forEach(function(u){conf[u]=true;});
+    var total=asig.length, listos=asig.filter(function(a){return conf[a.user_id];}).length;
+    html+='<div class="card"><h2>Semáforo de puestos — '+listos+' de '+total+' en posición</h2><div class="porque">Verde = confirmó «En posición» desde la activación. La confirmación es un toque en Control+ (hora, sin ubicación).</div>';
+    if(!puestos.length)html+='<p class="mini">Este plan no tiene puestos definidos — ármalos en «Planes y puestos».</p>';
+    puestos.forEach(function(p){
+      var deEste=asig.filter(function(a){return a.puesto_id===p.id;});
+      html+='<div class="puesto"><div class="t">'+esc(p.nombre)+' <span class="badge">'+esc((ESTADO.roles||{})[p.rol]||p.rol)+'</span> <span class="badge '+(deEste.length>=p.cupos?'verde':'ambar')+'">'+deEste.length+'/'+p.cupos+'</span></div>'+
+        (p.tarea?'<div class="m">'+esc(p.tarea)+'</div>':'')+
+        (deEste.length?deEste.map(function(a){return '<span class="asig'+(conf[a.user_id]?' ok':'')+'">'+(conf[a.user_id]?'✅':'⌛')+' '+esc(a.nombre)+'</span>';}).join(''):'<span class="mini">Sin asignados</span>')+
+        '</div>';
+    });
+    html+='</div>';
+  }
+
+  // Activación de planes (D4: el Worker solo deja al admin o al responsable).
+  html+='<div class="card"><h2>Activar un plan</h2><div class="porque">Al activar, cada guardia asignado recibe la instrucción de SU puesto en su teléfono y se le pide confirmar. Queda en la bitácora con hora. La radio sigue mandando la voz.</div><div class="fila">';
+  (ESTADO.planes||[]).forEach(function(p){
+    var activo=e.plan_activo_id===p.id;
+    var cls=p.tipo==='trabajo'?'verde':(p.tipo==='evacuacion'?'rojo':'sec');
+    html+='<button class="'+cls+'" '+(activo?'disabled':'')+' onclick="activarPlan('+p.id+',\''+esc(p.nombre).replace(/'/g,'')+'\')">'+(activo?'● ':'')+esc(p.nombre)+'</button>';
+  });
+  if(e.plan_activo_id)html+='<button class="sec" onclick="activarPlan(null,null)">🟢 Volver a la normalidad</button>';
+  html+='</div><div id="msgActivar"></div></div>';
+
+  // Registro rápido de bitácora.
+  html+='<div class="card"><h2>Registrar en bitácora</h2><div class="porque">Incidentes, órdenes de Carabineros (hay que seguirlas Y conviene poder probar cuál fue y cuándo — art. 13 N°11) y notas.</div>'+
+    '<div class="fila"><select id="bitTipo" style="max-width:200px"><option value="incidente">🚨 Incidente</option><option value="orden_autoridad">👮 Orden de la autoridad</option><option value="nota">📝 Nota</option></select>'+
+    '<input id="bitDetalle" placeholder="Qué pasó, dónde, quién" style="flex:1;min-width:200px"><button onclick="registrarBitacora()">Registrar</button></div><div id="msgBit"></div></div>';
+
+  // Dotación presente.
+  var confirmadosRoster=(ESTADO.roster||[]).filter(function(r){return r.estado==='confirmado'||r.estado==='asistio';});
+  html+='<div class="card"><h2>Dotación</h2><p class="mini">'+confirmadosRoster.length+' confirmados/presentes de '+(ESTADO.roster||[]).length+' convocados · Responsable de seguridad: <strong>'+(e.responsable_user_id?esc(nombreGuardia(e.responsable_user_id)):'⚠️ sin designar (se designa en Planes y puestos)')+'</strong></p></div>';
+
+  document.getElementById('contenido').innerHTML=html;
+}
+
+async function activarPlan(planId,nombre){
+  var msg=planId==null?'¿Volver a la normalidad? Se avisará a todos los guardias.':'¿ACTIVAR «'+nombre+'»? Cada guardia asignado recibirá su instrucción y deberá confirmar posición.';
+  if(!confirm(msg))return;
+  var el=document.getElementById('msgActivar');
+  try{
+    var d=await api('/admin/eventos/'+EVENTO_ID+'/activar',{method:'POST',body:{plan_id:planId}});
+    el.innerHTML='<p class="ok-msg">'+(planId==null?'Vuelta a la normalidad registrada.':'Plan activado — '+(d.notificados||0)+' guardia(s) notificados por push.')+'</p>';
+    refrescar();
+  }catch(e){el.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+
+async function registrarBitacora(){
+  var det=document.getElementById('bitDetalle').value.trim();
+  var el=document.getElementById('msgBit');
+  if(!det){el.innerHTML='<p class="err">Escribe el detalle.</p>';return;}
+  try{
+    await api('/admin/eventos/'+EVENTO_ID+'/bitacora',{method:'POST',body:{tipo:document.getElementById('bitTipo').value,detalle:det}});
+    document.getElementById('bitDetalle').value='';
+    el.innerHTML='<p class="ok-msg">Registrado con hora.</p>';
+    refrescar();
+  }catch(e){el.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+
+// ── Planes y puestos (configuración, solo admin) ──────────────────
+function renderConfig(){
+  var html='';
+  if(!ESTADO.es_admin){document.getElementById('contenido').innerHTML='<div class="card"><p class="mini">La configuración es solo del administrador. Como responsable de seguridad, tu lugar es el Tablero en vivo.</p></div>';return;}
+
+  // 1) Roles del roster.
+  html+='<div class="card"><h2>1 · Roles del personal en ESTE evento</h2><div class="porque">El rol es la llave de la asignación automática: los puestos piden un rol y se llenan con quienes lo tienen. Solo confirmados/presentes entran al reparto.</div><table><tr><th>Guardia</th><th>Estado</th><th>Rol en este evento</th></tr>';
+  (ESTADO.roster||[]).forEach(function(r){
+    var ops='<option value="">— sin rol —</option>';
+    Object.keys(ESTADO.roles||{}).forEach(function(k){ops+='<option value="'+k+'"'+(r.rol===k?' selected':'')+'>'+esc(ESTADO.roles[k])+'</option>';});
+    html+='<tr><td>'+esc(r.nombre)+'</td><td><span class="badge '+(r.estado==='confirmado'||r.estado==='asistio'?'verde':(r.estado==='desistio'||r.estado==='no_show'?'rojo':'ambar'))+'">'+esc(r.estado)+'</span></td><td><select onchange="ponerRol('+r.user_id+',this.value)" style="max-width:220px">'+ops+'</select></td></tr>';
+  });
+  html+='</table></div>';
+
+  // 2) Responsable de seguridad.
+  var opsR='<option value="">— sin designar —</option>';
+  (ESTADO.roster||[]).forEach(function(r){opsR+='<option value="'+r.user_id+'"'+(ESTADO.evento.responsable_user_id===r.user_id?' selected':'')+'>'+esc(r.nombre)+'</option>';});
+  html+='<div class="card"><h2>2 · Responsable de seguridad del evento</h2><div class="porque">Exigido por el D.S. 208 (art. 2 N°5). Es la ÚNICA persona además del admin que puede activar planes desde su Control+ entrando a esta misma página.</div><select onchange="ponerResponsable(this.value)" style="max-width:320px">'+opsR+'</select></div>';
+
+  // 3) Planes.
+  html+='<div class="card"><h2>3 · Planes del evento</h2><div class="porque">El catálogo mínimo sale del D.S. 208 art. 18 (evacuación + robo/asalto, múltiples víctimas, incendio, sismo). Cárgalo y ajusta puestos según el recinto y el informe del prevencionista.</div>'+
+    '<div class="fila" style="margin-bottom:10px"><button onclick="cargarPlantilla()">📋 Cargar catálogo D.S. 208</button>'+
+    '<input id="planNuevoNombre" placeholder="U otro plan: nombre" style="max-width:220px"><button class="sec" onclick="crearPlan()">➕ Crear plan</button></div><div id="msgPlanes"></div><div class="fila" style="margin-bottom:8px">';
+  (ESTADO.planes||[]).forEach(function(p){
+    html+='<button class="'+(PLAN_SEL===p.id?'':'sec')+'" onclick="PLAN_SEL='+p.id+';render()">'+esc(p.nombre)+'</button>';
+  });
+  html+='</div>';
+
+  var plan=PLAN_SEL?planPorId(PLAN_SEL):null;
+  if(!plan&&(ESTADO.planes||[]).length){plan=ESTADO.planes[0];PLAN_SEL=plan.id;}
+  if(plan){
+    html+='<div style="border-top:1px solid #2a2a2a;padding-top:12px;margin-top:4px"><div class="fila" style="justify-content:space-between"><strong>'+esc(plan.nombre)+'</strong>'+
+      '<span><button class="sec" onclick="asignarAuto('+plan.id+')">⚡ Asignar automático</button> <button class="rojo" onclick="eliminarPlan('+plan.id+')">Eliminar plan</button></span></div>'+
+      (plan.instrucciones?'<p class="mini" style="margin:6px 0">'+esc(plan.instrucciones)+'</p>':'')+
+      '<div class="fila" style="margin:10px 0"><input id="puestoNombre" placeholder="Puesto (ej: Puerta 4)" style="max-width:180px">'+
+      '<select id="puestoRol" style="max-width:180px">'+Object.keys(ESTADO.roles||{}).map(function(k){return '<option value="'+k+'">'+esc(ESTADO.roles[k])+'</option>';}).join('')+'</select>'+
+      '<input id="puestoCupos" type="number" min="1" value="1" style="max-width:70px" title="Cupos">'+
+      '<input id="puestoTarea" placeholder="Tarea en este plan" style="flex:1;min-width:160px"><button onclick="crearPuesto('+plan.id+')">➕ Puesto</button></div><div id="msgPuestos"></div>';
+
+    var puestos=(ESTADO.puestos||[]).filter(function(p2){return p2.plan_id===plan.id;});
+    var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===plan.id;});
+    var asignadosIds={};asig.forEach(function(a){asignadosIds[a.user_id]=true;});
+    var disponibles=(ESTADO.roster||[]).filter(function(r){return (r.estado==='confirmado'||r.estado==='asistio')&&!asignadosIds[r.user_id];});
+    if(!puestos.length)html+='<p class="mini">Sin puestos aún — agrega el primero arriba.</p>';
+    puestos.forEach(function(p2){
+      var deEste=asig.filter(function(a){return a.puesto_id===p2.id;});
+      var opsG='<option value="">+ asignar guardia…</option>';
+      disponibles.forEach(function(r){opsG+='<option value="'+r.user_id+'">'+esc(r.nombre)+(r.rol?' ('+esc((ESTADO.roles||{})[r.rol]||r.rol)+')':'')+'</option>';});
+      html+='<div class="puesto"><div class="t">'+esc(p2.nombre)+' <span class="badge">'+esc((ESTADO.roles||{})[p2.rol]||p2.rol)+'</span> <span class="badge '+(deEste.length>=p2.cupos?'verde':'ambar')+'">'+deEste.length+'/'+p2.cupos+'</span> <span style="float:right;cursor:pointer;color:#ff7a7a" onclick="eliminarPuesto('+p2.id+')" title="Eliminar puesto">🗑</span></div>'+
+        (p2.tarea?'<div class="m">'+esc(p2.tarea)+'</div>':'')+
+        deEste.map(function(a){return '<span class="asig">'+esc(a.nombre)+' <span class="x" onclick="quitarAsignacion('+plan.id+','+a.user_id+')">✕</span></span>';}).join('')+
+        (deEste.length<p2.cupos?'<select style="max-width:220px;display:inline-block;margin-top:4px" onchange="if(this.value)asignarManual('+plan.id+','+p2.id+',this.value)">'+opsG+'</select>':'')+
+        '</div>';
+    });
+    html+='</div>';
+  }
+  html+='</div>';
+  document.getElementById('contenido').innerHTML=html;
+}
+
+async function ponerRol(uid,rol){try{await api('/admin/eventos/'+EVENTO_ID+'/rol',{method:'POST',body:{user_id:uid,rol:rol||null}});await refrescar();}catch(e){alert(e.message);}}
+async function ponerResponsable(v){try{await api('/admin/eventos/'+EVENTO_ID+'/responsable',{method:'POST',body:{user_id:v?parseInt(v,10):null}});await refrescar();}catch(e){alert(e.message);}}
+async function cargarPlantilla(){try{var d=await api('/admin/eventos/'+EVENTO_ID+'/planes',{method:'POST',body:{plantilla:true}});document.getElementById('msgPlanes').innerHTML='<p class="ok-msg">'+d.creados+' plan(es) del catálogo agregados.</p>';await refrescar();}catch(e){document.getElementById('msgPlanes').innerHTML='<p class="err">'+esc(e.message)+'</p>';}}
+async function crearPlan(){var n=document.getElementById('planNuevoNombre').value.trim();if(!n)return;try{await api('/admin/eventos/'+EVENTO_ID+'/planes',{method:'POST',body:{nombre:n}});await refrescar();}catch(e){alert(e.message);}}
+async function eliminarPlan(id){if(!confirm('¿Eliminar este plan y sus puestos?'))return;try{await api('/admin/planes/'+id,{method:'PATCH',body:{eliminar:true}});PLAN_SEL=null;await refrescar();}catch(e){alert(e.message);}}
+async function crearPuesto(planId){
+  var b={nombre:document.getElementById('puestoNombre').value.trim(),rol:document.getElementById('puestoRol').value,cupos:parseInt(document.getElementById('puestoCupos').value,10)||1,tarea:document.getElementById('puestoTarea').value.trim()};
+  if(!b.nombre){document.getElementById('msgPuestos').innerHTML='<p class="err">Falta el nombre del puesto.</p>';return;}
+  try{await api('/admin/planes/'+planId+'/puestos',{method:'POST',body:b});await refrescar();}catch(e){document.getElementById('msgPuestos').innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+async function eliminarPuesto(id){if(!confirm('¿Eliminar este puesto? Sus asignados quedan libres.'))return;try{await api('/admin/puestos/'+id,{method:'PATCH',body:{eliminar:true}});await refrescar();}catch(e){alert(e.message);}}
+async function asignarAuto(planId){try{var d=await api('/admin/planes/'+planId+'/asignar-auto',{method:'POST',body:{}});document.getElementById('msgPuestos').innerHTML='<p class="ok-msg">'+d.asignados_nuevos+' asignados. '+(d.guardias_sin_puesto?d.guardias_sin_puesto+' guardia(s) con rol quedaron sin puesto. ':'')+(d.puestos_incompletos.length?d.puestos_incompletos.length+' puesto(s) siguen incompletos.':'')+'</p>';await refrescar();}catch(e){document.getElementById('msgPuestos').innerHTML='<p class="err">'+esc(e.message)+'</p>';}}
+async function asignarManual(planId,puestoId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{puesto_id:puestoId,user_id:parseInt(uid,10)}});await refrescar();}catch(e){alert(e.message);await refrescar();}}
+async function quitarAsignacion(planId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{user_id:uid,quitar:true}});await refrescar();}catch(e){alert(e.message);}}
+
+// ── Bitácora ──────────────────────────────────────────────────────
+var BIT_LABEL={activacion_plan:'🚨 Activación de plan',vuelta_normalidad:'🟢 Vuelta a la normalidad',incidente:'⚠️ Incidente',orden_autoridad:'👮 Orden de la autoridad',nota:'📝 Nota'};
+function renderBitacora(){
+  var html='<div class="card"><h2>Bitácora del evento</h2><div class="porque">Todo con hora: activaciones, incidentes y órdenes. Es la evidencia del «durante» ante una fiscalización y la base del informe al cliente. Recordatorios legales: delitos se denuncian dentro de 24 horas; imágenes de cámaras se resguardan 120 días.</div>';
+  var bit=ESTADO.bitacora||[];
+  if(!bit.length)html+='<p class="mini">Sin registros todavía.</p>';
+  bit.forEach(function(b){
+    html+='<div class="bit '+esc(b.tipo)+'"><div class="h">'+fmtHora(b.created_at)+' · '+(BIT_LABEL[b.tipo]||b.tipo)+(b.plan_nombre?' · '+esc(b.plan_nombre):'')+'</div>'+(b.detalle?esc(b.detalle):'')+'</div>';
+  });
+  html+='</div>';
+  document.getElementById('contenido').innerHTML=html;
+}
+
+iniciar();
+</script>
+</body>
+</html>

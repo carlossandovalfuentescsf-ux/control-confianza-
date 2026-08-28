@@ -1,4 +1,4 @@
-const CACHE = 'cyc-v20260824a';
+const CACHE = 'cyc-v20260828a';
 // Rutas relativas: funcionan tanto en app.controlyconfianza.cl (raíz)
 // como en la URL antigua de github.io (subcarpeta /control-confianza-/).
 const URLS = [
@@ -10,6 +10,7 @@ const URLS = [
   './georef-predio.html',
   './recuperar-clave.html',
   './guardias.html',
+  './modo-evento.html',
   './guardias-manifest.json',
   './icon-cplus-192.png',
   './terminos.html',

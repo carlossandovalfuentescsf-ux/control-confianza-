@@ -1149,6 +1149,10 @@ async function renderMisEventos(){
             '<button class="btn-sm" style="background:#0d2210;color:#7dc800" onclick="responderEvento('+e.evento_id+',\'confirmar\')">✔ Confirmar asistencia</button>'+
             '<button class="btn-sm btn-sm-danger" onclick="responderEvento('+e.evento_id+',\'desistir\')">✕ No puedo ir</button>'+
           '</div>' : '')+
+        (e.estado==='confirmado'||e.estado==='asistio'?
+          '<div class="admin-actions" style="margin-top:10px">'+
+            '<button class="btn-sm" style="background:#d4a017;color:#111;font-weight:800" onclick="verEventoVivo('+e.evento_id+')">🎪 Mi evento en vivo — mi puesto y mis planes</button>'+
+          '</div>' : '')+
         (e.documentos_generados_at?
           '<div class="admin-actions" style="margin-top:10px">'+
             '<button class="btn-sm" onclick="verMiDocumento('+e.evento_id+',\'contrato\')">📄 Contrato</button>'+
@@ -1161,6 +1165,140 @@ async function renderMisEventos(){
   }catch(e){
     el.innerHTML='<div class="empty">No se pudieron cargar tus eventos. Intenta de nuevo.</div>';
   }
+}
+
+// ── Mi evento en vivo (Modo Evento, 28-08-2026) ─────────────────────────
+// El briefing del guardia + el plan activo con SU instrucción + el botón
+// «✅ En posición» (toque + hora, SIN ubicación — el rastreo continuo del
+// teléfono es ilícito según la Dirección del Trabajo, y esta app no lo hace).
+// D3: el briefing se guarda en el teléfono — si el recinto queda sin señal,
+// la pantalla sigue mostrando los planes; la confirmación se reintenta sola.
+var VIVO_TIMER=null, VIVO_EVENTO=null;
+var VIVO_ROLES={accesos:'Accesos',accesos_preferenciales:'Accesos preferenciales',perimetro:'Perímetro',escenario:'Escenario / vallado',estacionamientos:'Estacionamientos',tactico:'Táctico / reacción',valores:'Valores',supervisor:'Supervisor de sector'};
+var VIVO_VAPID='BAskvcrZIYLarYHXoVv7iv5vm_8yhwaympZ9n8dWt4C0J3DAmo87mwML-3QOrgLUfZdmFY7ZamTspymFxY28W20';
+function vivoVapidBytes(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var bin=atob(s),out=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out;}
+function vivoParar(){if(VIVO_TIMER){clearInterval(VIVO_TIMER);VIVO_TIMER=null;}VIVO_EVENTO=null;}
+
+function verEventoVivo(eventoId){
+  VIVO_EVENTO=eventoId;
+  renderEventoVivo(eventoId,true);
+  if(VIVO_TIMER)clearInterval(VIVO_TIMER);
+  // Cada 20 s mientras la pestaña siga visible y en Mis Eventos: si se activa
+  // un plan, la pantalla cambia sola aunque no llegue el push.
+  VIVO_TIMER=setInterval(function(){
+    var el=document.getElementById('eventoVivoBox');
+    if(!el||location.hash!=='#mis-eventos'){vivoParar();return;}
+    if(document.visibilityState==='visible')renderEventoVivo(eventoId,false);
+  },20000);
+}
+
+async function renderEventoVivo(eventoId, primeraVez){
+  var el=document.getElementById('misEventosContent');
+  var cacheKey='cyc_vivo_'+eventoId;
+  var d=null, sinSenal=false;
+  try{
+    var res=await fetch(API_URL+'/guardias/mi-evento-vivo/'+eventoId,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    d=await res.json();
+    if(!res.ok){el.innerHTML='<div class="empty">'+esc(d.error||'No se pudo cargar.')+'</div>';vivoParar();return;}
+    try{localStorage.setItem(cacheKey,JSON.stringify(d));}catch(e){}
+  }catch(e){
+    // Sin señal: usar la última copia guardada en el teléfono (D3).
+    try{d=JSON.parse(localStorage.getItem(cacheKey)||'null');}catch(e2){}
+    sinSenal=true;
+    if(!d){el.innerHTML='<div class="empty">Sin conexión y sin copia guardada de este evento. Vuelve a intentar con señal.</div>';return;}
+  }
+  // Reintentar una confirmación que quedó en cola por falta de señal.
+  if(!sinSenal)vivoReintentarCola();
+
+  var planActivo=null;
+  (d.mis_puestos||[]).forEach(function(p){if(d.plan_activo_id&&p.plan_id===d.plan_activo_id)planActivo=p;});
+  var html='<div class="post-card" id="eventoVivoBox">';
+  html+='<div class="post-top"><div class="post-titulo">🎪 '+esc(d.evento.nombre)+'</div><button class="btn-sm" onclick="vivoParar();renderMisEventos()">‹ Volver</button></div>';
+  if(sinSenal)html+='<div style="background:#2a230d;color:#e8c860;border-radius:8px;padding:8px 10px;font-size:0.78rem;margin:8px 0">📴 Sin señal — mostrando tu última copia guardada. La radio manda.</div>';
+  html+='<div class="post-meta">📍 '+esc(d.evento.comuna||'')+(d.evento.lugar?' — '+esc(d.evento.lugar):'')+' · 📅 '+fmtFecha(d.evento.fecha_inicio)+
+    (d.evento.punto_reunion?'<br>🚩 Punto de reunión: '+esc(d.evento.punto_reunion):'')+
+    (d.evento.tenida?'<br>👔 Tenida: '+esc(d.evento.tenida):'')+
+    (d.mi_rol?'<br>🎖 Tu rol: <strong>'+esc(VIVO_ROLES[d.mi_rol]||d.mi_rol)+'</strong>':'')+
+    (d.responsable?'<br>👤 Responsable de seguridad: '+esc(d.responsable.nombre)+(d.responsable.telefono?' · <a href="tel:'+esc(d.responsable.telefono)+'" style="color:#d4a017">llamar</a>':''):'')+'</div>';
+
+  // El plan ACTIVO manda la pantalla.
+  if(d.plan_activo_id&&planActivo){
+    var esTrabajo=planActivo.tipo==='trabajo';
+    html+='<div style="background:'+(esTrabajo?'#0d2210':'#2a0d0d')+';border:1px solid '+(esTrabajo?'#1f5c26':'#7a1f1f')+';border-radius:10px;padding:12px;margin:10px 0">'+
+      '<div style="font-weight:800;font-size:0.95rem;color:'+(esTrabajo?'#7dc800':'#ff9a9a')+'">'+(esTrabajo?'🟢 ':'🚨 ')+esc(planActivo.plan).toUpperCase()+' ACTIVO</div>'+
+      '<div style="font-size:1rem;margin:8px 0"><strong>Tu puesto: '+esc(planActivo.puesto)+'</strong>'+(planActivo.tarea?'<br><span style="font-size:0.85rem">'+esc(planActivo.tarea)+'</span>':'')+'</div>'+
+      (d.confirmado
+        ?'<div style="color:#7dc800;font-weight:800">✅ Ya confirmaste tu posición.</div>'
+        :'<button class="btn-guardar" style="background:'+(esTrabajo?'#1f5c26':'#c0392b')+';color:#fff" onclick="vivoConfirmar('+eventoId+')">✅ ESTOY EN POSICIÓN</button>')+
+      '<div id="vivoConfMsg"></div></div>';
+  }else if(d.plan_activo_id&&!planActivo){
+    html+='<div style="background:#2a230d;color:#e8c860;border-radius:10px;padding:12px;margin:10px 0;font-size:0.85rem">🚨 Hay un plan activo pero <strong>no tienes puesto asignado en él</strong>. Preséntate con tu supervisor o el responsable de seguridad.</div>';
+  }else{
+    html+='<div style="background:#151515;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:0.8rem;color:#aaa">⚪ Sin plan activado por ahora. Abajo está tu briefing: qué te toca en cada plan.</div>';
+  }
+
+  // Briefing: mi puesto en CADA plan (esto es lo que se estudia ANTES).
+  html+='<div style="font-weight:800;margin:12px 0 6px">📋 Mi briefing — qué hago en cada plan</div>';
+  if(!(d.mis_puestos||[]).length){
+    html+='<div style="font-size:0.8rem;color:#888">Aún no te asignan puestos. El administrador arma la distribución antes del evento.</div>';
+  }
+  (d.mis_puestos||[]).forEach(function(p){
+    html+='<div style="background:#151515;border:1px solid #2a2a2a;border-radius:8px;padding:10px;margin-bottom:6px;font-size:0.82rem">'+
+      '<strong>'+esc(p.plan)+'</strong>'+(p.plan_id===d.plan_activo_id?' <span style="color:#ff9a9a;font-weight:800">← ACTIVO</span>':'')+
+      '<br>Puesto: <strong>'+esc(p.puesto)+'</strong>'+(p.tarea?' — '+esc(p.tarea):'')+
+      (p.instrucciones?'<br><span style="color:#888;font-size:0.75rem">'+esc(p.instrucciones)+'</span>':'')+'</div>';
+  });
+
+  // Push: recibir la instrucción aunque la app esté cerrada. Opt-in simple.
+  if(!sinSenal&&'serviceWorker' in navigator&&'PushManager' in window){
+    var pushOn=localStorage.getItem('cyc_push_evento')==='si';
+    html+='<div style="margin-top:10px;font-size:0.78rem;color:#888">'+(pushOn
+      ?'🔔 Avisos del evento activados en este teléfono.'
+      :'<button class="btn-sm" onclick="vivoActivarPush()">🔔 Avisarme en este teléfono cuando se active un plan</button><span id="vivoPushMsg"></span>')+'</div>';
+  }
+  html+='<div style="margin-top:10px;font-size:0.68rem;color:#666">La confirmación registra solo hora y puesto — esta app no rastrea tu ubicación.</div>';
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+async function vivoConfirmar(eventoId){
+  var msg=document.getElementById('vivoConfMsg');
+  try{
+    var res=await fetch(API_URL+'/guardias/mi-evento-vivo/'+eventoId+'/confirmar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:'{}'});
+    var d=await res.json();
+    if(!res.ok){if(msg)msg.innerHTML='<div style="color:#ff7a7a;font-size:0.78rem;margin-top:6px">'+esc(d.error||'No se pudo confirmar.')+'</div>';return;}
+    renderEventoVivo(eventoId,false);
+  }catch(e){
+    // Sin señal: la confirmación queda EN COLA y se reintenta sola (D3).
+    try{localStorage.setItem('cyc_vivo_cola',JSON.stringify({evento_id:eventoId,desde:Date.now()}));}catch(e2){}
+    if(msg)msg.innerHTML='<div style="color:#e8c860;font-size:0.78rem;margin-top:6px">📴 Sin señal — tu confirmación quedó guardada y se enviará sola al volver la conexión. Avisa por radio.</div>';
+  }
+}
+
+async function vivoReintentarCola(){
+  var cola=null;
+  try{cola=JSON.parse(localStorage.getItem('cyc_vivo_cola')||'null');}catch(e){}
+  if(!cola)return;
+  try{
+    var res=await fetch(API_URL+'/guardias/mi-evento-vivo/'+cola.evento_id+'/confirmar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:'{}'});
+    if(res.ok||res.status===400)localStorage.removeItem('cyc_vivo_cola'); // 400 = ya no hay plan activo: la cola caducó
+  }catch(e){/* sigue sin señal, se reintenta en el próximo refresco */}
+}
+
+async function vivoActivarPush(){
+  var msg=document.getElementById('vivoPushMsg');
+  try{
+    var p=await Notification.requestPermission();
+    if(p!=='granted'){if(msg)msg.innerHTML=' <span style="color:#ff7a7a">Permiso denegado.</span>';return;}
+    var reg=await navigator.serviceWorker.ready;
+    var sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:vivoVapidBytes(VIVO_VAPID)});
+    var j=sub.toJSON();
+    var res=await fetch(API_URL+'/guardias/push',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({endpoint:sub.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth})});
+    var d=await res.json();
+    if(!res.ok){if(msg)msg.innerHTML=' <span style="color:#ff7a7a">'+esc(d.error||'No se pudo activar.')+'</span>';return;}
+    localStorage.setItem('cyc_push_evento','si');
+    if(VIVO_EVENTO)renderEventoVivo(VIVO_EVENTO,false);
+  }catch(e){if(msg)msg.innerHTML=' <span style="color:#ff7a7a">No se pudo activar ('+esc(String(e).slice(0,60))+').</span>';}
 }
 
 async function verMiDocumento(eventoId, tipo){
