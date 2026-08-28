@@ -306,22 +306,44 @@ function renderFormacion(){
   var planTrabajo=(ESTADO.planes||[]).find(function(p){return p.tipo==='trabajo';});
   var puestos=planTrabajo?(ESTADO.puestos||[]).filter(function(q){return q.plan_id===planTrabajo.id;}):[];
   var asig=planTrabajo?(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===planTrabajo.id;}):[];
-  var cupos=puestos.reduce(function(s,q){return s+q.cupos;},0);
   var confs=(ESTADO.roster||[]).filter(function(r){return r.estado==='confirmado'||r.estado==='asistio';}).length;
-  var pct=cupos?Math.min(100,Math.round(confs/cupos*100)):0;
+
+  // Agrupación DÍA → TURNO (28-08: un evento de 4 días con 3 horarios NO
+  // tiene toda su gente a la vez; el número que importa para el recinto es
+  // el MÁXIMO SIMULTÁNEO, y el que importa para el costo es turnos-persona).
+  var porDia={},ordenDias=[];
+  puestos.forEach(function(q){
+    var d=q.dia||'Todo el evento';
+    if(!porDia[d]){porDia[d]={turnos:{},orden:[]};ordenDias.push(d);}
+    var t=q.turno||'Sin turno definido';
+    if(!porDia[d].turnos[t]){porDia[d].turnos[t]=[];porDia[d].orden.push(t);}
+    porDia[d].turnos[t].push(q);
+  });
+  var turnosPersona=puestos.reduce(function(s2,q){return s2+q.cupos;},0);
+  var maxSimul=0;
+  ordenDias.forEach(function(d){
+    porDia[d].orden.forEach(function(t){
+      var n=porDia[d].turnos[t].reduce(function(s2,q){return s2+q.cupos;},0);
+      if(n>maxSimul)maxSimul=n;
+    });
+  });
+  var multi=ordenDias.length>1||(ordenDias.length===1&&porDia[ordenDias[0]].orden.length>1);
 
   var html='<div class="card"><h2>👥 Formación del evento</h2>'+
     '<div class="porque">La distribución completa desde el momento uno: lo COMPROMETIDO (los cupos que nacen de la licitación) y cómo se va llenando con la convocatoria. Los huecos en rojo son lo que falta por cubrir. No necesita desplegar nada — es la foto de planificación.</div>';
 
-  // Los cuatro números que importan.
   html+='<div class="fila" style="margin-bottom:10px">'+
-    '<span class="badge" style="font-size:0.8rem;padding:8px 14px">Comprometidos: <strong>'+cupos+'</strong></span>'+
-    '<span class="badge '+(confs>=cupos&&cupos?'verde':'ambar')+'" style="font-size:0.8rem;padding:8px 14px">Confirmados: <strong>'+confs+'</strong></span>'+
-    '<span class="badge" style="font-size:0.8rem;padding:8px 14px">Asignados a puesto: <strong>'+asig.length+'</strong></span>'+
-    '<span class="badge '+(cupos-asig.length>0?'rojo':'verde')+'" style="font-size:0.8rem;padding:8px 14px">Vacantes: <strong>'+Math.max(0,cupos-asig.length)+'</strong></span></div>';
-  if(cupos){
+    '<span class="badge" style="font-size:0.8rem;padding:8px 14px">Máx. a la vez: <strong>'+maxSimul+'</strong></span>'+
+    (multi?'<span class="badge" style="font-size:0.8rem;padding:8px 14px">Turnos-persona: <strong>'+turnosPersona+'</strong></span>':'')+
+    '<span class="badge '+(confs>=maxSimul&&maxSimul?'verde':'ambar')+'" style="font-size:0.8rem;padding:8px 14px">Personas confirmadas: <strong>'+confs+'</strong></span>'+
+    '<span class="badge" style="font-size:0.8rem;padding:8px 14px">Asignaciones: <strong>'+asig.length+'</strong></span></div>';
+  if(multi){
+    html+='<p class="mini" style="margin-bottom:8px">📅 '+ordenDias.length+' día(s) de servicio. <strong>Máx. a la vez</strong> = la gente que está en el recinto simultáneamente (lo que declara el Plan de Seguridad). <strong>Turnos-persona</strong> = la suma de todos los turnos (lo que se cotiza y se paga). Una misma persona puede cubrir varios turnos.</p>';
+  }
+  if(maxSimul){
+    var pct=Math.min(100,Math.round(confs/maxSimul*100));
     html+='<div style="background:#111;border-radius:20px;height:14px;overflow:hidden;margin-bottom:4px"><div style="width:'+pct+'%;height:100%;background:'+(pct>=100?'#1f8a2d':pct>=50?'#e8a817':'#c0392b')+'"></div></div>'+
-      '<p class="mini" style="margin-bottom:10px">Avance de la convocatoria: '+pct+'% ('+confs+' de '+cupos+')'+(e.fecha_inicio?' · Evento: '+esc(e.fecha_inicio):'')+'</p>';
+      '<p class="mini" style="margin-bottom:10px">Convocatoria: '+pct+'% de la dotación simultánea ('+confs+' de '+maxSimul+')'+(e.fecha_inicio?' · Evento: '+esc(e.fecha_inicio):'')+'</p>';
   }
   if(ESTADO.es_admin)html+='<div class="fila" style="margin-bottom:6px"><button class="sec" onclick="generarFormacion(false)">🖨 Imprimir formación (BORRADOR)</button><button class="sec" onclick="generarFormacion(true)">🖨 Formación versión final</button></div>';
 
@@ -331,23 +353,24 @@ function renderFormacion(){
     return;
   }
 
-  // Agrupado por TURNO (texto igual = mismo turno). Mirar hacia abajo.
-  var grupos={},orden=[];
-  puestos.forEach(function(q){var t=q.turno||'Sin turno definido';if(!grupos[t]){grupos[t]=[];orden.push(t);}grupos[t].push(q);});
-  orden.forEach(function(t){
-    var del=grupos[t], cuposT=del.reduce(function(s2,q){return s2+q.cupos;},0);
-    var asigT=0;del.forEach(function(q){asigT+=asig.filter(function(a){return a.puesto_id===q.id;}).length;});
-    html+='<div style="border-top:1px solid #2a2a2a;margin-top:12px;padding-top:8px"><p style="font-weight:800;margin-bottom:6px">🕐 '+esc(t)+' <span class="badge '+(asigT>=cuposT?'verde':'ambar')+'">'+asigT+'/'+cuposT+'</span></p>';
-    del.forEach(function(q){
-      var deEste=asig.filter(function(a){return a.puesto_id===q.id;});
-      var faltan=q.cupos-deEste.length;
-      html+='<div class="puesto"><div class="t">'+esc(q.nombre)+' <span class="badge">'+esc(roles[q.rol]||q.rol)+'</span> <span class="badge '+(faltan<=0?'verde':'rojo')+'">'+deEste.length+'/'+q.cupos+'</span>'+
-        (ESTADO.es_admin?' <span style="float:right;cursor:pointer" title="Cambiar turno" onclick="editarTurno('+q.id+',\''+esc(q.turno||'').replace(/'/g,'')+'\')">🕐</span>':'')+'</div>'+
-        (deEste.length?deEste.map(function(a){return '<span class="asig">'+esc(a.nombre)+'</span>';}).join(''):'')+
-        (faltan>0?'<span class="asig" style="background:#2a0d0d;color:#ff7a7a">⚠ faltan '+faltan+'</span>':'')+
-        '</div>';
+  ordenDias.forEach(function(d){
+    var cuposDia=0;porDia[d].orden.forEach(function(t){porDia[d].turnos[t].forEach(function(q){cuposDia+=q.cupos;});});
+    html+='<div style="border-top:2px solid #d4a017;margin-top:14px;padding-top:8px"><p style="font-weight:800;color:#d4a017">📅 '+esc(d)+' <span class="badge">'+cuposDia+' turnos-persona</span></p></div>';
+    porDia[d].orden.forEach(function(t){
+      var del=porDia[d].turnos[t], cuposT=del.reduce(function(s2,q){return s2+q.cupos;},0);
+      var asigT=0;del.forEach(function(q){asigT+=asig.filter(function(a){return a.puesto_id===q.id;}).length;});
+      html+='<div style="margin-top:8px"><p style="font-weight:800;margin-bottom:6px">🕐 '+esc(t)+' <span class="badge '+(asigT>=cuposT?'verde':'ambar')+'">'+asigT+'/'+cuposT+'</span></p>';
+      del.forEach(function(q){
+        var deEste=asig.filter(function(a){return a.puesto_id===q.id;});
+        var faltan=q.cupos-deEste.length;
+        html+='<div class="puesto"><div class="t">'+esc(q.nombre)+' <span class="badge">'+esc(roles[q.rol]||q.rol)+'</span> <span class="badge '+(faltan<=0?'verde':'rojo')+'">'+deEste.length+'/'+q.cupos+'</span>'+
+          (ESTADO.es_admin?' <span style="float:right;cursor:pointer" title="Cambiar día y turno" onclick="editarTurno('+q.id+',\''+esc(q.turno||'').replace(/'/g,'')+'\',\''+esc(q.dia||'').replace(/'/g,'')+'\')">🕐</span>':'')+'</div>'+
+          (deEste.length?deEste.map(function(a){return '<span class="asig">'+esc(a.nombre)+'</span>';}).join(''):'')+
+          (faltan>0?'<span class="asig" style="background:#2a0d0d;color:#ff7a7a">⚠ faltan '+faltan+'</span>':'')+
+          '</div>';
+      });
+      html+='</div>';
     });
-    html+='</div>';
   });
   if(ESTADO.evento.croquis)html+='<div id="croFormZona" style="margin-top:10px"><p class="mini">Cargando croquis…</p></div>';
   html+='</div>';
@@ -355,10 +378,12 @@ function renderFormacion(){
   if(planTrabajo&&ESTADO.evento.croquis)pintarCroquisTablero(planTrabajo,false,'croFormZona');
 }
 
-async function editarTurno(puestoId,actual){
-  var t=prompt('Turno de este puesto (ej: 12:00–00:00, Nocturno 8 h). Vacío = sin turno.',actual||'');
+async function editarTurno(puestoId,actualTurno,actualDia){
+  var d=prompt('Día de este puesto (ej: Día 1, o 2026-09-19). Vacío = todo el evento.',actualDia||'');
+  if(d===null)return;
+  var t=prompt('Turno de este puesto (ej: 12:00–00:00, Nocturno 8 h). Vacío = sin turno.',actualTurno||'');
   if(t===null)return;
-  try{await api('/admin/puestos/'+puestoId,{method:'PATCH',body:{turno:t.trim()}});await refrescar();}catch(e){alert(e.message);}
+  try{await api('/admin/puestos/'+puestoId,{method:'PATCH',body:{turno:t.trim(),dia:d.trim()}});await refrescar();}catch(e){alert(e.message);}
 }
 
 // 🖨 La formación completa en papel: resumen + cada turno con sus puestos,
@@ -369,31 +394,46 @@ async function generarFormacion(final){
   var puestos=planTrabajo?(ESTADO.puestos||[]).filter(function(q){return q.plan_id===planTrabajo.id;}):[];
   if(!puestos.length){alert('El Plan de trabajo no tiene puestos todavía.');return;}
   var asig=(ESTADO.asignaciones||[]).filter(function(a){return a.plan_id===planTrabajo.id;});
-  var cupos=puestos.reduce(function(s,q){return s+q.cupos;},0);
   var confs=(ESTADO.roster||[]).filter(function(r){return r.estado==='confirmado'||r.estado==='asistio';}).length;
   var fechaTxt=esc(e.fecha_inicio)+(e.fecha_fin&&e.fecha_fin!==e.fecha_inicio?' al '+esc(e.fecha_fin):'');
   var urlCro=null;
   if(e.croquis){urlCro=await croquisURL();if(urlCro)await precargarImagen(urlCro);}
   puestos.forEach(function(q,i){q.num=i+1;});
 
+  var porDia={},ordenDias=[];
+  puestos.forEach(function(q){
+    var d=q.dia||'Todo el evento';
+    if(!porDia[d]){porDia[d]={turnos:{},orden:[]};ordenDias.push(d);}
+    var t=q.turno||'Sin turno definido';
+    if(!porDia[d].turnos[t]){porDia[d].turnos[t]=[];porDia[d].orden.push(t);}
+    porDia[d].turnos[t].push(q);
+  });
+  var turnosPersona=puestos.reduce(function(s2,q){return s2+q.cupos;},0), maxSimul=0;
+  ordenDias.forEach(function(d){porDia[d].orden.forEach(function(t){
+    var n=porDia[d].turnos[t].reduce(function(s2,q){return s2+q.cupos;},0);if(n>maxSimul)maxSimul=n;});});
+
   var html='<div class="d-portada"><img src="icon-192.png" alt="Control y Confianza">'+
     '<div class="d-form">Formación del personal · plan de trabajo</div>'+
     '<h1>'+esc(e.nombre).toUpperCase()+'</h1>'+
     '<div class="d-sub">'+esc([e.lugar,e.comuna].filter(Boolean).join(', '))+' · '+fechaTxt+'</div></div>';
-  html+='<table><tr><th>Dotación comprometida</th><th>Confirmados a la fecha</th><th>Asignados a puesto</th><th>Vacantes</th></tr>'+
-    '<tr><td><strong>'+cupos+'</strong></td><td>'+confs+'</td><td>'+asig.length+'</td><td>'+Math.max(0,cupos-asig.length)+'</td></tr></table>';
+  html+='<table><tr><th>Días de servicio</th><th>Máximo simultáneo</th><th>Total turnos-persona</th><th>Personas confirmadas</th><th>Asignaciones</th></tr>'+
+    '<tr><td>'+ordenDias.length+'</td><td><strong>'+maxSimul+'</strong></td><td>'+turnosPersona+'</td><td>'+confs+'</td><td>'+asig.length+'</td></tr></table>'+
+    '<p style="font-size:10.5px;color:#444">«Máximo simultáneo» es la dotación presente en el recinto a la vez; «turnos-persona» es la suma de todos los turnos del servicio. Una misma persona puede cubrir más de un turno.</p>';
 
-  var grupos={},orden=[];
-  puestos.forEach(function(q){var t=q.turno||'Sin turno definido';if(!grupos[t]){grupos[t]=[];orden.push(t);}grupos[t].push(q);});
-  orden.forEach(function(t){
-    var del=grupos[t];
-    var filas=del.map(function(q){
-      var nombres=asig.filter(function(a){return a.puesto_id===q.id;}).map(function(a){return esc(a.nombre);}).join(', ');
-      var faltan=q.cupos-asig.filter(function(a){return a.puesto_id===q.id;}).length;
-      return '<tr><td style="text-align:center;font-weight:bold">'+(q.pos_x!=null?q.num:'—')+'</td><td>'+esc(q.nombre)+'</td><td>'+esc(roles[q.rol]||q.rol)+'</td><td>'+q.cupos+'</td><td>'+(nombres||'<em>por asignar</em>')+(faltan>0?' <strong style="color:#a33">(faltan '+faltan+')</strong>':'')+'</td></tr>';
-    }).join('');
-    html+='<div class="d-sec"><div class="d-tit">Turno: '+esc(t)+'</div>'+
-      '<table><tr><th style="width:6%">N°</th><th>Puesto</th><th>Función</th><th>Cupos</th><th>Personal</th></tr>'+filas+'</table></div>';
+  ordenDias.forEach(function(d){
+    html+='<div class="d-sec"><div class="d-tit">'+esc(d)+'</div>';
+    porDia[d].orden.forEach(function(t){
+      var del=porDia[d].turnos[t];
+      var filas=del.map(function(q){
+        var deEste=asig.filter(function(a){return a.puesto_id===q.id;});
+        var nombres=deEste.map(function(a){return esc(a.nombre);}).join(', ');
+        var faltan=q.cupos-deEste.length;
+        return '<tr><td style="text-align:center;font-weight:bold">'+(q.pos_x!=null?q.num:'—')+'</td><td>'+esc(q.nombre)+'</td><td>'+esc(roles[q.rol]||q.rol)+'</td><td>'+q.cupos+'</td><td>'+(nombres||'<em>por asignar</em>')+(faltan>0?' <strong style="color:#a33">(faltan '+faltan+')</strong>':'')+'</td></tr>';
+      }).join('');
+      html+='<p style="margin:6px 0 2px"><strong>Turno: '+esc(t)+'</strong></p>'+
+        '<table><tr><th style="width:6%">N°</th><th>Puesto</th><th>Función</th><th>Cupos</th><th>Personal</th></tr>'+filas+'</table>';
+    });
+    html+='</div>';
   });
   if(urlCro&&puestos.some(function(q){return q.pos_x!=null;})){
     html+='<div class="d-sec"><div class="d-tit">Croquis del despliegue (operación normal)</div>'+croquisFiguraPrint(urlCro,puestos,true)+'</div>';
@@ -633,6 +673,7 @@ function renderConfig(){
       '<div class="fila" style="margin:10px 0"><input id="puestoNombre" placeholder="Puesto (ej: Puerta 4)" style="max-width:180px">'+
       '<select id="puestoRol" style="max-width:180px">'+Object.keys(ESTADO.roles||{}).map(function(k){return '<option value="'+k+'">'+esc(ESTADO.roles[k])+'</option>';}).join('')+'</select>'+
       '<input id="puestoCupos" type="number" min="1" value="1" style="max-width:70px" title="Cupos">'+
+      '<input id="puestoDia" placeholder="Día (ej: Día 1)" style="max-width:110px">'+
       '<input id="puestoTurno" placeholder="Turno (ej: 12:00–00:00)" style="max-width:160px">'+
       '<input id="puestoTarea" placeholder="Tarea en este plan" style="flex:1;min-width:160px"><button onclick="crearPuesto('+plan.id+')">➕ Puesto</button></div><div id="msgPuestos"></div>';
 
@@ -828,7 +869,7 @@ async function cargarPlantilla(){try{var d=await api('/admin/eventos/'+EVENTO_ID
 async function crearPlan(){var n=document.getElementById('planNuevoNombre').value.trim();if(!n)return;try{await api('/admin/eventos/'+EVENTO_ID+'/planes',{method:'POST',body:{nombre:n}});await refrescar();}catch(e){alert(e.message);}}
 async function eliminarPlan(id){if(!confirm('¿Eliminar este plan y sus puestos?'))return;try{await api('/admin/planes/'+id,{method:'PATCH',body:{eliminar:true}});PLAN_SEL=null;await refrescar();}catch(e){alert(e.message);}}
 async function crearPuesto(planId){
-  var b={nombre:document.getElementById('puestoNombre').value.trim(),rol:document.getElementById('puestoRol').value,cupos:parseInt(document.getElementById('puestoCupos').value,10)||1,tarea:document.getElementById('puestoTarea').value.trim(),turno:document.getElementById('puestoTurno').value.trim()};
+  var b={nombre:document.getElementById('puestoNombre').value.trim(),rol:document.getElementById('puestoRol').value,cupos:parseInt(document.getElementById('puestoCupos').value,10)||1,tarea:document.getElementById('puestoTarea').value.trim(),turno:document.getElementById('puestoTurno').value.trim(),dia:document.getElementById('puestoDia').value.trim()};
   if(!b.nombre){document.getElementById('msgPuestos').innerHTML='<p class="err">Falta el nombre del puesto.</p>';return;}
   try{await api('/admin/planes/'+planId+'/puestos',{method:'POST',body:b});await refrescar();}catch(e){document.getElementById('msgPuestos').innerHTML='<p class="err">'+esc(e.message)+'</p>';}
 }
@@ -989,10 +1030,32 @@ function pintarExtraido(){
     html+='<label style="display:flex;gap:8px;align-items:flex-start;margin:10px 0 4px"><input type="checkbox" checked id="ant-doc" style="width:auto;margin-top:3px"><span style="font-weight:800;font-size:0.85rem">Guardar antecedentes para el Plan de Seguridad y las cartas</span></label>'+
       '<p class="mini" style="margin-left:22px">Organizador: '+esc(X.mandante||'—')+' · RUT: '+esc(X.mandante_rut||'—')+' · Aforo: '+esc(X.aforo||'—')+'</p>';
   }
-  // 3) Puestos del plan de trabajo.
+  // 3) Puestos del plan de trabajo, con el desglose día × turno.
   if((X.dotacion||[]).length){
-    html+='<label style="display:flex;gap:8px;align-items:flex-start;margin:10px 0 4px"><input type="checkbox" checked id="ant-puestos" style="width:auto;margin-top:3px"><span style="font-weight:800;font-size:0.85rem">Crear '+X.dotacion.length+' puesto(s) en el Plan de trabajo</span></label>'+
-      '<p class="mini" style="margin-left:22px">'+X.dotacion.map(function(d){return d.cantidad+'× '+esc(d.funcion);}).join(' · ')+'</p>';
+    var maxSim=X.maximo_simultaneo||null, totTP=X.total_turnos_persona||null;
+    html+='<label style="display:flex;gap:8px;align-items:flex-start;margin:10px 0 4px"><input type="checkbox" checked id="ant-puestos" style="width:auto;margin-top:3px"><span style="font-weight:800;font-size:0.85rem">Crear '+X.dotacion.length+' puesto(s) en el Plan de trabajo</span></label>';
+    // ⚠️ Lo que la IA entendió del documento: días, turnos y si el número
+    // grande eran turnos-persona (error real del 28-08 con Limache).
+    html+='<div style="margin-left:22px;background:#151515;border-radius:8px;padding:8px 10px;margin-bottom:6px">'+
+      '<p class="mini" style="margin-bottom:4px"><strong>Cómo entendió la dotación:</strong> '+
+      (X.dias?X.dias+' día(s)':'días no declarados')+(X.turnos_por_dia?' · '+X.turnos_por_dia+' turno(s) por día':'')+
+      (maxSim?' · <strong style="color:#7dc800">máx. '+maxSim+' guardias a la vez</strong>':'')+
+      (totTP?' · total '+totTP+' turnos-persona':'')+'</p>'+
+      (X.nota_lectura?'<p class="mini">'+esc(X.nota_lectura)+'</p>':'')+
+      '<p class="mini" style="color:#e8c860;margin-top:4px">⚠️ Revisa esto: un número grande suele ser la SUMA de turnos de varios días, no la gente presente a la vez. Si está mal, corrige después en Planes y puestos.</p></div>';
+    var porDia={},ordenDias=[];
+    X.dotacion.forEach(function(d){var k=(d.dia||'Único día');if(!porDia[k]){porDia[k]=[];ordenDias.push(k);}porDia[k].push(d);});
+    html+='<div style="margin-left:22px">';
+    ordenDias.forEach(function(k){
+      var porTurno={},ordenT=[];
+      porDia[k].forEach(function(d){var t=(d.turno||'Sin turno');if(!porTurno[t]){porTurno[t]=[];ordenT.push(t);}porTurno[t].push(d);});
+      var totDia=porDia[k].reduce(function(a2,d){return a2+d.cantidad;},0);
+      html+='<p class="mini" style="margin-top:4px"><strong>📅 '+esc(k)+'</strong> ('+totDia+' turnos-persona)</p>';
+      ordenT.forEach(function(t){
+        html+='<p class="mini" style="margin-left:10px">🕐 '+esc(t)+': '+porTurno[t].map(function(d){return d.cantidad+'× '+esc(d.funcion);}).join(' · ')+'</p>';
+      });
+    });
+    html+='</div>';
   }
   if(!hayDatos&&!hayAntec&&!(X.dotacion||[]).length){
     html+='<p class="mini">El documento no traía datos aprovechables para este evento.</p>';
@@ -1031,7 +1094,7 @@ async function aplicarExtraido(){
       if(planTrabajo){
         for(var i=0;i<X.dotacion.length;i++){
           var dt=X.dotacion[i];
-          await api('/admin/planes/'+planTrabajo.id+'/puestos',{method:'POST',body:{nombre:dt.funcion,rol:dt.rol,cupos:dt.cantidad,orden:i,turno:dt.turno||null}});
+          await api('/admin/planes/'+planTrabajo.id+'/puestos',{method:'POST',body:{nombre:dt.funcion,rol:dt.rol,cupos:dt.cantidad,orden:i,turno:dt.turno||null,dia:dt.dia||null}});
         }
         hechos.push(X.dotacion.length+' puesto(s) en el Plan de trabajo');
       }
@@ -1141,8 +1204,8 @@ async function licitCrear(){
     var n=(LICIT.dotacion||[]).length, creados=0;
     for(var i=0;i<n;i++){
       var cant=parseInt(val('lpd-cant-'+i),10)||1, fun=val('lpd-fun-'+i)||'Guardia', rol=val('lpd-rol-'+i)||'perimetro';
-      var trn=(LICIT.dotacion[i]&&LICIT.dotacion[i].turno)||null;
-      if(planTrabajo){await api('/admin/planes/'+planTrabajo.id+'/puestos',{method:'POST',body:{nombre:fun,rol:rol,cupos:cant,orden:i,turno:trn}});creados++;}
+      var trn=(LICIT.dotacion[i]&&LICIT.dotacion[i].turno)||null, dia=(LICIT.dotacion[i]&&LICIT.dotacion[i].dia)||null;
+      if(planTrabajo){await api('/admin/planes/'+planTrabajo.id+'/puestos',{method:'POST',body:{nombre:fun,rol:rol,cupos:cant,orden:i,turno:trn,dia:dia}});creados++;}
     }
     // 4. Los antecedentes del documento (organizador = el mandante).
     await api('/admin/eventos/'+ev.id+'/doc',{method:'POST',body:{organizador:val('lp-mandante'),organizador_rut:val('lp-mrut'),aforo:val('lp-aforo')}});
@@ -1366,11 +1429,30 @@ async function generarDocumento(final){
   // se va llenando después con la convocatoria (pregunta de Carlos 28-08).
   var puestosTrab=planTrabajo?(ESTADO.puestos||[]).filter(function(q){return q.plan_id===planTrabajo.id;}):[];
   var cuposTotal=puestosTrab.reduce(function(s,q){return s+q.cupos;},0);
-  var porRolCupos={};puestosTrab.forEach(function(q){porRolCupos[q.rol]=(porRolCupos[q.rol]||0)+q.cupos;});
+  // Multi-día / multi-turno (28-08): el art. 18 N°3 pide cantidad, distribución
+  // Y LOS TURNOS. Se declara la dotación SIMULTÁNEA (la presente en el recinto)
+  // y se acompaña el cuadro de turnos — jamás la suma de turnos-persona como
+  // si fueran personas distintas.
+  var bloques={},ordenBloques=[];
+  puestosTrab.forEach(function(q){
+    var k=(q.dia||'Todo el evento')+' ‖ '+(q.turno||'Turno único');
+    if(!bloques[k]){bloques[k]={dia:q.dia||'Todo el evento',turno:q.turno||'Turno único',puestos:[],total:0};ordenBloques.push(k);}
+    bloques[k].puestos.push(q);bloques[k].total+=q.cupos;
+  });
+  var maxSimul=0,bloqueMax=null;
+  ordenBloques.forEach(function(k){if(bloques[k].total>maxSimul){maxSimul=bloques[k].total;bloqueMax=bloques[k];}});
+  var multiBloque=ordenBloques.length>1;
+  var porRolCupos={};
+  (bloqueMax?bloqueMax.puestos:puestosTrab).forEach(function(q){porRolCupos[q.rol]=(porRolCupos[q.rol]||0)+q.cupos;});
   var porRol={};roster.forEach(function(r){if(r.rol)porRol[r.rol]=(porRol[r.rol]||0)+1;});
   var fuenteRol=cuposTotal?porRolCupos:porRol;
   var filasRol=Object.keys(fuenteRol).map(function(k){return '<tr><td>'+esc(roles[k]||k)+'</td><td>'+fuenteRol[k]+'</td></tr>';}).join('')||'<tr><td colspan="2"><em>Sin funciones definidas aún</em></td></tr>';
-  var dotTotal=cuposTotal||roster.length;
+  var dotTotal=maxSimul||cuposTotal||roster.length;
+  var filasTurnos=ordenBloques.map(function(k){
+    var b2=bloques[k];
+    var det=b2.puestos.map(function(q){return esc(roles[q.rol]||q.rol)+' ('+q.cupos+')';}).join(', ');
+    return '<tr><td>'+esc(b2.dia)+'</td><td>'+esc(b2.turno)+'</td><td>'+b2.total+'</td><td>'+det+'</td></tr>';
+  }).join('');
 
   // Individualización nominal con puesto del plan de trabajo.
   var puestoDe={};
@@ -1423,8 +1505,10 @@ async function generarDocumento(final){
     '<p style="font-size:10.5px;color:#444">El responsable de seguridad cumple los requisitos del artículo 46 de la Ley N° 21.659 (con excepción de su numeral 11) y tiene la calidad de trabajador dependiente del organizador o del administrador del recinto (art. 2 N°5 del reglamento). Vela por el cumplimiento del presente plan durante todo el desarrollo del evento.</p></div>';
 
   html+='<div class="d-sec"><div class="d-tit">3. Personal de seguridad privada: cantidad, distribución y turnos (art. 18 N°3)</div>'+
-    '<p>Dotación total comprometida para el evento: <strong>'+dotTotal+' persona(s)</strong>'+(roster.length&&cuposTotal?' ('+roster.length+' ya confirmadas a la fecha de este documento)':'')+', distribuidas según los criterios técnicos siguientes:</p>'+
+    '<p>Dotación de seguridad privada presente simultáneamente en el recinto: <strong>'+dotTotal+' persona(s)</strong>'+(multiBloque?' en el turno de mayor dotación':'')+(roster.length?' ('+roster.length+' personas confirmadas a la fecha de este documento)':'')+', distribuida según los criterios técnicos siguientes:</p>'+
     '<table><tr><th>Función</th><th>Cantidad</th></tr>'+filasRol+'</table>'+
+    (multiBloque?'<p style="margin-top:6px"><strong>Turnos que cubrirán el evento (art. 18 N°3):</strong> el servicio se desarrolla en '+ordenBloques.length+' turno(s), con un total de '+cuposTotal+' turnos-persona. Una misma persona puede cubrir más de un turno; la cifra de dotación declarada corresponde al personal presente a la vez en el recinto.</p>'+
+      '<table><tr><th>Día</th><th>Turno</th><th>Dotación</th><th>Distribución por función</th></tr>'+filasTurnos+'</table>':'')+
     '<p style="margin-top:6px"><strong>Individualización del personal y su puesto de servicio:</strong></p>'+
     (roster.length
       ?'<table><tr><th>N°</th><th>Nombre</th><th>Función</th><th>Puesto (operación normal)</th><th>Turno</th></tr>'+filasNom+'</table>'+
