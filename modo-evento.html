@@ -714,9 +714,10 @@ async function cargarArchivos(){
       var esImg=a.media_type.indexOf('image/')===0;
       html+='<div class="puesto"><div class="t">'+(a.media_type==='application/pdf'?'📄':'🖼')+' '+esc(a.nombre)+'</div><div class="m">'+fmtHora(a.subido_at)+'</div>'+
         '<div class="fila"><button class="sec" onclick="descargarArchivo('+a.id+',\''+esc(a.nombre).replace(/'/g,'')+'\')">⬇ Descargar</button>'+
-        '<button class="sec" onclick="leerArchivoIA('+a.id+')">🔎 Leer con IA</button>'+
+        '<button class="sec" id="btnLeer-'+a.id+'" onclick="leerArchivoIA('+a.id+')">🔎 Leer con IA</button>'+
         (esImg?'<button class="sec" onclick="archivoComoCroquis('+a.id+')">🗺 Usar como croquis</button>':'')+
-        '<button class="rojo" onclick="eliminarArchivo('+a.id+')">🗑</button></div></div>';
+        '<button class="rojo" onclick="eliminarArchivo('+a.id+')">🗑</button></div>'+
+        '<div id="archMsg-'+a.id+'"></div></div>';
     });
     zona.innerHTML=html;
   }catch(e){zona.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
@@ -770,18 +771,36 @@ async function archivoComoCroquis(id){
 }
 
 async function leerArchivoIA(id){
-  var msg=document.getElementById('msgAnt');
-  msg.innerHTML='<p class="mini">⏳ Leyendo el documento… (10-30 segundos)</p>';
-  try{EXTRAIDO=await api('/admin/eventos/extraer-licitacion',{method:'POST',body:{archivo_id:id}});msg.innerHTML='';pintarExtraido();}
-  catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';EXTRAIDO=null;}
+  // El estado va PEGADO al botón que se tocó (en el teléfono, el mensaje de
+  // abajo quedaba fuera de la vista y parecía que no pasaba nada).
+  var msg=document.getElementById('archMsg-'+id), btn=document.getElementById('btnLeer-'+id);
+  if(btn&&btn.disabled)return; // ya hay una lectura en curso: no duplicar
+  if(btn){btn.disabled=true;btn.textContent='⏳ Leyendo…';}
+  if(msg)msg.innerHTML='<p class="mini">⏳ Leyendo el documento con IA… demora 10-30 segundos, no salgas de esta pestaña.</p>';
+  try{
+    EXTRAIDO=await api('/admin/eventos/extraer-licitacion',{method:'POST',body:{archivo_id:id}});
+    if(msg)msg.innerHTML='<p class="ok-msg">✅ Leído — revisa abajo qué encontró y marca qué aplicar.</p>';
+    pintarExtraido();
+    var prev=document.getElementById('antPreview');
+    if(prev)prev.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){
+    if(msg)msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';
+    EXTRAIDO=null;
+  }
+  if(btn){btn.disabled=false;btn.textContent='🔎 Leer con IA';}
 }
 async function leerTextoIA(){
   var t=document.getElementById('antTexto').value.trim();
   var msg=document.getElementById('msgAnt'), btn=document.getElementById('btnAntLeer');
   if(!t){msg.innerHTML='<p class="err">Pega primero el texto.</p>';return;}
   btn.disabled=true;msg.innerHTML='<p class="mini">⏳ Leyendo… (10-30 segundos)</p>';
-  try{EXTRAIDO=await api('/admin/eventos/extraer-licitacion',{method:'POST',body:{texto:t}});msg.innerHTML='';pintarExtraido();}
-  catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';EXTRAIDO=null;}
+  try{
+    EXTRAIDO=await api('/admin/eventos/extraer-licitacion',{method:'POST',body:{texto:t}});
+    msg.innerHTML='';
+    pintarExtraido();
+    var prev=document.getElementById('antPreview');
+    if(prev)prev.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';EXTRAIDO=null;}
   btn.disabled=false;
 }
 
