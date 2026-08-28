@@ -25,9 +25,11 @@ button.rojo{background:#7a1f1f;color:#fff}
 button.verde{background:#1f5c26;color:#fff}
 button:disabled{opacity:0.5;cursor:default}
 .fila{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
 .tabs button{background:#1a1a1a;color:#aaa;border:1px solid #2a2a2a}
 .tabs button.act{background:#d4a017;color:#111}
+/* El tablero en vivo es LA pestaña importante: más grande que el resto. */
+.tabs #tab-tablero{font-size:0.95rem;padding:13px 18px;font-weight:800;border-color:#d4a017}
 .badge{font-size:0.66rem;font-weight:800;padding:2px 8px;border-radius:20px;background:#2a2a2a;color:#aaa}
 .badge.verde{background:#0d2210;color:#7dc800}
 .badge.rojo{background:#2a0d0d;color:#ff7a7a}
@@ -89,10 +91,11 @@ a{color:#d4a017}
 </head>
 <body>
 <header>
+  <button class="sec" id="btnVolver" style="display:none" onclick="volver()">‹ Comando de Control</button>
   <h1>🎪 Modo Evento</h1>
-  <select id="selEvento" style="max-width:280px;display:none" onchange="cambiarEvento()"></select>
-  <button class="sec" id="btnLicit" style="display:none" onclick="renderLicitacion()">📑 Nuevo desde licitación</button>
-  <span id="btnSalir" style="display:none;margin-left:auto"><button class="sec" id="btnVolver" onclick="volver()">‹ Comando de Control</button> <button class="sec" onclick="salir()" style="opacity:.7" title="Cierra la sesión en este navegador">Cerrar sesión</button></span>
+  <span id="evTitulo" style="font-size:0.82rem;font-weight:800;color:#f0e8d0"></span>
+  <!-- Cerrar sesión: aislado en la esquina, se ocupa poco (pedido Carlos 28-08) -->
+  <a href="#" id="lnkSalir" onclick="salir();return false" style="display:none;position:absolute;top:8px;right:14px;font-size:0.65rem;color:#666;text-decoration:none" title="Cierra la sesión en este navegador">cerrar sesión ✕</a>
   <div class="sub">El puesto de mando en vivo: planes del D.S. 208, distribución del personal y redistribución con un botón. La radio manda la voz; esto es la memoria que no se desordena.</div>
 </header>
 
@@ -131,7 +134,7 @@ var CROQUIS_URL=null, CROQUIS_EVENTO=null, UBICANDO=null, PROPUESTA=null, PLAN_V
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmtHora(t){ if(!t)return ''; var d=new Date(t.replace(' ','T')+'Z'); return d.toLocaleString('es-CL',{timeZone:'America/Santiago',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
 function api(ruta,opts){opts=opts||{};opts.headers=Object.assign({'Authorization':'Bearer '+CYC_TOKEN},opts.body?{'Content-Type':'application/json'}:{},opts.headers||{});if(opts.body&&typeof opts.body!=='string')opts.body=JSON.stringify(opts.body);return fetch(API_URL+ruta,opts).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||('Error '+r.status));return d;});});}
-function mostrar(id){['cargando','login','app'].forEach(function(x){document.getElementById(x).style.display=x===id?(x==='app'?'block':'block'):'none';});document.getElementById('selEvento').style.display=id==='app'?'block':'none';document.getElementById('btnSalir').style.display=id==='app'?'inline':'none';}
+function mostrar(id){['cargando','login','app'].forEach(function(x){document.getElementById(x).style.display=x===id?'block':'none';});var dentro=id==='app';document.getElementById('btnVolver').style.display=dentro?'inline-block':'none';document.getElementById('lnkSalir').style.display=dentro?'block':'none';}
 
 async function entrar(){
   var err=document.getElementById('loginErr');err.textContent='';
@@ -144,9 +147,13 @@ async function entrar(){
   }catch(e){err.textContent='Sin conexión.';}
 }
 function salir(){localStorage.removeItem('cyc_token');CYC_TOKEN=null;location.reload();}
-// «Volver» NO cierra la sesión (regla de la casa: siempre una salida): el
-// admin vuelve al hub, el responsable de seguridad vuelve a Control+.
-function volver(){location.href=ES_ADMIN_LISTA?'comando.html':'guardias.html';}
+// «Volver» NO cierra la sesión (regla de la casa: siempre una salida): desde
+// un evento vuelve a la lista; desde la lista, al hub (o a Control+ si es
+// el responsable de seguridad).
+function volver(){
+  if(VISTA==='evento'){irInicio();return;}
+  location.href=ES_ADMIN_LISTA?'comando.html':'guardias.html';
+}
 
 async function iniciar(){
   if(!CYC_TOKEN){mostrar('login');return;}
@@ -165,19 +172,77 @@ async function iniciar(){
     }
     EVENTOS=d.eventos||d||[];
     if(!Array.isArray(EVENTOS))EVENTOS=[];
-    var sel=document.getElementById('selEvento');
-    sel.innerHTML=EVENTOS.length?EVENTOS.map(function(e){return '<option value="'+e.id+'">'+esc(e.nombre)+' ('+esc(e.fecha_inicio)+')</option>';}).join(''):'<option value="">— sin eventos: crea uno en Comando de Control → Eventos —</option>';
     mostrar('app');
-    if(ES_ADMIN_LISTA)document.getElementById('btnLicit').style.display='inline-block';
-    document.getElementById('btnVolver').textContent=ES_ADMIN_LISTA?'‹ Comando de Control':'‹ Control+';
-    if(EVENTOS.length){EVENTO_ID=EVENTOS[0].id;await refrescar();}
-    else document.getElementById('contenido').innerHTML='<div class="card"><h2>Sin eventos</h2><p class="porque">Crea el evento y su roster en <a href="comando.html">Comando de Control</a> → Eventos — o parte al revés: <strong>pega la licitación</strong> con el botón «📑 Nuevo desde licitación» de arriba y el sistema arma el evento, los puestos y el borrador de los documentos.</p></div>';
+    irInicio();
   }catch(e){
     if(String(e.message).indexOf('administrador')>=0||String(e.message).indexOf('autenticado')>=0){localStorage.removeItem('cyc_token');CYC_TOKEN=null;mostrar('login');}
     else document.getElementById('cargando').innerHTML='<p class="err">'+esc(e.message)+'</p>';
   }
 }
-function cambiarEvento(){EVENTO_ID=parseInt(document.getElementById('selEvento').value,10)||null;PLAN_SEL=null;PLAN_VISTA=null;if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;UBICANDO=null;PROPUESTA=null;refrescar();}
+
+// ── Pantalla de INICIO: elegir evento, crear uno o usar otro de plantilla ──
+// (pedido Carlos 28-08: no aterrizar de golpe en el primer evento)
+var VISTA='inicio';
+function irInicio(){
+  VISTA='inicio';EVENTO_ID=null;ESTADO=null;PLAN_SEL=null;PLAN_VISTA=null;UBICANDO=null;PROPUESTA=null;
+  if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;
+  document.querySelector('.tabs').style.display='none';
+  document.getElementById('evTitulo').textContent='';
+  document.getElementById('btnVolver').textContent=ES_ADMIN_LISTA?'‹ Comando de Control':'‹ Control+';
+  renderInicio();
+}
+async function recargarEventos(){
+  try{
+    if(ES_ADMIN_LISTA){var d=await api('/admin/eventos');EVENTOS=d.eventos||[];}
+  }catch(e){}
+}
+function abrirEvento(id,tab){
+  EVENTO_ID=id;VISTA='evento';PLAN_SEL=null;PLAN_VISTA=null;UBICANDO=null;PROPUESTA=null;
+  if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;
+  var ev=EVENTOS.find(function(e){return e.id===id;});
+  document.getElementById('evTitulo').textContent=ev?('· '+ev.nombre):'';
+  document.getElementById('btnVolver').textContent='‹ Eventos';
+  document.querySelector('.tabs').style.display='flex';
+  TAB=tab||'tablero';
+  ['tablero','config','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x===TAB?'act':'';});
+  document.getElementById('contenido').innerHTML='<div class="card"><p class="mini">Cargando el evento…</p></div>';
+  refrescar();
+}
+function renderInicio(){
+  var html='<div class="card"><h2>Tus eventos</h2><div class="porque">Toca «Abrir» para entrar al puesto de mando de ese evento. «⧉ Usar de plantilla» crea un evento NUEVO copiando los planes, los puestos, sus posiciones y el croquis de uno anterior — para recintos donde ya trabajaste (art. 10 D.S. 208), solo cambias nombre y fecha.</div>';
+  if(!EVENTOS.length)html+='<p class="mini">Aún no hay eventos — agrega el primero aquí abajo.</p>';
+  EVENTOS.forEach(function(e){
+    html+='<div class="puesto"><div class="t">'+esc(e.nombre)+'</div><div class="m">📅 '+esc(e.fecha_inicio||'')+(e.lugar?' · 📍 '+esc(e.lugar):'')+(e.comuna?', '+esc(e.comuna):'')+'</div>'+
+      '<div class="fila"><button onclick="abrirEvento('+e.id+')">Abrir</button>'+
+      (ES_ADMIN_LISTA?'<button class="sec" onclick="plantillaDe('+e.id+')">⧉ Usar de plantilla</button>':'')+'</div>'+
+      '<div id="dup-'+e.id+'"></div></div>';
+  });
+  html+='</div>';
+  if(ES_ADMIN_LISTA){
+    html+='<div class="card"><h2>➕ Agregar evento</h2><div class="porque">Las dos maneras crean el evento con sus 6 planes del D.S. 208 ya puestos. Con licitación, la IA lee el documento y propone todo (tú revisas antes de crear); a mano, llenas los datos en el mismo formulario. La nómina se convoca después en Comando de Control → Eventos.</div>'+
+      '<div class="fila"><button onclick="renderLicitacion()">📑 Desde una licitación</button>'+
+      '<button class="sec" onclick="agregarAMano()">✍️ A mano</button></div></div>';
+  }
+  document.getElementById('contenido').innerHTML=html;
+}
+function plantillaDe(id){
+  var z=document.getElementById('dup-'+id);
+  var ev=EVENTOS.find(function(e){return e.id===id;})||{};
+  z.innerHTML='<div class="fila" style="margin-top:8px"><input id="dupN-'+id+'" placeholder="Nombre del evento nuevo" value="'+esc(ev.nombre||'')+'" style="max-width:260px"><input id="dupF-'+id+'" placeholder="Fecha AAAA-MM-DD" style="max-width:150px"><button class="verde" onclick="duplicarEvento('+id+')">Crear copia</button><button class="sec" onclick="document.getElementById(\'dup-'+id+'\').innerHTML=\'\'">Cancelar</button></div><div id="dupMsg-'+id+'"></div>';
+}
+async function duplicarEvento(id){
+  var n=document.getElementById('dupN-'+id).value.trim(), f=document.getElementById('dupF-'+id).value.trim();
+  var msg=document.getElementById('dupMsg-'+id);
+  if(!n||!/^\d{4}-\d{2}-\d{2}$/.test(f)){msg.innerHTML='<p class="err">Falta el nombre o la fecha (AAAA-MM-DD).</p>';return;}
+  msg.innerHTML='<p class="mini">⏳ Copiando planes, puestos y croquis…</p>';
+  try{
+    var d=await api('/admin/eventos/'+id+'/duplicar',{method:'POST',body:{nombre:n,fecha_inicio:f}});
+    await recargarEventos();
+    abrirEvento(d.id,'config');
+  }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+// «A mano»: el mismo formulario de revisión de la licitación, pero vacío.
+function agregarAMano(){LICIT={dotacion:[]};document.getElementById('contenido').innerHTML='<div id="licitPreview"></div>';licitRenderPreview();}
 
 // La imagen del croquis se pide UNA vez por evento (va con token, por eso
 // no puede ir directo en un <img src>): se convierte en URL local y se reusa.
@@ -247,12 +312,17 @@ function renderTablero(){
     html+='<div class="banner normal" style="background:#1a1a1a;color:#aaa;border-color:#2a2a2a">⚪ Ningún plan desplegado todavía. Al iniciar el turno, despliega el Plan de trabajo.</div>';
   }
 
-  html+='<div class="card"><h2>Planes del evento</h2><div class="porque">Toca un plan para cargarlo; el botón DESPLEGAR lo activa: cada guardia recibe SU instrucción en Control+ y confirma con un toque. ¿Emergencia superada? Cargas el Plan de trabajo y lo despliegas — eso es volver a la normalidad. La radio sigue mandando la voz.</div><div class="fila" style="margin-bottom:10px">';
+  // El recuadro ÚNICO de los 3 pasos (pedido Carlos 28-08): nadie tiene que
+  // adivinar el orden ni puede confundirse de plan — el plan elegido queda
+  // marcado y el botón final lleva su nombre.
+  html+='<div class="card" style="border:2px solid #d4a017"><h2>Desplegar un plan — 3 pasos, en este orden</h2><div class="porque">Cada guardia asignado recibe SU instrucción en Control+ y confirma con un toque. ¿Emergencia superada? Los mismos 3 pasos con el Plan de trabajo — eso es volver a la normalidad. La radio sigue mandando la voz.</div>';
+
+  // Paso 1: lista VERTICAL (más fácil mirar hacia abajo que hacia los lados).
+  html+='<p style="font-weight:800;margin-bottom:6px">1 · Elige el plan</p>';
   (ESTADO.planes||[]).forEach(function(p){
     var sel=PLAN_VISTA===p.id, act=e.plan_activo_id===p.id;
-    html+='<button class="'+(sel?'':'sec')+'"'+(act?' style="box-shadow:0 0 0 2px '+(p.tipo==='trabajo'?'#7dc800':'#ff7a7a')+'"':'')+' onclick="PLAN_VISTA='+p.id+';render()">'+(act?'● ':'')+esc(p.nombre)+'</button>';
+    html+='<button class="'+(sel?'':'sec')+'" style="display:block;width:100%;text-align:left;margin-bottom:6px'+(act?';box-shadow:0 0 0 2px '+(p.tipo==='trabajo'?'#7dc800':'#ff7a7a'):'')+'" onclick="PLAN_VISTA='+p.id+';render()">'+(sel?'▣':'▢')+' '+esc(p.nombre)+(act?' — ● DESPLEGADO AHORA':'')+'</button>';
   });
-  html+='</div>';
 
   var planV=PLAN_VISTA?planPorId(PLAN_VISTA):null;
   if(planV){
@@ -262,26 +332,30 @@ function renderTablero(){
     var esActivo=e.plan_activo_id===planV.id;
     var planListo=puestos.length>0&&puestos.every(function(q){return asig.some(function(a){return a.puesto_id===q.id;});});
 
-    html+='<div style="border-top:1px solid #2a2a2a;padding-top:12px">';
-    if(planV.instrucciones)html+='<p class="mini" style="margin-bottom:8px">'+esc(planV.instrucciones)+'</p>';
-
     if(esActivo){
       var total=asig.length, listos=asig.filter(function(a){return conf[a.user_id];}).length;
-      html+='<div class="fila" style="margin-bottom:10px"><span class="badge verde" style="font-size:0.85rem;padding:8px 14px">✅ DESPLEGADO — '+listos+' de '+total+' en posición</span>'+
+      html+='<p style="font-weight:800;margin:14px 0 6px">Este plan ya está desplegado</p>'+
+        '<div class="fila"><span class="badge verde" style="font-size:0.85rem;padding:8px 14px">✅ '+listos+' de '+total+' en posición</span>'+
         '<button class="sec" onclick="avisoWhatsApp('+planV.id+')">📋 Copiar aviso WhatsApp</button>'+
         '<button class="sec" onclick="exportarPlan('+planV.id+')">🖨 Exportar (PDF)</button></div><div id="msgActivar"></div>';
     }else{
-      // Secuencia guiada: 1) asignar → 2) desplegar. El botón grande queda
-      // teñido hasta que todos los puestos tengan gente — pero nunca atrapa:
-      // se puede desplegar igual (avisa) y ajustar en terreno.
-      html+='<div class="fila" style="margin-bottom:6px">'+
-        (planListo?'':'<button onclick="asignarAutoTablero('+planV.id+')">1 · ⚡ Asignar automático</button>')+
+      html+='<p style="font-weight:800;margin:14px 0 6px">2 · Asigna la gente a los puestos</p><div class="fila">'+
+        (planListo
+          ?'<span class="badge verde" style="padding:8px 14px">✓ Listo — todos los puestos de «'+esc(planV.nombre)+'» tienen gente</span>'
+          :(ESTADO.es_admin
+            ?'<button onclick="asignarAutoTablero('+planV.id+')">⚡ Asignar automático</button><span class="mini">(reparte a los confirmados según su rol)</span>'
+            :'<span class="mini">Hay puestos sin gente — la asignación la hace el administrador. Puedes desplegar igual.</span>'))+
+        '</div>'+
+        '<p style="font-weight:800;margin:14px 0 6px">3 · Despliega</p><div class="fila">'+
         '<button class="verde" style="font-size:0.95rem;padding:14px 20px'+(planListo?'':';opacity:.45')+'" onclick="desplegarPlan('+planV.id+','+(planListo?'true':'false')+')">'+(planV.tipo==='trabajo'?'🟢':'🚨')+' DESPLEGAR: '+esc(planV.nombre).toUpperCase()+'</button>'+
         '<button class="sec" onclick="exportarPlan('+planV.id+')">🖨 Exportar (PDF)</button></div>'+
-        (planListo?'':'<p class="mini" style="margin-bottom:8px">El botón se enciende cuando todos los puestos tengan gente (paso 1) — o despliega igual y ajusta en terreno.</p>')+
+        (planListo?'':'<p class="mini" style="margin-top:6px">El botón se enciende con el paso 2 — o despliega igual y ajusta en terreno.</p>')+
         '<div id="msgActivar"></div>';
     }
 
+    // El detalle del plan elegido: qué hace cada puesto y el croquis.
+    html+='<div style="border-top:1px solid #2a2a2a;margin-top:14px;padding-top:10px"><p style="font-weight:800;margin-bottom:6px">Qué hace «'+esc(planV.nombre)+'»</p>';
+    if(planV.instrucciones)html+='<p class="mini" style="margin-bottom:8px">'+esc(planV.instrucciones)+'</p>';
     if(!puestos.length)html+='<p class="mini">Este plan no tiene puestos — ármalos en «Planes y puestos».</p>';
     puestos.forEach(function(p){
       var deEste=asig.filter(function(a){return a.puesto_id===p.id;});
@@ -302,7 +376,7 @@ function renderTablero(){
 
   // Dotación presente.
   var confirmadosRoster=(ESTADO.roster||[]).filter(function(r){return r.estado==='confirmado'||r.estado==='asistio';});
-  html+='<div class="card"><h2>Dotación</h2><p class="mini">'+confirmadosRoster.length+' confirmados/presentes de '+(ESTADO.roster||[]).length+' convocados · Responsable de seguridad: <strong>'+(e.responsable_user_id?esc(nombreGuardia(e.responsable_user_id)):'⚠️ sin designar (se designa en Planes y puestos)')+'</strong></p></div>';
+  html+='<div class="card"><h2>Dotación</h2><p class="mini">'+confirmadosRoster.length+' confirmados/presentes de '+(ESTADO.roster||[]).length+' convocados · Responsable de seguridad: <strong>'+(e.responsable_user_id?esc(nombreGuardia(e.responsable_user_id)):'⚠️ sin designar — se designa (y se cambia) en la pestaña Planes y puestos, sección 2')+'</strong></p></div>';
 
   document.getElementById('contenido').innerHTML=html;
   var planPintar=PLAN_VISTA?planPorId(PLAN_VISTA):null;
@@ -413,17 +487,14 @@ function renderConfig(){
   // 2) Responsable de seguridad.
   var opsR='<option value="">— sin designar —</option>';
   (ESTADO.roster||[]).forEach(function(r){opsR+='<option value="'+r.user_id+'"'+(ESTADO.evento.responsable_user_id===r.user_id?' selected':'')+'>'+esc(r.nombre)+'</option>';});
-  html+='<div class="card"><h2>2 · Responsable de seguridad del evento</h2><div class="porque">Exigido por el D.S. 208 (art. 2 N°5). Es la ÚNICA persona además del admin que puede activar planes desde su Control+ entrando a esta misma página.</div><select onchange="ponerResponsable(this.value)" style="max-width:320px">'+opsR+'</select></div>';
+  html+='<div class="card"><h2>2 · Responsable de seguridad del evento</h2><div class="porque">Exigido por el D.S. 208 (art. 2 N°5). Es la ÚNICA persona además del administrador que puede desplegar planes (entra a esta misma página con su cuenta de Control+). <strong>Se designa eligiendo un nombre en esta lista — y para cambiarlo, eliges otro nombre aquí mismo</strong>, en cualquier momento.</div><select onchange="ponerResponsable(this.value)" style="max-width:320px">'+opsR+'</select></div>';
 
   // 3) Planes.
-  html+='<div class="card"><h2>3 · Planes del evento</h2><div class="porque">El catálogo mínimo del D.S. 208 (trabajo + evacuación + robo/asalto, múltiples víctimas, incendio, sismo) <strong>se crea solo con cada evento</strong> — es exigible, no opcional. Aquí ajustas puestos y tareas según el recinto, agregas planes propios, y si borraste uno del catálogo lo repones.</div>'+
-    '<div class="fila" style="margin-bottom:10px"><button class="sec" onclick="cargarPlantilla()">↺ Reponer catálogo D.S. 208</button>'+
-    '<input id="planNuevoNombre" placeholder="U otro plan: nombre" style="max-width:220px"><button class="sec" onclick="crearPlan()">➕ Crear plan</button>'+
-    '<button class="sec" onclick="proponerTareasIA()">✨ Proponer tareas (IA)</button></div><div id="msgPlanes"></div><div id="propuestaZona"></div><div class="fila" style="margin-bottom:8px">';
+  html+='<div class="card"><h2>3 · Planes del evento</h2><div class="porque">Los 6 planes del catálogo D.S. 208 <strong>ya vienen creados con el evento</strong> (son exigibles, no opcionales). Elige uno en la lista para armar sus puestos y tareas según el recinto. Todo plan de esta lista aparece también en el Tablero en vivo, listo para desplegarse.</div>';
+  if(!PLAN_SEL&&(ESTADO.planes||[]).length)PLAN_SEL=ESTADO.planes[0].id;
   (ESTADO.planes||[]).forEach(function(p){
-    html+='<button class="'+(PLAN_SEL===p.id?'':'sec')+'" onclick="PLAN_SEL='+p.id+';render()">'+esc(p.nombre)+'</button>';
+    html+='<button class="'+(PLAN_SEL===p.id?'':'sec')+'" style="display:block;width:100%;text-align:left;margin-bottom:6px" onclick="PLAN_SEL='+p.id+';render()">'+(PLAN_SEL===p.id?'▣':'▢')+' '+esc(p.nombre)+'</button>';
   });
-  html+='</div>';
 
   var plan=PLAN_SEL?planPorId(PLAN_SEL):null;
   if(!plan&&(ESTADO.planes||[]).length){plan=ESTADO.planes[0];PLAN_SEL=plan.id;}
@@ -453,6 +524,14 @@ function renderConfig(){
     });
     html+='</div>';
   }
+
+  // Herramientas de los planes — con SU explicación (regla de la casa:
+  // toda herramienta dice para qué sirve y por qué es útil).
+  html+='<div style="border-top:1px solid #2a2a2a;margin-top:12px;padding-top:10px"><p style="font-weight:800;margin-bottom:4px">Herramientas de los planes</p>'+
+    '<div class="porque">✨ <strong>Redactar tareas con IA</strong>: escribe un BORRADOR del lineamiento de cada plan y de la tarea de cada puesto (qué hace, qué comunica, cuándo escala) usando los datos de este evento; tú revisas, desmarcas lo que no te guste y aplicas — nada se escribe solo. · ➕ <strong>Agregar otro plan</strong>: para algo que este recinto pida además del catálogo (ej: «Corte de calle»); aparecerá también en el tablero, como los demás. · ↺ <strong>Reponer catálogo</strong>: recrea los planes del D.S. 208 que se hayan borrado.</div>'+
+    '<div class="fila"><button class="sec" onclick="proponerTareasIA()">✨ Redactar tareas con IA</button>'+
+    '<input id="planNuevoNombre" placeholder="Nombre del plan nuevo" style="max-width:200px"><button class="sec" onclick="crearPlan()">➕ Agregar otro plan</button>'+
+    '<button class="sec" onclick="cargarPlantilla()">↺ Reponer catálogo</button></div><div id="msgPlanes"></div><div id="propuestaZona"></div></div>';
   html+='</div>';
 
   // 4) Croquis del recinto (sesión 44). En Limache nuestros croquis fueron
@@ -603,11 +682,12 @@ async function quitarAsignacion(planId,uid){try{await api('/admin/planes/'+planI
 // que ya existen (crear evento, plantilla de planes, puestos, doc).
 function renderLicitacion(){
   LICIT=null;
-  var html='<div class="card"><h2>📑 Nuevo evento desde una licitación</h2>'+
+  var html='<div class="card"><h2>➕ Agregar evento desde una licitación</h2>'+
     '<div class="porque">Pega el texto de la licitación, bases técnicas u orden de compra — o sube el PDF o una foto. La IA extrae el evento y la dotación pedida; tú revisas, corriges y recién ahí se crea todo: el evento, el catálogo de planes del D.S. 208 y los puestos del plan de trabajo.</div>'+
     '<textarea id="licitTexto" style="min-height:140px" placeholder="Pega aquí el texto de la licitación…"></textarea>'+
     '<div class="fila" style="margin-top:8px"><input type="file" id="licitArchivo" accept=".pdf,image/jpeg,image/png,image/webp" style="max-width:320px">'+
-    '<button onclick="licitLeer()" id="btnLicitLeer">🔎 Leer con IA</button></div>'+
+    '<button onclick="licitLeer()" id="btnLicitLeer">🔎 Leer con IA</button>'+
+    '<button class="sec" onclick="renderInicio()">‹ Volver</button></div>'+
     '<div id="msgLicit"></div></div><div id="licitPreview"></div>';
   document.getElementById('contenido').innerHTML=html;
 }
@@ -652,7 +732,7 @@ function licitRenderPreview(){
       '<td><select id="lpd-rol-'+i+'">'+ops+'</select></td>'+
       '<td style="text-align:center;cursor:pointer;color:#ff7a7a" onclick="LICIT.dotacion.splice('+i+',1);licitRenderPreview()">✕</td></tr>';
   }).join('');
-  var html='<div class="card"><h2>Revisa lo extraído — nada se crea hasta que confirmes</h2>'+
+  var html='<div class="card"><h2>Datos del evento nuevo — nada se crea hasta que confirmes</h2>'+
     campo('nombre','Nombre del evento',L.nombre_evento)+
     '<div class="fila">'+
     '<div style="flex:1;min-width:180px">'+campo('lugar','Lugar / recinto',L.lugar)+'</div>'+
@@ -670,7 +750,7 @@ function licitRenderPreview(){
     '<table><tr><th>Cant.</th><th>Función (según la licitación)</th><th>Rol</th><th></th></tr>'+(filas||'')+'</table>'+
     ((L.dotacion||[]).length?'':'<p class="mini">La licitación no detalla dotación — puedes crear el evento igual y armar los puestos a mano.</p>')+
     '<div class="fila" style="margin-top:12px"><button class="verde" id="btnLicitCrear" onclick="licitCrear()">✅ Crear evento + planes + puestos</button>'+
-    '<button class="sec" onclick="renderLicitacion()">↺ Empezar de nuevo</button></div>'+
+    '<button class="sec" onclick="renderInicio()">‹ Volver sin crear</button></div>'+
     '<div id="msgLicitCrear"></div></div>';
   document.getElementById('licitPreview').innerHTML=html;
 }
@@ -698,13 +778,8 @@ async function licitCrear(){
     await api('/admin/eventos/'+ev.id+'/doc',{method:'POST',body:{organizador:val('lp-mandante'),organizador_rut:val('lp-mrut'),aforo:val('lp-aforo')}});
     msg.innerHTML='<p class="ok-msg">Evento creado con '+creados+' puesto(s). Abriendo…</p>';
     // Recargar la lista y aterrizar en Planes y puestos del evento nuevo.
-    var d=await api('/admin/eventos');
-    EVENTOS=d.eventos||[];
-    var sel=document.getElementById('selEvento');
-    sel.innerHTML=EVENTOS.map(function(e){return '<option value="'+e.id+'"'+(e.id===ev.id?' selected':'')+'>'+esc(e.nombre)+' ('+esc(e.fecha_inicio)+')</option>';}).join('');
-    EVENTO_ID=ev.id;PLAN_SEL=null;TAB='config';
-    ['tablero','config','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x==='config'?'act':'';});
-    await refrescar();
+    await recargarEventos();
+    abrirEvento(ev.id,'config');
   }catch(e){btn.disabled=false;msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
 }
 
@@ -735,7 +810,7 @@ function renderDocumento(){
   if(!ESTADO.es_admin){document.getElementById('contenido').innerHTML='<div class="card"><p class="mini">El documento lo arma el administrador.</p></div>';return;}
   var d=docDatos();
   var html='<div class="card"><h2>📄 Plan de Seguridad — documento formal</h2>'+
-    '<div class="porque">Arma el documento con la estructura EXACTA del art. 18 del D.S. 208 (los 7 numerales, cotejables por el fiscalizador), tomando la dotación, los puestos y los planes ya cargados. Sale con marca de agua BORRADOR: la versión que se presenta a la Delegación la visa Carlos como asesor acreditado. El informe del prevencionista, la directiva y la póliza van como ANEXOS — esta herramienta no los reemplaza.</div>';
+    '<div class="porque"><strong>No necesita licitación</strong>: el documento se arma con lo que ya está cargado en el evento (planes, puestos, dotación) más estos antecedentes, que llenas UNA vez y quedan guardados — la licitación solo ahorra tipeo cuando existe. La estructura es la EXACTA del art. 18 del D.S. 208 (los 7 numerales, cotejables por el fiscalizador). Sale con marca de agua BORRADOR: la versión que se presenta a la Delegación la visa Carlos como asesor acreditado. El informe del prevencionista, la directiva y la póliza van como ANEXOS — esta herramienta no los reemplaza.</div>';
   DOC_CAMPOS.forEach(function(c){
     html+='<div style="margin-bottom:8px"><label class="mini" style="display:block;margin-bottom:2px">'+esc(c[1])+'</label>'+
       (c[0]==='medidas_generales'||c[0]==='accesos'
