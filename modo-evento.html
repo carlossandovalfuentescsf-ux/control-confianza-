@@ -92,7 +92,7 @@ a{color:#d4a017}
   <h1>🎪 Modo Evento</h1>
   <select id="selEvento" style="max-width:280px;display:none" onchange="cambiarEvento()"></select>
   <button class="sec" id="btnLicit" style="display:none" onclick="renderLicitacion()">📑 Nuevo desde licitación</button>
-  <span id="btnSalir" style="display:none;margin-left:auto"><button class="sec" onclick="salir()">Salir</button></span>
+  <span id="btnSalir" style="display:none;margin-left:auto"><button class="sec" id="btnVolver" onclick="volver()">‹ Comando de Control</button> <button class="sec" onclick="salir()" style="opacity:.7" title="Cierra la sesión en este navegador">Cerrar sesión</button></span>
   <div class="sub">El puesto de mando en vivo: planes del D.S. 208, distribución del personal y redistribución con un botón. La radio manda la voz; esto es la memoria que no se desordena.</div>
 </header>
 
@@ -144,6 +144,9 @@ async function entrar(){
   }catch(e){err.textContent='Sin conexión.';}
 }
 function salir(){localStorage.removeItem('cyc_token');CYC_TOKEN=null;location.reload();}
+// «Volver» NO cierra la sesión (regla de la casa: siempre una salida): el
+// admin vuelve al hub, el responsable de seguridad vuelve a Control+.
+function volver(){location.href=ES_ADMIN_LISTA?'comando.html':'guardias.html';}
 
 async function iniciar(){
   if(!CYC_TOKEN){mostrar('login');return;}
@@ -166,6 +169,7 @@ async function iniciar(){
     sel.innerHTML=EVENTOS.length?EVENTOS.map(function(e){return '<option value="'+e.id+'">'+esc(e.nombre)+' ('+esc(e.fecha_inicio)+')</option>';}).join(''):'<option value="">— sin eventos: crea uno en Comando de Control → Eventos —</option>';
     mostrar('app');
     if(ES_ADMIN_LISTA)document.getElementById('btnLicit').style.display='inline-block';
+    document.getElementById('btnVolver').textContent=ES_ADMIN_LISTA?'‹ Comando de Control':'‹ Control+';
     if(EVENTOS.length){EVENTO_ID=EVENTOS[0].id;await refrescar();}
     else document.getElementById('contenido').innerHTML='<div class="card"><h2>Sin eventos</h2><p class="porque">Crea el evento y su roster en <a href="comando.html">Comando de Control</a> → Eventos — o parte al revés: <strong>pega la licitación</strong> con el botón «📑 Nuevo desde licitación» de arriba y el sistema arma el evento, los puestos y el borrador de los documentos.</p></div>';
   }catch(e){
@@ -190,9 +194,22 @@ async function croquisURL(){
 }
 function verTab(t){TAB=t;['tablero','config','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x===t?'act':'';});render();}
 
+var CATALOGO_SEMBRADO={}; // por evento, para no reintentar en cada refresco
 async function refrescar(){
   if(!EVENTO_ID)return;
-  try{ESTADO=await api('/admin/eventos/'+EVENTO_ID+'/modo');render();}catch(e){document.getElementById('contenido').innerHTML='<div class="card"><p class="err">'+esc(e.message)+'</p></div>';}
+  try{
+    ESTADO=await api('/admin/eventos/'+EVENTO_ID+'/modo');
+    // El catálogo del D.S. 208 es EXIGIBLE: si un evento (antiguo) no tiene
+    // ningún plan, se siembra solo — el servidor no duplica (por nombre).
+    if(ESTADO.es_admin&&!(ESTADO.planes||[]).length&&!CATALOGO_SEMBRADO[EVENTO_ID]){
+      CATALOGO_SEMBRADO[EVENTO_ID]=true;
+      try{
+        await api('/admin/eventos/'+EVENTO_ID+'/planes',{method:'POST',body:{plantilla:true}});
+        ESTADO=await api('/admin/eventos/'+EVENTO_ID+'/modo');
+      }catch(e2){}
+    }
+    render();
+  }catch(e){document.getElementById('contenido').innerHTML='<div class="card"><p class="err">'+esc(e.message)+'</p></div>';}
 }
 // El tablero se refresca solo cada 15 s — es la vista que se deja abierta
 // durante el evento.
@@ -332,8 +349,8 @@ function renderConfig(){
   html+='<div class="card"><h2>2 · Responsable de seguridad del evento</h2><div class="porque">Exigido por el D.S. 208 (art. 2 N°5). Es la ÚNICA persona además del admin que puede activar planes desde su Control+ entrando a esta misma página.</div><select onchange="ponerResponsable(this.value)" style="max-width:320px">'+opsR+'</select></div>';
 
   // 3) Planes.
-  html+='<div class="card"><h2>3 · Planes del evento</h2><div class="porque">El catálogo mínimo sale del D.S. 208 art. 18 (evacuación + robo/asalto, múltiples víctimas, incendio, sismo). Cárgalo y ajusta puestos según el recinto y el informe del prevencionista.</div>'+
-    '<div class="fila" style="margin-bottom:10px"><button onclick="cargarPlantilla()">📋 Cargar catálogo D.S. 208</button>'+
+  html+='<div class="card"><h2>3 · Planes del evento</h2><div class="porque">El catálogo mínimo del D.S. 208 (trabajo + evacuación + robo/asalto, múltiples víctimas, incendio, sismo) <strong>se crea solo con cada evento</strong> — es exigible, no opcional. Aquí ajustas puestos y tareas según el recinto, agregas planes propios, y si borraste uno del catálogo lo repones.</div>'+
+    '<div class="fila" style="margin-bottom:10px"><button class="sec" onclick="cargarPlantilla()">↺ Reponer catálogo D.S. 208</button>'+
     '<input id="planNuevoNombre" placeholder="U otro plan: nombre" style="max-width:220px"><button class="sec" onclick="crearPlan()">➕ Crear plan</button>'+
     '<button class="sec" onclick="proponerTareasIA()">✨ Proponer tareas (IA)</button></div><div id="msgPlanes"></div><div id="propuestaZona"></div><div class="fila" style="margin-bottom:8px">';
   (ESTADO.planes||[]).forEach(function(p){
