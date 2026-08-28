@@ -91,6 +91,7 @@ a{color:#d4a017}
 <header>
   <h1>🎪 Modo Evento</h1>
   <select id="selEvento" style="max-width:280px;display:none" onchange="cambiarEvento()"></select>
+  <button class="sec" id="btnLicit" style="display:none" onclick="renderLicitacion()">📑 Nuevo desde licitación</button>
   <span id="btnSalir" style="display:none;margin-left:auto"><button class="sec" onclick="salir()">Salir</button></span>
   <div class="sub">El puesto de mando en vivo: planes del D.S. 208, distribución del personal y redistribución con un botón. La radio manda la voz; esto es la memoria que no se desordena.</div>
 </header>
@@ -122,7 +123,7 @@ a{color:#d4a017}
 <script>
 var API_URL='https://cyc-asistente.carlos-sandovalfuentes-csf.workers.dev';
 var CYC_TOKEN=localStorage.getItem('cyc_token')||null;
-var EVENTOS=[], EVENTO_ID=null, ESTADO=null, TAB='tablero', TIMER=null, PLAN_SEL=null;
+var EVENTOS=[], EVENTO_ID=null, ESTADO=null, TAB='tablero', TIMER=null, PLAN_SEL=null, ES_ADMIN_LISTA=false, LICIT=null;
 
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmtHora(t){ if(!t)return ''; var d=new Date(t.replace(' ','T')+'Z'); return d.toLocaleString('es-CL',{timeZone:'America/Santiago',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
@@ -147,6 +148,7 @@ async function iniciar(){
     var d;
     try{
       d=await api('/admin/eventos');
+      ES_ADMIN_LISTA=true;
     }catch(errAdmin){
       // No es admin: puede ser el RESPONSABLE DE SEGURIDAD de un evento (D4).
       // Su lista sale de «mis eventos»; el Worker igual valida evento por
@@ -160,8 +162,9 @@ async function iniciar(){
     var sel=document.getElementById('selEvento');
     sel.innerHTML=EVENTOS.length?EVENTOS.map(function(e){return '<option value="'+e.id+'">'+esc(e.nombre)+' ('+esc(e.fecha_inicio)+')</option>';}).join(''):'<option value="">— sin eventos: crea uno en Comando de Control → Eventos —</option>';
     mostrar('app');
+    if(ES_ADMIN_LISTA)document.getElementById('btnLicit').style.display='inline-block';
     if(EVENTOS.length){EVENTO_ID=EVENTOS[0].id;await refrescar();}
-    else document.getElementById('contenido').innerHTML='<div class="card"><h2>Sin eventos</h2><p class="porque">Primero crea el evento y su roster en <a href="comando.html">Comando de Control</a> → Eventos. Después vuelve aquí para armar los planes.</p></div>';
+    else document.getElementById('contenido').innerHTML='<div class="card"><h2>Sin eventos</h2><p class="porque">Crea el evento y su roster en <a href="comando.html">Comando de Control</a> → Eventos — o parte al revés: <strong>pega la licitación</strong> con el botón «📑 Nuevo desde licitación» de arriba y el sistema arma el evento, los puestos y el borrador de los documentos.</p></div>';
   }catch(e){
     if(String(e.message).indexOf('administrador')>=0||String(e.message).indexOf('autenticado')>=0){localStorage.removeItem('cyc_token');CYC_TOKEN=null;mostrar('login');}
     else document.getElementById('cargando').innerHTML='<p class="err">'+esc(e.message)+'</p>';
@@ -340,6 +343,119 @@ async function asignarAuto(planId){try{var d=await api('/admin/planes/'+planId+'
 async function asignarManual(planId,puestoId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{puesto_id:puestoId,user_id:parseInt(uid,10)}});await refrescar();}catch(e){alert(e.message);await refrescar();}}
 async function quitarAsignacion(planId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{user_id:uid,quitar:true}});await refrescar();}catch(e){alert(e.message);}}
 
+// ── Nuevo evento desde una LICITACIÓN (28-08-2026) ────────────────
+// El flujo pedido por Carlos: se pega (o sube) la licitación y el sistema
+// arma solo el evento, los puestos del plan de trabajo y los antecedentes
+// del documento. Patrón de la casa: la IA PROPONE, el humano REVISA y
+// CONFIRMA — nada se crea hasta el botón final, y todo usa los endpoints
+// que ya existen (crear evento, plantilla de planes, puestos, doc).
+function renderLicitacion(){
+  LICIT=null;
+  var html='<div class="card"><h2>📑 Nuevo evento desde una licitación</h2>'+
+    '<div class="porque">Pega el texto de la licitación, bases técnicas u orden de compra — o sube el PDF o una foto. La IA extrae el evento y la dotación pedida; tú revisas, corriges y recién ahí se crea todo: el evento, el catálogo de planes del D.S. 208 y los puestos del plan de trabajo.</div>'+
+    '<textarea id="licitTexto" style="min-height:140px" placeholder="Pega aquí el texto de la licitación…"></textarea>'+
+    '<div class="fila" style="margin-top:8px"><input type="file" id="licitArchivo" accept=".pdf,image/jpeg,image/png,image/webp" style="max-width:320px">'+
+    '<button onclick="licitLeer()" id="btnLicitLeer">🔎 Leer con IA</button></div>'+
+    '<div id="msgLicit"></div></div><div id="licitPreview"></div>';
+  document.getElementById('contenido').innerHTML=html;
+}
+
+function archivoABase64(file){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(){res(String(r.result).split(',')[1]);};
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function licitLeer(){
+  var msg=document.getElementById('msgLicit'), btn=document.getElementById('btnLicitLeer');
+  var texto=document.getElementById('licitTexto').value.trim();
+  var archivo=document.getElementById('licitArchivo').files[0];
+  if(!texto&&!archivo){msg.innerHTML='<p class="err">Pega el texto o sube el archivo.</p>';return;}
+  btn.disabled=true;msg.innerHTML='<p class="mini">⏳ Leyendo la licitación… (10-30 segundos)</p>';
+  try{
+    var body={texto:texto};
+    if(archivo){
+      var b64=await archivoABase64(archivo);
+      if(archivo.type==='application/pdf')body.pdf={data:b64};
+      else body.imagen={media_type:archivo.type,data:b64};
+    }
+    LICIT=await api('/admin/eventos/extraer-licitacion',{method:'POST',body:body});
+    msg.innerHTML='';
+    licitRenderPreview();
+  }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+  btn.disabled=false;
+}
+
+var LICIT_ROLES={accesos:'Accesos',accesos_preferenciales:'Accesos preferenciales',perimetro:'Perímetro',escenario:'Escenario / vallado',estacionamientos:'Estacionamientos',tactico:'Táctico / reacción',valores:'Valores',supervisor:'Supervisor de sector'};
+function licitRenderPreview(){
+  var L=LICIT;
+  var campo=function(id,label,val){return '<div style="margin-bottom:8px"><label class="mini" style="display:block;margin-bottom:2px">'+label+'</label><input id="lp-'+id+'" value="'+esc(val||'')+'"></div>';};
+  var filas=(L.dotacion||[]).map(function(d,i){
+    var ops=Object.keys(LICIT_ROLES).map(function(k){return '<option value="'+k+'"'+(d.rol===k?' selected':'')+'>'+LICIT_ROLES[k]+'</option>';}).join('');
+    return '<tr><td><input id="lpd-cant-'+i+'" type="number" min="1" value="'+d.cantidad+'" style="width:64px"></td>'+
+      '<td><input id="lpd-fun-'+i+'" value="'+esc(d.funcion)+'"></td>'+
+      '<td><select id="lpd-rol-'+i+'">'+ops+'</select></td>'+
+      '<td style="text-align:center;cursor:pointer;color:#ff7a7a" onclick="LICIT.dotacion.splice('+i+',1);licitRenderPreview()">✕</td></tr>';
+  }).join('');
+  var html='<div class="card"><h2>Revisa lo extraído — nada se crea hasta que confirmes</h2>'+
+    campo('nombre','Nombre del evento',L.nombre_evento)+
+    '<div class="fila">'+
+    '<div style="flex:1;min-width:180px">'+campo('lugar','Lugar / recinto',L.lugar)+'</div>'+
+    '<div style="flex:1;min-width:140px">'+campo('comuna','Comuna',L.comuna)+'</div></div>'+
+    '<div class="fila">'+
+    '<div style="flex:1;min-width:140px">'+campo('fi','Fecha inicio (AAAA-MM-DD)',L.fecha_inicio)+'</div>'+
+    '<div style="flex:1;min-width:140px">'+campo('ff','Fecha fin (vacío si es de un día)',L.fecha_fin)+'</div></div>'+
+    '<div class="fila">'+
+    '<div style="flex:1;min-width:180px">'+campo('mandante','Mandante / organizador',L.mandante)+'</div>'+
+    '<div style="flex:1;min-width:120px">'+campo('mrut','RUT mandante',L.mandante_rut)+'</div>'+
+    '<div style="flex:1;min-width:100px">'+campo('aforo','Aforo estimado',L.aforo)+'</div></div>'+
+    campo('req','Requisitos al personal',L.requisitos)+
+    (L.pago_referencia?'<p class="mini">💰 Referencia de pago detectada: '+esc(L.pago_referencia)+' (no se usa automáticamente — va al Cotizador si corresponde)</p>':'')+
+    '<p style="font-weight:800;margin:12px 0 6px">Dotación pedida → puestos del plan de trabajo</p>'+
+    '<table><tr><th>Cant.</th><th>Función (según la licitación)</th><th>Rol</th><th></th></tr>'+(filas||'')+'</table>'+
+    ((L.dotacion||[]).length?'':'<p class="mini">La licitación no detalla dotación — puedes crear el evento igual y armar los puestos a mano.</p>')+
+    '<div class="fila" style="margin-top:12px"><button class="verde" id="btnLicitCrear" onclick="licitCrear()">✅ Crear evento + planes + puestos</button>'+
+    '<button class="sec" onclick="renderLicitacion()">↺ Empezar de nuevo</button></div>'+
+    '<div id="msgLicitCrear"></div></div>';
+  document.getElementById('licitPreview').innerHTML=html;
+}
+
+async function licitCrear(){
+  var msg=document.getElementById('msgLicitCrear'), btn=document.getElementById('btnLicitCrear');
+  var val=function(id){var el=document.getElementById(id);return el?el.value.trim():'';};
+  var nombre=val('lp-nombre'), fi=val('lp-fi');
+  if(!nombre||!/^\d{4}-\d{2}-\d{2}$/.test(fi)){msg.innerHTML='<p class="err">Faltan el nombre o la fecha de inicio (AAAA-MM-DD).</p>';return;}
+  btn.disabled=true;msg.innerHTML='<p class="mini">⏳ Creando evento, planes y puestos…</p>';
+  try{
+    // 1. El evento (endpoint que ya existía).
+    var ev=await api('/admin/eventos',{method:'POST',body:{nombre:nombre,lugar:val('lp-lugar'),comuna:val('lp-comuna'),fecha_inicio:fi,fecha_fin:/^\d{4}-\d{2}-\d{2}$/.test(val('lp-ff'))?val('lp-ff'):null,requisitos:val('lp-req')}});
+    // 2. El catálogo de planes del D.S. 208.
+    await api('/admin/eventos/'+ev.id+'/planes',{method:'POST',body:{plantilla:true}});
+    // 3. Los puestos de la dotación pedida, en el plan de trabajo.
+    var modo=await api('/admin/eventos/'+ev.id+'/modo');
+    var planTrabajo=(modo.planes||[]).find(function(p){return p.tipo==='trabajo';});
+    var n=(LICIT.dotacion||[]).length, creados=0;
+    for(var i=0;i<n;i++){
+      var cant=parseInt(val('lpd-cant-'+i),10)||1, fun=val('lpd-fun-'+i)||'Guardia', rol=val('lpd-rol-'+i)||'perimetro';
+      if(planTrabajo){await api('/admin/planes/'+planTrabajo.id+'/puestos',{method:'POST',body:{nombre:fun,rol:rol,cupos:cant,orden:i}});creados++;}
+    }
+    // 4. Los antecedentes del documento (organizador = el mandante).
+    await api('/admin/eventos/'+ev.id+'/doc',{method:'POST',body:{organizador:val('lp-mandante'),organizador_rut:val('lp-mrut'),aforo:val('lp-aforo')}});
+    msg.innerHTML='<p class="ok-msg">Evento creado con '+creados+' puesto(s). Abriendo…</p>';
+    // Recargar la lista y aterrizar en Planes y puestos del evento nuevo.
+    var d=await api('/admin/eventos');
+    EVENTOS=d.eventos||[];
+    var sel=document.getElementById('selEvento');
+    sel.innerHTML=EVENTOS.map(function(e){return '<option value="'+e.id+'"'+(e.id===ev.id?' selected':'')+'>'+esc(e.nombre)+' ('+esc(e.fecha_inicio)+')</option>';}).join('');
+    EVENTO_ID=ev.id;PLAN_SEL=null;TAB='config';
+    ['tablero','config','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x==='config'?'act':'';});
+    await refrescar();
+  }catch(e){btn.disabled=false;msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+
 // ── Documento formal: Plan de Seguridad (art. 18 D.S. 208) ────────
 // La estructura sigue LOS 7 NUMERALES del artículo, en su orden y con sus
 // nombres — un fiscalizador debe poder cotejar el documento contra la norma
@@ -378,11 +494,93 @@ function renderDocumento(){
     '<button onclick="generarDocumento(false)">🖨 Generar BORRADOR</button>'+
     '<button class="verde" onclick="generarDocumento(true)">🖨 Versión final (sin marca de agua)</button></div>'+
     '<p class="mini" style="margin-top:8px">La impresión del navegador deja elegir «Guardar como PDF».</p><div id="msgDoc"></div></div>';
+
+  // ✉️ Carta a la Delegación Presidencial — incluida la situación real más
+  // frecuente: el mandante contrató tarde y NADIE pidió la autorización con
+  // los 60 días del art. 17. La carta extemporánea invoca el inciso que
+  // permite a la Delegación admitirla «en casos calificados» por resolución
+  // fundada, y acompaña el expediente COMPLETO para facilitar la revisión.
+  html+='<div class="card"><h2>✉️ Carta a la Delegación Presidencial</h2>'+
+    '<div class="porque">La carta que acompaña (o rescata) la solicitud. Elige el caso: dentro de plazo, fuera de plazo (admisión extemporánea, art. 17), o evento bajo 3.000 asistentes que se comunica por si la autoridad lo califica con medidas especiales (art. 2 N°1). Firma el representante del organizador.</div>'+
+    '<div class="fila"><select id="carta-tipo" style="max-width:360px">'+
+    '<option value="conductora">Solicitud de autorización (dentro de plazo)</option>'+
+    '<option value="extemporanea">Admisión extemporánea (no se pidió a tiempo)</option>'+
+    '<option value="bajo">Comunicación de evento bajo 3.000 asistentes</option></select></div>'+
+    '<div class="fila" style="margin-top:8px">'+
+    '<div style="flex:1;min-width:220px"><label class="mini" style="display:block;margin-bottom:2px">Delegación destinataria (ej: «Regional de Valparaíso» o «Provincial de Marga Marga»)</label><input id="doc-delegacion" value="'+esc(d.delegacion||'')+'"></div>'+
+    '<div style="flex:1;min-width:140px"><label class="mini" style="display:block;margin-bottom:2px">Ciudad de la carta</label><input id="doc-ciudad_carta" value="'+esc(d.ciudad_carta||'')+'"></div></div>'+
+    '<div style="margin-top:8px"><label class="mini" style="display:block;margin-bottom:2px">Justificación del retraso (solo carta extemporánea — el «caso calificado»: contratación tardía del servicio, cambio de recinto, fuerza mayor…)</label>'+
+    '<textarea id="doc-justificacion_ext">'+esc(d.justificacion_ext||'')+'</textarea></div>'+
+    '<div class="fila" style="margin-top:10px"><button class="sec" onclick="guardarDocCarta()">💾 Guardar</button>'+
+    '<button onclick="generarCarta(false)">🖨 Carta BORRADOR</button>'+
+    '<button class="verde" onclick="generarCarta(true)">🖨 Carta final</button></div><div id="msgCarta"></div></div>';
   document.getElementById('contenido').innerHTML=html;
 }
 
+async function guardarDocCarta(){
+  // Guarda TODO el formulario (antecedentes + campos de la carta comparten doc_json).
+  var b={};DOC_CAMPOS.forEach(function(c){var el=document.getElementById('doc-'+c[0]);if(el)b[c[0]]=el.value.trim();});
+  ['delegacion','ciudad_carta','justificacion_ext'].forEach(function(k){var el=document.getElementById('doc-'+k);if(el)b[k]=el.value.trim();});
+  try{await api('/admin/eventos/'+EVENTO_ID+'/doc',{method:'POST',body:b});ESTADO.evento.doc_json=JSON.stringify(b);document.getElementById('msgCarta').innerHTML='<p class="ok-msg">Guardado.</p>';}
+  catch(e){document.getElementById('msgCarta').innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+
+function generarCarta(final){
+  var d=docDatos();
+  var g=function(id){var el=document.getElementById('doc-'+id);return el?el.value.trim():(d[id]||'');};
+  var tipo=document.getElementById('carta-tipo').value;
+  var e=ESTADO.evento;
+  var v=function(x,alt){return x?esc(x):'<em style="color:#a33">[COMPLETAR: '+esc(alt)+']</em>';};
+  var hoy=new Date().toLocaleDateString('es-CL',{timeZone:'America/Santiago',day:'numeric',month:'long',year:'numeric'});
+  var fechaTxt=esc(e.fecha_inicio)+(e.fecha_fin&&e.fecha_fin!==e.fecha_inicio?' al '+esc(e.fecha_fin):'');
+  var organizador=g('organizador'), rut=g('organizador_rut'), delegacion=g('delegacion'), ciudad=g('ciudad_carta'), just=g('justificacion_ext');
+  var lugarTxt=[e.lugar,e.comuna].filter(Boolean).join(', ');
+
+  var MAT={conductora:'Solicita autorización para la realización de evento masivo que indica',
+    extemporanea:'Solicita admisión a tramitación de solicitud de autorización de evento masivo presentada fuera de plazo, y su posterior autorización',
+    bajo:'Comunica realización de evento y acompaña antecedentes de seguridad, para los efectos del art. 2 N°1 del D.S. N° 208/2025'}[tipo];
+
+  var cuerpo='';
+  var parrafoId='<p style="text-align:justify">Quien suscribe, en representación de <strong>'+v(organizador,'organizador')+'</strong>, RUT '+v(rut,'RUT')+', en su calidad de organizador del evento «<strong>'+esc(e.nombre)+'</strong>», a realizarse el '+fechaTxt+' en '+v(lugarTxt,'recinto y comuna')+', expone y solicita a Ud. lo siguiente:</p>';
+
+  if(tipo==='conductora'){
+    cuerpo=parrafoId+
+    '<p style="text-align:justify">1. Que, de conformidad con el Título IV de la Ley N° 21.659 sobre Seguridad Privada y el artículo 17 del D.S. N° 208, de 2025, del Ministerio del Interior y Seguridad Pública, se presenta la solicitud de autorización para la realización del evento masivo individualizado, dentro del plazo de sesenta días de antelación que dicha norma establece.</p>'+
+    '<p style="text-align:justify">2. Que se acompañan a esta presentación la totalidad de los antecedentes exigidos: el Formulario de Solicitud y Acta Descriptiva y la declaración jurada del organizador (formatos oficiales aprobados por Resolución Exenta N° 2.100 de la Subsecretaría de Prevención del Delito), el Plan de Seguridad del evento elaborado conforme al artículo 18 del citado reglamento con sus anexos —incluyendo el informe del prevencionista de riesgos y la directiva de funcionamiento del servicio de guardias—, y los antecedentes del seguro exigido por el artículo 14.</p>'+
+    '<p style="text-align:justify">POR TANTO, solicito a Ud. tener por presentada la solicitud de autorización del evento masivo individualizado, admitirla a tramitación y, en definitiva, autorizar su realización.</p>';
+  }else if(tipo==='extemporanea'){
+    cuerpo=parrafoId+
+    '<p style="text-align:justify">1. Que el artículo 17 del D.S. N° 208, de 2025, dispone que la solicitud de autorización de un evento masivo debe presentarse con a lo menos sesenta días de antelación, plazo que en este caso no fue posible cumplir. La razón es la siguiente: '+v(just,'explicar el caso calificado — p. ej. la contratación del servicio de seguridad y la organización definitiva del evento se concretaron recién el [fecha]')+'</p>'+
+    '<p style="text-align:justify">2. Que la misma disposición faculta expresamente a la Delegación Presidencial Regional para admitir a tramitación solicitudes extemporáneas, <em>«mediante resolución fundada, (...) en casos calificados»</em> (art. 17, inciso penúltimo, D.S. N° 208/2025).</p>'+
+    '<p style="text-align:justify">3. Que, con el objeto de facilitar una revisión expedita, esta presentación acompaña desde ya el expediente COMPLETO del evento: Formulario de Solicitud y Acta Descriptiva y declaración jurada (formatos oficiales de la Resolución Exenta N° 2.100), Plan de Seguridad elaborado conforme al artículo 18 con todos sus anexos —informe del prevencionista de riesgos con visita al recinto, directiva de funcionamiento del servicio de guardias— y los antecedentes del seguro del artículo 14, manifestando además la total disposición del organizador para adoptar las medidas adicionales que la autoridad determine.</p>'+
+    '<p style="text-align:justify">POR TANTO, solicito a Ud. admitir a tramitación la presente solicitud en carácter extemporáneo, atendido el caso calificado expuesto, y en definitiva autorizar la realización del evento individualizado.</p>';
+  }else{
+    cuerpo=parrafoId+
+    '<p style="text-align:justify">1. Que el evento individualizado contempla una concurrencia estimada inferior a 3.000 personas, por lo que no se encuentra comprendido, por regla general, en la definición de evento masivo del artículo 2 N°1 del D.S. N° 208, de 2025.</p>'+
+    '<p style="text-align:justify">2. Que, no obstante, la misma norma permite a esa Delegación calificar como evento masivo actividades de menor concurrencia que requieran medidas especiales. En ese entendido, y como medida de transparencia y coordinación con la autoridad, se comunica su realización y se acompañan los antecedentes de seguridad con que cuenta el organizador: Plan de Seguridad elaborado voluntariamente según la estructura del artículo 18, dotación de guardias acreditados conforme a la Ley N° 21.659 y su directiva de funcionamiento.</p>'+
+    '<p style="text-align:justify">POR TANTO, solicito a Ud. tener por efectuada la presente comunicación y, en caso de estimar que el evento requiere medidas especiales, indicarlas oportunamente al organizador, quien manifiesta desde ya su plena disposición a adoptarlas.</p>';
+  }
+
+  var html='<div style="text-align:right;font-size:11px">'+v(ciudad,'ciudad')+', '+hoy+'</div>'+
+    '<div style="margin:18px 0 4px;font-size:11px"><strong>MAT.:</strong> '+MAT+'<br><strong>REF.:</strong> Evento «'+esc(e.nombre)+'» · '+fechaTxt+'</div>'+
+    '<div style="margin:16px 0"><strong>DE: '+v(organizador,'organizador').toUpperCase()+'</strong><br>'+
+    '<strong>A: SEÑOR(A) DELEGADO(A) PRESIDENCIAL '+v(delegacion,'Regional/Provincial de …').toUpperCase()+'</strong><br>PRESENTE</div>'+
+    cuerpo+
+    '<div class="d-firma-fila" style="margin-top:56px"><div class="linea">'+v(organizador,'organizador')+'<br>RUT '+v(rut,'RUT')+'<br>Representante legal del organizador</div></div>'+
+    '<div style="margin-top:24px;font-size:10px"><strong>Adjuntos:</strong> Acta Descriptiva y declaración jurada (formatos R.E. N° 2.100) · Plan de Seguridad (art. 18) y anexos · antecedentes del seguro (art. 14).</div>'+
+    '<div class="d-pie">Carta preparada con la asesoría en seguridad privada de Control y Confianza CSF SpA (controlyconfianza.cl) · '+
+    (final?'Versión para firma y presentación.':'BORRADOR — requiere revisión del asesor acreditado y del organizador antes de firmarse.')+'</div>';
+
+  document.getElementById('docPrint').innerHTML=html;
+  document.getElementById('marcaAgua').className=final?'oculta':'';
+  window.print();
+}
+
 async function guardarDoc(){
-  var b={};DOC_CAMPOS.forEach(function(c){b[c[0]]=document.getElementById('doc-'+c[0]).value.trim();});
+  // Junta TODO lo visible de la pestaña (antecedentes + carta): el servidor
+  // reemplaza el JSON completo, así que guardar a medias borraría el resto.
+  var b={};DOC_CAMPOS.forEach(function(c){var el=document.getElementById('doc-'+c[0]);if(el)b[c[0]]=el.value.trim();});
+  ['delegacion','ciudad_carta','justificacion_ext'].forEach(function(k){var el=document.getElementById('doc-'+k);if(el)b[k]=el.value.trim();});
   try{await api('/admin/eventos/'+EVENTO_ID+'/doc',{method:'POST',body:b});ESTADO.evento.doc_json=JSON.stringify(b);document.getElementById('msgDoc').innerHTML='<p class="ok-msg">Antecedentes guardados.</p>';}
   catch(e){document.getElementById('msgDoc').innerHTML='<p class="err">'+esc(e.message)+'</p>';}
 }
