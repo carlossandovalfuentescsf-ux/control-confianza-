@@ -114,6 +114,7 @@ a{color:#d4a017}
   <div class="tabs">
     <button id="tab-tablero" class="act" onclick="verTab('tablero')">🚨 Tablero en vivo</button>
     <button id="tab-config" onclick="verTab('config')">🗺️ Planes y puestos</button>
+    <button id="tab-antecedentes" onclick="verTab('antecedentes')">📎 Antecedentes</button>
     <button id="tab-bitacora" onclick="verTab('bitacora')">📓 Bitácora</button>
     <button id="tab-documento" onclick="verTab('documento')">📄 Documento</button>
   </div>
@@ -204,7 +205,7 @@ function abrirEvento(id,tab){
   document.getElementById('btnVolver').textContent='‹ Eventos';
   document.querySelector('.tabs').style.display='flex';
   TAB=tab||'tablero';
-  ['tablero','config','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x===TAB?'act':'';});
+  ['tablero','config','antecedentes','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x===TAB?'act':'';});
   document.getElementById('contenido').innerHTML='<div class="card"><p class="mini">Cargando el evento…</p></div>';
   refrescar();
 }
@@ -257,7 +258,7 @@ async function croquisURL(){
     return CROQUIS_URL;
   }catch(e){return null;}
 }
-function verTab(t){TAB=t;['tablero','config','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x===t?'act':'';});render();}
+function verTab(t){TAB=t;['tablero','config','antecedentes','bitacora','documento'].forEach(function(x){document.getElementById('tab-'+x).className=x===t?'act':'';});render();}
 
 var CATALOGO_SEMBRADO={}; // por evento, para no reintentar en cada refresco
 async function refrescar(){
@@ -288,6 +289,7 @@ function render(){
   if(!ESTADO)return;
   if(TAB==='tablero')renderTablero();
   else if(TAB==='config')renderConfig();
+  else if(TAB==='antecedentes')renderAntecedentes();
   else if(TAB==='documento')renderDocumento();
   else renderBitacora();
 }
@@ -673,6 +675,193 @@ async function eliminarPuesto(id){if(!confirm('¿Eliminar este puesto? Sus asign
 async function asignarAuto(planId){try{var d=await api('/admin/planes/'+planId+'/asignar-auto',{method:'POST',body:{}});document.getElementById('msgPuestos').innerHTML='<p class="ok-msg">'+d.asignados_nuevos+' asignados. '+(d.guardias_sin_puesto?d.guardias_sin_puesto+' guardia(s) con rol quedaron sin puesto. ':'')+(d.puestos_incompletos.length?d.puestos_incompletos.length+' puesto(s) siguen incompletos.':'')+'</p>';await refrescar();}catch(e){document.getElementById('msgPuestos').innerHTML='<p class="err">'+esc(e.message)+'</p>';}}
 async function asignarManual(planId,puestoId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{puesto_id:puestoId,user_id:parseInt(uid,10)}});await refrescar();}catch(e){alert(e.message);await refrescar();}}
 async function quitarAsignacion(planId,uid){try{await api('/admin/planes/'+planId+'/asignar',{method:'POST',body:{user_id:uid,quitar:true}});await refrescar();}catch(e){alert(e.message);}}
+
+// ── 📎 ANTECEDENTES del evento (sesión 45, 28-08) ─────────────────
+// El cajón del evento: guardar la licitación, el plano, fotos, la póliza…
+// «para después». Desde aquí un documento guardado se LEE con IA y sus
+// datos se vuelcan al evento que YA existe (datos, antecedentes del
+// documento, puestos del plan de trabajo) — mismo patrón: la IA propone,
+// tú marcas qué aplicar. Una foto guardada puede volverse el croquis.
+var EXTRAIDO=null; // lo que la IA leyó, esperando tu revisión
+
+function renderAntecedentes(){
+  if(!ESTADO.es_admin){document.getElementById('contenido').innerHTML='<div class="card"><p class="mini">Los antecedentes los maneja el administrador.</p></div>';return;}
+  var html='<div class="card"><h2>📎 Archivo del evento</h2>'+
+    '<div class="porque">Guarda aquí lo del evento «para después»: la licitación, el plano del prevencionista, fotos del recinto, la póliza… Todo queda junto, en este evento. Desde cada archivo puedes: descargarlo, 🔎 leerlo con IA para volcar sus datos a este evento, o (si es imagen) usarlo como croquis del recinto.</div>'+
+    '<div class="fila"><input type="file" id="archFile" accept=".pdf,image/jpeg,image/png,image/webp" style="max-width:280px">'+
+    '<input id="archNombre" placeholder="Nombre (ej: Licitación municipal)" style="max-width:240px">'+
+    '<button onclick="subirArchivo()">💾 Guardar</button></div><div id="msgArch"></div>'+
+    '<div id="archLista" style="margin-top:10px"><p class="mini">Cargando archivos…</p></div></div>';
+
+  html+='<div class="card"><h2>🔎 Leer un documento y volcarlo a ESTE evento</h2>'+
+    '<div class="porque">También puedes pegar texto directo (un correo, unas bases). La IA extrae los datos y ABAJO te muestra qué encontró — tú marcas qué aplicar: actualizar los datos del evento, guardar los antecedentes del documento (organizador, RUT, aforo) y/o crear los puestos pedidos en el Plan de trabajo. Nada se aplica sin tu revisión.</div>'+
+    '<textarea id="antTexto" style="min-height:100px" placeholder="Pega aquí el texto (o usa 🔎 Leer con IA en un archivo guardado arriba)…"></textarea>'+
+    '<div class="fila" style="margin-top:8px"><button onclick="leerTextoIA()" id="btnAntLeer">🔎 Leer este texto con IA</button></div>'+
+    '<div id="msgAnt"></div><div id="antPreview"></div></div>';
+  document.getElementById('contenido').innerHTML=html;
+  cargarArchivos();
+  if(EXTRAIDO)pintarExtraido();
+}
+
+async function cargarArchivos(){
+  var zona=document.getElementById('archLista');if(!zona)return;
+  try{
+    var d=await api('/admin/eventos/'+EVENTO_ID+'/archivos');
+    var arch=d.archivos||[];
+    if(!arch.length){zona.innerHTML='<p class="mini">Aún no hay archivos guardados en este evento.</p>';return;}
+    var html='';
+    arch.forEach(function(a){
+      var esImg=a.media_type.indexOf('image/')===0;
+      html+='<div class="puesto"><div class="t">'+(a.media_type==='application/pdf'?'📄':'🖼')+' '+esc(a.nombre)+'</div><div class="m">'+fmtHora(a.subido_at)+'</div>'+
+        '<div class="fila"><button class="sec" onclick="descargarArchivo('+a.id+',\''+esc(a.nombre).replace(/'/g,'')+'\')">⬇ Descargar</button>'+
+        '<button class="sec" onclick="leerArchivoIA('+a.id+')">🔎 Leer con IA</button>'+
+        (esImg?'<button class="sec" onclick="archivoComoCroquis('+a.id+')">🗺 Usar como croquis</button>':'')+
+        '<button class="rojo" onclick="eliminarArchivo('+a.id+')">🗑</button></div></div>';
+    });
+    zona.innerHTML=html;
+  }catch(e){zona.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+
+async function subirArchivo(){
+  var f=document.getElementById('archFile').files[0];
+  var msg=document.getElementById('msgArch');
+  if(!f){msg.innerHTML='<p class="err">Elige primero el archivo.</p>';return;}
+  msg.innerHTML='<p class="mini">⏳ Subiendo…</p>';
+  try{
+    var b64=await archivoABase64(f);
+    var nombre=document.getElementById('archNombre').value.trim()||f.name;
+    await api('/admin/eventos/'+EVENTO_ID+'/archivos',{method:'POST',body:{nombre:nombre,media_type:f.type,data:b64}});
+    document.getElementById('archFile').value='';document.getElementById('archNombre').value='';
+    msg.innerHTML='<p class="ok-msg">Guardado.</p>';
+    cargarArchivos();
+  }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+
+async function descargarArchivo(id,nombre){
+  try{
+    var r=await fetch(API_URL+'/admin/archivos/'+id,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!r.ok)throw new Error('No se pudo descargar.');
+    var url=URL.createObjectURL(await r.blob());
+    var a=document.createElement('a');a.href=url;a.download=nombre||'archivo';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url);},4000);
+  }catch(e){alert(e.message);}
+}
+
+async function eliminarArchivo(id){
+  if(!confirm('¿Eliminar este archivo del evento? No se puede deshacer.'))return;
+  try{await api('/admin/archivos/'+id,{method:'DELETE'});cargarArchivos();}catch(e){alert(e.message);}
+}
+
+// Una FOTO guardada (el plano, una captura del mapa) se vuelve el croquis
+// del recinto con un toque: se achica y se instala donde ya vive el croquis.
+async function archivoComoCroquis(id){
+  if(ESTADO.evento.croquis&&!confirm('Este evento ya tiene croquis. ¿Reemplazarlo por esta imagen? Las posiciones de los puestos se conservan.'))return;
+  var msg=document.getElementById('msgArch');
+  msg.innerHTML='<p class="mini">⏳ Preparando el croquis…</p>';
+  try{
+    var r=await fetch(API_URL+'/admin/archivos/'+id,{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    if(!r.ok)throw new Error('No se pudo cargar la imagen.');
+    var b64=await achicarImagen(await r.blob(),1600);
+    await api('/admin/eventos/'+EVENTO_ID+'/croquis',{method:'POST',body:{media_type:'image/jpeg',data:b64}});
+    if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;
+    ESTADO.evento.croquis=1;
+    msg.innerHTML='<p class="ok-msg">🗺 Instalada como croquis — ubica los puestos en «Planes y puestos», sección 4.</p>';
+  }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+
+async function leerArchivoIA(id){
+  var msg=document.getElementById('msgAnt');
+  msg.innerHTML='<p class="mini">⏳ Leyendo el documento… (10-30 segundos)</p>';
+  try{EXTRAIDO=await api('/admin/eventos/extraer-licitacion',{method:'POST',body:{archivo_id:id}});msg.innerHTML='';pintarExtraido();}
+  catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';EXTRAIDO=null;}
+}
+async function leerTextoIA(){
+  var t=document.getElementById('antTexto').value.trim();
+  var msg=document.getElementById('msgAnt'), btn=document.getElementById('btnAntLeer');
+  if(!t){msg.innerHTML='<p class="err">Pega primero el texto.</p>';return;}
+  btn.disabled=true;msg.innerHTML='<p class="mini">⏳ Leyendo… (10-30 segundos)</p>';
+  try{EXTRAIDO=await api('/admin/eventos/extraer-licitacion',{method:'POST',body:{texto:t}});msg.innerHTML='';pintarExtraido();}
+  catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';EXTRAIDO=null;}
+  btn.disabled=false;
+}
+
+function pintarExtraido(){
+  var zona=document.getElementById('antPreview');
+  if(!zona||!EXTRAIDO)return;
+  var X=EXTRAIDO, e=ESTADO.evento;
+  var cambio=function(etq,antes,despues){return '<tr><td>'+etq+'</td><td class="mini">'+esc(antes||'—')+'</td><td><strong>'+esc(despues||'—')+'</strong></td></tr>';};
+  var html='<div style="border:1px solid #3a3010;background:#181405;border-radius:10px;padding:12px;margin-top:10px">'+
+    '<p style="font-weight:800;margin-bottom:4px">Lo que la IA encontró — marca qué aplicar a «'+esc(e.nombre)+'»</p>';
+  // 1) Datos del evento.
+  var hayDatos=X.lugar||X.comuna||X.fecha_inicio||X.requisitos;
+  if(hayDatos){
+    html+='<label style="display:flex;gap:8px;align-items:flex-start;margin:10px 0 4px"><input type="checkbox" id="ant-datos" style="width:auto;margin-top:3px"><span style="font-weight:800;font-size:0.85rem">Actualizar los datos del evento</span></label>'+
+      '<table><tr><th></th><th>Hoy dice</th><th>Pasaría a decir</th></tr>'+
+      (X.lugar?cambio('Lugar',e.lugar,X.lugar):'')+
+      (X.comuna?cambio('Comuna',e.comuna,X.comuna):'')+
+      (X.fecha_inicio?cambio('Fecha inicio',e.fecha_inicio,X.fecha_inicio):'')+
+      (X.fecha_fin?cambio('Fecha fin',e.fecha_fin,X.fecha_fin):'')+
+      (X.requisitos?cambio('Requisitos',null,X.requisitos):'')+'</table>';
+  }
+  // 2) Antecedentes del documento.
+  var hayAntec=X.mandante||X.mandante_rut||X.aforo;
+  if(hayAntec){
+    html+='<label style="display:flex;gap:8px;align-items:flex-start;margin:10px 0 4px"><input type="checkbox" checked id="ant-doc" style="width:auto;margin-top:3px"><span style="font-weight:800;font-size:0.85rem">Guardar antecedentes para el Plan de Seguridad y las cartas</span></label>'+
+      '<p class="mini" style="margin-left:22px">Organizador: '+esc(X.mandante||'—')+' · RUT: '+esc(X.mandante_rut||'—')+' · Aforo: '+esc(X.aforo||'—')+'</p>';
+  }
+  // 3) Puestos del plan de trabajo.
+  if((X.dotacion||[]).length){
+    html+='<label style="display:flex;gap:8px;align-items:flex-start;margin:10px 0 4px"><input type="checkbox" checked id="ant-puestos" style="width:auto;margin-top:3px"><span style="font-weight:800;font-size:0.85rem">Crear '+X.dotacion.length+' puesto(s) en el Plan de trabajo</span></label>'+
+      '<p class="mini" style="margin-left:22px">'+X.dotacion.map(function(d){return d.cantidad+'× '+esc(d.funcion);}).join(' · ')+'</p>';
+  }
+  if(!hayDatos&&!hayAntec&&!(X.dotacion||[]).length){
+    html+='<p class="mini">El documento no traía datos aprovechables para este evento.</p>';
+  }
+  html+='<div class="fila" style="margin-top:12px"><button class="verde" onclick="aplicarExtraido()">✅ Aplicar lo marcado</button>'+
+    '<button class="sec" onclick="EXTRAIDO=null;render()">Descartar</button></div><div id="msgAplicar"></div></div>';
+  zona.innerHTML=html;
+}
+
+async function aplicarExtraido(){
+  var X=EXTRAIDO, msg=document.getElementById('msgAplicar');
+  var on=function(id){var el=document.getElementById(id);return el&&el.checked;};
+  msg.innerHTML='<p class="mini">⏳ Aplicando…</p>';
+  var hechos=[];
+  try{
+    if(on('ant-datos')){
+      var b={};
+      if(X.lugar)b.lugar=X.lugar;
+      if(X.comuna)b.comuna=X.comuna;
+      if(X.fecha_inicio)b.fecha_inicio=X.fecha_inicio;
+      if(X.fecha_fin)b.fecha_fin=X.fecha_fin;
+      if(X.requisitos)b.requisitos=X.requisitos;
+      if(Object.keys(b).length){await api('/admin/eventos/'+EVENTO_ID,{method:'PATCH',body:b});hechos.push('datos del evento');}
+    }
+    if(on('ant-doc')){
+      // El servidor reemplaza el JSON completo: se mezcla con lo ya guardado.
+      var d={};try{d=JSON.parse(ESTADO.evento.doc_json||'{}')||{};}catch(e2){}
+      if(X.mandante)d.organizador=X.mandante;
+      if(X.mandante_rut)d.organizador_rut=X.mandante_rut;
+      if(X.aforo)d.aforo=String(X.aforo);
+      await api('/admin/eventos/'+EVENTO_ID+'/doc',{method:'POST',body:d});
+      hechos.push('antecedentes del documento');
+    }
+    if(on('ant-puestos')&&(X.dotacion||[]).length){
+      var planTrabajo=(ESTADO.planes||[]).find(function(p){return p.tipo==='trabajo';});
+      if(planTrabajo){
+        for(var i=0;i<X.dotacion.length;i++){
+          var dt=X.dotacion[i];
+          await api('/admin/planes/'+planTrabajo.id+'/puestos',{method:'POST',body:{nombre:dt.funcion,rol:dt.rol,cupos:dt.cantidad,orden:i}});
+        }
+        hechos.push(X.dotacion.length+' puesto(s) en el Plan de trabajo');
+      }
+    }
+    EXTRAIDO=null;
+    await refrescar();
+    var m2=document.getElementById('msgAnt');
+    if(m2)m2.innerHTML='<p class="ok-msg">✅ Aplicado: '+(hechos.join(', ')||'nada marcado')+'.</p>';
+  }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+' — lo ya aplicado ('+hechos.join(', ')+') quedó guardado.</p>';}
+}
 
 // ── Nuevo evento desde una LICITACIÓN (28-08-2026) ────────────────
 // El flujo pedido por Carlos: se pega (o sube) la licitación y el sistema
