@@ -667,7 +667,9 @@ function renderConfig(){
   // los oficiales que difundió la productora: el mapa ES el producto.
   html+='<div class="card"><h2>4 · Croquis del recinto</h2><div class="porque">Sube UNA foto o plano del recinto (sirve el plano del prevencionista o una captura del mapa). Después toca 📍 en un puesto del plan seleccionado y toca el punto del mapa donde va. El mismo mapa alimenta el tablero en vivo, el teléfono de cada guardia y los documentos para imprimir.</div>'+
     '<div class="fila"><input type="file" id="croFile" accept="image/jpeg,image/png,image/webp" style="max-width:280px"><button class="sec" onclick="subirCroquis()">'+(ESTADO.evento.croquis?'↺ Reemplazar croquis':'⬆️ Subir croquis')+'</button>'+
-    (ESTADO.evento.croquis?'<button class="rojo" onclick="quitarCroquis()">🗑 Quitar</button>':'')+'</div><div id="msgCroquis"></div>'+
+    (ESTADO.evento.croquis?'<button onclick="ubicarPuestosIA()">✨ Ubicar los puestos con IA</button><button class="rojo" onclick="quitarCroquis()">🗑 Quitar</button>':'')+'</div>'+
+    (ESTADO.evento.croquis?'<p class="mini" style="margin-top:6px">✨ <strong>Ubicar con IA</strong>: mira la foto y pone TODOS los puestos sin ubicar de TODOS los planes, según su función y el tipo de plan (accesos a las entradas, evacuación a las salidas, incendio al sector de riesgo…). Después mueves con 📍 el que no te calce — la IA propone, tu ojo de terreno manda.</p>':'')+
+    '<div id="msgCroquis"></div>'+
     (ESTADO.evento.croquis?'<div id="croCfgZona" style="margin-top:10px"><p class="mini">Cargando croquis…</p></div>':'')+
     '</div>';
 
@@ -738,6 +740,28 @@ async function subirCroquis(){
     await refrescar();
   }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
 }
+// ✨ La IA mira el croquis y ubica los puestos según su función y el tipo
+// de plan (metodología en el motor). Solo toca los SIN posición; si ya
+// están todos puestos, ofrece reubicar desde cero.
+async function ubicarPuestosIA(){
+  var msg=document.getElementById('msgCroquis');
+  var sinPos=(ESTADO.puestos||[]).filter(function(q){return q.pos_x==null;}).length;
+  var todos=false;
+  if(!sinPos){
+    if(!confirm('Todos los puestos ya están ubicados. ¿Quieres que la IA los REUBIQUE todos desde cero? (Se pierden las posiciones actuales.)'))return;
+    todos=true;
+  }else{
+    if(!confirm('La IA mirará el croquis y ubicará los '+sinPos+' puesto(s) sin posición, de todos los planes, según su función. Después puedes mover cualquiera con 📍. ¿Continuar?'))return;
+  }
+  msg.innerHTML='<p class="mini">⏳ La IA está mirando el plano y distribuyendo… (20-60 segundos)</p>';
+  try{
+    var d=await api('/admin/eventos/'+EVENTO_ID+'/ubicar-puestos-ia',{method:'POST',body:{todos:todos}});
+    await refrescar();
+    var m2=document.getElementById('msgCroquis');
+    if(m2)m2.innerHTML='<p class="ok-msg">✨ '+d.ubicados+' puesto(s) ubicados en el mapa'+(d.pendientes?' ('+d.pendientes+' no se pudieron — ubícalos con 📍)':'')+'. Revisa cada plan y mueve lo que no calce.</p>';
+  }catch(e){msg.innerHTML='<p class="err">'+esc(e.message)+'</p>';}
+}
+
 async function quitarCroquis(){
   if(!confirm('¿Quitar el croquis? Las posiciones de los puestos se conservan por si subes otro.'))return;
   try{await api('/admin/eventos/'+EVENTO_ID+'/croquis',{method:'DELETE'});if(CROQUIS_URL)URL.revokeObjectURL(CROQUIS_URL);CROQUIS_URL=null;CROQUIS_EVENTO=null;await refrescar();}catch(e){alert(e.message);}
