@@ -1223,9 +1223,17 @@ async function generarDocumento(final){
   var fechaTxt=esc(e.fecha_inicio)+(e.fecha_fin&&e.fecha_fin!==e.fecha_inicio?' al '+esc(e.fecha_fin):'');
   var respNombre=e.responsable_user_id?nombreGuardia(e.responsable_user_id):null;
 
-  // Conteo por rol (N°3: cantidad y distribución según criterios técnicos).
+  // Cantidad y distribución (N°3): el plan se presenta ANTES de contratar
+  // (art. 17: 60 días de antelación), así que la dotación COMPROMETIDA sale
+  // de los CUPOS del plan de trabajo — la nómina confirmada es la capa que
+  // se va llenando después con la convocatoria (pregunta de Carlos 28-08).
+  var puestosTrab=planTrabajo?(ESTADO.puestos||[]).filter(function(q){return q.plan_id===planTrabajo.id;}):[];
+  var cuposTotal=puestosTrab.reduce(function(s,q){return s+q.cupos;},0);
+  var porRolCupos={};puestosTrab.forEach(function(q){porRolCupos[q.rol]=(porRolCupos[q.rol]||0)+q.cupos;});
   var porRol={};roster.forEach(function(r){if(r.rol)porRol[r.rol]=(porRol[r.rol]||0)+1;});
-  var filasRol=Object.keys(porRol).map(function(k){return '<tr><td>'+esc(roles[k]||k)+'</td><td>'+porRol[k]+'</td></tr>';}).join('')||'<tr><td colspan="2"><em>Sin roles asignados aún</em></td></tr>';
+  var fuenteRol=cuposTotal?porRolCupos:porRol;
+  var filasRol=Object.keys(fuenteRol).map(function(k){return '<tr><td>'+esc(roles[k]||k)+'</td><td>'+fuenteRol[k]+'</td></tr>';}).join('')||'<tr><td colspan="2"><em>Sin funciones definidas aún</em></td></tr>';
+  var dotTotal=cuposTotal||roster.length;
 
   // Individualización nominal con puesto del plan de trabajo.
   var puestoDe={};
@@ -1278,10 +1286,13 @@ async function generarDocumento(final){
     '<p style="font-size:10.5px;color:#444">El responsable de seguridad cumple los requisitos del artículo 46 de la Ley N° 21.659 (con excepción de su numeral 11) y tiene la calidad de trabajador dependiente del organizador o del administrador del recinto (art. 2 N°5 del reglamento). Vela por el cumplimiento del presente plan durante todo el desarrollo del evento.</p></div>';
 
   html+='<div class="d-sec"><div class="d-tit">3. Personal de seguridad privada: cantidad, distribución y turnos (art. 18 N°3)</div>'+
-    '<p>Dotación total del evento: <strong>'+roster.length+' persona(s)</strong>, distribuidas según los criterios técnicos siguientes:</p>'+
+    '<p>Dotación total comprometida para el evento: <strong>'+dotTotal+' persona(s)</strong>'+(roster.length&&cuposTotal?' ('+roster.length+' ya confirmadas a la fecha de este documento)':'')+', distribuidas según los criterios técnicos siguientes:</p>'+
     '<table><tr><th>Función</th><th>Cantidad</th></tr>'+filasRol+'</table>'+
     '<p style="margin-top:6px"><strong>Individualización del personal y su puesto de servicio:</strong></p>'+
-    '<table><tr><th>N°</th><th>Nombre</th><th>Función</th><th>Puesto (operación normal)</th><th>Turno</th></tr>'+filasNom+'</table>'+
+    (roster.length
+      ?'<table><tr><th>N°</th><th>Nombre</th><th>Función</th><th>Puesto (operación normal)</th><th>Turno</th></tr>'+filasNom+'</table>'+
+        (roster.length<cuposTotal?'<p style="font-size:10.5px;color:#444">La convocatoria del personal restante se encuentra en curso. La individualización nominal completa (nombre y credencial de cada guardia) se remitirá a la Delegación como actualización del presente plan antes de la realización del evento, manteniéndose la cantidad y la distribución por función aquí comprometidas.</p>':'')
+      :'<p style="font-size:10.5px;color:#444">La convocatoria del personal se encuentra en curso a la fecha de este documento. La individualización nominal (nombre y credencial de cada guardia, conforme al art. 18 N°3) se remitirá a la Delegación como <strong>actualización del presente plan</strong> con la debida antelación a la realización del evento, manteniéndose la cantidad y la distribución por función aquí comprometidas.</p>')+
     '<table style="margin-top:6px"><tr><th style="width:34%">Uniforme / tenida</th><td>'+v(b.tenida,'tenida del personal')+'</td></tr>'+
     '<tr><th>Equipamiento y credencial</th><td>'+v(b.equipamiento,'equipamiento y credencial')+'</td></tr></table>'+
     '<p style="font-size:10.5px;color:#444">La <strong>Directiva de Funcionamiento</strong> del servicio de guardias, con el número de guardias y las modalidades de organización y funcionamiento, se acompaña como <strong>Anexo A</strong>, conforme lo exige el mismo numeral.</p></div>';
