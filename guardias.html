@@ -913,6 +913,27 @@ function html_pintarOfertasLista(el, lista, prefijoHtml, sufijoHtml, encabezados
   html+=sufijoHtml||'';
   el.innerHTML=html;
 }
+// Sugiere la especialidad leyendo el nombre del lugar. Espejo de la instrucción
+// nº10 del extractor de IA (cyc-worker/index.js): si se cambia una, cambiar la otra.
+// Devuelve null cuando el texto no da ninguna pista — jamás adivina por adivinar.
+function adivinarEspecialidad(txt){
+  var t=(txt||'').toLowerCase();
+  // «instalación no retail» significa lo CONTRARIO: se borra antes de buscar.
+  t=t.replace(/\bno\s+(es\s+)?retail\b/g,' ');
+  var R=[
+    ['salud',          /hospital|cl[íi]nic|cesfam|cecof|consultorio|sapu/],
+    ['cctv-monitoreo', /cctv|monitoreo|operador de c[aá]mar|c[áa]maras/],
+    ['eventos',        /\bevento|concierto|estadio|festival|masivo/],
+    ['mineria',        /minera|miner[ií]a|faena/],
+    ['escolta-vip',    /escolta|\bvip\b|traslado ejecutiv/],
+    ['retail',         /paris|h&m|falabella|ripley|\bmall\b|supermercado|acuenta|casaideas|\beasy\b|tottus|l[ií]der|sodimac|jumbo|santa isabel|unimarc|\btienda\b|\bretail\b/],
+    ['industrial',     /industri|bodega|planta|cervecer|qu[ií]mica|pinturas|log[ií]stic|datacenter|centro de distribu|f[áa]brica|manufactur|sector empresarial|correos/],
+    ['porteria',       /corporativ|porter[ií]a|portero|conserje|recepci[óo]n|colegio|universidad|inacap|instituto|escuela/],
+    ['condominio',     /condominio|\bvilla\b|parcela|departamento|edificio residencial/]
+  ];
+  for(var i=0;i<R.length;i++){ if(R[i][1].test(t)) return R[i][0]; }
+  return null;
+}
 var NOMBRE_ESPECIALIDAD={'cctv-monitoreo':'CCTV/Monitoreo','eventos':'Eventos','retail':'Retail','industrial':'Industrial','condominio':'Condominio','escolta-vip':'Escolta VIP','porteria':'Portería','mineria':'Minería','tactico':'Táctico','nochero':'Nochero','salud':'Salud/Hospitalario','otro':'Otra especialidad'};
 
 async function reportarOferta(id){
@@ -1937,6 +1958,19 @@ async function guardarOferta(id){
   if(origen==='comunidad' && !whatsapp){ msg.textContent='Oferta de la comunidad: falta el WhatsApp del reclutador.'; msg.className='form-msg err'; return; }
   var cupos=parseInt(cuposRaw,10);
   if(!(cupos>0)){ msg.textContent='Cupos debe ser mayor a 0.'; msg.className='form-msg err'; return; }
+
+  // Especialidad: aviso, no bloqueo (29-08-2026). Una oferta sin especialidad es
+  // INVISIBLE para el guardia que filtra por su rubro — así se perdieron 56 de 68
+  // ofertas sin que nadie se enterara. Se sugiere la más probable leyendo el nombre
+  // del lugar; el humano confirma o la ignora, nunca se decide sola.
+  if(!especialidad){
+    var sug=adivinarEspecialidad(titulo+' '+lugar+' '+descripcion+' '+requisitos+' '+empresa);
+    var aviso=sug
+      ? 'Esta oferta va SIN especialidad, así que no aparecerá cuando un guardia filtre por su rubro.\n\nPor el lugar, parece «'+NOMBRE_ESPECIALIDAD[sug]+'».\n\nAceptar = publicar como '+NOMBRE_ESPECIALIDAD[sug]+'\nCancelar = volver y elegirla yo'
+      : 'Esta oferta va SIN especialidad, así que no aparecerá cuando un guardia filtre por su rubro.\n\nNo pude deducirla del texto.\n\nAceptar = publicar igual\nCancelar = volver y elegirla yo';
+    if(confirm(aviso)){ if(sug) especialidad=sug; }
+    else { document.getElementById('oEspecialidad').focus(); msg.textContent='Elige el tipo de trabajo y vuelve a guardar.'; msg.className='form-msg'; return; }
+  }
 
   var body={tipo:tipo,origen:origen,titulo:titulo,comuna:comuna,lugar:lugar,fecha_inicio:fechaInicio,fecha_fin:fechaFin,cupos:cupos,descripcion:descripcion,requisitos:requisitos,
     pago_turno:pagoRaw?parseInt(pagoRaw,10):null,
