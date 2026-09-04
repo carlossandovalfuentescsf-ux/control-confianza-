@@ -212,6 +212,31 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .inc-btns button{background:#2a2a2a;color:#f0e8d0;border:none;border-radius:8px;padding:10px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
 .inc-btns button.oro{background:#d4a017;color:#111}
 .inc-lock{background:#161616;border:1px solid rgba(212,160,23,.4);border-radius:14px;padding:16px;margin-top:12px}
+/* Turnos + familia (Premium, 04-09-2026) */
+.tu-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tu-form .full{grid-column:1/-1}
+.tu-form select,.tu-form input{width:100%;background:#111;border:1px solid #333;border-radius:8px;color:#fff;padding:10px;font-size:.85rem;font-family:inherit}
+.tu-cal{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:14px;margin-top:12px}
+.tu-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.tu-nav b{font-size:.95rem;text-transform:capitalize}
+.tu-nav button{background:#2a2a2a;color:#f0e8d0;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;font-weight:700}
+.tu-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.tu-grid .dn{font-size:.62rem;color:#888;text-align:center;font-weight:700;padding-bottom:4px}
+.tu-d{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.8rem;background:#111;color:#666;border:1px solid transparent}
+.tu-d.otro{opacity:.25}
+.tu-d.dia{background:rgba(212,160,23,.22);color:#f0e8d0;border-color:rgba(212,160,23,.5)}
+.tu-d.noche{background:rgba(63,81,181,.28);color:#dfe3ff;border-color:rgba(120,140,255,.5)}
+.tu-d.hoy{outline:2px solid #fff;outline-offset:-2px}
+.tu-d small{font-size:.5rem;line-height:1;margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+.tu-leyenda{display:flex;gap:14px;font-size:.7rem;color:#999;margin-top:10px;flex-wrap:wrap}
+.tu-leyenda i{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:middle;margin-right:5px}
+.tu-prox{margin-top:12px}
+.tu-prox .fila{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #222;font-size:.8rem}
+.tu-prox .fila span:last-child{font-weight:700}
+.tu-res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tu-res div{background:#111;border-radius:10px;padding:10px;text-align:center}
+.tu-res b{display:block;font-size:1.2rem;color:#d4a017}
+.tu-res span{font-size:.66rem;color:#999}
 /* Venta real de Premium (04-09-2026) */
 .p-lbl{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a7a45;margin:14px 0 8px}
 .p-tool.p-hoy{border-color:rgba(212,160,23,.55);background:#1a1200}
@@ -349,6 +374,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <a href="#mis-eventos" data-tab="mis-eventos">Mis Eventos</a>
       <a href="#mis-postulaciones" data-tab="mis-postulaciones">Postulaciones</a>
       <a href="#incidente" data-tab="incidente" style="border-top:1px solid #2a2a2a;margin-top:4px;padding-top:8px">⚖️ Después del incidente <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
+      <a href="#turnos" data-tab="turnos">📅 Turnos + familia <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
     </div>
   </div>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
@@ -375,13 +401,13 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <div class="p-grid">
         <div class="p-tool p-hoy"><div class="t">⭐ Perfil destacado</div><p>Tus postulaciones aparecen primero y con insignia Premium ante quien contrata.</p></div>
         <div class="p-tool p-hoy"><div class="t">⚖️ Después del incidente</div><p>Protocolo paso a paso para 7 situaciones: qué hacer, qué registrar, a quién avisar, tus derechos, y tu acta personal lista para imprimir. <a href="#incidente" style="color:#d4a017">Abrir →</a></p></div>
+        <div class="p-tool p-hoy"><div class="t">📅 Turnos + familia</div><p>Tu pauta 4x4, 5x2, 6x1 o la que uses, proyectada en un calendario. Enlace para tu familia y archivo para el calendario del teléfono. <a href="#turnos" style="color:#d4a017">Abrir →</a></p></div>
       </div>
       <div class="p-lbl">En camino — se activan en tu cuenta sin costo extra</div>
       <div class="p-grid">
         <div class="p-tool"><div class="t">🧾 Verificador de Liquidación</div><p>Le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p></div>
         <div class="p-tool"><div class="t">🤖 Asistente Gremial IA</div><p>Consultas sobre tus leyes, dictámenes y procedimientos.</p></div>
         <div class="p-tool"><div class="t">🔒 Bitácora Blindada</div><p>Registro personal de incidentes, inalterable y con export PDF.</p></div>
-        <div class="p-tool"><div class="t">📅 Turnos + Familia</div><p>Tu pauta 4x4/5x2 en un calendario proyectado, compartible con tu familia.</p></div>
         <div class="p-tool"><div class="t">🎓 Mi Carrera</div><p>CV profesional en PDF y tu ruta de especializaciones.</p></div>
         <div class="p-tool"><div class="t">🔔 Alertas a tu medida</div><p>Hoy ya recibes avisos por comuna y especialidad; podrás sumar turno y renta mínima.</p></div>
       </div>
@@ -403,6 +429,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <!-- DESPUÉS DEL INCIDENTE (Control+ Premium, 04-09-2026) -->
   <section class="view" id="view-incidente">
     <div id="incidenteContent"></div>
+  </section>
+
+  <!-- TURNOS + FAMILIA (Control+ Premium, 04-09-2026) -->
+  <section class="view" id="view-turnos">
+    <div id="turnosContent"></div>
   </section>
 
   <!-- SUELDO / CALCULADORA (G3) -->
@@ -470,7 +501,6 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <div class="mp-t">🤖 Asistente Gremial IA</div>
             <div class="mp-t">📁 Carpeta documental</div>
       <div class="mp-t alt">🔒 Bitácora blindada</div>
-      <div class="mp-t">📅 Turnos + Familia</div>
       <div class="mp-t">🎓 Mi Carrera</div>
     </div>
     <div class="mp-gratis">
@@ -731,8 +761,8 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','admin'];
-var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente'];
+var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','admin'];
+var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos'];
 function toggleMenuCuenta(e){
   // OJO: sin preventDefault — el clic en "Mi Perfil"/etc burbujea desde el <a> hijo
   // hasta este div padre, y preventDefault() aqui cancelaba tambien la navegacion
@@ -761,6 +791,7 @@ document.addEventListener('click', function(e){
 function vistaActual(){
   var h=(location.hash||'#ofertas').replace('#','');
   if(h.indexOf('guia')===0) return 'guia'; // #guia-g23 abre la ficha g23 (links compartibles)
+  if(h.indexOf('turnos')===0) return 'turnos'; // #turnos-<código> = calendario compartido con la familia
   return VISTAS.indexOf(h)>=0 ? h : 'ofertas';
 }
 function renderView(){
@@ -790,6 +821,7 @@ function renderView(){
   else if(v==='mis-eventos') renderMisEventos();
   else if(v==='mis-postulaciones') renderMisPostulaciones();
   else if(v==='incidente') renderIncidente();
+  else if(v==='turnos') renderTurnos();
   else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
 }
@@ -2563,6 +2595,149 @@ function incActasGuardadas(){
   }).join('')+'<div class="p-nota">Se guardan solo en este teléfono, no en nuestros servidores.</div></div>';
 }
 function incBorrar(i){ try{ var l=JSON.parse(localStorage.getItem('cplus_actas')||'[]'); l.splice(i,1); localStorage.setItem('cplus_actas',JSON.stringify(l)); }catch(e){} renderIncidente(); }
+
+/* ---------- Turnos + familia (Control+ Premium, 04-09-2026) ----------
+   Proyecta la pauta (trabajo x descanso) en un calendario. El enlace #turnos-<código> lo
+   abre cualquiera (la familia no necesita cuenta): el código lleva la pauta, no datos
+   personales salvo el nombre que el guardia decida poner. Se guarda en este teléfono. */
+var TU_PAUTAS={'4x4':[4,4],'5x2':[5,2],'6x1':[6,1],'2x2':[2,2],'3x3':[3,3],'7x7':[7,7],'6x2':[6,2]};
+var TU_MES=null; // {y,m} del mes que se está mirando
+function tuCfgDefault(){ var d=new Date(); return {p:'4x4',w:4,r:4,i:tuISO(d),t:'d',h:'08:00-20:00',n:''}; }
+function tuISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function tuDeISO(iso){ var a=iso.split('-'); return new Date(+a[0],+a[1]-1,+a[2]); }
+function tuCargar(){ try{ var c=JSON.parse(localStorage.getItem('cplus_turnos')||'null'); if(c&&c.i) return c; }catch(e){} return null; }
+function tuCodigo(c){ return [c.p==='custom'?c.w+'x'+c.r:c.p, c.i, c.t, c.h.replace(/:/g,''), encodeURIComponent(c.n||'')].join('_'); }
+function tuDeCodigo(code){
+  try{
+    var a=code.split('_'); var p=a[0], wr=p.split('x'); var w=+wr[0], r=+wr[1];
+    if(!w||!r||w>30||r>30) return null;
+    var h=(a[3]||'0800-2000').replace(/(\d\d)(\d\d)-(\d\d)(\d\d)/,'$1:$2-$3:$4');
+    return {p:TU_PAUTAS[p]?p:'custom',w:w,r:r,i:a[1],t:(a[2]==='n'||a[2]==='dn')?a[2]:'d',h:h,n:decodeURIComponent(a[4]||'')};
+  }catch(e){ return null; }
+}
+/* ¿Qué toca el día d? null = libre, 'dia' o 'noche'. */
+function tuEstado(c,d){
+  var ini=tuDeISO(c.i); var dias=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-ini)/864e5);
+  var ciclo=c.w+c.r; var idx=((dias%ciclo)+ciclo)%ciclo;
+  if(idx>=c.w) return null;
+  if(c.t==='n') return 'noche';
+  if(c.t==='dn'){ var bloque=Math.floor(dias/ciclo); return ((bloque%2)+2)%2===0?'dia':'noche'; }
+  return 'dia';
+}
+function renderTurnos(){
+  var el=document.getElementById('turnosContent');
+  var h=(location.hash||'').replace('#','');
+  var codigo=h.indexOf('turnos-')===0?h.slice(7):'';
+  var compartido=codigo?tuDeCodigo(codigo):null;
+  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">📅 Turnos + familia <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+    '<div class="auth-sub" style="margin-bottom:0">Tu pauta de turnos proyectada en un calendario, para que tú y tu familia sepan qué días trabajas y cuáles estás en casa. Compártelo con un enlace o cárgalo en el calendario del teléfono.</div></div>';
+  if(compartido){
+    if(!TU_MES){ var hoy=new Date(); TU_MES={y:hoy.getFullYear(),m:hoy.getMonth()}; }
+    el.innerHTML='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">📅 Turnos de '+(compartido.n?esc(compartido.n):'un guardia')+'</div>'+
+      '<div class="auth-sub" style="margin-bottom:0">Pauta '+compartido.w+'x'+compartido.r+' · '+tuTipoTxt(compartido)+' · horario '+esc(compartido.h)+'. Calendario compartido desde Control+.</div></div>'+
+      tuCalendarioHTML(compartido)+tuProximosHTML(compartido)+
+      '<div class="p-nota" style="text-align:center;margin-top:14px">Control+ es la app del gremio de guardias: bolsa de trabajo gratis, Test OS-10 y guía legal. <a href="#ofertas" style="color:#d4a017">Ver la app →</a></div>';
+    cycTelemetria('guardias','turnos_compartido_visto',true);
+    return;
+  }
+  if(!CYC_TOKEN || !CYC_CM){
+    var cta;
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye esta herramienta, el perfil destacado y «Después del incidente». 30 días por cada pago, sin cobro automático.</div>'; }
+    var demo={p:'4x4',w:4,r:4,i:tuISO(new Date()),t:'dn',h:'08:00-20:00',n:''}; if(!TU_MES){ var hy=new Date(); TU_MES={y:hy.getFullYear(),m:hy.getMonth()}; }
+    el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;margin-bottom:6px">Así se ve (ejemplo con pauta 4x4 día y noche):</div>'+tuCalendarioHTML(demo,true)+'<div style="margin-top:14px">'+cta+'</div></div>';
+    return;
+  }
+  var c=tuCargar()||tuCfgDefault();
+  if(!TU_MES){ var hh=new Date(); TU_MES={y:hh.getFullYear(),m:hh.getMonth()}; }
+  var opciones=Object.keys(TU_PAUTAS).map(function(k){return '<option value="'+k+'"'+(c.p===k?' selected':'')+'>'+k+' ('+TU_PAUTAS[k][0]+' de trabajo, '+TU_PAUTAS[k][1]+' libres)</option>';}).join('')+'<option value="custom"'+(c.p==='custom'?' selected':'')+'>Otra pauta…</option>';
+  el.innerHTML=cab+'<div class="card"><div class="tu-form">'+
+    '<div class="full"><label for="tuP">Tu pauta</label><select id="tuP" onchange="tuCambioPauta()">'+opciones+'</select></div>'+
+    '<div id="tuCustom" class="full" style="display:'+(c.p==='custom'?'grid':'none')+';grid-template-columns:1fr 1fr;gap:10px"><div><label for="tuW">Días de trabajo</label><input id="tuW" type="number" min="1" max="30" value="'+c.w+'"></div><div><label for="tuR">Días libres</label><input id="tuR" type="number" min="1" max="30" value="'+c.r+'"></div></div>'+
+    '<div><label for="tuI">Primer día de tu bloque de trabajo actual</label><input id="tuI" type="date" value="'+c.i+'"></div>'+
+    '<div><label for="tuT">Tipo de turno</label><select id="tuT"><option value="d"'+(c.t==='d'?' selected':'')+'>Día</option><option value="n"'+(c.t==='n'?' selected':'')+'>Noche</option><option value="dn"'+(c.t==='dn'?' selected':'')+'>Rotativo: un bloque de día, el siguiente de noche</option></select></div>'+
+    '<div><label for="tuH">Horario (inicio-fin)</label><input id="tuH" type="text" value="'+esc(c.h)+'" placeholder="08:00-20:00" pattern="\\d\\d:\\d\\d-\\d\\d:\\d\\d"></div>'+
+    '<div><label for="tuN">Tu nombre (para el enlace a tu familia)</label><input id="tuN" type="text" value="'+esc(c.n||'')+'" placeholder="Ej: Papá / Carlos"></div>'+
+    '<div class="full inc-btns"><button class="oro" onclick="tuGuardar()">Guardar y ver calendario</button></div>'+
+    '</div><div id="tuMsg" class="p-msg"></div></div>'+
+    '<div id="tuCalWrap">'+(tuCargar()?tuCalendarioHTML(c)+tuResumenHTML(c)+tuProximosHTML(c)+tuAccionesHTML(c):'<div class="p-nota">Guarda tu pauta para ver el calendario.</div>')+'</div>';
+}
+function tuTipoTxt(c){ return c.t==='n'?'turno de noche':(c.t==='dn'?'rotativo día/noche':'turno de día'); }
+function tuCambioPauta(){ document.getElementById('tuCustom').style.display=document.getElementById('tuP').value==='custom'?'grid':'none'; }
+function tuGuardar(){
+  var p=document.getElementById('tuP').value, w,r;
+  if(p==='custom'){ w=+document.getElementById('tuW').value; r=+document.getElementById('tuR').value; } else { w=TU_PAUTAS[p][0]; r=TU_PAUTAS[p][1]; }
+  var i=document.getElementById('tuI').value, t=document.getElementById('tuT').value, h=(document.getElementById('tuH').value||'').trim(), n=(document.getElementById('tuN').value||'').trim().slice(0,30);
+  var m=document.getElementById('tuMsg');
+  if(!w||!r||w>30||r>30){ m.className='p-msg err'; m.textContent='Revisa los días de trabajo y libres (entre 1 y 30).'; return; }
+  if(!i){ m.className='p-msg err'; m.textContent='Indica el primer día de tu bloque de trabajo actual.'; return; }
+  if(!/^\d\d:\d\d-\d\d:\d\d$/.test(h)){ m.className='p-msg err'; m.textContent='Horario con formato 08:00-20:00.'; return; }
+  var c={p:p,w:w,r:r,i:i,t:t,h:h,n:n};
+  try{ localStorage.setItem('cplus_turnos',JSON.stringify(c)); }catch(e){}
+  m.className='p-msg ok'; m.textContent='Pauta guardada en este teléfono.';
+  var hoy=new Date(); TU_MES={y:hoy.getFullYear(),m:hoy.getMonth()};
+  document.getElementById('tuCalWrap').innerHTML=tuCalendarioHTML(c)+tuResumenHTML(c)+tuProximosHTML(c)+tuAccionesHTML(c);
+  cycTelemetria('guardias','turnos_guardado',true,p);
+}
+function tuMes(delta){ TU_MES.m+=delta; if(TU_MES.m<0){TU_MES.m=11;TU_MES.y--;} if(TU_MES.m>11){TU_MES.m=0;TU_MES.y++;} renderTurnos(); }
+function tuCalendarioHTML(c,demo){
+  var y=TU_MES.y, m=TU_MES.m, primero=new Date(y,m,1), hoy=new Date();
+  var nombreMes=primero.toLocaleDateString('es-CL',{month:'long',year:'numeric'});
+  var offset=(primero.getDay()+6)%7; // lunes=0
+  var dias=new Date(y,m+1,0).getDate();
+  var h='<div class="tu-cal"><div class="tu-nav">'+(demo?'<span></span>':'<button onclick="tuMes(-1)" aria-label="Mes anterior">‹</button>')+'<b>'+nombreMes+'</b>'+(demo?'<span></span>':'<button onclick="tuMes(1)" aria-label="Mes siguiente">›</button>')+'</div><div class="tu-grid">';
+  ['L','M','M','J','V','S','D'].forEach(function(x){h+='<div class="dn">'+x+'</div>';});
+  for(var k=0;k<offset;k++){ h+='<div class="tu-d otro"></div>'; }
+  for(var d=1;d<=dias;d++){
+    var fecha=new Date(y,m,d), e=tuEstado(c,fecha);
+    var esHoy=fecha.toDateString()===hoy.toDateString();
+    h+='<div class="tu-d'+(e?' '+e:'')+(esHoy?' hoy':'')+'">'+d+(e?'<small>'+(e==='dia'?'día':'noche')+'</small>':'')+'</div>';
+  }
+  h+='</div><div class="tu-leyenda"><span><i style="background:rgba(212,160,23,.6)"></i>Trabajo de día</span><span><i style="background:rgba(120,140,255,.6)"></i>Trabajo de noche</span><span><i style="background:#333"></i>Libre</span></div></div>';
+  return h;
+}
+function tuResumenHTML(c){
+  var y=TU_MES.y, m=TU_MES.m, dias=new Date(y,m+1,0).getDate(), trab=0, findes=0;
+  for(var d=1;d<=dias;d++){ var f=new Date(y,m,d); var e=tuEstado(c,f); if(e){ trab++; } else if(f.getDay()===0||f.getDay()===6){ findes++; } }
+  var hoy=new Date(), prox=null;
+  for(var k=0;k<60;k++){ var f2=new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()+k); if(!tuEstado(c,f2)){ prox=f2; break; } }
+  return '<div class="tu-res"><div><b>'+trab+'</b><span>días de trabajo este mes</span></div><div><b>'+(dias-trab)+'</b><span>días libres este mes</span></div><div><b>'+(prox?prox.toLocaleDateString('es-CL',{weekday:'short',day:'numeric'}):'—')+'</b><span>próximo día libre</span></div></div>';
+}
+function tuProximosHTML(c){
+  var hoy=new Date(), h='<div class="card tu-prox" style="margin-top:12px"><div class="auth-title" style="font-size:.9rem">Próximos 14 días</div>';
+  for(var k=0;k<14;k++){ var f=new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()+k); var e=tuEstado(c,f);
+    h+='<div class="fila"><span>'+f.toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'short'})+(k===0?' (hoy)':'')+'</span><span style="color:'+(e?(e==='dia'?'#d4a017':'#9fb0ff'):'#7dc800')+'">'+(e?(e==='dia'?'Día · ':'Noche · ')+esc(c.h):'Libre')+'</span></div>'; }
+  return h+'</div>';
+}
+function tuAccionesHTML(c){
+  return '<div class="card" style="margin-top:12px"><div class="auth-title" style="font-size:.9rem">Compartir con tu familia</div>'+
+    '<div class="auth-sub">El enlace muestra solo tu calendario y el nombre que pusiste. Quien lo abra no necesita cuenta.</div>'+
+    '<div class="inc-btns"><button class="oro" onclick="tuCompartir()">Compartir enlace</button><button onclick="tuICS()">Descargar para el calendario del teléfono</button></div>'+
+    '<div id="tuMsg2" class="p-msg"></div><div class="p-nota">El archivo de calendario (.ics) se abre con Google Calendar, el calendario de iPhone o Outlook y carga tus turnos de los próximos 6 meses.</div></div>';
+}
+function tuEnlace(){ var c=tuCargar(); return location.origin+location.pathname+'#turnos-'+tuCodigo(c); }
+function tuCompartir(){
+  var url=tuEnlace(), m=document.getElementById('tuMsg2'), c=tuCargar();
+  var texto='Mis turnos ('+c.w+'x'+c.r+', '+tuTipoTxt(c)+'): '+url;
+  if(navigator.share){ navigator.share({title:'Mis turnos',text:texto}).catch(function(){}); return; }
+  try{ navigator.clipboard.writeText(texto).then(function(){ m.className='p-msg ok'; m.textContent='Enlace copiado. Pégalo en WhatsApp a tu familia.'; }); }catch(e){ m.className='p-msg'; m.textContent=url; }
+  cycTelemetria('guardias','turnos_compartir',true);
+}
+function tuICS(){
+  var c=tuCargar(), hoy=new Date(), hh=c.h.split('-'), ini=hh[0].replace(':',''), fin=hh[1].replace(':','');
+  var noche=+fin.slice(0,2)<+ini.slice(0,2);
+  var lineas=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Control+//Turnos//ES','CALSCALE:GREGORIAN','X-WR-CALNAME:Mis turnos (Control+)'];
+  for(var k=0;k<183;k++){
+    var f=new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()+k), e=tuEstado(c,f); if(!e) continue;
+    var f2=new Date(f); if(noche) f2.setDate(f2.getDate()+1);
+    var d1=tuISO(f).replace(/-/g,''), d2=tuISO(f2).replace(/-/g,'');
+    lineas.push('BEGIN:VEVENT','UID:cplus-turno-'+d1+'@app.controlyconfianza.cl','DTSTAMP:'+tuISO(hoy).replace(/-/g,'')+'T000000','DTSTART:'+d1+'T'+ini+'00','DTEND:'+d2+'T'+fin+'00','SUMMARY:Turno '+(e==='dia'?'de día':'de noche')+' — Control+','END:VEVENT');
+  }
+  lineas.push('END:VCALENDAR');
+  var blob=new Blob([lineas.join('\r\n')],{type:'text/calendar;charset=utf-8'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='mis-turnos-controlplus.ics'; document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},2000);
+  var m=document.getElementById('tuMsg2'); if(m){ m.className='p-msg ok'; m.textContent='Archivo descargado. Ábrelo y elige tu calendario.'; }
+  cycTelemetria('guardias','turnos_ics',true);
+}
 
 /* ---------- Control+ Premium: compra real (04-09-2026) ----------
    El cobro lo hace el mismo Worker que ya cobra Plan Personal/Empresa (plan 'controlmas',
