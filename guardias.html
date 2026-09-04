@@ -189,6 +189,29 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .p-legal{font-size:.6rem;color:#666;margin-top:8px;line-height:1.5}
 .p-legal a{color:#998a55}
 @media (max-width:380px){.p-grid{grid-template-columns:1fr}}
+/* Después del incidente (Premium, 04-09-2026) */
+.inc-tipos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.inc-tipo{background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:12px;cursor:pointer;text-align:left;color:#f0e8d0;font-family:inherit}
+.inc-tipo:hover,.inc-tipo:focus-visible{border-color:#d4a017;outline:none}
+.inc-tipo .it{font-weight:800;font-size:.82rem}
+.inc-tipo .id{font-size:.7rem;color:#999;margin-top:3px;line-height:1.4}
+.inc-sec{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:10px}
+.inc-sec h4{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#d4a017;margin-bottom:8px}
+.inc-sec ul{margin:0;padding-left:18px;font-size:.8rem;color:#ccc;line-height:1.6}
+.inc-sec li{margin-bottom:5px}
+.inc-sec .ahora{border-left:3px solid #e74c3c;padding-left:10px}
+.inc-chk{list-style:none;padding:0}
+.inc-chk li{display:flex;gap:9px;align-items:flex-start}
+.inc-chk input{margin-top:4px;accent-color:#d4a017}
+.inc-fuente{font-size:.66rem;color:#777;line-height:1.5;margin-top:6px}
+.inc-fuente a{color:#998a55}
+.inc-acta textarea{width:100%;min-height:70px;background:#111;border:1px solid #333;border-radius:8px;color:#fff;padding:10px;font-size:.82rem;font-family:inherit;margin-bottom:8px}
+.inc-acta input{width:100%;background:#111;border:1px solid #333;border-radius:8px;color:#fff;padding:10px;font-size:.82rem;margin-bottom:8px;font-family:inherit}
+.inc-acta pre{white-space:pre-wrap;background:#111;border:1px dashed #444;border-radius:8px;padding:12px;font-size:.78rem;color:#ddd;line-height:1.55;font-family:inherit}
+.inc-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.inc-btns button{background:#2a2a2a;color:#f0e8d0;border:none;border-radius:8px;padding:10px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
+.inc-btns button.oro{background:#d4a017;color:#111}
+.inc-lock{background:#161616;border:1px solid rgba(212,160,23,.4);border-radius:14px;padding:16px;margin-top:12px}
 /* Venta real de Premium (04-09-2026) */
 .p-lbl{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a7a45;margin:14px 0 8px}
 .p-tool.p-hoy{border-color:rgba(212,160,23,.55);background:#1a1200}
@@ -325,6 +348,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <a href="#carpeta" data-tab="carpeta">Mi Carpeta</a>
       <a href="#mis-eventos" data-tab="mis-eventos">Mis Eventos</a>
       <a href="#mis-postulaciones" data-tab="mis-postulaciones">Postulaciones</a>
+      <a href="#incidente" data-tab="incidente" style="border-top:1px solid #2a2a2a;margin-top:4px;padding-top:8px">⚖️ Después del incidente <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
     </div>
   </div>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
@@ -350,6 +374,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <div class="p-lbl">Incluido hoy</div>
       <div class="p-grid">
         <div class="p-tool p-hoy"><div class="t">⭐ Perfil destacado</div><p>Tus postulaciones aparecen primero y con insignia Premium ante quien contrata.</p></div>
+        <div class="p-tool p-hoy"><div class="t">⚖️ Después del incidente</div><p>Protocolo paso a paso para 7 situaciones: qué hacer, qué registrar, a quién avisar, tus derechos, y tu acta personal lista para imprimir. <a href="#incidente" style="color:#d4a017">Abrir →</a></p></div>
       </div>
       <div class="p-lbl">En camino — se activan en tu cuenta sin costo extra</div>
       <div class="p-grid">
@@ -357,7 +382,6 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
         <div class="p-tool"><div class="t">🤖 Asistente Gremial IA</div><p>Consultas sobre tus leyes, dictámenes y procedimientos.</p></div>
         <div class="p-tool"><div class="t">🔒 Bitácora Blindada</div><p>Registro personal de incidentes, inalterable y con export PDF.</p></div>
         <div class="p-tool"><div class="t">📅 Turnos + Familia</div><p>Tu pauta 4x4/5x2 en un calendario proyectado, compartible con tu familia.</p></div>
-        <div class="p-tool"><div class="t">⚖️ Después del Incidente</div><p>Protocolo legal tras un incidente: qué registrar y tus derechos.</p></div>
         <div class="p-tool"><div class="t">🎓 Mi Carrera</div><p>CV profesional en PDF y tu ruta de especializaciones.</p></div>
         <div class="p-tool"><div class="t">🔔 Alertas a tu medida</div><p>Hoy ya recibes avisos por comuna y especialidad; podrás sumar turno y renta mínima.</p></div>
       </div>
@@ -374,6 +398,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <!-- GUÍA (G2) -->
   <section class="view" id="view-guia">
     <div id="guiaContent"></div>
+  </section>
+
+  <!-- DESPUÉS DEL INCIDENTE (Control+ Premium, 04-09-2026) -->
+  <section class="view" id="view-incidente">
+    <div id="incidenteContent"></div>
   </section>
 
   <!-- SUELDO / CALCULADORA (G3) -->
@@ -442,7 +471,6 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
             <div class="mp-t">📁 Carpeta documental</div>
       <div class="mp-t alt">🔒 Bitácora blindada</div>
       <div class="mp-t">📅 Turnos + Familia</div>
-      <div class="mp-t alt">⚖️ Después del incidente</div>
       <div class="mp-t">🎓 Mi Carrera</div>
     </div>
     <div class="mp-gratis">
@@ -703,8 +731,8 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','admin'];
-var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones'];
+var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','admin'];
+var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente'];
 function toggleMenuCuenta(e){
   // OJO: sin preventDefault — el clic en "Mi Perfil"/etc burbujea desde el <a> hijo
   // hasta este div padre, y preventDefault() aqui cancelaba tambien la navegacion
@@ -761,6 +789,7 @@ function renderView(){
   else if(v==='carpeta') renderCarpeta();
   else if(v==='mis-eventos') renderMisEventos();
   else if(v==='mis-postulaciones') renderMisPostulaciones();
+  else if(v==='incidente') renderIncidente();
   else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
 }
@@ -2191,7 +2220,7 @@ function renderGuia(){
       '<p>Tu relación laboral es <strong>con tu empleador</strong>, no con la instalación: si tu empresa pierde el contrato, debe pagarte <strong>finiquito completo</strong> (vacaciones proporcionales, remuneraciones pendientes e indemnizaciones si corresponde). Que la nueva empresa «te recontrate» no borra lo que te debe la anterior. El finiquito se firma ante ministro de fe y puedes firmarlo <strong>con reserva de derechos</strong> si algo no te cuadra.</p>',
       'Art. 177 <a href="https://www.bcn.cl/leychile/navegar?idNorma=207436" target="_blank" rel="noopener">Código del Trabajo (BCN)</a> · <a href="https://www.dt.gob.cl/portal/1626/w3-channel.html" target="_blank" rel="noopener">DT</a>');
     h+='<div class="gbloque">Bloque 3 · Cómo actuar ante…</div>';
-    h+='<details class="gficha gprox"><summary>10 fichas de actuación (delito flagrante, agresión, accidente laboral…)</summary></details>';
+    h+='<a class="gficha" href="#incidente" style="display:block;text-decoration:none;color:inherit;padding:13px 14px;font-size:.85rem;font-weight:700;border-color:rgba(212,160,23,.45)">⚖️ Después del incidente <span style="color:#d4a017;font-size:.72em">PREMIUM</span><div style="font-size:.76rem;font-weight:400;color:#999;margin-top:4px">Protocolo paso a paso para 7 situaciones (agresión, robo, flagrancia, accidente, uso de fuerza, acusación, riesgo inminente) y tu acta personal del incidente.</div></a>';
     h+='<div class="gbloque">Bloque 4 · Modo Inspector Municipal (Ley 21.802)</div>';
     h+='<details class="gficha gprox"><summary>Qué sí / qué no puede hacer un inspector municipal</summary></details>';
     el.innerHTML=h;
@@ -2376,6 +2405,164 @@ async function inscribirPremium(){
     }
   });
 })();
+
+/* ---------- Después del incidente (Control+ Premium, 04-09-2026) ----------
+   Protocolo paso a paso por tipo de incidente + acta personal. Todo el contenido legal
+   está anclado a texto vigente leído en LeyChile el 04-09-2026 (ver INC_FUENTES). Es
+   orientación de referencia para el guardia; no reemplaza a un abogado ni al asesor. */
+var INC_FUENTES={
+  l21659:'<a href="https://www.bcn.cl/leychile/navegar?idNorma=1202067" target="_blank" rel="noopener">Ley 21.659</a>',
+  cpp:'<a href="https://www.bcn.cl/leychile/navegar?idNorma=176595" target="_blank" rel="noopener">Código Procesal Penal</a>',
+  cp:'<a href="https://www.bcn.cl/leychile/navegar?idNorma=1984" target="_blank" rel="noopener">Código Penal</a>',
+  l16744:'<a href="https://www.bcn.cl/leychile/navegar?idNorma=28650" target="_blank" rel="noopener">Ley 16.744</a>',
+  cdt:'<a href="https://www.bcn.cl/leychile/navegar?idNorma=207436" target="_blank" rel="noopener">Código del Trabajo</a>'
+};
+var INC_TIPOS=[
+ {id:'agresion',t:'Me agredieron o amenazaron',d:'Un cliente, usuario o desconocido te golpeó, insultó o amenazó en el puesto.',
+  ahora:['Ponte a salvo primero. Tu integridad va antes que el recinto o la mercadería.','Si hay lesiones o el agresor sigue ahí: llama al 133 (Carabineros) y, si corresponde, al 131 (SAMU).','Avisa de inmediato a tu supervisor o central. Di hora, lugar y qué pasó, en una frase.','Si te lesionaron: es accidente del trabajo. Pide que te deriven a la mutual (ACHS, IST, Mutual de Seguridad o ISL) ese mismo día.'],
+  reg:['Hora exacta de inicio y término del hecho','Lugar preciso (puesto, acceso, pasillo, estacionamiento)','Descripción del agresor: sexo, edad aproximada, ropa, señas, vehículo y patente si hubo','Qué dijo o hizo, con sus palabras textuales si las recuerdas','Testigos: nombre, cargo o teléfono de quien vio algo','Cámaras que apuntaban al lugar (número, ubicación) y a quién pediste resguardar la grabación','A quién avisaste y a qué hora (supervisor, central, Carabineros)','Tus lesiones y dónde te atendieron'],
+  inf:[['Supervisor o central de tu empresa','De inmediato, y por escrito antes de terminar el turno (WhatsApp o correo dejan hora).'],['Carabineros (133) o denuncia en la comisaría / <a href="https://www.comisariavirtual.cl" target="_blank" rel="noopener">Comisaría Virtual</a>','La Ley 21.659 (art. 4 N°4) obliga a quienes ejercen seguridad privada a denunciar todo hecho que revista caracteres de delito <b>dentro de 24 horas</b> de conocerlo. Si tu empresa no denuncia, denuncia tú: la agresión te ocurrió a ti.'],['Mutual o ISL (accidente del trabajo)','Tu empleador debe denunciarlo <b>de inmediato</b> (Ley 16.744, art. 76). Si no lo hace, puedes denunciarlo tú mismo en la mutual.']],
+  der:['<b>Atención médica y licencia por la mutual</b>, sin costo, porque una agresión en el puesto es accidente del trabajo (Ley 16.744, art. 5).','<b>Protección frente a la violencia de terceros:</b> desde la Ley Karin, la violencia ejercida por clientes o usuarios con ocasión del trabajo es una conducta contraria a la dignidad que tu empleador debe prevenir y atender (Código del Trabajo, art. 2 letra c).','<b>Copia de lo que declaraste</b> ante Carabineros o la empresa. Pídela siempre.','Si te descuentan el día, te sancionan o te despiden por haber sido agredido, puedes reclamar en la Dirección del Trabajo.'],
+  err:['Perseguir al agresor fuera del recinto.','Declarar «estoy bien» antes de que te vea un médico: sin atención no hay constancia de la lesión.','Dejar pasar el turno sin dejar nada por escrito.'],
+  fuentes:['l21659','l16744','cdt']},
+ {id:'robo',t:'Robo, hurto o daño en el recinto',d:'Se robaron algo, forzaron un acceso o dañaron bienes mientras estabas de turno.',
+  ahora:['No te arriesgues por bienes. Observa, registra y avisa.','Llama al 133 si el hecho está ocurriendo o acaba de ocurrir.','No toques ni ordenes el lugar: la ley obliga a <b>conservar y poner a disposición</b> de la autoridad todos los antecedentes y pruebas que permitan identificar a los autores (Ley 21.659, art. 4 N°3).','Avisa a tu supervisor o central de inmediato.'],
+  reg:['Hora en que detectaste el hecho y hora estimada en que ocurrió','Qué faltó o qué se dañó, con la mayor precisión posible','Por dónde entraron y salieron; estado de puertas, candados, rejas','Personas o vehículos vistos antes y después (descripción, patente)','Cámaras del sector y a quién pediste resguardar la grabación','Rondas que hiciste antes del hecho, con horas','A quién avisaste y a qué hora','Si Carabineros concurrió: unidad, hora de llegada y número de parte si te lo dieron'],
+  inf:[['Supervisor o central','De inmediato y por escrito.'],['Carabineros (133) / Comisaría Virtual','Denuncia dentro de <b>24 horas</b> (Ley 21.659, art. 4 N°4). Normalmente denuncia la empresa o el cliente; confirma quién lo hizo y pide el número de parte.'],['Encargado del recinto (cliente)','Según el protocolo de tu instalación; que quede constancia de que informaste.']],
+  der:['Nadie puede obligarte a <b>pagar lo robado</b>: la responsabilidad por bienes es de la empresa y sus seguros, salvo dolo o culpa grave tuya probada.','Tienes derecho a <b>copia de tu declaración</b> y a que la empresa conserve la grabación que te respalda.','Si te acusan a ti de negligencia, mira la ficha «Me acusan a mí».'],
+  err:['Ordenar o limpiar el sitio antes de que llegue Carabineros.','Firmar un inventario de faltantes que no verificaste.','Perseguir o retener a alguien sin haberlo sorprendido en flagrancia.'],
+  fuentes:['l21659','cpp']},
+ {id:'flagrancia',t:'Sorprendí a alguien cometiendo un delito',d:'Lo viste robando o agrediendo y lo retuviste, o dudas si puedes hacerlo.',
+  ahora:['La ley permite que <b>cualquier persona</b> detenga a quien sorprende en delito flagrante, con la obligación de <b>entregarlo de inmediato</b> a la policía (Código Procesal Penal, art. 129). No es una facultad especial del guardia: es la misma que tiene cualquier ciudadano.','Flagrancia es: lo está cometiendo, acaba de cometerlo, huye y alguien lo señala, o es encontrado con lo robado o con las herramientas del delito en un tiempo inmediato, que la ley fija en <b>máximo 12 horas</b> (art. 130).','Llama al 133 de inmediato. Retener es esperar a Carabineros, no interrogar, no registrar bolsos, no castigar.','Usa la fuerza mínima necesaria y solo para evitar la fuga o la agresión. Nada de golpes ni humillaciones: la Ley 21.659 (art. 4 N°5) te obliga a respetar los derechos humanos de la persona, sobre todo si es menor de edad o está en situación de vulnerabilidad.'],
+  reg:['Hora en que viste el hecho y hora en que retuviste a la persona','Qué viste exactamente (no lo que supones)','Qué tenía la persona y dónde quedó eso (no lo manipules)','Hora en que llamaste al 133 y hora en que llegó Carabineros','Nombre de los funcionarios o unidad que se hizo cargo','Testigos y cámaras','Si hubo contacto físico: qué hiciste, por qué y cuánto duró','Lesiones tuyas o de la persona, si las hubo'],
+  inf:[['Carabineros (133)','De inmediato: la entrega debe ser inmediata (art. 129).'],['Supervisor o central','De inmediato y por escrito.'],['Denuncia formal','Si Carabineros no la toma en el lugar, la empresa o tú deben denunciar dentro de 24 horas (Ley 21.659, art. 4 N°4).']],
+  der:['Actuaste dentro de la ley si hubo flagrancia, fuerza mínima y entrega inmediata.','Si la persona te agredió al retenerla, tienes derecho a atención por la mutual y a denunciarla.','Si te denuncian por la retención, tienes los derechos de todo imputado: guardar silencio y abogado desde el primer momento (CPP, art. 93). Si no tienes abogado, puedes pedir un defensor de la Defensoría Penal Pública.'],
+  err:['Registrar bolsos o ropa: eso solo puede hacerlo la policía (art. 129 lo reserva a los agentes policiales).','Retener más tiempo del necesario, encerrar o trasladar a la persona.','Grabar y difundir la cara de la persona en redes: puede volverse en tu contra.'],
+  fuentes:['cpp','l21659']},
+ {id:'accidente',t:'Tuve un accidente (en el puesto o en el trayecto)',d:'Te caíste, te cortaste, te atropellaron, te lesionaste yendo o volviendo del trabajo.',
+  ahora:['Pide atención de inmediato. Si es grave, 131 (SAMU).','Avisa a tu supervisor antes de irte a la casa: un accidente sin aviso es difícil de probar después.','Pide que te deriven a la <b>mutual de tu empresa</b> (ACHS, IST, Mutual de Seguridad) o al ISL, no a una clínica particular ni a la isapre: la cobertura de accidente del trabajo es completa y sin costo.','Si fue en el trayecto directo casa–trabajo o entre dos trabajos, <b>también es accidente del trabajo</b> (Ley 16.744, art. 5). Guarda el parte de Carabineros, el ticket del transporte o el testimonio de quien te vio.'],
+  reg:['Hora, lugar exacto y cómo ocurrió, en tus palabras','Qué estabas haciendo (ronda, control de acceso, traslado)','Condiciones del lugar: piso, iluminación, señalética, equipo que fallaba','Testigos','Elementos de protección que tenías puestos y cuáles faltaban','Hora en que avisaste y a quién','Centro asistencial, hora de ingreso y diagnóstico','Fotos del lugar y de la lesión si puedes'],
+  inf:[['Supervisor / empleador','De inmediato. El empleador debe denunciar el accidente a la mutual <b>inmediatamente de producido</b> (Ley 16.744, art. 76).'],['Mutual o ISL','Si tu empleador no hace la denuncia (DIAT), <b>tú mismo puedes hacerla</b> en la mutual (art. 76, inciso 2°). También puede hacerla el médico que te atendió.'],['Carabineros','Solo si hubo terceros involucrados (atropello, agresión) o para dejar constancia del trayecto.']],
+  der:['<b>Atención médica completa, remedios, rehabilitación y subsidio</b> mientras dure la licencia, todo por la mutual y sin costo para ti.','A que <b>no te descuenten</b> los días de licencia ni te sancionen por accidentarte.','A los <b>elementos de protección</b> que la ley exige, pagados por el empleador (Código del Trabajo, art. 184; Ley 21.659, art. 53).','Si un riesgo grave e inminente sigue presente, puedes <b>interrumpir tus labores y salir del lugar</b>, avisando al empleador a la brevedad (Código del Trabajo, art. 184 bis).'],
+  err:['Ir a un consultorio o clínica por tu cuenta: la mutual puede rechazar después el carácter laboral.','Firmar que fue «por descuido propio» sin leer.','Volver a trabajar con licencia vigente porque te lo piden.'],
+  fuentes:['l16744','cdt','l21659']},
+ {id:'fuerza',t:'Tuve que usar fuerza',d:'Empujaste, sujetaste o golpeaste a alguien para defenderte, defender a otro o impedir un delito.',
+  ahora:['Detente en cuanto cese el peligro. La fuerza se justifica mientras dura la agresión, no después.','Llama al 133 y pide atención médica para todos los involucrados, incluida la otra persona.','Avisa a tu supervisor de inmediato. Cuenta los hechos en orden, sin adjetivos.','Si tu función es de riesgo alto y tienes cámara corporal, no la apagues ni borres nada (Ley 21.659, art. 54).'],
+  reg:['Qué hizo la otra persona ANTES de que actuaras (la agresión o el delito que enfrentaste)','Qué hiciste exactamente, en qué orden y por cuánto tiempo','Qué alternativas intentaste primero (voz, distancia, pedir ayuda)','Cuándo y por qué dejaste de usar fuerza','Lesiones de ambos y dónde fueron atendidas','Testigos, cámaras fijas y corporal','Hora del aviso a Carabineros y a tu supervisor','Objetos o armas que portaba la otra persona y dónde quedaron'],
+  inf:[['Carabineros (133)','De inmediato. Es tu mejor protección: que la autoridad registre los hechos con tu versión desde el minuto uno.'],['Supervisor / empresa','De inmediato y por escrito.'],['Denuncia','Si fuiste agredido, denuncia dentro de 24 horas (Ley 21.659, art. 4 N°4).']],
+  der:['<b>Legítima defensa</b> (Código Penal, art. 10 N°4): estás exento de responsabilidad si hubo <b>agresión ilegítima</b>, <b>necesidad racional del medio</b> que usaste y <b>falta de provocación</b> de tu parte. Vale también para defender a otra persona (N°5 y N°6).','Si te formalizan, tienes derecho a <b>guardar silencio y a un abogado desde el primer momento</b> (CPP, art. 93). Declara con abogado, no antes.','Atención médica por la mutual si resultaste lesionado.'],
+  err:['Seguir golpeando cuando la persona ya está en el suelo o inmovilizada: ahí termina la defensa y empieza tu problema.','Quedarte callado ante tu empresa y que la otra versión llegue primero.','Declarar ante la policía sin abogado si ya te tratan como imputado.'],
+  fuentes:['cp','cpp','l21659']},
+ {id:'acusacion',t:'Me acusan a mí',d:'Un cliente, tu empresa o un compañero te acusa de robo, agresión, negligencia o abandono del puesto.',
+  ahora:['Mantén la calma y no discutas. Pide que te digan <b>exactamente</b> de qué se te acusa y quién lo dice.','No firmes nada que no hayas leído completo. Puedes pedir copia y tiempo para leer.','Pide de inmediato que se <b>resguarden las grabaciones</b> de las cámaras del sector y de la hora: son tu principal prueba.','Escribe tu versión hoy, con horas, antes de olvidar detalles.'],
+  reg:['Fecha, hora y lugar de los hechos que te atribuyen','Dónde estabas tú a esa hora y quién puede confirmarlo','Tu versión completa, en orden cronológico','Cámaras que lo prueban y a quién pediste resguardarlas','Qué te dijeron, quién y cuándo (la acusación misma, textual)','Documentos que firmaste o te pidieron firmar','Testigos','Si te suspendieron o separaron del puesto: fecha y por escrito de quién'],
+  inf:[['Tu empleador, por escrito','Entrega tu versión por escrito y guarda copia. Si hay investigación interna, tienes derecho a ser escuchado y a conocer el resultado.'],['Dirección del Trabajo','Si te sancionan sin procedimiento, te descuentan o te despiden de forma injustificada. Para el despido, el reclamo judicial tiene plazo de <b>60 días hábiles</b> desde la separación (Código del Trabajo, art. 168).'],['Defensoría Penal Pública','Si la acusación llega a Fiscalía o Carabineros: pide un defensor desde el primer momento; no declares sin abogado.']],
+  der:['<b>Presunción de inocencia.</b> Si te tratan como imputado: guardar silencio, no declarar bajo juramento y tener abogado desde los actos iniciales (CPP, art. 93).','<b>Acoso laboral</b> (Código del Trabajo, art. 2 letra b): si la acusación es una forma de hostigamiento o humillación, puedes denunciarlo por el procedimiento de la Ley Karin.','<b>Copia</b> de toda declaración, sanción o carta que te entreguen.'],
+  err:['Firmar una «renuncia voluntaria» o un finiquito bajo presión.','Borrar tus propios mensajes o registros: todo lo que muestre tu versión te sirve.','Confrontar al acusador o a los testigos.'],
+  fuentes:['cpp','cdt']},
+ {id:'riesgo',t:'Riesgo grave e inminente',d:'Amenaza de artefacto explosivo, persona armada, incendio, fuga de gas, estructura que cede.',
+  ahora:['Tu vida primero. La ley te da <b>derecho a interrumpir tus labores y abandonar el lugar</b> cuando por motivos razonables consideres que seguir implica un riesgo grave e inminente para tu vida o salud (Código del Trabajo, art. 184 bis).','Llama al 133 (Carabineros), 132 (Bomberos) o 131 (SAMU) según corresponda.','Avisa a las personas del recinto y ayuda a evacuar sin exponerte.','Avisa al empleador <b>a la brevedad</b> de que interrumpiste labores: la ley te lo exige y a ellos les exige informar del riesgo y suspender la faena (art. 184 bis).'],
+  reg:['Hora en que detectaste el riesgo y en qué consistía','Qué hiciste: llamadas (hora), evacuación, avisos','A quién avisaste en la empresa y a qué hora','Hora de llegada de Carabineros, Bomberos o SAMU','Personas afectadas o evacuadas','Daños observados','Si te ordenaron quedarte o volver: quién, cuándo y con qué palabras'],
+  inf:[['Emergencias (133 / 132 / 131)','De inmediato.'],['Empleador','A la brevedad, por el medio que deje hora (mensaje, llamada registrada).'],['Inspección del Trabajo','Si te sancionan por haberte retirado o si el empleador no adoptó medidas frente al riesgo.']],
+  der:['<b>No pueden sancionarte</b> por interrumpir labores ante un riesgo grave e inminente ejercido de buena fe (art. 184 bis).','A que el empleador te informe del riesgo y de las medidas, y suspenda la faena si el riesgo no se puede eliminar (art. 184 bis letras a y b).','Elementos de protección adecuados a tu nivel de riesgo (Ley 21.659, arts. 53 y 54).'],
+  err:['Quedarte «porque el cliente lo pidió».','Manipular el objeto sospechoso o intentar apagar un incendio sin medios.','No avisar al empleador después: la ley te pide dar cuenta a la brevedad.'],
+  fuentes:['cdt','l21659']}
+];
+var INC_TIPO_ACTUAL=null;
+function incTipo(id){ return INC_TIPOS.filter(function(x){return x.id===id;})[0]; }
+function renderIncidente(){
+  var el=document.getElementById('incidenteContent');
+  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">⚖️ Después del incidente <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+    '<div class="auth-sub" style="margin-bottom:0">Pasó algo en tu turno. Aquí tienes, para cada situación, qué hacer ahora, qué registrar, a quién avisar y en qué plazo, tus derechos y los errores que cuestan caro. Al final generas tu <b>acta personal</b> del incidente para guardarla, copiarla o imprimirla. Orientación de referencia con la ley vigente en la mano; no reemplaza a un abogado.</div></div>';
+  if(!CYC_TOKEN || !CYC_CM){
+    var lista='<div class="inc-tipos">'+INC_TIPOS.map(function(t){return '<div class="inc-tipo" style="cursor:default;opacity:.75"><div class="it">'+t.t+'</div><div class="id">'+t.d+'</div></div>';}).join('')+'</div>';
+    var cta;
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    else if(!CYC_TOKEN){ cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye esta herramienta y el perfil destacado. Primero creas tu cuenta gratis o inicias sesión.</div>'; }
+    else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye esta herramienta y el perfil destacado. 30 días por cada pago, sin cobro automático.</div>'; }
+    el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;margin-bottom:6px">Las 7 situaciones que cubre:</div>'+lista+'<div style="margin-top:14px">'+cta+'</div></div>';
+    cycTelemetria('guardias','incidente_bloqueado',true);
+    return;
+  }
+  if(!INC_TIPO_ACTUAL){
+    el.innerHTML=cab+'<div class="card"><div class="auth-title" style="font-size:.9rem">¿Qué pasó?</div><div class="inc-tipos">'+
+      INC_TIPOS.map(function(t){return '<button class="inc-tipo" onclick="incAbrir(\''+t.id+'\')"><div class="it">'+t.t+'</div><div class="id">'+t.d+'</div></button>';}).join('')+'</div></div>'+incActasGuardadas();
+    return;
+  }
+  var t=incTipo(INC_TIPO_ACTUAL);
+  var h=cab+'<button class="btn-salir" style="margin-bottom:10px" onclick="INC_TIPO_ACTUAL=null;renderIncidente()">← Elegir otra situación</button>';
+  h+='<div class="auth-title" style="margin-bottom:10px">'+esc(t.t)+'</div>';
+  h+='<div class="inc-sec"><h4>Ahora mismo</h4><ul class="ahora">'+t.ahora.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
+  h+='<div class="inc-sec"><h4>Qué registrar (marca lo que ya tienes)</h4><ul class="inc-chk">'+t.reg.map(function(x,i){return '<li><input type="checkbox" id="incr'+i+'"><label for="incr'+i+'" style="margin:0;color:#ccc;font-weight:400;font-size:.8rem">'+x+'</label></li>';}).join('')+'</ul></div>';
+  h+='<div class="inc-sec"><h4>A quién informar y en qué plazo</h4><ul>'+t.inf.map(function(x){return '<li><b>'+x[0]+'</b> — '+x[1]+'</li>';}).join('')+'</ul></div>';
+  h+='<div class="inc-sec"><h4>Tus derechos</h4><ul>'+t.der.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
+  h+='<div class="inc-sec"><h4>Errores que te pueden costar</h4><ul>'+t.err.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'+
+     '<div class="inc-fuente">Fuentes (texto vigente leído en LeyChile el 04-09-2026): '+t.fuentes.map(function(f){return INC_FUENTES[f];}).join(' · ')+'. Orientación de referencia; en un caso concreto consulta a un abogado o a la Defensoría Penal Pública.</div></div>';
+  h+='<div class="inc-sec inc-acta"><h4>Tu acta personal del incidente</h4>'+
+     '<div style="font-size:.76rem;color:#999;margin-bottom:8px">Escríbela hoy, con horas. Es tu respaldo si después la versión de otro llega primero.</div>'+
+     '<label for="incF">Fecha y hora del hecho</label><input id="incF" type="datetime-local" value="'+incAhoraLocal()+'">'+
+     '<label for="incL">Lugar (recinto, puesto, sector)</label><input id="incL" type="text" placeholder="Ej: Acceso vehicular, bodega 3, Mall X">'+
+     '<label for="incQ">Qué pasó, en orden y sin adjetivos</label><textarea id="incQ" placeholder="A las 21:40 una persona…"></textarea>'+
+     '<label for="incT">Testigos y cámaras</label><input id="incT" type="text" placeholder="Nombre / cargo / teléfono · cámara N°…">'+
+     '<label for="incA">A quién avisé y a qué hora</label><input id="incA" type="text" placeholder="Supervisor Juan Pérez 21:45 por WhatsApp · Carabineros 133 a las 21:47">'+
+     '<div class="inc-btns"><button class="oro" onclick="incGenerar()">Generar acta</button></div>'+
+     '<div id="incActaOut" style="margin-top:10px"></div></div>';
+  el.innerHTML=h;
+  cycTelemetria('guardias','incidente_abierto',true,INC_TIPO_ACTUAL);
+}
+function incAbrir(id){ INC_TIPO_ACTUAL=id; renderIncidente(); window.scrollTo(0,0); }
+function incAhoraLocal(){ var d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
+function incGenerar(){
+  var t=incTipo(INC_TIPO_ACTUAL);
+  var f=document.getElementById('incF').value, l=document.getElementById('incL').value.trim(), q=document.getElementById('incQ').value.trim(), te=document.getElementById('incT').value.trim(), a=document.getElementById('incA').value.trim();
+  if(!q){ document.getElementById('incActaOut').innerHTML='<div class="p-msg err">Escribe al menos qué pasó.</div>'; return; }
+  var marcados=[].slice.call(document.querySelectorAll('.inc-chk input')).map(function(c,i){return c.checked?t.reg[i]:null;}).filter(Boolean);
+  var fecha=f?new Date(f).toLocaleString('es-CL',{dateStyle:'full',timeStyle:'short'}):'(sin fecha)';
+  var acta='ACTA PERSONAL DE INCIDENTE\n'+
+    'Tipo: '+t.t+'\n'+
+    'Fecha y hora del hecho: '+fecha+'\n'+
+    'Lugar: '+(l||'(no indicado)')+'\n'+
+    'Guardia: '+(CYC_PERFIL&&CYC_PERFIL.nombre?CYC_PERFIL.nombre:'(sin nombre en el perfil)')+(CYC_EMAIL?' · '+CYC_EMAIL:'')+'\n\n'+
+    'RELATO DE LOS HECHOS\n'+q+'\n\n'+
+    'TESTIGOS Y CÁMARAS\n'+(te||'(ninguno registrado)')+'\n\n'+
+    'AVISOS REALIZADOS\n'+(a||'(ninguno registrado)')+'\n\n'+
+    'REGISTRO REUNIDO\n'+(marcados.length?marcados.map(function(x){return '• '+x;}).join('\n'):'(pendiente)')+'\n\n'+
+    'Acta redactada el '+new Date().toLocaleString('es-CL',{dateStyle:'long',timeStyle:'short'})+' con Control+ (app.controlyconfianza.cl). Relato del propio guardia; no constituye declaración jurada.';
+  var out=document.getElementById('incActaOut');
+  out.innerHTML='<pre id="incActaTxt">'+esc(acta)+'</pre><div class="inc-btns">'+
+    '<button class="oro" onclick="incCopiar()">Copiar</button>'+
+    (navigator.share?'<button onclick="incCompartir()">Compartir</button>':'')+
+    '<button onclick="incImprimir()">Imprimir / guardar PDF</button>'+
+    '<button onclick="incGuardar()">Guardar en este teléfono</button></div>'+
+    '<div id="incActaMsg" class="p-msg"></div>';
+  window.__incActa=acta;
+  cycTelemetria('guardias','incidente_acta',true,INC_TIPO_ACTUAL);
+}
+function incMsg(txt,ok){ var m=document.getElementById('incActaMsg'); if(m){ m.textContent=txt; m.className='p-msg '+(ok?'ok':'err'); } }
+function incCopiar(){ try{ navigator.clipboard.writeText(window.__incActa).then(function(){ incMsg('Acta copiada. Pégala en WhatsApp o en un correo a tu supervisor.',true); }, function(){ incMsg('No se pudo copiar: selecciona el texto y cópialo a mano.',false); }); }catch(e){ incMsg('No se pudo copiar: selecciona el texto y cópialo a mano.',false); } }
+function incCompartir(){ try{ navigator.share({title:'Acta personal de incidente',text:window.__incActa}); }catch(e){ incCopiar(); } }
+function incImprimir(){
+  var w=window.open('','_blank');
+  if(!w){ incMsg('El navegador bloqueó la ventana de impresión. Usa «Copiar» y pégalo en un correo.',false); return; }
+  w.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Acta personal de incidente</title><style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:0 20px;color:#111;line-height:1.5}pre{white-space:pre-wrap;font-family:inherit;font-size:14px}h1{font-size:18px;letter-spacing:.06em}</style></head><body><h1>CONTROL+ · ACTA PERSONAL DE INCIDENTE</h1><pre>'+esc(window.__incActa)+'</pre><script>window.onload=function(){window.print();}<\/script></body></html>');
+  w.document.close();
+}
+function incGuardar(){
+  try{
+    var lista=JSON.parse(localStorage.getItem('cplus_actas')||'[]');
+    lista.unshift({t:Date.now(),tipo:INC_TIPO_ACTUAL,acta:window.__incActa});
+    localStorage.setItem('cplus_actas',JSON.stringify(lista.slice(0,20)));
+    incMsg('Guardada en este teléfono (menú «Después del incidente» → Mis actas). Cuando la Bitácora blindada esté lista, tus actas pasan ahí con sello de fecha.',true);
+  }catch(e){ incMsg('No se pudo guardar en este teléfono.',false); }
+}
+function incActasGuardadas(){
+  var lista=[]; try{ lista=JSON.parse(localStorage.getItem('cplus_actas')||'[]'); }catch(e){}
+  if(!lista.length) return '';
+  return '<div class="card"><div class="auth-title" style="font-size:.9rem">Mis actas guardadas en este teléfono</div>'+lista.map(function(x,i){
+    var t=incTipo(x.tipo); return '<details class="gficha"><summary>'+new Date(x.t).toLocaleString('es-CL',{dateStyle:'medium',timeStyle:'short'})+' · '+esc(t?t.t:x.tipo)+'</summary><div class="gcuerpo"><pre style="white-space:pre-wrap;font-family:inherit">'+esc(x.acta)+'</pre><div class="inc-btns"><button onclick="incBorrar('+i+')">Borrar</button></div></div></details>';
+  }).join('')+'<div class="p-nota">Se guardan solo en este teléfono, no en nuestros servidores.</div></div>';
+}
+function incBorrar(i){ try{ var l=JSON.parse(localStorage.getItem('cplus_actas')||'[]'); l.splice(i,1); localStorage.setItem('cplus_actas',JSON.stringify(l)); }catch(e){} renderIncidente(); }
 
 /* ---------- Control+ Premium: compra real (04-09-2026) ----------
    El cobro lo hace el mismo Worker que ya cobra Plan Personal/Empresa (plan 'controlmas',
