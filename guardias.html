@@ -375,6 +375,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <a href="#mis-postulaciones" data-tab="mis-postulaciones">Postulaciones</a>
       <a href="#incidente" data-tab="incidente" style="border-top:1px solid #2a2a2a;margin-top:4px;padding-top:8px">⚖️ Después del incidente <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
       <a href="#turnos" data-tab="turnos">📅 Turnos + familia <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
+      <a href="#alertas" data-tab="alertas">🔔 Alertas a tu medida <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
     </div>
   </div>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
@@ -402,6 +403,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
         <div class="p-tool p-hoy"><div class="t">⭐ Perfil destacado</div><p>Tus postulaciones aparecen primero y con insignia Premium ante quien contrata.</p></div>
         <div class="p-tool p-hoy"><div class="t">⚖️ Después del incidente</div><p>Protocolo paso a paso para 7 situaciones: qué hacer, qué registrar, a quién avisar, tus derechos, y tu acta personal lista para imprimir. <a href="#incidente" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">📅 Turnos + familia</div><p>Tu pauta 4x4, 5x2, 6x1 o la que uses, proyectada en un calendario. Enlace para tu familia y archivo para el calendario del teléfono. <a href="#turnos" style="color:#d4a017">Abrir →</a></p></div>
+        <div class="p-tool p-hoy"><div class="t">🔔 Alertas a tu medida</div><p>Hasta 5 alertas permanentes: comuna, especialidad, día o noche, pauta y renta o pago mínimo. Te llega un correo cada vez que aparece una oferta que calza. <a href="#alertas" style="color:#d4a017">Abrir →</a></p></div>
       </div>
       <div class="p-lbl">En camino — se activan en tu cuenta sin costo extra</div>
       <div class="p-grid">
@@ -434,6 +436,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <!-- TURNOS + FAMILIA (Control+ Premium, 04-09-2026) -->
   <section class="view" id="view-turnos">
     <div id="turnosContent"></div>
+  </section>
+
+  <!-- ALERTAS A TU MEDIDA (Control+ Premium, 04-09-2026) -->
+  <section class="view" id="view-alertas">
+    <div id="alertasContent"></div>
   </section>
 
   <!-- SUELDO / CALCULADORA (G3) -->
@@ -574,7 +581,8 @@ window.addEventListener('error',function(ev){ try{ cycNo('error_js',String(ev.me
    que calce. Gratis y aditivo: jamás se cobra por acceso al trabajo. */
 function htmlBotonAviso(){
   if(!CYC_TOKEN) return '';
-  return '<br><button class="btn-sm" style="margin-top:8px" id="btnAvisoOferta" onclick="pedirAvisoOferta()">🔔 Avísame por correo cuando haya una oferta así</button>';
+  return '<br><button class="btn-sm" style="margin-top:8px" id="btnAvisoOferta" onclick="pedirAvisoOferta()">🔔 Avísame por correo cuando haya una oferta así</button>'+
+    (CYC_CM?'':'<div class="p-nota" style="margin-top:6px">Este aviso es gratis y llega una vez. Con Control+ Premium puedes dejar <a href="#alertas" style="color:#d4a017">alertas permanentes a tu medida</a> (día/noche, pauta, renta mínima).</div>');
 }
 async function pedirAvisoOferta(){
   var btn=document.getElementById('btnAvisoOferta');
@@ -761,8 +769,8 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','admin'];
-var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos'];
+var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','admin'];
+var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas'];
 function toggleMenuCuenta(e){
   // OJO: sin preventDefault — el clic en "Mi Perfil"/etc burbujea desde el <a> hijo
   // hasta este div padre, y preventDefault() aqui cancelaba tambien la navegacion
@@ -822,6 +830,7 @@ function renderView(){
   else if(v==='mis-postulaciones') renderMisPostulaciones();
   else if(v==='incidente') renderIncidente();
   else if(v==='turnos') renderTurnos();
+  else if(v==='alertas') renderAlertas();
   else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
 }
@@ -2737,6 +2746,66 @@ function tuICS(){
   var blob=new Blob([lineas.join('\r\n')],{type:'text/calendar;charset=utf-8'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='mis-turnos-controlplus.ics'; document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},2000);
   var m=document.getElementById('tuMsg2'); if(m){ m.className='p-msg ok'; m.textContent='Archivo descargado. Ábrelo y elige tu calendario.'; }
   cycTelemetria('guardias','turnos_ics',true);
+}
+
+/* ---------- Alertas a tu medida (Control+ Premium, 04-09-2026) ----------
+   Hasta 5 alertas permanentes por guardia: comuna, especialidad, día/noche, pauta,
+   renta mínima (empleos) o pago mínimo (turnos). El cron diario del Worker manda un correo
+   por cada alerta que calce con ofertas nuevas y NO la borra (a diferencia del aviso
+   gratis, que es de una sola vez). */
+var AL_PAUTAS=['4x4','5x2','6x1','2x2','3x3','7x7','6x2'];
+async function renderAlertas(){
+  var el=document.getElementById('alertasContent');
+  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🔔 Alertas a tu medida <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+    '<div class="auth-sub" style="margin-bottom:0">Dime qué trabajo buscas y te aviso por correo cada vez que aparezca una oferta que calce: tu comuna, tu especialidad, día o noche, tu pauta y el mínimo que aceptas. Hasta 5 alertas activas; las borras cuando quieras.</div></div>';
+  if(!CYC_TOKEN || !CYC_CM){
+    var cta;
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye esta herramienta, el perfil destacado, «Después del incidente» y «Turnos + familia». 30 días por cada pago, sin cobro automático.</div>'; }
+    el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Sin Premium puedes pedir un aviso gratis desde la pestaña Ofertas cuando tu búsqueda no tiene resultados: llega una vez, por comuna y especialidad. Premium agrega <b>día o noche, pauta, renta o pago mínimo</b> y que la alerta <b>siga activa</b> hasta que la borres.</div><div style="margin-top:14px">'+cta+'</div></div>';
+    return;
+  }
+  var comunas=comunasOrdenadas();
+  var optC='<option value="">Cualquier comuna</option>'+comunas.map(function(n){return '<option value="'+esc(n)+'"'+(CYC_PERFIL&&CYC_PERFIL.comuna===n?' selected':'')+'>'+esc(n)+'</option>';}).join('');
+  var optE='<option value="">Cualquier especialidad</option>'+Object.keys(NOMBRE_ESPECIALIDAD).map(function(k){return '<option value="'+k+'">'+esc(NOMBRE_ESPECIALIDAD[k])+'</option>';}).join('');
+  var optP='<option value="">Cualquier pauta</option>'+AL_PAUTAS.map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('');
+  el.innerHTML=cab+'<div class="card"><div class="auth-title" style="font-size:.9rem">Nueva alerta</div><div class="tu-form">'+
+    '<div><label for="alC">Comuna</label><select id="alC">'+optC+'</select></div>'+
+    '<div><label for="alE">Especialidad</label><select id="alE">'+optE+'</select></div>'+
+    '<div><label for="alT">Turno</label><select id="alT"><option value="">Día o noche</option><option value="dia">Solo día</option><option value="noche">Solo noche</option></select></div>'+
+    '<div><label for="alP">Pauta</label><select id="alP">'+optP+'</select></div>'+
+    '<div><label for="alR">Renta mínima líquida (empleos)</label><input id="alR" type="number" inputmode="numeric" min="0" step="10000" placeholder="Ej: 650000"></div>'+
+    '<div><label for="alG">Pago mínimo por turno</label><input id="alG" type="number" inputmode="numeric" min="0" step="1000" placeholder="Ej: 45000"></div>'+
+    '<div class="full inc-btns"><button class="oro" onclick="alCrear()">Guardar alerta</button></div>'+
+    '</div><div id="alMsg" class="p-msg"></div><div class="p-nota">Deja en blanco lo que te dé lo mismo. Si la oferta no dice horario o renta, igual te la mandamos para que no se te escape.</div></div>'+
+    '<div id="alLista"><div class="spinner">Cargando tus alertas…</div></div>';
+  alCargar();
+}
+async function alCargar(){
+  var box=document.getElementById('alLista'); if(!box) return;
+  try{
+    var res=await fetch(API_URL+'/guardias/aviso-oferta',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    var d=await res.json(); var lista=d.avisos||[];
+    if(!lista.length){ box.innerHTML='<div class="card"><div class="auth-title" style="font-size:.9rem">Mis alertas</div><div class="empty">Aún no tienes alertas. Crea la primera arriba.</div></div>'; return; }
+    box.innerHTML='<div class="card"><div class="auth-title" style="font-size:.9rem">Mis alertas ('+lista.length+' de 5)</div>'+lista.map(function(a){
+      var partes=[a.comuna||'Cualquier comuna', a.especialidad?(NOMBRE_ESPECIALIDAD[a.especialidad]||a.especialidad):'cualquier especialidad', a.turno?(a.turno==='dia'?'solo día':'solo noche'):'día o noche', a.pauta?('pauta '+a.pauta):null, a.renta_min?('renta ≥ $'+Number(a.renta_min).toLocaleString('es-CL')):null, a.pago_min?('turno ≥ $'+Number(a.pago_min).toLocaleString('es-CL')):null].filter(Boolean);
+      return '<div class="post-card" style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><div style="font-size:.84rem;font-weight:700">'+esc(partes.join(' · '))+'</div><div style="font-size:.7rem;color:#888;margin-top:3px">'+(a.permanente?'Permanente · ':'Una sola vez · ')+(a.ultimo_envio?'último aviso '+fechaCorta(a.ultimo_envio):'sin avisos todavía')+'</div></div><button class="btn-sm" onclick="alBorrar('+a.id+')">Borrar</button></div>';
+    }).join('')+'</div>';
+  }catch(e){ box.innerHTML='<div class="empty">No se pudieron cargar tus alertas. Intenta de nuevo.</div>'; }
+}
+async function alCrear(){
+  var m=document.getElementById('alMsg'); m.className='p-msg'; m.textContent='Guardando…';
+  var cuerpo={comuna:document.getElementById('alC').value||undefined, especialidad:document.getElementById('alE').value||undefined, turno:document.getElementById('alT').value||undefined, pauta:document.getElementById('alP').value||undefined, renta_min:Number(document.getElementById('alR').value)||undefined, pago_min:Number(document.getElementById('alG').value)||undefined, permanente:true};
+  try{
+    var res=await fetch(API_URL+'/guardias/aviso-oferta',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(cuerpo)});
+    var d=await res.json();
+    m.className='p-msg '+(res.ok?'ok':'err'); m.textContent=d.mensaje||d.error||(res.ok?'Guardada.':'No se pudo guardar.');
+    if(res.ok){ cycTelemetria('guardias','alerta_creada',true,(cuerpo.turno||'-')+'|'+(cuerpo.pauta||'-')); alCargar(); }
+  }catch(e){ m.className='p-msg err'; m.textContent='Error de conexión.'; }
+}
+async function alBorrar(id){
+  try{ await fetch(API_URL+'/guardias/aviso-oferta/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+CYC_TOKEN}}); }catch(e){}
+  alCargar();
 }
 
 /* ---------- Control+ Premium: compra real (04-09-2026) ----------
