@@ -454,7 +454,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
         <div class="p-tool p-hoy"><div class="t">🔔 Alertas a tu medida</div><p>Hasta 5 alertas permanentes: comuna, especialidad, día o noche, pauta y renta o pago mínimo. Te llega un correo cada vez que aparece una oferta que calza. <a href="#alertas" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🔒 Bitácora blindada</div><p>Tu registro de novedades e incidentes con fecha y hora del servidor y sello encadenado: nada se edita ni se borra. Imprimible para mostrarlo a quien haga falta. <a href="#bitacora" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🎓 Mi Carrera</div><p>Tu CV profesional de guardia, listo para imprimir o mandar por WhatsApp, y tu ruta de especializaciones con el OS-10 al día. <a href="#carrera" style="color:#d4a017">Abrir →</a></p></div>
-        <div class="p-tool p-hoy"><div class="t">🤖 Asistente gremial IA</div><p>Pregúntale por tus leyes, tu sueldo, tus turnos o qué hacer ante un problema en el trabajo. Responde con la norma vigente y te dice cuándo ir a la Dirección del Trabajo o a un abogado. 30 preguntas al día. <a href="#asistente" style="color:#d4a017">Abrir →</a></p></div>
+        <div class="p-tool p-hoy"><div class="t">🤖 Asistente gremial IA</div><p>Pregúntale por tus leyes, tu sueldo, tus turnos o qué hacer ante un problema en el trabajo. Responde con la norma vigente y te dice cuándo ir a la Dirección del Trabajo o a un abogado. 10 preguntas al día. <a href="#asistente" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🧾 Verificador de liquidación</div><p>Le sacas una foto a tu liquidación, confirmas los números y la app revisa horas extra, gratificación, mínimo legal, descuentos y la suma. Referencial: tu liquidación siempre manda. <a href="#liquidacion" style="color:#d4a017">Abrir →</a></p></div>
       </div>
       <div class="p-lbl">Ya lo tienes gratis, con o sin Premium</div>
@@ -3071,7 +3071,7 @@ function renderAsistente(){
   if(!CYC_TOKEN || !CYC_CM){
     var cta;
     if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
-    else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye el asistente (30 preguntas al día) y las demás herramientas Premium. 30 días por cada pago, sin cobro automático.</div>'; }
+    else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye el asistente (10 preguntas al día) y las demás herramientas Premium. 30 días por cada pago, sin cobro automático.</div>'; }
     el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Ejemplos de lo que le puedes preguntar:</div><div class="as-sug">'+AS_SUGERENCIAS.map(function(q){return '<button disabled style="opacity:.7">'+esc(q)+'</button>';}).join('')+'</div><div style="margin-top:14px">'+cta+'</div></div>';
     return;
   }
@@ -3079,7 +3079,7 @@ function renderAsistente(){
   el.innerHTML=cab+'<div class="card"><div class="as-chat" id="asChat">'+(AS_HIST.length?AS_HIST.map(function(m){return '<div class="as-m '+(m.role==='user'?'u':'a')+'">'+(m.role==='user'?esc(m.content):asMd(m.content))+'</div>';}).join(''):'<div class="as-m a">Hola. Cuéntame qué pasa o qué quieres saber. Si es urgente y hay peligro, primero el 133.</div>')+'</div>'+
     '<div class="as-in"><textarea id="asIn" placeholder="Escribe tu pregunta…" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();asEnviar();}"></textarea><button id="asBtn" onclick="asEnviar()">Enviar</button></div>'+
     '<div class="as-sug">'+AS_SUGERENCIAS.map(function(q){return '<button onclick="document.getElementById(\'asIn\').value=this.textContent;asEnviar()">'+esc(q)+'</button>';}).join('')+'</div>'+
-    '<div id="asMsg" class="p-nota" style="margin-top:8px">Hasta 30 preguntas al día. La conversación se borra al cerrar la app; no la guardamos.'+(AS_HIST.length?' <a href="#" onclick="AS_HIST=[];asGuardarHist();renderAsistente();return false" style="color:#d4a017">Empezar de nuevo</a>':'')+'</div></div>';
+    '<div id="asMsg" class="p-nota" style="margin-top:8px">Hasta 10 preguntas al día. La conversación se borra al cerrar la app; no la guardamos.'+(AS_HIST.length?' <a href="#" onclick="AS_HIST=[];asGuardarHist();renderAsistente();return false" style="color:#d4a017">Empezar de nuevo</a>':'')+'</div></div>';
   var ch=document.getElementById('asChat'); ch.scrollTop=ch.scrollHeight;
 }
 async function asEnviar(){
