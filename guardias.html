@@ -189,6 +189,14 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .p-legal{font-size:.6rem;color:#666;margin-top:8px;line-height:1.5}
 .p-legal a{color:#998a55}
 @media (max-width:380px){.p-grid{grid-template-columns:1fr}}
+/* Venta real de Premium (04-09-2026) */
+.p-lbl{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a7a45;margin:14px 0 8px}
+.p-tool.p-hoy{border-color:rgba(212,160,23,.55);background:#1a1200}
+.p-tool.p-hoy .t{color:#f0e8d0}
+#premiumEstado{margin-top:16px}
+.p-btn{width:100%;background:#d4a017;color:#111;border:none;border-radius:10px;padding:13px;font-size:.86rem;font-weight:900;cursor:pointer}
+.p-activo{background:rgba(46,125,50,.18);border:1px solid #4a8a4a;color:#a5e0a5;border-radius:10px;padding:12px;font-size:.78rem;line-height:1.5}
+.p-nota{font-size:.7rem;color:#999;margin-top:8px;line-height:1.5}
 /* Pie de ecosistema: Control+ alimenta al resto de Control y Confianza */
 .eco{max-width:600px;margin:34px auto 0;padding:22px 16px 30px;border-top:1px solid #262626;text-align:center}
 .eco .e-t{font-size:.66rem;font-weight:800;letter-spacing:.12em;color:#8a7a45;text-transform:uppercase;margin-bottom:12px}
@@ -329,30 +337,31 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
     <div id="filtroComunaWrap" style="margin-bottom:14px"></div>
     <div id="ofertasList" class="spinner">Cargando ofertas…</div>
 
-    <!-- Próximamente: Control+ Premium (validación de demanda) -->
-    <div class="premium">
+    <!-- Control+ Premium: venta real desde el 04-09-2026 (BRIEF-activacion-cobro-apps, Fase 1).
+         Regla de Carlos: la bolsa y los avisos siguen gratis; Premium es aparte.
+         Modo tienda (app instalada desde Play): sin precio ni botón de pago (ver config.js). -->
+    <div class="premium" id="premium">
       <div class="p-head">
-        <span class="p-kicker">Próximamente</span>
-        <span class="p-precio">$2.500<small> /mes</small></span>
+        <span class="p-kicker">Control+ Premium</span>
+        <span class="p-precio solo-web">$2.500<small> por 30 días</small></span>
       </div>
-      <h3>Control+ Premium</h3>
-      <p class="p-sub">Herramientas para defender tu trabajo y tu plata. <b>La bolsa de trabajo y los avisos de ofertas siguen gratis para todos.</b> Inscríbete y sé de los primeros — los inscritos entran con precio preferente.</p>
+      <h3>Herramientas para defender tu trabajo y tu plata</h3>
+      <p class="p-sub"><b>La bolsa de trabajo y los avisos de ofertas siguen gratis para todos.</b> Premium es aparte: cada pago habilita 30 días y <b>no hay cobro automático</b> — renuevas cuando tú quieras.</p>
+      <div class="p-lbl">Incluido hoy</div>
       <div class="p-grid">
-        <div class="p-tool"><div class="t">🤖 Asistente Gremial IA</div><p>Consultas ilimitadas sobre tus leyes, dictámenes y procedimientos.</p></div>
-        <div class="p-tool"><div class="t">⭐ Perfil destacado + alertas a tu medida</div><p>Tu perfil aparece resaltado ante el reclutador, y eliges qué ofertas te llegan: tu comuna, tu tipo de turno, tu renta mínima.</p></div>
-        <div class="p-tool"><div class="t">🧾 Verificador de Liquidación</div><p>Detecta recargos mal pagados y descuentos ilegales en tu liquidación.</p></div>
-        <div class="p-tool"><div class="t">📁 Carpeta Documental</div><p>Contratos, finiquitos y certificados respaldados y exportables.</p></div>
+        <div class="p-tool p-hoy"><div class="t">⭐ Perfil destacado</div><p>Tus postulaciones aparecen primero y con insignia Premium ante quien contrata.</p></div>
+      </div>
+      <div class="p-lbl">En camino — se activan en tu cuenta sin costo extra</div>
+      <div class="p-grid">
+        <div class="p-tool"><div class="t">🧾 Verificador de Liquidación</div><p>Le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p></div>
+        <div class="p-tool"><div class="t">🤖 Asistente Gremial IA</div><p>Consultas sobre tus leyes, dictámenes y procedimientos.</p></div>
         <div class="p-tool"><div class="t">🔒 Bitácora Blindada</div><p>Registro personal de incidentes, inalterable y con export PDF.</p></div>
         <div class="p-tool"><div class="t">📅 Turnos + Familia</div><p>Tu pauta 4x4/5x2 en un calendario proyectado, compartible con tu familia.</p></div>
         <div class="p-tool"><div class="t">⚖️ Después del Incidente</div><p>Protocolo legal tras un incidente: qué registrar y tus derechos.</p></div>
         <div class="p-tool"><div class="t">🎓 Mi Carrera</div><p>CV profesional en PDF y tu ruta de especializaciones.</p></div>
       </div>
-      <div class="p-form">
-        <input id="pEmail" type="email" placeholder="tucorreo@ejemplo.cl" autocomplete="email">
-        <button onclick="inscribirPremium()">Inscribirme</button>
-      </div>
-      <div class="p-msg" id="pMsg"></div>
-      <p class="p-legal">Solo usaremos tu correo para avisarte de Control+ Premium. <a href="terminos.html" target="_blank" rel="noopener">Términos y Privacidad</a>.</p>
+      <div id="premiumEstado"></div>
+      <p class="p-legal solo-web">Al pagar aceptas los <a href="terminos.html#controlplus" target="_blank" rel="noopener">Términos y Condiciones</a> (sección Control+ Premium). Precio con IVA incluido; el comprobante lo emite Flow.</p>
     </div>
   </section>
 
@@ -410,22 +419,21 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
 </footer>
 
 <!-- Atajo flotante a Premium + su ventana (ver comentario en el CSS #fabPrem) -->
-<button id="fabPrem" aria-label="Revisa si te están pagando bien">
+<button id="fabPrem" class="solo-web" aria-label="Revisa si te están pagando bien">
   <span>🧾 ¿Te están pagando bien?</span><span class="fab-x" role="button" aria-label="Cerrar">×</span>
 </button>
-<div id="modPrem" role="dialog" aria-modal="true" aria-labelledby="mpTitulo">
+<div id="modPrem" class="solo-web" role="dialog" aria-modal="true" aria-labelledby="mpTitulo">
   <div class="mp-caja">
     <div class="mp-top">
-      <div class="mp-kicker">PRÓXIMAMENTE</div>
+      <div class="mp-kicker">EN CAMINO · CONTROL+ PREMIUM</div>
       <button class="mp-cerrar" id="mpCerrar" aria-label="Cerrar">×</button>
     </div>
     <h3 id="mpTitulo">¿Seguro que te pagan<br>lo que corresponde?</h3>
     <p class="mp-sub">Estamos construyendo un <b>verificador de liquidación</b>: le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p>
-    <div class="mp-lbl">Y 7 HERRAMIENTAS MÁS</div>
+    <div class="mp-lbl">Y MÁS HERRAMIENTAS EN CAMINO</div>
     <div class="mp-grid">
       <div class="mp-t">🤖 Asistente Gremial IA</div>
-      <div class="mp-t alt">⭐ Perfil destacado</div>
-      <div class="mp-t">📁 Carpeta documental</div>
+            <div class="mp-t">📁 Carpeta documental</div>
       <div class="mp-t alt">🔒 Bitácora blindada</div>
       <div class="mp-t">📅 Turnos + Familia</div>
       <div class="mp-t alt">⚖️ Después del incidente</div>
@@ -433,12 +441,12 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
     </div>
     <div class="mp-gratis">
       <div class="g1">✅ La bolsa de trabajo sigue gratis</div>
-      <div class="g2">Los avisos de ofertas son gratis para todos, siempre. Esto es aparte: herramientas para defender tu trabajo ($2.500/mes cuando esté listo).</div>
+      <div class="g2">Los avisos de ofertas son gratis para todos, siempre. Esto es aparte: herramientas para defender tu trabajo. Control+ Premium ya se puede activar ($2.500 por 30 días) e incluye hoy el perfil destacado.</div>
     </div>
     <input id="mpEmail" type="email" placeholder="tucorreo@ejemplo.cl" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false">
     <button class="mp-cta" id="mpEnviar">Avísenme cuando esté listo</button>
     <div class="mp-msg" id="mpMsg"></div>
-    <button class="mp-vertodo" id="mpVerTodo">Ver el detalle de cada herramienta</button>
+    <button class="mp-vertodo" id="mpVerTodo">Ver Control+ Premium y activarlo</button>
     <p class="mp-legal">Solo usaremos tu correo para avisarte de Control+ Premium. <a href="terminos.html" target="_blank" rel="noopener">Términos y Privacidad</a>.</p>
   </div>
 </div>
@@ -530,6 +538,9 @@ cycTelemetria('guardias','carga_pagina',true);
 })();
 
 var CYC_TOKEN=localStorage.getItem('cyc_token')||null;
+var CYC_PLANES=[];      // todos los planes activos de la cuenta (/auth/me → planes)
+var CYC_CM=null;        // {plan, vence} si Control+ Premium (o Plan Empresa) está activo
+var CYC_VERIFICADO=null;
 var CYC_EMAIL=null;
 var CYC_PERFIL=null; // null=sin cargar aún, false=no tiene perfil, {..}=tiene perfil
 var CYC_OFERTAS=[];
@@ -641,15 +652,19 @@ function cambiarFiltroComuna(v){
 
 /* ---------- Sesión ---------- */
 async function cycCargarSesion(){
-  if(!CYC_TOKEN){ CYC_EMAIL=null; CYC_PERFIL=false; CYC_IS_ADMIN=false; actualizarTabAdmin(); actualizarTabCuenta(); return; }
+  if(!CYC_TOKEN){ CYC_EMAIL=null; CYC_PERFIL=false; CYC_IS_ADMIN=false; CYC_PLANES=[]; CYC_CM=null; CYC_VERIFICADO=null; actualizarTabAdmin(); actualizarTabCuenta(); renderPremiumEstado(); return; }
   try{
     var res=await fetch(API_URL+'/auth/me',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
     if(!res.ok){ cycCerrarSesion(true); return; }
     var data=await res.json();
     CYC_EMAIL=data.email||null;
     CYC_IS_ADMIN=!!data.is_admin;
+    CYC_PLANES=data.planes||[];
+    CYC_CM=cmActivo(CYC_PLANES);
+    CYC_VERIFICADO=!!data.verificado;
     actualizarTabAdmin();
     actualizarTabCuenta();
+    renderPremiumEstado();
   }catch(e){}
   try{
     var res2=await fetch(API_URL+'/guardias/perfil',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
@@ -668,15 +683,16 @@ function actualizarTabAdmin(){
 function actualizarTabCuenta(){
   var label=document.getElementById('tabCuentaLabel'), flecha=document.getElementById('tabCuentaFlecha');
   if(!label) return;
-  label.textContent=CYC_TOKEN?'Mi cuenta':'Iniciar sesión';
+  label.textContent=CYC_TOKEN?(CYC_CM?'Mi cuenta ⭐':'Mi cuenta'):'Iniciar sesión';
   if(flecha) flecha.style.display=CYC_TOKEN?'':'none';
 }
 function cycCerrarSesion(silencioso){
   localStorage.removeItem('cyc_token');
   CYC_TOKEN=null; CYC_EMAIL=null; CYC_PERFIL=false; CYC_IS_ADMIN=false;
-  CYC_PERFIL_POSTULADAS=null;
+  CYC_PERFIL_POSTULADAS=null; CYC_PLANES=[]; CYC_CM=null; CYC_VERIFICADO=null;
   actualizarTabAdmin();
   actualizarTabCuenta();
+  renderPremiumEstado();
   if(!silencioso) renderView();
 }
 
@@ -999,7 +1015,7 @@ function renderPerfil(){
     el.innerHTML=aviso+formPerfil(null);
     return;
   }
-  el.innerHTML=aviso+resumenPerfil(CYC_PERFIL);
+  el.innerHTML=aviso+premiumChip()+resumenPerfil(CYC_PERFIL);
 }
 
 function formAuth(){
@@ -1038,6 +1054,9 @@ async function cycAuth(modo){
     renderPerfil();
     await cycCargarSesion();
     renderPerfil();
+    // Venía desde «Activar Control+ Premium»: devolverlo a la tarjeta con la sesión ya abierta.
+    var intent=false; try{ intent=!!sessionStorage.getItem('cplus_premium_intent'); sessionStorage.removeItem('cplus_premium_intent'); }catch(err){}
+    if(intent){ location.hash='#ofertas'; setTimeout(function(){ var t=document.getElementById('premium'); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); },350); }
   }catch(e){ msg.textContent='Error de conexión.'; }
 }
 
@@ -2055,7 +2074,7 @@ function pintarPostulantes(){
   html+='<button class="btn-guardar" style="margin-bottom:12px" onclick="exportarCSV()">Exportar CSV</button>';
   ADMIN_POSTULANTES.forEach(function(p){
     html+='<div class="post-card">'+
-      '<div class="post-top"><div class="post-titulo">'+esc(p.nombre)+'</div>'+
+      '<div class="post-top"><div class="post-titulo">'+(p.premium?'<span title="Control+ Premium" style="color:#d4a017">⭐ </span>':'')+esc(p.nombre)+'</div>'+
       '<span class="badge '+p.estado+'">'+labelEstado(p.estado)+'</span></div>'+
       '<div class="post-meta">📍 '+esc(p.comuna)+' · Acreditación: '+esc(labelAcreditacion(p.acreditacion))+' · '+esc(labelDisponibilidad(p.disponibilidad))+'</div>'+
       '<a class="btn-whatsapp" href="'+esc(waLink(p.telefono))+'" target="_blank" rel="noopener noreferrer">💬 Escribir por WhatsApp — '+esc(p.telefono)+'</a>'+
@@ -2350,6 +2369,96 @@ async function inscribirPremium(){
       cycTelemetria('guardias','premium_inscrito',false,'red');
     }
   });
+})();
+
+/* ---------- Control+ Premium: compra real (04-09-2026) ----------
+   El cobro lo hace el mismo Worker que ya cobra Plan Personal/Empresa (plan 'controlmas',
+   $2.500, 30 días, sin cobro automático). Aquí solo: mostrar el estado, mandar a pagar
+   y recibir el retorno. En modo tienda (app desde Play) no hay precio ni botón. */
+function cmActivo(planes){
+  var cm=null;
+  (planes||[]).forEach(function(p){
+    if(p.plan!=='controlmas'&&p.plan!=='empresa') return;
+    if(!cm||(p.vence||'9999')>(cm.vence||'9999')) cm=p;
+  });
+  return cm;
+}
+// D1 guarda el vencimiento en UTC sin zona («2026-10-04 12:52:42»); se le agrega la Z para que
+// el navegador no lo lea como hora local de Chile.
+function fechaUTC(iso){ return new Date(/Z$|[+-]\d\d:\d\d$/.test(iso)?iso:String(iso).replace(' ','T')+'Z'); }
+function fechaCorta(iso){ try{ return fechaUTC(iso).toLocaleDateString('es-CL',{day:'numeric',month:'long'}); }catch(e){ return iso; } }
+function renderPremiumEstado(){
+  var el=document.getElementById('premiumEstado'); if(!el) return;
+  if(window.CYC_MODO_TIENDA){
+    el.innerHTML = CYC_CM
+      ? '<div class="p-activo">✅ Control+ Premium activo'+(CYC_CM.vence?' hasta el '+fechaCorta(CYC_CM.vence):'')+'.</div>'
+      : '<div class="p-nota">Si ya tienes Control+ Premium, inicia sesión con tu cuenta y tu insignia se activa sola.</div>';
+    return;
+  }
+  if(CYC_CM){
+    var dias=CYC_CM.vence?Math.round((fechaUTC(CYC_CM.vence)-Date.now())/864e5):null;
+    el.innerHTML='<div class="p-activo">✅ Control+ Premium activo'+(CYC_CM.vence?' hasta el '+fechaCorta(CYC_CM.vence)+' ('+dias+(dias===1?' día':' días')+')':' — incluido en tu Plan Empresa')+'.</div>'+
+      ((dias!==null&&dias<=5&&CYC_CM.plan==='controlmas')?'<button class="p-btn" style="margin-top:10px" onclick="cycActivarPremium()">Renovar 30 días más — $2.500</button>':'');
+    return;
+  }
+  if(!CYC_TOKEN){
+    el.innerHTML='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button>'+
+      '<div class="p-nota">Primero creas tu cuenta gratis (o inicias sesión) y después pagas con Flow: tarjeta, débito o transferencia.</div>';
+    return;
+  }
+  if(CYC_VERIFICADO===false){
+    el.innerHTML='<div class="p-nota">⚠️ Para pagar necesitas confirmar tu correo: revisa tu bandeja y el spam. Después vuelve aquí.</div>'+
+      '<button class="p-btn" style="margin-top:8px;opacity:.65" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button>';
+    return;
+  }
+  el.innerHTML='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button>'+
+    '<div class="p-nota">Pagas con Flow (tarjeta, débito o transferencia) y vuelves a la app con tu Premium activo.</div>';
+}
+function premiumChip(){
+  if(CYC_CM) return '<div class="card" style="border-color:#4a8a4a;background:#0f1a0f"><div style="font-size:.8rem;color:#a5e0a5;font-weight:800">⭐ Control+ Premium activo'+(CYC_CM.vence?' · hasta el '+fechaCorta(CYC_CM.vence):' · incluido en tu Plan Empresa')+'</div><div style="font-size:.7rem;color:#9bb;margin-top:3px">Tus postulaciones aparecen primero y con insignia ante quien contrata.</div></div>';
+  if(window.CYC_MODO_TIENDA) return '';
+  return '<div class="card" style="border-color:rgba(212,160,23,.4)"><div style="font-size:.78rem;color:#e8dfc8;line-height:1.5"><b style="color:#d4a017">Control+ Premium</b> — perfil destacado por $2.500 cada 30 días, sin cobro automático. <a href="#ofertas" onclick="setTimeout(function(){var t=document.getElementById(\'premium\');if(t)t.scrollIntoView({behavior:\'smooth\'})},300)" style="color:#d4a017">Ver qué incluye →</a></div></div>';
+}
+async function cycActivarPremium(){
+  cycTelemetria('guardias','premium_activar_clic',true);
+  if(!CYC_TOKEN){
+    try{ sessionStorage.setItem('cplus_premium_intent','1'); }catch(e){}
+    avisoPerfilPendiente='Crea tu cuenta o inicia sesión para activar Control+ Premium. Después te devolvemos a la tarjeta.';
+    location.hash='#perfil'; renderPerfil(); return;
+  }
+  var el=document.getElementById('premiumEstado');
+  if(el) el.innerHTML='<div class="p-nota">Abriendo el pago seguro en Flow…</div>';
+  try{
+    var res=await fetch(API_URL+'/pago/iniciar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({plan:'controlmas'})});
+    var data=await res.json();
+    if(res.ok&&data.url){ cycTelemetria('guardias','premium_pago_iniciado',true); location.href=data.url; return; }
+    cycTelemetria('guardias','premium_pago_iniciado',false,res.status+' '+String(data.error||'').slice(0,60));
+    renderPremiumEstado();
+    if(el) el.insertAdjacentHTML('beforeend','<div class="p-msg err">'+esc(data.error||'No se pudo iniciar el pago.')+'</div>');
+  }catch(e){
+    renderPremiumEstado();
+    if(el) el.insertAdjacentHTML('beforeend','<div class="p-msg err">Error de conexión. Intenta de nuevo.</div>');
+  }
+}
+// Vuelta desde Flow (?pago=confirmado): aviso arriba + releer la sesión cuando el webhook activó el plan.
+(function(){
+  try{
+    var q=new URLSearchParams(location.search);
+    if(q.get('pago')!=='confirmado') return;
+    cycTelemetria('guardias','premium_pago_retorno',true);
+    var ban=document.createElement('div'); ban.className='card'; ban.id='banPago';
+    ban.style.cssText='border-color:#4a8a4a;background:#0f1a0f;max-width:600px;margin:0 auto 14px';
+    ban.innerHTML='<div style="font-size:.9rem;font-weight:800;color:#a5e0a5">✅ ¡Pago recibido! Estamos activando tu Control+ Premium…</div>'+
+      '<div style="font-size:.74rem;color:#9bb;margin-top:4px;line-height:1.5">Flow nos avisa en segundos. Si en un minuto no aparece «Premium activo» en Mi cuenta, escríbenos por <a href="https://wa.me/56984600273" style="color:#d4a017">WhatsApp</a> con tu comprobante.</div>';
+    var main=document.querySelector('main.container'); if(main) main.insertBefore(ban,main.firstChild);
+    history.replaceState(null,'',location.pathname+location.hash);
+    var intentos=0;
+    var t=setInterval(async function(){
+      intentos++; await cycCargarSesion();
+      if(CYC_CM){ clearInterval(t); ban.innerHTML='<div style="font-size:.9rem;font-weight:800;color:#a5e0a5">⭐ ¡Bienvenido a Control+ Premium! Ya está activo'+(CYC_CM.vence?' hasta el '+fechaCorta(CYC_CM.vence):'')+'.</div><div style="font-size:.74rem;color:#9bb;margin-top:4px">Te enviamos el comprobante por correo (revisa spam si no llega).</div>'; renderPerfil(); }
+      else if(intentos>=8) clearInterval(t);
+    },5000);
+  }catch(e){}
 })();
 
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}

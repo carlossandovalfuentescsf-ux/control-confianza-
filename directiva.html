@@ -141,7 +141,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
   </div>
   <div class="card" id="authBox" style="display:none">
     <h2>Exclusivo Plan Empresa</h2>
-    <p>El generador de Directivas es parte del <strong>Plan Empresa ($<span id="precioEmp"></span>/30 días)</strong>. Inicia sesión o crea tu cuenta para continuar.</p>
+    <p class="solo-web">El generador de Directivas es parte del <strong>Plan Empresa ($<span id="precioEmp"></span>/30 días)</strong>. Inicia sesión o crea tu cuenta para continuar.</p>
+    <p class="solo-tienda">El generador de Directivas es parte del <strong>Plan Empresa</strong>. Si ya lo tienes, inicia sesión con tu correo.</p>
     <label for="aEmail">Email</label>
     <input id="aEmail" type="email" placeholder="Email" autocomplete="email">
     <label for="aPass">Contraseña</label>
@@ -150,9 +151,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
       <button class="btn btn-gris" style="flex:1" onclick="autenticar('login')">Ya tengo cuenta</button>
       <button class="btn btn-oro" style="flex:1" onclick="autenticar('registro')">Crear cuenta</button>
     </div>
-    <button class="btn btn-oro btn-full" id="btnPagarEmp" style="display:none" onclick="pagarEmpresa()">Pagar Plan Empresa y desbloquear</button>
+    <button class="btn btn-oro btn-full solo-web" id="btnPagarEmp" style="display:none" onclick="pagarEmpresa()">Pagar Plan Empresa y desbloquear</button>
     <a href="recuperar-clave.html" style="display:inline-block;margin-top:8px;font-size:0.72rem;color:#d4a017">¿Olvidaste tu contraseña?</a>
-    <div style="font-size:0.66rem;color:#888;margin-top:4px">Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017">Términos y Condiciones</a></div>
+    <div class="solo-web" style="font-size:0.66rem;color:#888;margin-top:4px">Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017">Términos y Condiciones</a></div>
     <div class="msg" id="msgAuth"></div>
   </div>
 </section>
@@ -394,7 +395,7 @@ async function autenticar(modo){
     localStorage.setItem('cyc_token',d.token);
     const e=await estadoPlan();
     if(e.plan==='empresa'){document.getElementById('authBox').style.display='none';comenzar();}
-    else{document.getElementById('btnPagarEmp').style.display='block';msg('msgAuth','Sesión iniciada. Falta activar el Plan Empresa.','ok');}
+    else{document.getElementById('btnPagarEmp').style.display='block';msg('msgAuth',window.CYC_MODO_TIENDA?'Sesión iniciada. Esta cuenta no tiene el Plan Empresa activo.':'Sesión iniciada. Falta activar el Plan Empresa.','ok');}
   }catch(err){msg('msgAuth','Sin conexión. Intenta de nuevo.','err');}
 }
 async function pagarEmpresa(){

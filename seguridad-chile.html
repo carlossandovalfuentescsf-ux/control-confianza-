@@ -391,7 +391,7 @@ select:disabled{opacity:0.4}
   <div style="display:flex;gap:6px;">
     <a href="#" onclick="abrirPeligro();return false" style="background:#c0392b;color:white;border:none;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;display:flex;align-items:center;">&#9888; SOS</a>
     <button id="chipCuenta" onclick="abrirModal()" title="Mi cuenta" style="background:#1a1a1a;border:1px solid rgba(212,160,23,.6);color:#d4a017;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">👤</button>
-    <button class="btnprem" onclick="abrirModal()" style="background:#d4a017;color:#111;">Planes</button>
+    <button class="btnprem solo-web" onclick="abrirModal()" style="background:#d4a017;color:#111;">Planes</button>
   </div>
 </header>
 
@@ -666,7 +666,7 @@ select:disabled{opacity:0.4}
       <div class="stit"><span>Consejo rapido - Gratis</span></div>
       <button class="btncons" onclick="mostrarConsejo()">Ver consejo para este sector ahora</button>
       <div id="iConsejo"></div>
-      <div class="prem-box">
+      <div class="prem-box solo-web">
         <div class="prem-tit">Potencia tu seguridad con un plan</div>
         <div class="prem-desc">Accede a herramientas exclusivas segun tus necesidades.</div>
         <div class="pf">⭐ <strong>Personal $<span data-price="personal"></span> pago único</strong> — informe completo de tu hogar (Plan Hogar + Mi Cobertura)</div>
@@ -683,7 +683,7 @@ select:disabled{opacity:0.4}
       <div class="fl">PDI: reportes de delitos graves.</div>
       <div class="fl">Encuesta Nacional: consulta directa a los vecinos.</div>
     </div>
-    <a class="wlink" href="https://www.controlyconfianza.cl" target="_blank">www.controlyconfianza.cl</a>
+    <a class="wlink solo-web" href="https://www.controlyconfianza.cl" target="_blank">www.controlyconfianza.cl</a>
   </div>
 </div>
 </main>
@@ -691,9 +691,10 @@ select:disabled{opacity:0.4}
 <div class="mbg" id="modal" onclick="if(event.target===this){cerrarModal()}">
   <div class="mbox">
     <button class="mclose-x" onclick="cerrarModal()" aria-label="Cerrar planes">✕</button>
-    <h2>Planes de Seguridad</h2>
-    <div class="msub">Elige el nivel de proteccion para ti o tu empresa</div>
-    <div class="plan">
+    <h2 class="solo-web">Planes de Seguridad</h2>
+    <h2 class="solo-tienda">Mi cuenta</h2>
+    <div class="msub solo-web">Elige el nivel de proteccion para ti o tu empresa</div>
+    <div class="plan solo-web">
       <div class="ptop"><div class="pnom">Basico</div><div class="pprc"><strong>Gratis</strong></div></div>
       <div class="pft">
         ✓ Mapa de riesgo por sector<br>
@@ -714,7 +715,7 @@ select:disabled{opacity:0.4}
         <div class="ph"><span class="ph-ic">🏠</span><span><span class="ph-nom">Plan Hogar (general)</span><span class="ph-desc">Diagnóstico rápido de tu casa con una nota general de seguridad.</span></span></div>
       </div>
     </div>
-    <div class="plan star">
+    <div class="plan star solo-web">
       <div class="ptop"><div class="pnom">Personal ⭐</div><div class="pprc"><strong>$<span data-price="personal"></span></strong> <span style="font-size:10px;color:#aaa">pago único</span></div></div>
       <div class="pft">
         ✓ Todo lo gratuito mas:<br>
@@ -734,7 +735,7 @@ select:disabled{opacity:0.4}
         <div class="ph"><span class="ph-ic">💬</span><span><span class="ph-nom">Consulta con asesor OS.10</span><span class="ph-desc">Una consulta al año con un asesor de seguridad acreditado.</span></span></div>
       </div>
     </div>
-    <div class="plan">
+    <div class="plan solo-web">
       <div class="ptop"><div class="pnom">Empresa</div><div class="pprc"><strong>$<span data-price="empresa"></span></strong>/mes</div></div>
       <div class="pft">
         ✓ Todo lo anterior mas:<br>
@@ -776,8 +777,9 @@ select:disabled{opacity:0.4}
         <div style="margin-top:8px;font-size:11px;color:#777;text-align:center"><a href="eliminar-cuenta.html" target="_blank" rel="noopener noreferrer" style="color:#8a8a80;text-decoration:underline">Eliminar mi cuenta y mis datos</a></div>
       </div>
       <div id="cycCuentaAnonimo">
-        <div style="font-weight:800;margin-bottom:4px">¿Quieres contratar un plan de pago?</div>
-        <div style="font-size:11px;color:#999;margin-bottom:8px;line-height:1.5">Primero crea tu cuenta gratis con tu email — la necesitas para <strong>pagar tu plan</strong> y para <strong>acceder a lo que contrates desde cualquier teléfono o computador</strong>. Apenas la creas, aquí abajo aparece el botón para pagar el plan que elijas.</div>
+        <div class="solo-web" style="font-weight:800;margin-bottom:4px">¿Quieres contratar un plan de pago?</div>
+        <div class="solo-tienda" style="font-size:11px;color:#ccc;margin-bottom:8px;line-height:1.5"><strong>Inicia sesión</strong> con tu correo para acceder a lo que ya tienes contratado en tu cuenta.</div>
+        <div class="solo-web" style="font-size:11px;color:#999;margin-bottom:8px;line-height:1.5">Primero crea tu cuenta gratis con tu email — la necesitas para <strong>pagar tu plan</strong> y para <strong>acceder a lo que contrates desde cualquier teléfono o computador</strong>. Apenas la creas, aquí abajo aparece el botón para pagar el plan que elijas.</div>
         <input id="cycEmail" type="email" placeholder="Email" style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff">
         <div style="position:relative;margin-bottom:8px"><input id="cycPassword" type="password" placeholder="Contraseña (mínimo 8 caracteres)" style="width:100%;box-sizing:border-box;padding:8px;padding-right:34px;border-radius:6px;border:1px solid #333;background:#111;color:#fff"><button type="button" tabindex="-1" aria-label="Mostrar contraseña" onclick="cycToggleOjo(this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;padding:0;line-height:1">👁</button></div>
         <div style="display:flex;gap:8px">
@@ -788,11 +790,11 @@ select:disabled{opacity:0.4}
         <div id="cycAuthMsg" style="margin-top:6px;font-size:11px;color:#e74c3c"></div>
       </div>
     </div>
-    <button class="btnc" id="btnPagarPersonal" onclick="cycIniciarPago('personal')" style="display:none">Pagar Plan Personal — $<span data-price="personal"></span></button>
-    <button class="btnc" id="btnPagarEmpresa" onclick="cycIniciarPago('empresa')" style="display:none">Suscribirme al Plan Empresa</button>
-    <div style="font-size:10px;color:#888;text-align:center;margin:6px 0 2px">Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017">Términos y Condiciones</a></div>
+    <button class="btnc solo-web" id="btnPagarPersonal" onclick="cycIniciarPago('personal')" style="display:none">Pagar Plan Personal — $<span data-price="personal"></span></button>
+    <button class="btnc solo-web" id="btnPagarEmpresa" onclick="cycIniciarPago('empresa')" style="display:none">Suscribirme al Plan Empresa</button>
+    <div class="solo-web" style="font-size:10px;color:#888;text-align:center;margin:6px 0 2px">Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017">Términos y Condiciones</a></div>
     <button class="btnc" onclick="contactar()">Quiero que me contacten</button>
-    <a class="wlink" href="https://www.controlyconfianza.cl" target="_blank">www.controlyconfianza.cl</a>
+    <a class="wlink solo-web" href="https://www.controlyconfianza.cl" target="_blank">www.controlyconfianza.cl</a>
     <div style="font-size:11px;color:#888;text-align:center;margin-top:8px"><a href="terminos.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017;text-decoration:none">Términos y Privacidad</a> &nbsp;·&nbsp; <a href="verificacion.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017;text-decoration:none">Verificación y transparencia</a></div>
     <button class="btnclose" onclick="cerrarModal()">Cerrar</button>
   </div>
@@ -1200,8 +1202,10 @@ function renderIndice(el,nombre,data){
       '</div>'+
       '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(17,17,17,0.82);border-radius:10px;padding:12px;text-align:center">'+
         '<div style="font-size:11px;color:#ccc;font-weight:700">Score exacto + factores detallados</div>'+
-        '<div style="font-size:10px;color:#666;max-width:200px">Disponible en el plan Empresa</div>'+
-        '<button onclick="abrirModal()" style="background:#d4a017;color:#111;border:none;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;margin-top:2px">Ver plan Empresa →</button>'+
+        (window.CYC_MODO_TIENDA
+          ? '<div style="font-size:10px;color:#888;max-width:220px;line-height:1.5">Incluido en el Plan Empresa. Si ya lo tienes, inicia sesión desde el botón 👤.</div>'
+          : '<div style="font-size:10px;color:#666;max-width:200px">Disponible en el plan Empresa</div>'+
+            '<button onclick="abrirModal()" style="background:#d4a017;color:#111;border:none;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;margin-top:2px">Ver plan Empresa →</button>')+
       '</div>'+
     '</div>'+
     metodologia+

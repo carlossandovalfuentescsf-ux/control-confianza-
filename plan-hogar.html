@@ -616,7 +616,12 @@ function showResult(){
     var msgWa = encodeURIComponent('Hice el diagnóstico de seguridad del hogar en la app de Control & Confianza y quiero contratar el Plan Personal para ver mis recomendaciones. Mi resultado fue '+r.scorePct+'% ('+nivelLabel(r.scorePct)+').');
     var logueado=!!localStorage.getItem('cyc_token');
     var ctaHtml;
-    if(logueado){
+    if(window.CYC_MODO_TIENDA){
+      // Modo tienda (app instalada desde Play): sin precio ni botón de pago — solo entrar.
+      ctaHtml = logueado
+        ? '<div style="font-size:0.78rem;color:#888;margin-bottom:8px;">Esta cuenta no tiene el Plan Personal activo.</div>'
+        : cycOverlayTienda('Plan Personal','ph');
+    } else if(logueado){
       ctaHtml='<button onclick="cycPagarPersonalPH()" style="background:#d4a017;color:#111;border:none;padding:12px 22px;border-radius:8px;font-size:0.85rem;font-weight:800;cursor:pointer;margin-bottom:8px;">Pagar $'+CYC_CONFIG.precioPersonal+' y desbloquear ahora</button>'+
         '<div style="font-size:0.68rem;color:#888;margin-bottom:8px;">¿Ya lo pagaste con esta cuenta? <a href="#" onclick="cycRefrescarPlanPH(event)" style="color:#d4a017;text-decoration:underline;">Revisar mi plan</a></div>';
     } else {
@@ -640,14 +645,14 @@ function showResult(){
         '<div style="font-size:1.6rem;margin-bottom:8px;">🔓</div>' +
         '<div style="font-size:0.95rem;font-weight:800;color:#f0e8d0;margin-bottom:6px;">Desbloquea tus recomendaciones</div>' +
         '<div style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:10px;">Con el <strong style="color:#d4a017;">Plan Personal</strong> recibes el listado completo de vulnerabilidades detectadas, las acciones concretas por prioridad y el informe en PDF.</div>' +
-        '<div style="background:#1a1200;border:1px solid #d4a017;border-radius:10px;padding:10px 16px;margin-bottom:10px;">' +
+        (window.CYC_MODO_TIENDA ? '' : '<div style="background:#1a1200;border:1px solid #d4a017;border-radius:10px;padding:10px 16px;margin-bottom:10px;">' +
           '<div style="font-size:1.1rem;font-weight:900;color:#d4a017;">$'+CYC_CONFIG.precioPersonal+'<span style="font-size:0.7rem;font-weight:400;color:#888;"> pago único</span></div>' +
           '<div style="font-size:0.7rem;color:#888;margin-top:3px;">Plan Personal — acceso permanente, pagas una sola vez</div>' +
           '<div style="font-size:0.72rem;color:#aaa;margin-top:6px;line-height:1.5;">✓ Informe completo con todas las vulnerabilidades<br>✓ Recomendaciones priorizadas en PDF<br>✓ Informe de tu propiedad en Mi Cobertura<br>✓ 1 consulta anual con asesor acreditado</div>' +
-        '</div>' +
+        '</div>') +
         ctaHtml +
-        '<a href="https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+msgWa+'" style="font-size:0.7rem;color:#25d366;text-decoration:underline;margin-bottom:6px;">¿Prefieres pagar por WhatsApp?</a>' +
-        '<div style="font-size:0.6rem;color:#666;">Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017;">Términos y Condiciones</a></div>' +
+        (window.CYC_MODO_TIENDA ? '' : '<a href="https://wa.me/'+CYC_CONFIG.whatsapp+'?text='+msgWa+'" style="font-size:0.7rem;color:#25d366;text-decoration:underline;margin-bottom:6px;">¿Prefieres pagar por WhatsApp?</a>' +
+        '<div style="font-size:0.6rem;color:#666;">Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener noreferrer" style="color:#d4a017;">Términos y Condiciones</a></div>') +
       '</div>' +
     '</div>';
   }
