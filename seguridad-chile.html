@@ -391,7 +391,7 @@ select:disabled{opacity:0.4}
   <div style="display:flex;gap:6px;">
     <a href="#" onclick="abrirPeligro();return false" style="background:#c0392b;color:white;border:none;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;display:flex;align-items:center;">&#9888; SOS</a>
     <button id="chipCuenta" onclick="abrirModal()" title="Mi cuenta" style="background:#1a1a1a;border:1px solid rgba(212,160,23,.6);color:#d4a017;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">👤</button>
-    <button class="btnprem solo-web" onclick="abrirModal()" style="background:#d4a017;color:#111;">Planes</button>
+    <a class="btnprem solo-web" href="planes.html?f=app-cc" style="background:#d4a017;color:#111;text-decoration:none;display:inline-flex;align-items:center">Planes</a>
   </div>
 </header>
 
@@ -671,7 +671,7 @@ select:disabled{opacity:0.4}
         <div class="prem-desc">Accede a herramientas exclusivas segun tus necesidades.</div>
         <div class="pf">⭐ <strong>Personal $<span data-price="personal"></span> pago único</strong> — informe completo de tu hogar (Plan Hogar + Mi Cobertura)</div>
         <div class="pf">🏢 <strong>Empresa $<span data-price="empresa"></span>/mes</strong> — Indice de riesgo detallado + Directiva de Funcionamiento</div>
-        <button class="btnpagar" onclick="abrirModal()">Ver planes y precios</button>
+        <a class="btnpagar" href="planes.html?f=app-cc" style="text-decoration:none;display:inline-block;text-align:center;box-sizing:border-box">Ver planes y precios</a>
       </div>
     </div>
     <div class="notadatos" id="notaDatos"></div>
@@ -1205,7 +1205,7 @@ function renderIndice(el,nombre,data){
         (window.CYC_MODO_TIENDA
           ? '<div style="font-size:10px;color:#888;max-width:220px;line-height:1.5">Incluido en el Plan Empresa. Si ya lo tienes, inicia sesión desde el botón 👤.</div>'
           : '<div style="font-size:10px;color:#666;max-width:200px">Disponible en el plan Empresa</div>'+
-            '<button onclick="abrirModal()" style="background:#d4a017;color:#111;border:none;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;margin-top:2px">Ver plan Empresa →</button>')+
+            '<a href="planes.html?f=app-cc" style="display:inline-block;background:#d4a017;color:#111;text-decoration:none;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:800;margin-top:2px">Ver plan Empresa →</a>')+
       '</div>'+
     '</div>'+
     metodologia+

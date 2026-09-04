@@ -4,6 +4,15 @@ document.querySelectorAll('[data-price="empresa"]').forEach(function(el){el.text
 document.querySelectorAll('[data-price="controlmas"]').forEach(function(el){el.textContent=CYC_CONFIG.precioControlMas;});
 
 var TOKEN=localStorage.getItem('cyc_token')||null, PLAN_ELEGIDO=null, VERIFICADO=null, PLANES=[];
+// Quien llega desde una app vuelve a esa app, no a la portada (?f=app-cc / ?f=app-cplus).
+(function(){
+  try{
+    var f=new URLSearchParams(location.search).get('f')||'', v=document.querySelector('.volver');
+    if(!v) return;
+    if(f==='app-cc'){ v.href='seguridad-chile.html'; v.textContent='← Volver a la App Control y Confianza'; }
+    else if(f==='app-cplus'){ v.href='guardias.html'; v.textContent='← Volver a Control+'; }
+  }catch(e){}
+})();
 var NOMBRE={personal:'Plan Personal',empresa:'Plan Empresa',controlmas:'Control+ Premium'};
 
 function fechaCorta(iso){ try{ return new Date(/Z$|[+-]\d\d:\d\d$/.test(iso)?iso:String(iso).replace(' ','T')+'Z').toLocaleDateString('es-CL',{day:'numeric',month:'long'}); }catch(e){ return iso; } }
