@@ -3,141 +3,233 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Planes de la App Control y Confianza — precios</title>
-<meta name="description" content="Contrata en la web los planes de la App Control y Confianza (seguridad para tu hogar y tu empresa): Plan Personal $4.990 pago único y Plan Empresa $49.990 por 30 días. Pago seguro con Flow.">
+<title>App Control y Confianza — planes Personal y Empresa</title>
+<meta name="description" content="La app de seguridad para tu hogar y tu empresa: mapa de riesgo por comuna y sector con base en datos oficiales, alertas y diagnósticos. Plan Personal $4.990 pago único · Plan Empresa $49.990 por 30 días. Se contrata en la web, pago seguro con Flow.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Control y Confianza">
 <meta property="og:locale" content="es_CL">
-<meta property="og:title" content="Planes de la App Control y Confianza — precios">
-<meta property="og:description" content="Plan Personal $4.990 pago único · Plan Empresa $49.990 por 30 días. Se contrata aquí, en la web.">
+<meta property="og:title" content="App Control y Confianza — planes Personal y Empresa">
+<meta property="og:description" content="Conoce el riesgo de tu barrio, tu casa y tu empresa, con base en datos oficiales por comuna. Plan Personal $4.990 pago único · Plan Empresa $49.990 por 30 días.">
+<meta property="og:image" content="https://app.controlyconfianza.cl/og-app.png">
 <link rel="canonical" href="https://app.controlyconfianza.cl/planes.html">
 <link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+:root{--bg:#0f0f0f;--panel:#171717;--linea:#262626;--oro:#d4a017;--oro2:#f0c04a;--crema:#f0e8d0;--gris:#a9a396;--gris2:#6f6a5e;--verde:#a5e0a5}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#111;color:#f0e8d0;min-height:100vh;line-height:1.5}
-a{color:#d4a017}
-.wrap{max-width:1040px;margin:0 auto;padding:22px 16px 60px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
-.marca{display:flex;align-items:center;gap:10px;text-decoration:none;color:#f0e8d0}
-.marca img{width:40px;height:40px;border-radius:10px}
-.marca b{font-size:.95rem;letter-spacing:.04em}
-.marca small{display:block;font-size:.66rem;color:#998a55;letter-spacing:.14em;text-transform:uppercase}
-.volver{font-size:.8rem;color:#998a55;text-decoration:none}
-h1{font-size:1.7rem;line-height:1.15;color:#fff;margin-bottom:8px}
-.sub{color:#aaa;font-size:.95rem;max-width:720px;margin-bottom:26px}
-.sub b{color:#f0e8d0}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-@media(max-width:820px){.grid{grid-template-columns:1fr}}
-.plan{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:20px 18px;display:flex;flex-direction:column}
-.plan.star{border-color:rgba(212,160,23,.6);background:linear-gradient(180deg,rgba(212,160,23,.10),rgba(212,160,23,.02) 40%),#161616}
-.p-app{font-size:.64rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#998a55;margin-bottom:6px}
-.p-nom{font-size:1.25rem;font-weight:900;color:#fff}
-.p-prc{margin:8px 0 4px;font-size:1.7rem;font-weight:900;color:#d4a017}
-.p-prc small{font-size:.78rem;color:#998a55;font-weight:700}
-.p-ren{font-size:.74rem;color:#999;margin-bottom:14px;line-height:1.5}
-.p-ft{font-size:.84rem;color:#ddd;line-height:1.7;flex:1}
-.p-ft li{list-style:none;padding-left:22px;position:relative}
-.p-ft li::before{content:"✓";position:absolute;left:0;color:#d4a017;font-weight:900}
-.p-ft li.camino::before{content:"→";color:#777}
-.p-ft li.camino{color:#999}
-.p-lbl{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a7a45;margin:12px 0 4px}
-.btn{display:block;width:100%;background:#d4a017;color:#111;border:none;border-radius:10px;padding:14px;font-size:.92rem;font-weight:900;cursor:pointer;text-align:center;margin-top:16px;text-decoration:none}
-.btn.sec{background:#2a2a2a;color:#f0e8d0}
-.btn[disabled]{opacity:.55;cursor:default}
-.activo{margin-top:16px;background:rgba(46,125,50,.18);border:1px solid #4a8a4a;color:#a5e0a5;border-radius:10px;padding:12px;font-size:.8rem;line-height:1.5}
-.nota{font-size:.7rem;color:#888;margin-top:10px;line-height:1.5}
-/* cuenta */
-.cuenta{margin-top:26px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:18px}
-.cuenta h2{font-size:1rem;color:#fff;margin-bottom:4px}
-.cuenta p{font-size:.82rem;color:#aaa;margin-bottom:12px}
-.cuenta input{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:.9rem;margin-bottom:8px}
-.pw{position:relative}.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;font-size:16px}
-.fila{display:flex;gap:8px}.fila .btn{margin-top:0}
-.msg{font-size:.8rem;margin-top:8px;min-height:1.2em}.msg.err{color:#e74c3c}.msg.ok{color:#7dc800}
-.sesion{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.84rem;color:#ccc}
-.sesion button{background:none;border:none;color:#d4a017;text-decoration:underline;cursor:pointer;font-size:.8rem}
-.aviso{background:#1a1200;border:1px solid rgba(212,160,23,.5);border-radius:10px;padding:10px 12px;font-size:.78rem;color:#e0a800;margin-top:10px;line-height:1.5}
-.faq{margin-top:30px;font-size:.86rem;color:#bbb}
-.faq h2{font-size:1rem;color:#fff;margin-bottom:10px}
-.faq details{background:#161616;border:1px solid #262626;border-radius:10px;padding:10px 14px;margin-bottom:8px}
-.faq summary{cursor:pointer;font-weight:700;color:#f0e8d0}
-.faq details p{margin-top:8px;line-height:1.6}
-footer{margin-top:34px;font-size:.72rem;color:#666;text-align:center;line-height:1.7}
-.tienda{display:none;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:20px;font-size:.9rem;color:#ccc}
+html{scroll-behavior:smooth}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--crema);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--oro)}
+img{max-width:100%;display:block}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:'Barlow Condensed',Inter,sans-serif;font-weight:700;letter-spacing:.01em;line-height:1.05;color:#fff}
+h2{font-size:clamp(1.9rem,4vw,2.6rem);text-transform:uppercase}
+h3{font-size:1.35rem}
+.eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--oro)}
+.btn{display:inline-block;background:var(--oro);color:#111;border:none;border-radius:10px;padding:14px 22px;font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;transition:transform .12s,background .12s}
+.btn:hover{background:var(--oro2);transform:translateY(-1px)}
+.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--oro2);outline-offset:3px}
+.btn.sec{background:transparent;color:var(--crema);border:1px solid #3a3a3a}
+.btn.sec:hover{background:#1d1d1d}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:18px 0}
+.marca{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--crema)}
+.marca img{width:44px;height:44px;border-radius:11px}
+.marca b{font-size:.98rem;display:block;line-height:1.1}
+.marca small{display:block;font-size:.66rem;color:var(--gris);letter-spacing:.14em;text-transform:uppercase;margin-top:3px}
+.volver{font-size:.82rem;color:var(--gris);text-decoration:none}
+.volver:hover{color:var(--crema)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center;padding:34px 0 10px}
+.hero h1{font-size:clamp(2.6rem,6vw,4.4rem);text-transform:uppercase;margin:12px 0 16px}
+.hero h1 em{font-style:normal;color:var(--oro)}
+.hero p.lead{font-size:1.08rem;color:var(--gris);max-width:520px}
+.hero .ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.hero .fino{font-size:.76rem;color:var(--gris2);margin-top:14px}
+.tels{position:relative;height:560px;display:flex;justify-content:center;align-items:flex-end}
+.tel{width:230px;background:#050505;border:1px solid #2c2c2c;border-radius:34px;padding:9px;box-shadow:0 40px 80px rgba(0,0,0,.6);position:absolute;bottom:0}
+.tel img{border-radius:26px;width:100%;aspect-ratio:418/900;object-fit:cover;object-position:top}
+.tel.c{z-index:3}
+.tel.l{left:0;transform:rotate(-7deg) translate(0,28px) scale(.86);z-index:2;opacity:.9}
+.tel.r{right:0;transform:rotate(7deg) translate(0,28px) scale(.86);z-index:2;opacity:.9}
+.gratis{margin:40px 0;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);padding:22px 0;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.gratis .t{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gris)}
+.gratis span{font-size:.86rem;color:var(--crema);background:var(--panel);border:1px solid var(--linea);border-radius:99px;padding:7px 12px}
+.plan{display:grid;grid-template-columns:1fr 1fr;gap:38px;align-items:center;padding:56px 0;border-bottom:1px solid var(--linea)}
+.plan .visual{display:flex;justify-content:center}
+.plan .visual .tel{position:static;transform:none;width:250px;box-shadow:0 30px 70px rgba(0,0,0,.55)}
+.plan h2{margin:10px 0 12px}
+.plan .para{color:var(--gris);font-size:1.02rem;margin-bottom:22px}
+.plan .para b{color:var(--crema)}
+.inc{list-style:none;display:grid;gap:12px}
+.inc li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:.93rem}
+.inc li::before{content:"✓";color:var(--oro);font-weight:700;font-size:1rem;line-height:1.4}
+.inc b{color:#fff}
+.inc small{display:block;color:var(--gris);font-size:.82rem;margin-top:2px}
+.precio{margin-top:24px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.precio .n{font-family:'Barlow Condensed',sans-serif;font-size:2.6rem;font-weight:700;color:var(--oro);line-height:1}
+.precio .c{font-size:.84rem;color:var(--gris)}
+.ren{font-size:.8rem;color:var(--gris);margin-top:6px}
+.plan .btn{margin-top:16px;min-width:260px}
+.nota{font-size:.72rem;color:var(--gris2);margin-top:10px;line-height:1.5}
+.activo{margin-top:16px;background:rgba(46,125,50,.16);border:1px solid #3f7a3f;color:var(--verde);border-radius:10px;padding:12px;font-size:.84rem}
+.ley{background:var(--panel);border-left:3px solid var(--oro);border-radius:0 10px 10px 0;padding:12px 14px;font-size:.84rem;color:var(--gris);margin-bottom:18px}
+.ley b{color:var(--crema)}
+.como{padding:56px 0;border-bottom:1px solid var(--linea)}
+.pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.paso{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:20px}
+.paso .k{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;color:var(--oro);line-height:1}
+.paso b{display:block;margin:8px 0 4px;color:#fff}
+.paso p{font-size:.86rem;color:var(--gris)}
+.conf{padding:56px 0;border-bottom:1px solid var(--linea);display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
+.conf ul{list-style:none;display:grid;gap:10px;font-size:.9rem}
+.conf li{display:grid;grid-template-columns:22px 1fr;gap:8px;color:var(--gris)}
+.conf li::before{content:"▪";color:var(--oro)}
+.conf li b{color:var(--crema)}
+.cuenta{margin:56px 0 0;background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:22px}
+.cuenta h3{margin-bottom:4px}
+.cuenta p{font-size:.86rem;color:var(--gris);margin-bottom:12px}
+.cuenta input{width:100%;padding:13px;border-radius:9px;border:1px solid #333;background:#0f0f0f;color:#fff;font-size:.95rem;margin-bottom:8px;font-family:inherit}
+.pw{position:relative}.pw button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;font-size:16px}
+.fila{display:flex;gap:8px}.fila .btn{flex:1;margin:0}
+.msg{font-size:.82rem;margin-top:8px;min-height:1.2em}.msg.err{color:#e74c3c}.msg.ok{color:#7dc800}
+.sesion{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.86rem;color:#ccc}
+.sesion button{background:none;border:none;color:var(--oro);text-decoration:underline;cursor:pointer;font-size:.82rem;font-family:inherit}
+.aviso{background:#1a1200;border:1px solid rgba(212,160,23,.5);border-radius:10px;padding:10px 12px;font-size:.8rem;color:#e0a800;margin-top:10px;line-height:1.5}
+.faq{padding:48px 0 10px}
+.faq details{background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:12px 16px;margin-top:8px}
+.faq summary{cursor:pointer;font-weight:600;color:var(--crema);font-size:.92rem}
+.faq details p{margin-top:8px;font-size:.88rem;color:var(--gris);line-height:1.6}
+.otra{margin:36px 0 0;border:1px dashed #333;border-radius:14px;padding:14px 16px;font-size:.86rem;color:var(--gris);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.otra img{width:38px;height:38px;border-radius:10px}
+footer{margin:40px 0 50px;font-size:.74rem;color:var(--gris2);text-align:center;line-height:1.8}
+.tienda{display:none;background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:20px;font-size:.9rem;color:#ccc;margin-top:20px}
 .modo-tienda .tienda{display:block}.modo-tienda .solo-web{display:none !important}
-.appcab{display:flex;gap:14px;align-items:center;background:#161616;border:1px solid #262626;border-radius:16px;padding:14px 16px;margin-bottom:22px}
-.appcab img{width:56px;height:56px;border-radius:14px;flex-shrink:0}
-.appcab > div > b{display:block;color:#fff;font-size:1rem}
-.appcab span b{color:#f0e8d0}
-.appcab span{font-size:.82rem;color:#aaa;line-height:1.5}
-.grid.dos{grid-template-columns:repeat(2,1fr)}
-@media(max-width:820px){.grid.dos{grid-template-columns:1fr}}
-.otra{margin-top:26px;background:#161616;border:1px dashed #333;border-radius:14px;padding:14px 16px;font-size:.84rem;color:#bbb;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.otra img{width:36px;height:36px;border-radius:9px}
-.otra a{font-weight:700}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr;padding-top:20px}
+  .tels{height:430px;margin-top:10px}
+  .tel{width:190px}
+  .plan{grid-template-columns:1fr;gap:26px;padding:40px 0}
+  .plan .visual{order:-1}
+  .plan .visual .tel{width:210px}
+  .pasos{grid-template-columns:1fr}
+  .conf{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <a class="marca" href="https://www.controlyconfianza.cl"><img src="icon-192.png" alt=""><span><b>App Control y Confianza</b><small>Planes y precios</small></span></a>
+  <a class="marca" href="https://www.controlyconfianza.cl"><img src="icon-192.png" alt=""><span><b>App Control y Confianza</b><small>Planes Personal y Empresa</small></span></a>
   <a class="volver" href="https://www.controlyconfianza.cl">← Volver a controlyconfianza.cl</a>
 </header>
 
-<!-- Dentro de la app instalada desde Google Play no se ofrecen compras (política de pagos de Play).
-     Esta página es la tienda de la WEB; si alguien la abre desde la app, solo ve este aviso. -->
-<div class="tienda">Esta página es la tienda de la versión web. Si ya tienes un plan, inicia sesión en la app con tu correo y se desbloquea solo.</div>
+<!-- Dentro de la app instalada desde Google Play no se ofrecen compras (política de pagos de Play). -->
+<div class="tienda">Esta página es la tienda de la versión web. Los planes se contratan en nuestra web, controlyconfianza.cl. Si ya tienes uno, inicia sesión en la app con tu correo y se desbloquea solo.</div>
 
 <div class="solo-web">
-<div class="appcab"><img src="icon-192.png" alt=""><div><b>App Control y Confianza</b><span>La app de seguridad para <b>personas y empresas</b>: mapa de riesgo por comuna y sector, alertas, protocolos de emergencia, diagnóstico del hogar y herramientas para empresas obligadas por la Ley 21.659. Lo básico es gratis; estos son sus planes de pago.</span></div></div>
-<h1>Planes de la App Control y Confianza</h1>
-<p class="sub"><b>Se contrata aquí, en la web,</b> con tu cuenta de Control y Confianza. Pagas con Flow (tarjeta, débito o transferencia) y el plan queda activo al instante: entras a la App Control y Confianza con el mismo correo y ya está desbloqueado. Sin cobros automáticos: nada se renueva solo.</p>
 
-<div class="grid dos">
-  <div class="plan">
-    <div class="p-app">Para tu hogar</div>
-    <div class="p-nom">Plan Personal</div>
-    <div class="p-prc">$<span data-price="personal"></span> <small>pago único</small></div>
-    <div class="p-ren">Pagas una sola vez. Acceso permanente.</div>
-    <ul class="p-ft">
-      <li><b>Mi Cobertura</b>: informe completo de tu propiedad (vulnerabilidades y recomendaciones)</li>
-      <li><b>Plan de Seguridad del Hogar completo</b>, con recomendaciones por prioridad</li>
-      <li>Informe en PDF descargable</li>
-      <li>Boletín mensual de seguridad preventiva</li>
-      <li>1 consulta anual con asesor acreditado OS.10</li>
-    </ul>
-    <button class="btn" onclick="contratar('personal')">Contratar Plan Personal</button>
-    <div class="nota">Después de pagar vuelves a la app con el informe desbloqueado.</div>
+<section class="hero">
+  <div>
+    <div class="eyebrow">App Control y Confianza · para personas y empresas</div>
+    <h1>Conoce el riesgo de <em>tu barrio, tu casa y tu empresa</em></h1>
+    <p class="lead">Mapa de riesgo por comuna y sector con base en datos oficiales por comuna, horarios de mayor peligro, números de emergencia y protocolos. Todo eso es gratis. Los planes de pago agregan el informe completo de tu casa o las herramientas que una empresa necesita para cumplir la Ley 21.659.</p>
+    <div class="ctas">
+      <a class="btn" href="#personal">Ver los planes</a>
+      <a class="btn sec" href="seguridad-chile.html">Abrir la app gratis</a>
+    </div>
+    <p class="fino">Se contrata aquí, en la web. Pago seguro con Flow. Sin cobros automáticos.</p>
   </div>
+  <div class="tels" aria-label="Pantallas reales de la app">
+    <div class="tel l"><img src="img/cap-app-horarios.png" alt="Horarios de mayor riesgo en la app" loading="lazy"></div>
+    <div class="tel c"><img src="img/cap-app-indice.png" alt="Índice de riesgo por sector en la app"></div>
+    <div class="tel r"><img src="img/cap-app-planhogar.png" alt="Plan de Seguridad del Hogar en la app" loading="lazy"></div>
+  </div>
+</section>
 
-  <div class="plan star">
-    <div class="p-app">Para empresas</div>
-    <div class="p-nom">Plan Empresa</div>
-    <div class="p-prc">$<span data-price="empresa"></span> <small>por 30 días</small></div>
-    <div class="p-ren">Cada pago habilita 30 días. Renovación manual, sin cobro automático.</div>
-    <ul class="p-ft">
-      <li><b>Índice de riesgo detallado</b> por comuna y sector</li>
-      <li><b>Calculadora de riesgo OS.10</b> completa (Ley 21.659): brecha y recomendaciones</li>
-      <li><b>Generador de Directiva de Funcionamiento</b> (borrador listo para visación)</li>
-      <li>2 consultas al mes con asesor acreditado OS.10</li>
-      <li>Carta de respaldo como empresa asesorada y acompañamiento ante fiscalización</li>
-    </ul>
-    <button class="btn" onclick="contratar('empresa')">Contratar Plan Empresa</button>
-    <div class="nota">La Directiva firmada por el asesor se cotiza aparte según la instalación.</div>
-  </div>
+<div class="gratis">
+  <span class="t">Gratis para todos</span>
+  <span>Mapa de riesgo por sector</span><span>Horarios de mayor riesgo</span><span>Números de emergencia</span><span>Alertas de zona peligrosa (GPS)</span><span>Protocolos de emergencia</span><span>Diagnóstico del hogar con puntaje general</span>
 </div>
+
+<!-- PLAN PERSONAL -->
+<section class="plan" id="personal">
+  <div>
+    <div class="eyebrow">Plan Personal · para tu casa</div>
+    <h2>Tu casa, punto por punto</h2>
+    <p class="para">La versión gratis te da la nota general de tu hogar. El Plan Personal te entrega <b>el informe completo</b>: qué está débil, qué arreglar primero y cómo.</p>
+    <ul class="inc">
+      <li><span><b>Plan de Seguridad del Hogar completo</b><small>Respondes 44 preguntas en 7 áreas (perímetro exterior, iluminación exterior, puertas y ventanas, interior y dormitorios, sistema de alarma, rutinas y vehículo, familia y entorno). Recibes cada vulnerabilidad detectada y las recomendaciones ordenadas por prioridad: crítico, importante y sugerido.</small></span></li>
+      <li><span><b>Mi Cobertura: el plano de tu propiedad</b><small>Dibujas tu casa con cámaras, accesos y puntos de vigilancia, marcas los puntos ciegos y la app te dice qué quedó sin cubrir y cómo hacerlo.</small></span></li>
+      <li><span><b>Informe en PDF</b><small>Para guardarlo, imprimirlo o mostrárselo a quien vaya a hacer los arreglos.</small></span></li>
+      <li><span><b>Boletín mensual de seguridad preventiva</b><small>Consejos de prevención en tu correo, una vez al mes.</small></span></li>
+      <li><span><b>1 consulta anual con asesor acreditado OS.10</b><small>Para resolver una duda concreta sobre tu caso con un profesional de seguridad privada.</small></span></li>
+    </ul>
+    <div class="precio"><span class="n">$<span data-price="personal"></span></span><span class="c">pago único · acceso permanente</span></div>
+    <div class="ren">Pagas una sola vez. No hay renovación ni cobro automático.</div>
+    <button class="btn" onclick="contratar('personal')">Contratar Plan Personal</button>
+    <div class="nota">Después de pagar entras a la app con tu correo y el informe queda desbloqueado.</div>
+  </div>
+  <div class="visual"><div class="tel"><img src="img/cap-app-planhogar.png" alt="Diagnóstico del hogar: 44 preguntas en 7 áreas" loading="lazy"></div></div>
+</section>
+
+<!-- PLAN EMPRESA -->
+<section class="plan" id="empresa">
+  <div class="visual"><div class="tel"><img src="img/cap-app-indice.png" alt="Índice de riesgo detallado por sector" loading="lazy"></div></div>
+  <div>
+    <div class="eyebrow">Plan Empresa · para empresas y locales</div>
+    <h2>Prepárate para la Ley 21.659</h2>
+    <div class="ley"><b>¿Te alcanza la ley?</b> La Ley 21.659 obliga a ciertas empresas a contar con guardias y con una Directiva de Funcionamiento. El Plan Empresa estima qué tan probable es que estés obligado y arma el borrador del documento para la visación del asesor.</div>
+    <ul class="inc">
+      <li><span><b>Índice de riesgo detallado</b><small>El puntaje exacto y los factores de tu comuna (hoy, las 29 comunas principales de Santiago), no solo el nivel general. Para decidir cuándo reforzar.</small></span></li>
+      <li><span><b>Calculadora de riesgo OS.10 completa</b><small>Estima la probabilidad de que tu empresa esté obligada por ley a contar con guardias, con índice de percepción, análisis de brecha y recomendaciones.</small></span></li>
+      <li><span><b>Generador de Directiva de Funcionamiento</b><small>Arma el borrador de tu Directiva con análisis de riesgo, listo para la visación del asesor.</small></span></li>
+      <li><span><b>2 consultas al mes con asesor acreditado OS.10</b><small>Para tus dudas de cumplimiento, dotación o fiscalización.</small></span></li>
+      <li><span><b>Carta de respaldo y acompañamiento</b><small>Carta como empresa asesorada y apoyo si te llega una fiscalización de OS.10.</small></span></li>
+    </ul>
+    <div class="precio"><span class="n">$<span data-price="empresa"></span></span><span class="c">por 30 días</span></div>
+    <div class="ren">Cada pago habilita 30 días. Renovación manual: te avisamos por correo antes de que venza y tú decides.</div>
+    <button class="btn" onclick="contratar('empresa')">Contratar Plan Empresa</button>
+    <div class="nota">La Directiva firmada por el asesor es un servicio aparte que se cotiza según la instalación. El plan te entrega el borrador listo para esa visación.</div>
+  </div>
+</section>
+
+<section class="como">
+  <div class="eyebrow">Cómo funciona</div>
+  <h2>Tres pasos y estás dentro</h2>
+  <div class="pasos">
+    <div class="paso"><div class="k">1</div><b>Crea tu cuenta gratis</b><p>Correo y contraseña, aquí abajo. Es la misma cuenta que usas en la app.</p></div>
+    <div class="paso"><div class="k">2</div><b>Paga con Flow</b><p>Tarjeta de crédito, débito o transferencia. Flow emite el comprobante y nosotros te enviamos el detalle por correo.</p></div>
+    <div class="paso"><div class="k">3</div><b>Entra a la app</b><p>Con el mismo correo. Lo que contrataste ya está desbloqueado, en el teléfono o en el computador.</p></div>
+  </div>
+</section>
+
+<section class="conf">
+  <div>
+    <div class="eyebrow">Quién está detrás</div>
+    <h2>Seguridad privada, no una app anónima</h2>
+    <p style="color:var(--gris);font-size:.95rem;margin-top:10px">La app la opera <b style="color:var(--crema)">Control y Confianza CSF SpA</b>, empresa chilena de asesorías en seguridad privada, con asesor de seguridad privada acreditado. Lo que la app te dice es lo mismo que le decimos a nuestros clientes de asesoría.</p>
+  </div>
+  <ul>
+    <li><span><b>Empresa chilena.</b> Control y Confianza CSF SpA, RUT 78.043.129-6. Marca en trámite ante INAPI (solicitud SM1110278).</span></li>
+    <li><span><b>Pago seguro.</b> Lo procesa Flow; nosotros no vemos ni guardamos tu tarjeta.</span></li>
+    <li><span><b>Sin cobro automático.</b> Ningún plan se renueva solo.</span></li>
+    <li><span><b>Tus derechos.</b> Aplica la Ley del Consumidor; cobros duplicados o planes no activados se corrigen y se devuelven cuando corresponde (Términos, sección 1.8).</span></li>
+    <li><span><b>Una persona al otro lado.</b> WhatsApp +56 9 8460 0273 para cualquier problema con tu compra.</span></li>
+  </ul>
+</section>
 
 <div class="cuenta" id="cuenta">
   <div id="cuentaAnon">
-    <h2>Tu cuenta</h2>
-    <p>Para contratar necesitas una cuenta (gratis) de Control y Confianza. Elige un plan arriba: si no tienes cuenta, la creas aquí y sigues al pago.</p>
+    <h3>Tu cuenta</h3>
+    <p>Para contratar necesitas una cuenta gratis de Control y Confianza. Elige un plan arriba: si no tienes cuenta, la creas aquí y sigues al pago.</p>
     <input id="email" type="email" placeholder="Email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false">
     <div class="pw"><input id="pass" type="password" placeholder="Contraseña (mínimo 8 caracteres)" autocomplete="current-password"><button type="button" tabindex="-1" aria-label="Mostrar contraseña" onclick="cycToggleOjo(this)">👁</button></div>
     <div class="fila">
       <button class="btn sec" onclick="auth('login')">Ya tengo cuenta</button>
       <button class="btn" onclick="auth('registro')">Crear cuenta</button>
     </div>
-    <a href="recuperar-clave.html" style="display:inline-block;margin-top:10px;font-size:.78rem">¿Olvidaste tu contraseña?</a>
+    <a href="recuperar-clave.html" style="display:inline-block;margin-top:10px;font-size:.8rem">¿Olvidaste tu contraseña?</a>
     <div class="msg" id="authMsg"></div>
   </div>
   <div id="cuentaOk" style="display:none">
@@ -148,20 +240,22 @@ footer{margin-top:34px;font-size:.72rem;color:#666;text-align:center;line-height
   </div>
 </div>
 
-<div class="otra"><img src="icon-cplus-192.png" alt=""><div>¿Eres guardia o trabajas en seguridad privada? Eso es otra app: <a href="planes-controlplus.html">Control+ y su plan Premium →</a></div></div>
-
-<div class="faq">
-  <h2>Preguntas frecuentes</h2>
-  <details><summary>¿Por qué se contrata en la web y no dentro de la app?</summary><p>Porque dentro de una app instalada desde Google Play solo se puede cobrar con el sistema de Google. Por eso la compra vive aquí, en la web, y la app simplemente reconoce tu cuenta: entras con el mismo correo y lo que contrataste ya está desbloqueado.</p></details>
-  <details><summary>¿Se renueva solo?</summary><p>No. Ningún plan se cobra automáticamente. Los planes por 30 días se habilitan con cada pago; te avisamos por correo antes de que venza y tú decides si renuevas.</p></details>
+<section class="faq">
+  <h2 style="font-size:1.6rem">Preguntas frecuentes</h2>
+  <details><summary>¿Por qué se contrata en la web y no dentro de la app?</summary><p>Porque dentro de una app instalada desde Google Play solo se puede cobrar con el sistema de Google. Por eso la compra vive aquí, y la app simplemente reconoce tu cuenta: entras con el mismo correo y lo que contrataste ya está desbloqueado.</p></details>
+  <details><summary>¿El Plan Personal sirve para un departamento?</summary><p>Sí. El diagnóstico pregunta por puertas, ventanas, iluminación, alarma, interior y rutinas, y puedes marcar «N/A» en las preguntas que no correspondan a tu vivienda.</p></details>
+  <details><summary>¿Qué pasa cuando vence el Plan Empresa?</summary><p>La cuenta vuelve al plan gratis; no pierdes tu cuenta ni tus datos. Te avisamos por correo antes del vencimiento y renuevas cuando quieras. No hay cobro automático.</p></details>
   <details><summary>¿Cómo pago y qué comprobante recibo?</summary><p>El pago lo procesa Flow (tarjeta de crédito, débito o transferencia). Recibes un correo nuestro con el detalle de tu compra y Flow emite el comprobante.</p></details>
   <details><summary>¿Y si tengo un problema con el pago?</summary><p>Escríbenos por <a href="https://wa.me/56984600273">WhatsApp</a> con tu número de orden. Cobros duplicados, planes no activados o errores de monto se corrigen, con devolución cuando corresponda (sección 1.8 de los Términos).</p></details>
-</div>
+</section>
+
+<div class="otra"><img src="icon-cplus-192.png" alt=""><div>¿Eres guardia o trabajas en seguridad privada? Eso es otra app: <a href="planes-controlplus.html">Control+ y su plan Premium →</a></div></div>
+
 </div><!-- /solo-web -->
 
 <footer>
   Precios en pesos chilenos, IVA incluido cuando corresponde. Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener">Términos y Condiciones</a> · <a href="verificacion.html">Verificación y transparencia</a><br>
-  Control y Confianza · <a href="https://www.controlyconfianza.cl">controlyconfianza.cl</a>
+  Control y Confianza CSF SpA · <a href="https://www.controlyconfianza.cl">controlyconfianza.cl</a>
 </footer>
 </div>
 

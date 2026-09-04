@@ -3,118 +3,236 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Control+ Premium — plan para guardias</title>
-<meta name="description" content="Control+ es la app del gremio de guardias: bolsa de trabajo gratis, Test OS-10, guía legal y calculadora de sueldo. Control+ Premium ($2.500 por 30 días) se contrata aquí, en la web.">
+<title>Control+ Premium — la app del gremio de guardias</title>
+<meta name="description" content="Control+ es la app del gremio de guardias: bolsa de trabajo gratis, simulador del Test OS-10 con 300 preguntas, guía legal, calculadora de sueldo y carpeta de documentos (certificado OS-10, cédula y CV). Control+ Premium ($2.500 por 30 días) destaca tu perfil ante quien contrata. Se contrata en la web.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Control y Confianza">
 <meta property="og:locale" content="es_CL">
-<meta property="og:title" content="Control+ Premium — plan para guardias">
-<meta property="og:description" content="Control+ Premium $2.500 por 30 días, sin cobro automático. La bolsa de trabajo sigue gratis. Se contrata aquí, en la web.">
+<meta property="og:title" content="Control+ Premium — la app del gremio de guardias">
+<meta property="og:description" content="La bolsa de trabajo sigue gratis. Premium destaca tu perfil ante quien contrata: $2.500 por 30 días, sin cobro automático.">
 <link rel="canonical" href="https://app.controlyconfianza.cl/planes-controlplus.html">
 <link rel="icon" href="icon-cplus-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+:root{--bg:#0f0f0f;--panel:#171717;--linea:#262626;--oro:#d4a017;--oro2:#f0c04a;--crema:#f0e8d0;--gris:#a9a396;--gris2:#6f6a5e;--verde:#a5e0a5}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#111;color:#f0e8d0;min-height:100vh;line-height:1.5}
-a{color:#d4a017}
-.wrap{max-width:1040px;margin:0 auto;padding:22px 16px 60px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
-.marca{display:flex;align-items:center;gap:10px;text-decoration:none;color:#f0e8d0}
-.marca img{width:40px;height:40px;border-radius:10px}
-.marca b{font-size:.95rem;letter-spacing:.04em}
-.marca small{display:block;font-size:.66rem;color:#998a55;letter-spacing:.14em;text-transform:uppercase}
-.volver{font-size:.8rem;color:#998a55;text-decoration:none}
-h1{font-size:1.7rem;line-height:1.15;color:#fff;margin-bottom:8px}
-.sub{color:#aaa;font-size:.95rem;max-width:720px;margin-bottom:26px}
-.sub b{color:#f0e8d0}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-@media(max-width:820px){.grid{grid-template-columns:1fr}}
-.plan{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:20px 18px;display:flex;flex-direction:column}
-.plan.star{border-color:rgba(212,160,23,.6);background:linear-gradient(180deg,rgba(212,160,23,.10),rgba(212,160,23,.02) 40%),#161616}
-.p-app{font-size:.64rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#998a55;margin-bottom:6px}
-.p-nom{font-size:1.25rem;font-weight:900;color:#fff}
-.p-prc{margin:8px 0 4px;font-size:1.7rem;font-weight:900;color:#d4a017}
-.p-prc small{font-size:.78rem;color:#998a55;font-weight:700}
-.p-ren{font-size:.74rem;color:#999;margin-bottom:14px;line-height:1.5}
-.p-ft{font-size:.84rem;color:#ddd;line-height:1.7;flex:1}
-.p-ft li{list-style:none;padding-left:22px;position:relative}
-.p-ft li::before{content:"✓";position:absolute;left:0;color:#d4a017;font-weight:900}
-.p-ft li.camino::before{content:"→";color:#777}
-.p-ft li.camino{color:#999}
-.p-lbl{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a7a45;margin:12px 0 4px}
-.btn{display:block;width:100%;background:#d4a017;color:#111;border:none;border-radius:10px;padding:14px;font-size:.92rem;font-weight:900;cursor:pointer;text-align:center;margin-top:16px;text-decoration:none}
-.btn.sec{background:#2a2a2a;color:#f0e8d0}
-.btn[disabled]{opacity:.55;cursor:default}
-.activo{margin-top:16px;background:rgba(46,125,50,.18);border:1px solid #4a8a4a;color:#a5e0a5;border-radius:10px;padding:12px;font-size:.8rem;line-height:1.5}
-.nota{font-size:.7rem;color:#888;margin-top:10px;line-height:1.5}
-/* cuenta */
-.cuenta{margin-top:26px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:18px}
-.cuenta h2{font-size:1rem;color:#fff;margin-bottom:4px}
-.cuenta p{font-size:.82rem;color:#aaa;margin-bottom:12px}
-.cuenta input{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:.9rem;margin-bottom:8px}
-.pw{position:relative}.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;font-size:16px}
-.fila{display:flex;gap:8px}.fila .btn{margin-top:0}
-.msg{font-size:.8rem;margin-top:8px;min-height:1.2em}.msg.err{color:#e74c3c}.msg.ok{color:#7dc800}
-.sesion{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.84rem;color:#ccc}
-.sesion button{background:none;border:none;color:#d4a017;text-decoration:underline;cursor:pointer;font-size:.8rem}
-.aviso{background:#1a1200;border:1px solid rgba(212,160,23,.5);border-radius:10px;padding:10px 12px;font-size:.78rem;color:#e0a800;margin-top:10px;line-height:1.5}
-.faq{margin-top:30px;font-size:.86rem;color:#bbb}
-.faq h2{font-size:1rem;color:#fff;margin-bottom:10px}
-.faq details{background:#161616;border:1px solid #262626;border-radius:10px;padding:10px 14px;margin-bottom:8px}
-.faq summary{cursor:pointer;font-weight:700;color:#f0e8d0}
-.faq details p{margin-top:8px;line-height:1.6}
-footer{margin-top:34px;font-size:.72rem;color:#666;text-align:center;line-height:1.7}
-.tienda{display:none;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:20px;font-size:.9rem;color:#ccc}
+html{scroll-behavior:smooth}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--crema);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--oro)}
+img{max-width:100%;display:block}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:'Barlow Condensed',Inter,sans-serif;font-weight:700;letter-spacing:.01em;line-height:1.05;color:#fff}
+h2{font-size:clamp(1.9rem,4vw,2.6rem);text-transform:uppercase}
+h3{font-size:1.35rem}
+.eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--oro)}
+.btn{display:inline-block;background:var(--oro);color:#111;border:none;border-radius:10px;padding:14px 22px;font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;transition:transform .12s,background .12s}
+.btn:hover{background:var(--oro2);transform:translateY(-1px)}
+.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--oro2);outline-offset:3px}
+.btn.sec{background:transparent;color:var(--crema);border:1px solid #3a3a3a}
+.btn.sec:hover{background:#1d1d1d}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:18px 0}
+.marca{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--crema)}
+.marca img{width:44px;height:44px;border-radius:11px}
+.marca b{font-size:.98rem;display:block;line-height:1.1}
+.marca small{display:block;font-size:.66rem;color:var(--gris);letter-spacing:.14em;text-transform:uppercase;margin-top:3px}
+.volver{font-size:.82rem;color:var(--gris);text-decoration:none}
+.volver:hover{color:var(--crema)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center;padding:34px 0 10px}
+.hero h1{font-size:clamp(2.6rem,6vw,4.4rem);text-transform:uppercase;margin:12px 0 16px}
+.hero h1 em{font-style:normal;color:var(--oro)}
+.hero p.lead{font-size:1.08rem;color:var(--gris);max-width:520px}
+.hero .ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.hero .fino{font-size:.76rem;color:var(--gris2);margin-top:14px}
+.tels{position:relative;height:560px;display:flex;justify-content:center;align-items:flex-end}
+.tel{width:230px;background:#050505;border:1px solid #2c2c2c;border-radius:34px;padding:9px;box-shadow:0 40px 80px rgba(0,0,0,.6);position:absolute;bottom:0}
+.tel img{border-radius:26px;width:100%;aspect-ratio:418/900;object-fit:cover;object-position:top}
+.tel.c{z-index:3}
+.tel.l{left:0;transform:rotate(-7deg) translate(0,28px) scale(.86);z-index:2;opacity:.9}
+.tel.r{right:0;transform:rotate(7deg) translate(0,28px) scale(.86);z-index:2;opacity:.9}
+.gratis{margin:40px 0;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);padding:22px 0;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.gratis .t{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gris)}
+.gratis span{font-size:.86rem;color:var(--crema);background:var(--panel);border:1px solid var(--linea);border-radius:99px;padding:7px 12px}
+/* lo gratis, en detalle */
+.herr{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:10px 0 50px;border-bottom:1px solid var(--linea)}
+.h{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:18px}
+.h b{display:block;color:#fff;font-size:1rem;margin-bottom:4px}
+.h p{font-size:.86rem;color:var(--gris)}
+/* Premium: la credencial */
+.plan{display:grid;grid-template-columns:1fr 1fr;gap:38px;align-items:center;padding:56px 0;border-bottom:1px solid var(--linea)}
+.plan h2{margin:10px 0 12px}
+.plan .para{color:var(--gris);font-size:1.02rem;margin-bottom:22px}
+.inc{list-style:none;display:grid;gap:12px}
+.inc li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:.93rem}
+.inc li::before{content:"✓";color:var(--oro);font-weight:700;font-size:1rem;line-height:1.4}
+.inc li.camino::before{content:"→";color:var(--gris2)}
+.inc li.camino{color:var(--gris)}
+.inc b{color:#fff}
+.inc small{display:block;color:var(--gris);font-size:.82rem;margin-top:2px}
+.lbl{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);margin:18px 0 8px}
+.precio{margin-top:24px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.precio .n{font-family:'Barlow Condensed',sans-serif;font-size:2.6rem;font-weight:700;color:var(--oro);line-height:1}
+.precio .c{font-size:.84rem;color:var(--gris)}
+.ren{font-size:.8rem;color:var(--gris);margin-top:6px}
+.plan .btn{margin-top:16px;min-width:260px}
+.nota{font-size:.72rem;color:var(--gris2);margin-top:10px;line-height:1.5}
+.activo{margin-top:16px;background:rgba(46,125,50,.16);border:1px solid #3f7a3f;color:var(--verde);border-radius:10px;padding:12px;font-size:.84rem}
+/* la credencial: el elemento distintivo de esta página */
+.cred{justify-self:center;width:min(100%,360px);background:linear-gradient(160deg,#1c1a12,#111);border:1px solid rgba(212,160,23,.55);border-radius:18px;padding:22px;position:relative;box-shadow:0 30px 70px rgba(0,0,0,.55)}
+.cred::before{content:"";position:absolute;left:22px;right:22px;top:0;height:4px;background:var(--oro);border-radius:0 0 4px 4px}
+.cred .top{display:flex;justify-content:space-between;align-items:center;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);margin-top:8px}
+.cred .top b{color:var(--oro)}
+.cred .foto{width:74px;height:74px;border-radius:50%;background:#222;border:2px solid var(--oro);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;color:var(--oro);margin:18px 0 12px}
+.cred .nom{font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;color:#fff;line-height:1}
+.cred .rol{font-size:.8rem;color:var(--gris);margin-top:4px}
+.cred .badge{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:var(--oro);color:#111;border-radius:99px;padding:6px 12px;font-size:.74rem;font-weight:700}
+.cred .fila2{display:flex;justify-content:space-between;margin-top:18px;font-size:.72rem;color:var(--gris);border-top:1px dashed #3a3520;padding-top:10px}
+.cred .fila2 b{display:block;color:var(--crema);font-size:.82rem}
+.cred .pie{margin-top:14px;font-size:.66rem;color:var(--gris2)}
+.como{padding:56px 0;border-bottom:1px solid var(--linea)}
+.pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.paso{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:20px}
+.paso .k{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;color:var(--oro);line-height:1}
+.paso b{display:block;margin:8px 0 4px;color:#fff}
+.paso p{font-size:.86rem;color:var(--gris)}
+.conf{padding:56px 0;border-bottom:1px solid var(--linea);display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
+.conf ul{list-style:none;display:grid;gap:10px;font-size:.9rem}
+.conf li{display:grid;grid-template-columns:22px 1fr;gap:8px;color:var(--gris)}
+.conf li::before{content:"▪";color:var(--oro)}
+.conf li b{color:var(--crema)}
+.cuenta{margin:56px 0 0;background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:22px}
+.cuenta h3{margin-bottom:4px}
+.cuenta p{font-size:.86rem;color:var(--gris);margin-bottom:12px}
+.cuenta input{width:100%;padding:13px;border-radius:9px;border:1px solid #333;background:#0f0f0f;color:#fff;font-size:.95rem;margin-bottom:8px;font-family:inherit}
+.pw{position:relative}.pw button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;font-size:16px}
+.fila{display:flex;gap:8px}.fila .btn{flex:1;margin:0}
+.msg{font-size:.82rem;margin-top:8px;min-height:1.2em}.msg.err{color:#e74c3c}.msg.ok{color:#7dc800}
+.sesion{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.86rem;color:#ccc}
+.sesion button{background:none;border:none;color:var(--oro);text-decoration:underline;cursor:pointer;font-size:.82rem;font-family:inherit}
+.aviso{background:#1a1200;border:1px solid rgba(212,160,23,.5);border-radius:10px;padding:10px 12px;font-size:.8rem;color:#e0a800;margin-top:10px;line-height:1.5}
+.faq{padding:48px 0 10px}
+.faq details{background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:12px 16px;margin-top:8px}
+.faq summary{cursor:pointer;font-weight:600;color:var(--crema);font-size:.92rem}
+.faq details p{margin-top:8px;font-size:.88rem;color:var(--gris);line-height:1.6}
+.otra{margin:36px 0 0;border:1px dashed #333;border-radius:14px;padding:14px 16px;font-size:.86rem;color:var(--gris);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.otra img{width:38px;height:38px;border-radius:10px}
+footer{margin:40px 0 50px;font-size:.74rem;color:var(--gris2);text-align:center;line-height:1.8}
+.tienda{display:none;background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:20px;font-size:.9rem;color:#ccc;margin-top:20px}
 .modo-tienda .tienda{display:block}.modo-tienda .solo-web{display:none !important}
-.appcab{display:flex;gap:14px;align-items:center;background:#161616;border:1px solid #262626;border-radius:16px;padding:14px 16px;margin-bottom:22px}
-.appcab img{width:56px;height:56px;border-radius:14px;flex-shrink:0}
-.appcab > div > b{display:block;color:#fff;font-size:1rem}
-.appcab span b{color:#f0e8d0}
-.appcab span{font-size:.82rem;color:#aaa;line-height:1.5}
-.grid.dos{grid-template-columns:repeat(2,1fr)}
-@media(max-width:820px){.grid.dos{grid-template-columns:1fr}}
-.otra{margin-top:26px;background:#161616;border:1px dashed #333;border-radius:14px;padding:14px 16px;font-size:.84rem;color:#bbb;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.otra img{width:36px;height:36px;border-radius:9px}
-.otra a{font-weight:700}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr;padding-top:20px}
+  .tels{height:430px;margin-top:10px}
+  .tel{width:190px}
+  .herr{grid-template-columns:1fr}
+  .plan{grid-template-columns:1fr;gap:26px;padding:40px 0}
+  .pasos{grid-template-columns:1fr}
+  .conf{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <a class="marca" href="https://www.controlyconfianza.cl"><img src="icon-cplus-192.png" alt=""><span><b>Control+</b><small>Planes y precios</small></span></a>
+  <a class="marca" href="https://www.controlyconfianza.cl"><img src="icon-cplus-192.png" alt=""><span><b>Control+</b><small>La app del gremio · Premium</small></span></a>
   <a class="volver" href="https://www.controlyconfianza.cl">← Volver a controlyconfianza.cl</a>
 </header>
 
-<!-- Dentro de la app instalada desde Google Play no se ofrecen compras (política de pagos de Play).
-     Esta página es la tienda de la WEB; si alguien la abre desde la app, solo ve este aviso. -->
-<div class="tienda">Esta página es la tienda de la versión web. Si ya tienes un plan, inicia sesión en la app con tu correo y se desbloquea solo.</div>
+<!-- Dentro de la app instalada desde Google Play no se ofrecen compras (política de pagos de Play). -->
+<div class="tienda">Esta página es la tienda de la versión web. Control+ Premium se activa en nuestra web, controlyconfianza.cl. Si ya lo tienes, inicia sesión en la app con tu correo y tu insignia aparece sola.</div>
 
 <div class="solo-web">
-<div class="appcab"><img src="icon-cplus-192.png" alt=""><div><b>Control+</b><span>La app del <b>gremio de guardias y personal de seguridad</b>: bolsa de trabajo, simulador del Test OS-10, guía legal, calculadora de sueldo y carpeta de documentos. Todo eso es gratis y lo seguirá siendo; Premium es aparte.</span></div></div>
-<h1>Control+ Premium</h1>
-<p class="sub"><b>Se contrata aquí, en la web,</b> con tu cuenta de Control+. Pagas con Flow (tarjeta, débito o transferencia) y Premium queda activo al instante en tu cuenta: abres Control+ con el mismo correo y ya tienes la insignia. Sin cobro automático: cada pago son 30 días y renuevas cuando quieras.</p>
 
-<div class="grid" style="grid-template-columns:minmax(0,520px)">
-  <div class="plan">
-    <div class="p-app">Para guardias y personal de seguridad</div>
-    <div class="p-nom">Control+ Premium</div>
-    <div class="p-prc">$<span data-price="controlmas"></span> <small>por 30 días</small></div>
-    <div class="p-ren">Cada pago habilita 30 días. Renovación manual, sin cobro automático. La bolsa de trabajo sigue gratis para todos.</div>
-    <ul class="p-ft">
-      <div class="p-lbl">Incluido hoy</div>
-      <li><b>Perfil destacado</b>: tus postulaciones aparecen primero y con insignia Premium ante quien contrata</li>
-      <div class="p-lbl">En camino, sin costo extra</div>
-      <li class="camino">Verificador de liquidación</li>
-      <li class="camino">Asistente gremial IA</li>
-      <li class="camino">Bitácora blindada · Turnos + familia · Después del incidente · Mi Carrera</li>
-    </ul>
-    <button class="btn" onclick="contratar('controlmas')">Activar Control+ Premium</button>
-    <div class="nota">Lo «en camino» se irá activando en tu cuenta; no forma parte de lo que contratas hoy.</div>
+<section class="hero">
+  <div>
+    <div class="eyebrow">Control+ · para guardias y personal de seguridad</div>
+    <h1>La app del gremio: <em>trabajo, sueldo y OS-10</em> en tu bolsillo</h1>
+    <p class="lead">Bolsa de trabajo con ofertas propias y de la comunidad, simulador del Test OS-10 con 300 preguntas, guía legal en lenguaje simple, calculadora de sueldo y horas extra, y tu carpeta de documentos. Todo eso es gratis y no depende de Premium. Premium es aparte: para que quien contrata te vea primero.</p>
+    <div class="ctas">
+      <a class="btn" href="#premium">Ver Control+ Premium</a>
+      <a class="btn sec" href="guardias.html">Abrir Control+ gratis</a>
+    </div>
+    <p class="fino">Se contrata aquí, en la web. Pago seguro con Flow. Sin cobros automáticos.</p>
   </div>
+  <div class="tels" aria-label="Pantallas reales de Control+">
+    <div class="tel l"><img src="img/cap-cplus-sueldo.png" alt="Calculadora de sueldo y horas extra en Control+" loading="lazy"></div>
+    <div class="tel c"><img src="img/cap-cplus-bolsa.png" alt="Bolsa de trabajo de Control+"></div>
+    <div class="tel r"><img src="img/cap-cplus-estudio.png" alt="Guía de estudio del Test OS-10 en Control+" loading="lazy"></div>
+  </div>
+</section>
+
+<div class="gratis">
+  <span class="t">Gratis para todos</span>
+  <span>Bolsa de trabajo</span><span>Test OS-10 · 300 preguntas</span><span>Guía legal</span><span>Calculadora de sueldo</span><span>Carpeta de documentos</span>
 </div>
+
+<section class="herr">
+  <div class="h"><b>Bolsa de trabajo del gremio</b><p>Ofertas ordenadas por tu comuna (ninguna se esconde) y, si quieres, filtradas por tu especialidad. Contactas por WhatsApp o postulas con tu perfil. Las ofertas de la comunidad se marcan para que las verifiques antes.</p></div>
+  <div class="h"><b>Simulador del Test OS-10</b><p>300 preguntas en 24 áreas de estudio, ancladas al temario oficial. Al terminar cada ensayo repasas las que fallaste, con la respuesta correcta y su explicación. Guía de estudio descargable en PDF.</p></div>
+  <div class="h"><b>Guía legal y calculadora de sueldo</b><p>Tus derechos explicados en simple (Ley 21.659 y su reglamento, jornada, recargos) y una calculadora de sueldo, horas extra y gratificación con las reglas de la Dirección del Trabajo. Referencial: tu liquidación siempre manda.</p></div>
+  <div class="h"><b>Tu carpeta de documentos</b><p>Tu certificado OS-10, tu cédula y tu CV guardados en tu cuenta, listos para postular a un evento o a una oferta sin buscar papeles.</p></div>
+</section>
+
+<!-- PREMIUM -->
+<section class="plan" id="premium">
+  <div class="cred" aria-label="Así se ve un perfil Premium ante quien contrata">
+    <div class="top"><span>Control+ · perfil del guardia</span><b>★ Premium</b></div>
+    <div class="foto">C+</div>
+    <div class="nom">Tu nombre aquí</div>
+    <div class="rol">Guardia de seguridad · tu comuna</div>
+    <span class="badge">⭐ Perfil destacado</span>
+    <div class="fila2"><span>Acreditación<b>OS-10 vigente</b></span><span>Disponibilidad<b>Día · Noche</b></span><span>Postulación<b>Primera en la lista</b></span></div>
+    <div class="pie">Ejemplo ilustrativo. Los datos son los que tú completas en tu perfil.</div>
+  </div>
+  <div>
+    <div class="eyebrow">Control+ Premium</div>
+    <h2>Que te vean primero</h2>
+    <p class="para">Cuando una oferta recibe muchas postulaciones, quien contrata revisa la lista de arriba hacia abajo. Con Premium, <b>tu postulación aparece primero y con la insignia ⭐</b> en las ofertas donde se postula por la app. La bolsa de trabajo sigue gratis para todos; Premium es tu lugar en la fila.</p>
+    <div class="lbl">Incluido hoy</div>
+    <ul class="inc">
+      <li><span><b>Perfil destacado ante quien contrata</b><small>En las ofertas donde se postula por la app, tus postulaciones se ordenan primero y llevan la insignia Premium en la lista que ve quien contrata.</small></span></li>
+    </ul>
+    <div class="lbl">En camino, sin costo extra</div>
+    <ul class="inc">
+      <li class="camino"><span>Verificador de liquidación: le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden</span></li>
+      <li class="camino"><span>Asistente gremial IA para tus dudas de leyes y procedimientos</span></li>
+      <li class="camino"><span>Bitácora blindada · Turnos + familia · Protocolo después de un incidente · Mi Carrera</span></li>
+    </ul>
+    <div class="precio"><span class="n">$<span data-price="controlmas"></span></span><span class="c">por 30 días</span></div>
+    <div class="ren">Cada pago habilita 30 días. Sin cobro automático: te avisamos por correo antes de que venza y tú decides.</div>
+    <button class="btn" onclick="contratar('controlmas')">Activar Control+ Premium</button>
+    <div class="nota">Lo «en camino» se irá activando en tu cuenta cuando esté listo; no forma parte de lo que contratas hoy. Si tienes Plan Empresa de la App Control y Confianza, Premium ya viene incluido.</div>
+  </div>
+</section>
+
+<section class="como">
+  <div class="eyebrow">Cómo funciona</div>
+  <h2>Tres pasos y tu insignia está puesta</h2>
+  <div class="pasos">
+    <div class="paso"><div class="k">1</div><b>Crea tu cuenta gratis</b><p>Correo y contraseña, aquí abajo. Es la misma cuenta que usas en Control+.</p></div>
+    <div class="paso"><div class="k">2</div><b>Paga con Flow</b><p>Tarjeta de crédito, débito o transferencia. Flow emite el comprobante y nosotros te enviamos el detalle por correo.</p></div>
+    <div class="paso"><div class="k">3</div><b>Abre Control+</b><p>Con el mismo correo. Tu insignia ya está activa y tus postulaciones por la app van primero.</p></div>
+  </div>
+</section>
+
+<section class="conf">
+  <div>
+    <div class="eyebrow">Quién está detrás</div>
+    <h2>Hecha por gente del rubro</h2>
+    <p style="color:var(--gris);font-size:.95rem;margin-top:10px">Control+ la opera <b style="color:var(--crema)">Control y Confianza CSF SpA</b>, empresa chilena de asesorías en seguridad privada, con asesor de seguridad privada acreditado. La misma empresa que organiza la seguridad de eventos y convoca guardias para ellos: por eso publicamos ofertas propias y por eso tu perfil destacado le importa a quien contrata.</p>
+  </div>
+  <ul>
+    <li><span><b>Empresa chilena.</b> Control y Confianza CSF SpA, RUT 78.043.129-6. Marca en trámite ante INAPI (solicitud SM1110278).</span></li>
+    <li><span><b>La bolsa no se cobra.</b> Ni a ti ni al que publica una oferta. Premium es opcional.</span></li>
+    <li><span><b>Pago seguro.</b> Lo procesa Flow; nosotros no vemos ni guardamos tu tarjeta.</span></li>
+    <li><span><b>Sin cobro automático.</b> Cada pago son 30 días; nada se renueva solo.</span></li>
+    <li><span><b>Una persona al otro lado.</b> WhatsApp +56 9 8460 0273 para cualquier problema con tu compra.</span></li>
+  </ul>
+</section>
 
 <div class="cuenta" id="cuenta">
   <div id="cuentaAnon">
-    <h2>Tu cuenta</h2>
+    <h3>Tu cuenta</h3>
     <p>Para activar Premium necesitas tu cuenta de Control+ (gratis; es la misma que usas en la app). Pulsa «Activar» arriba: si no tienes cuenta, la creas aquí y sigues al pago.</p>
     <input id="email" type="email" placeholder="Email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false">
     <div class="pw"><input id="pass" type="password" placeholder="Contraseña (mínimo 8 caracteres)" autocomplete="current-password"><button type="button" tabindex="-1" aria-label="Mostrar contraseña" onclick="cycToggleOjo(this)">👁</button></div>
@@ -122,7 +240,7 @@ footer{margin-top:34px;font-size:.72rem;color:#666;text-align:center;line-height
       <button class="btn sec" onclick="auth('login')">Ya tengo cuenta</button>
       <button class="btn" onclick="auth('registro')">Crear cuenta</button>
     </div>
-    <a href="recuperar-clave.html" style="display:inline-block;margin-top:10px;font-size:.78rem">¿Olvidaste tu contraseña?</a>
+    <a href="recuperar-clave.html" style="display:inline-block;margin-top:10px;font-size:.8rem">¿Olvidaste tu contraseña?</a>
     <div class="msg" id="authMsg"></div>
   </div>
   <div id="cuentaOk" style="display:none">
@@ -133,20 +251,22 @@ footer{margin-top:34px;font-size:.72rem;color:#666;text-align:center;line-height
   </div>
 </div>
 
-<div class="otra"><img src="icon-192.png" alt=""><div>¿Buscas seguridad para tu hogar o tu empresa? Eso es otra app: <a href="planes.html">App Control y Confianza y sus planes →</a></div></div>
-
-<div class="faq">
-  <h2>Preguntas frecuentes</h2>
-  <details><summary>¿Por qué se contrata en la web y no dentro de la app?</summary><p>Porque dentro de una app instalada desde Google Play solo se puede cobrar con el sistema de Google. Por eso la compra vive aquí, en la web, y la app simplemente reconoce tu cuenta: entras con el mismo correo y lo que contrataste ya está desbloqueado.</p></details>
-  <details><summary>¿Se renueva solo?</summary><p>No. Ningún plan se cobra automáticamente. Los planes por 30 días se habilitan con cada pago; te avisamos por correo antes de que venza y tú decides si renuevas.</p></details>
+<section class="faq">
+  <h2 style="font-size:1.6rem">Preguntas frecuentes</h2>
+  <details><summary>¿La bolsa de trabajo va a seguir gratis?</summary><p>Sí. Ver ofertas, contactar por WhatsApp y postular es gratis para todos y no depende de Premium. Premium solo cambia el orden en que te ve quien contrata.</p></details>
+  <details><summary>¿Por qué se contrata en la web y no dentro de la app?</summary><p>Porque dentro de una app instalada desde Google Play solo se puede cobrar con el sistema de Google. Por eso la compra vive aquí, y la app reconoce tu cuenta: entras con el mismo correo y tu insignia ya está.</p></details>
+  <details><summary>¿Qué pasa cuando vencen los 30 días?</summary><p>Tu cuenta vuelve al plan gratis: no pierdes tu perfil, tu carpeta ni tus postulaciones. Te avisamos por correo tres días antes y renuevas cuando quieras. No hay cobro automático.</p></details>
   <details><summary>¿Cómo pago y qué comprobante recibo?</summary><p>El pago lo procesa Flow (tarjeta de crédito, débito o transferencia). Recibes un correo nuestro con el detalle de tu compra y Flow emite el comprobante.</p></details>
   <details><summary>¿Y si tengo un problema con el pago?</summary><p>Escríbenos por <a href="https://wa.me/56984600273">WhatsApp</a> con tu número de orden. Cobros duplicados, planes no activados o errores de monto se corrigen, con devolución cuando corresponda (sección 1.8 de los Términos).</p></details>
-</div>
+</section>
+
+<div class="otra"><img src="icon-192.png" alt=""><div>¿Buscas seguridad para tu hogar o tu empresa? Eso es otra app: <a href="planes.html">App Control y Confianza y sus planes →</a></div></div>
+
 </div><!-- /solo-web -->
 
 <footer>
-  Precios en pesos chilenos, IVA incluido cuando corresponde. Al pagar aceptas los <a href="terminos.html" target="_blank" rel="noopener">Términos y Condiciones</a> · <a href="verificacion.html">Verificación y transparencia</a><br>
-  Control y Confianza · <a href="https://www.controlyconfianza.cl">controlyconfianza.cl</a>
+  Precios en pesos chilenos, IVA incluido cuando corresponde. Al pagar aceptas los <a href="terminos.html#controlplus" target="_blank" rel="noopener">Términos y Condiciones</a> · <a href="verificacion.html">Verificación y transparencia</a><br>
+  Control y Confianza CSF SpA · <a href="https://www.controlyconfianza.cl">controlyconfianza.cl</a>
 </footer>
 </div>
 
