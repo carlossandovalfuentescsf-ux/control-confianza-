@@ -254,6 +254,20 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .ruta-paso b{color:#fff}
 .ruta-paso p{color:#999;font-size:.76rem;margin-top:2px;line-height:1.5}
 .ruta-paso.ok .e{color:#7dc800}.ruta-paso.alerta .e{color:#e74c3c}.ruta-paso.pend .e{color:#d4a017}
+/* Asistente gremial (Premium, 04-09-2026) */
+.as-chat{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:260px}
+.as-m{max-width:88%;padding:10px 12px;border-radius:14px;font-size:.84rem;line-height:1.55;white-space:pre-wrap}
+.as-m.u{align-self:flex-end;background:rgba(212,160,23,.18);border:1px solid rgba(212,160,23,.4);color:#f0e8d0;border-bottom-right-radius:4px}
+.as-m.a{align-self:flex-start;background:#111;border:1px solid #2a2a2a;color:#ddd;border-bottom-left-radius:4px}
+.as-m.a b{color:#f0e8d0}
+.as-m.espera{color:#888;font-style:italic}
+.as-in{display:flex;gap:8px;margin-top:10px}
+.as-in textarea{flex:1;min-height:48px;max-height:140px;background:#111;border:1px solid #333;border-radius:10px;color:#fff;padding:10px;font-size:.86rem;font-family:inherit;resize:vertical}
+.as-in button{background:#d4a017;color:#111;border:none;border-radius:10px;padding:0 16px;font-weight:800;cursor:pointer;font-family:inherit}
+.as-in button:disabled{opacity:.5;cursor:default}
+.as-sug{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.as-sug button{background:#161616;border:1px solid #333;color:#ccc;border-radius:99px;padding:6px 10px;font-size:.72rem;cursor:pointer;font-family:inherit}
+.as-sug button:hover{border-color:#d4a017;color:#f0e8d0}
 /* Venta real de Premium (04-09-2026) */
 .p-lbl{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a7a45;margin:14px 0 8px}
 .p-tool.p-hoy{border-color:rgba(212,160,23,.55);background:#1a1200}
@@ -395,6 +409,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <a href="#alertas" data-tab="alertas">🔔 Alertas a tu medida <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
       <a href="#bitacora" data-tab="bitacora">🔒 Bitácora blindada <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
       <a href="#carrera" data-tab="carrera">🎓 Mi Carrera <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
+      <a href="#asistente" data-tab="asistente">🤖 Asistente gremial <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
     </div>
   </div>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
@@ -425,11 +440,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
         <div class="p-tool p-hoy"><div class="t">🔔 Alertas a tu medida</div><p>Hasta 5 alertas permanentes: comuna, especialidad, día o noche, pauta y renta o pago mínimo. Te llega un correo cada vez que aparece una oferta que calza. <a href="#alertas" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🔒 Bitácora blindada</div><p>Tu registro de novedades e incidentes con fecha y hora del servidor y sello encadenado: nada se edita ni se borra. Imprimible para mostrarlo a quien haga falta. <a href="#bitacora" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🎓 Mi Carrera</div><p>Tu CV profesional de guardia, listo para imprimir o mandar por WhatsApp, y tu ruta de especializaciones con el OS-10 al día. <a href="#carrera" style="color:#d4a017">Abrir →</a></p></div>
+        <div class="p-tool p-hoy"><div class="t">🤖 Asistente gremial IA</div><p>Pregúntale por tus leyes, tu sueldo, tus turnos o qué hacer ante un problema en el trabajo. Responde con la norma vigente y te dice cuándo ir a la Dirección del Trabajo o a un abogado. 30 preguntas al día. <a href="#asistente" style="color:#d4a017">Abrir →</a></p></div>
       </div>
       <div class="p-lbl">En camino — se activan en tu cuenta sin costo extra</div>
       <div class="p-grid">
         <div class="p-tool"><div class="t">🧾 Verificador de Liquidación</div><p>Le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p></div>
-        <div class="p-tool"><div class="t">🤖 Asistente Gremial IA</div><p>Consultas sobre tus leyes, dictámenes y procedimientos.</p></div>
         <div class="p-tool"><div class="t">🔔 Alertas a tu medida</div><p>Hoy ya recibes avisos por comuna y especialidad; podrás sumar turno y renta mínima.</p></div>
       </div>
       <div class="p-lbl">Ya lo tienes gratis, con o sin Premium</div>
@@ -470,6 +485,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <!-- MI CARRERA (Control+ Premium, 04-09-2026) -->
   <section class="view" id="view-carrera">
     <div id="carreraContent"></div>
+  </section>
+
+  <!-- ASISTENTE GREMIAL IA (Control+ Premium, 04-09-2026) -->
+  <section class="view" id="view-asistente">
+    <div id="asistenteContent"></div>
   </section>
 
   <!-- SUELDO / CALCULADORA (G3) -->
@@ -534,7 +554,6 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
     <p class="mp-sub">Estamos construyendo un <b>verificador de liquidación</b>: le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p>
     <div class="mp-lbl">Y MÁS HERRAMIENTAS EN CAMINO</div>
     <div class="mp-grid">
-      <div class="mp-t">🤖 Asistente Gremial IA</div>
             <div class="mp-t">📁 Carpeta documental</div>
     </div>
     <div class="mp-gratis">
@@ -796,8 +815,8 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera','admin'];
-var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera'];
+var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera','asistente','admin'];
+var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera','asistente'];
 function toggleMenuCuenta(e){
   // OJO: sin preventDefault — el clic en "Mi Perfil"/etc burbujea desde el <a> hijo
   // hasta este div padre, y preventDefault() aqui cancelaba tambien la navegacion
@@ -860,6 +879,7 @@ function renderView(){
   else if(v==='alertas') renderAlertas();
   else if(v==='bitacora') renderBitacora();
   else if(v==='carrera') renderCarrera();
+  else if(v==='asistente') renderAsistente();
   else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
 }
@@ -3020,6 +3040,51 @@ function cvRutaHTML(c){
   if(!(c.esp||[]).length) pasos.push({cl:'pend',e:'→',t:'Elige una especialidad',p:'Marca arriba el rubro al que quieres apuntar y te mostramos qué suma para ese camino.'});
   return '<div class="auth-title" style="font-size:.9rem">Mi ruta</div>'+pasos.map(function(x){return '<div class="ruta-paso '+x.cl+'"><div class="e">'+x.e+'</div><div><b>'+x.t+'</b><p>'+x.p+'</p></div></div>';}).join('')+
     '<div class="inc-fuente">La Ley 21.659 (art. 54) fija que los guardias deben cursar capacitaciones según el nivel de riesgo y que las especializaciones y su acreditación las define el reglamento; esta ruta es orientación de Control+, no un requisito oficial salvo donde se indica la ley.</div>';
+}
+
+/* ---------- Asistente gremial IA (Control+ Premium, 04-09-2026) ----------
+   Chat con el Worker (/guardias/asistente). El historial vive solo en esta pestaña
+   (sessionStorage) y se manda recortado en cada pregunta; no se guarda en el servidor. */
+var AS_HIST=[];
+var AS_SUGERENCIAS=['¿Me pueden descontar el curso OS-10?','¿Cuántas horas puedo trabajar a la semana?','¿Cómo se calcula mi hora extra?','Me agredieron en el turno, ¿qué hago?','¿Existe recargo nocturno por ley?','Me quieren despedir, ¿qué plazos tengo?'];
+function asCargarHist(){ try{ AS_HIST=JSON.parse(sessionStorage.getItem('cplus_asistente')||'[]'); }catch(e){ AS_HIST=[]; } }
+function asGuardarHist(){ try{ sessionStorage.setItem('cplus_asistente',JSON.stringify(AS_HIST.slice(-12))); }catch(e){} }
+function asMd(t){ return esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^- /gm,'• '); }
+function renderAsistente(){
+  var el=document.getElementById('asistenteContent');
+  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🤖 Asistente gremial <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+    '<div class="auth-sub" style="margin-bottom:0">Pregúntale lo que le preguntarías a un compañero que se sabe la ley: sueldo, horas extra, curso OS-10, despidos, accidentes, qué hacer ante un incidente. Responde con la norma vigente y te dice cuándo tienes que ir a la Dirección del Trabajo, a la mutual o a un abogado. Es orientación, no reemplaza a un abogado.</div></div>';
+  if(!CYC_TOKEN || !CYC_CM){
+    var cta;
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye el asistente (30 preguntas al día) y las demás herramientas Premium. 30 días por cada pago, sin cobro automático.</div>'; }
+    el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Ejemplos de lo que le puedes preguntar:</div><div class="as-sug">'+AS_SUGERENCIAS.map(function(q){return '<button disabled style="opacity:.7">'+esc(q)+'</button>';}).join('')+'</div><div style="margin-top:14px">'+cta+'</div></div>';
+    return;
+  }
+  asCargarHist();
+  el.innerHTML=cab+'<div class="card"><div class="as-chat" id="asChat">'+(AS_HIST.length?AS_HIST.map(function(m){return '<div class="as-m '+(m.role==='user'?'u':'a')+'">'+(m.role==='user'?esc(m.content):asMd(m.content))+'</div>';}).join(''):'<div class="as-m a">Hola. Cuéntame qué pasa o qué quieres saber. Si es urgente y hay peligro, primero el 133.</div>')+'</div>'+
+    '<div class="as-in"><textarea id="asIn" placeholder="Escribe tu pregunta…" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();asEnviar();}"></textarea><button id="asBtn" onclick="asEnviar()">Enviar</button></div>'+
+    '<div class="as-sug">'+AS_SUGERENCIAS.map(function(q){return '<button onclick="document.getElementById(\'asIn\').value=this.textContent;asEnviar()">'+esc(q)+'</button>';}).join('')+'</div>'+
+    '<div id="asMsg" class="p-nota" style="margin-top:8px">Hasta 30 preguntas al día. La conversación se borra al cerrar la app; no la guardamos.'+(AS_HIST.length?' <a href="#" onclick="AS_HIST=[];asGuardarHist();renderAsistente();return false" style="color:#d4a017">Empezar de nuevo</a>':'')+'</div></div>';
+  var ch=document.getElementById('asChat'); ch.scrollTop=ch.scrollHeight;
+}
+async function asEnviar(){
+  var inp=document.getElementById('asIn'), btn=document.getElementById('asBtn'), ch=document.getElementById('asChat'), msg=document.getElementById('asMsg');
+  var q=(inp.value||'').trim(); if(q.length<3) return;
+  inp.value=''; btn.disabled=true;
+  ch.insertAdjacentHTML('beforeend','<div class="as-m u">'+esc(q)+'</div><div class="as-m a espera" id="asEspera">Pensando…</div>'); ch.scrollTop=ch.scrollHeight;
+  try{
+    var res=await fetch(API_URL+'/guardias/asistente',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({pregunta:q,historial:AS_HIST.slice(-6)})});
+    var d=await res.json();
+    var esp=document.getElementById('asEspera');
+    if(res.ok && d.respuesta){
+      esp.className='as-m a'; esp.innerHTML=asMd(d.respuesta);
+      AS_HIST.push({role:'user',content:q},{role:'assistant',content:d.respuesta}); asGuardarHist();
+      if(typeof d.restantes==='number') msg.textContent='Te quedan '+d.restantes+' preguntas hoy. La conversación se borra al cerrar la app; no la guardamos.';
+      cycTelemetria('guardias','asistente_ok',true);
+    } else { esp.className='as-m a'; esp.style.color='#e74c3c'; esp.textContent=d.error||'No se pudo responder.'; cycTelemetria('guardias','asistente_ok',false,String(res.status)); }
+  }catch(e){ var e2=document.getElementById('asEspera'); if(e2){ e2.className='as-m a'; e2.style.color='#e74c3c'; e2.textContent='Error de conexión. Intenta de nuevo.'; } }
+  btn.disabled=false; ch.scrollTop=ch.scrollHeight; inp.focus();
 }
 
 /* ---------- Control+ Premium: compra real (04-09-2026) ----------
