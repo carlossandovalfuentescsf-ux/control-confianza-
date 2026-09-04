@@ -237,6 +237,23 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .tu-res div{background:#111;border-radius:10px;padding:10px;text-align:center}
 .tu-res b{display:block;font-size:1.2rem;color:#d4a017}
 .tu-res span{font-size:.66rem;color:#999}
+/* Mi Carrera (Premium, 04-09-2026) */
+.cv-sec{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:10px}
+.cv-sec h4{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#d4a017;margin-bottom:8px}
+.cv-sec input,.cv-sec textarea,.cv-sec select{width:100%;background:#111;border:1px solid #333;border-radius:8px;color:#fff;padding:9px;font-size:.82rem;font-family:inherit;margin-bottom:6px}
+.cv-sec textarea{min-height:64px}
+.cv-fila{border:1px dashed #333;border-radius:10px;padding:10px;margin-bottom:8px;position:relative}
+.cv-fila .x{position:absolute;right:8px;top:6px;background:none;border:none;color:#888;cursor:pointer;font-size:.9rem}
+.cv-2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cv-chips{display:flex;flex-wrap:wrap;gap:6px}
+.cv-chips label{display:inline-flex;align-items:center;gap:5px;background:#111;border:1px solid #333;border-radius:99px;padding:6px 10px;font-size:.74rem;color:#ccc;cursor:pointer;margin:0;font-weight:600}
+.cv-chips input{width:auto;margin:0;accent-color:#d4a017}
+.cv-chips label.on{border-color:#d4a017;color:#f0e8d0}
+.ruta-paso{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid #222;font-size:.82rem}
+.ruta-paso .e{font-size:1rem;line-height:1.2}
+.ruta-paso b{color:#fff}
+.ruta-paso p{color:#999;font-size:.76rem;margin-top:2px;line-height:1.5}
+.ruta-paso.ok .e{color:#7dc800}.ruta-paso.alerta .e{color:#e74c3c}.ruta-paso.pend .e{color:#d4a017}
 /* Venta real de Premium (04-09-2026) */
 .p-lbl{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a7a45;margin:14px 0 8px}
 .p-tool.p-hoy{border-color:rgba(212,160,23,.55);background:#1a1200}
@@ -377,6 +394,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <a href="#turnos" data-tab="turnos">📅 Turnos + familia <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
       <a href="#alertas" data-tab="alertas">🔔 Alertas a tu medida <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
       <a href="#bitacora" data-tab="bitacora">🔒 Bitácora blindada <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
+      <a href="#carrera" data-tab="carrera">🎓 Mi Carrera <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
     </div>
   </div>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
@@ -406,12 +424,12 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
         <div class="p-tool p-hoy"><div class="t">📅 Turnos + familia</div><p>Tu pauta 4x4, 5x2, 6x1 o la que uses, proyectada en un calendario. Enlace para tu familia y archivo para el calendario del teléfono. <a href="#turnos" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🔔 Alertas a tu medida</div><p>Hasta 5 alertas permanentes: comuna, especialidad, día o noche, pauta y renta o pago mínimo. Te llega un correo cada vez que aparece una oferta que calza. <a href="#alertas" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🔒 Bitácora blindada</div><p>Tu registro de novedades e incidentes con fecha y hora del servidor y sello encadenado: nada se edita ni se borra. Imprimible para mostrarlo a quien haga falta. <a href="#bitacora" style="color:#d4a017">Abrir →</a></p></div>
+        <div class="p-tool p-hoy"><div class="t">🎓 Mi Carrera</div><p>Tu CV profesional de guardia, listo para imprimir o mandar por WhatsApp, y tu ruta de especializaciones con el OS-10 al día. <a href="#carrera" style="color:#d4a017">Abrir →</a></p></div>
       </div>
       <div class="p-lbl">En camino — se activan en tu cuenta sin costo extra</div>
       <div class="p-grid">
         <div class="p-tool"><div class="t">🧾 Verificador de Liquidación</div><p>Le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p></div>
         <div class="p-tool"><div class="t">🤖 Asistente Gremial IA</div><p>Consultas sobre tus leyes, dictámenes y procedimientos.</p></div>
-        <div class="p-tool"><div class="t">🎓 Mi Carrera</div><p>CV profesional en PDF y tu ruta de especializaciones.</p></div>
         <div class="p-tool"><div class="t">🔔 Alertas a tu medida</div><p>Hoy ya recibes avisos por comuna y especialidad; podrás sumar turno y renta mínima.</p></div>
       </div>
       <div class="p-lbl">Ya lo tienes gratis, con o sin Premium</div>
@@ -447,6 +465,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <!-- BITÁCORA BLINDADA (Control+ Premium, 04-09-2026) -->
   <section class="view" id="view-bitacora">
     <div id="bitacoraContent"></div>
+  </section>
+
+  <!-- MI CARRERA (Control+ Premium, 04-09-2026) -->
+  <section class="view" id="view-carrera">
+    <div id="carreraContent"></div>
   </section>
 
   <!-- SUELDO / CALCULADORA (G3) -->
@@ -513,7 +536,6 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
     <div class="mp-grid">
       <div class="mp-t">🤖 Asistente Gremial IA</div>
             <div class="mp-t">📁 Carpeta documental</div>
-      <div class="mp-t">🎓 Mi Carrera</div>
     </div>
     <div class="mp-gratis">
       <div class="g1">✅ La bolsa de trabajo sigue gratis</div>
@@ -774,8 +796,8 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','admin'];
-var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora'];
+var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera','admin'];
+var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera'];
 function toggleMenuCuenta(e){
   // OJO: sin preventDefault — el clic en "Mi Perfil"/etc burbujea desde el <a> hijo
   // hasta este div padre, y preventDefault() aqui cancelaba tambien la navegacion
@@ -837,6 +859,7 @@ function renderView(){
   else if(v==='turnos') renderTurnos();
   else if(v==='alertas') renderAlertas();
   else if(v==='bitacora') renderBitacora();
+  else if(v==='carrera') renderCarrera();
   else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
 }
@@ -2883,6 +2906,120 @@ function biImprimir(){
   var filas=BI_DATOS.entradas.slice().reverse().map(function(e){ return '<tr><td>'+esc(fechaHora(e.ts))+'</td><td>'+esc(BI_TIPOS[e.tipo]||e.tipo)+'</td><td>'+esc(e.lugar||'')+'</td><td style="white-space:pre-wrap">'+esc(e.texto)+'</td><td style="font-family:monospace;font-size:10px;word-break:break-all">'+esc(e.hash)+'</td></tr>'; }).join('');
   w.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Bitácora blindada</title><style>body{font-family:Georgia,serif;margin:30px;color:#111}h1{font-size:18px;letter-spacing:.06em}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #999;padding:6px;vertical-align:top;text-align:left}th{background:#eee}p{font-size:12px;color:#444}</style></head><body><h1>CONTROL+ · BITÁCORA BLINDADA</h1><p>Guardia: '+esc(CYC_EMAIL||'')+' · '+BI_DATOS.total+' entradas · Integridad: '+(BI_DATOS.integra?'cadena íntegra':'CADENA ROTA')+' · Impresa el '+new Date().toLocaleString('es-CL')+'</p><p>Cada entrada fue sellada con la fecha y hora del servidor de Control y Confianza y un código SHA-256 que incluye el sello de la entrada anterior. Cualquier modificación posterior rompe la cadena. Registro personal del guardia; no constituye declaración jurada.</p><table><tr><th>Fecha y hora</th><th>Tipo</th><th>Lugar</th><th>Registro</th><th>Sello</th></tr>'+filas+'</table><script>window.onload=function(){window.print();}<\/script></body></html>');
   w.document.close();
+}
+
+/* ---------- Mi Carrera (Control+ Premium, 04-09-2026) ----------
+   CV profesional del guardia (se imprime/guarda como PDF, se copia o se comparte) y ruta
+   de especializaciones a partir de su perfil, su carpeta (OS-10 y vencimiento) y lo que
+   marque. El CV se guarda en este teléfono; el perfil y la carpeta vienen del servidor. */
+var CV_HABILIDADES=['Control de acceso','CCTV y monitoreo','Rondas y patrullaje','Manejo de conflictos','Primeros auxilios','Uso de extintores / evacuación','Redacción de partes e informes','Atención a público','Licencia de conducir','Manejo de radio / comunicaciones','Detección de hurto (retail)','Inglés básico'];
+var CV_RUTA={
+  'cctv-monitoreo':{t:'CCTV y monitoreo',p:'Curso de operador de cámaras y centrales de monitoreo; conocer la ley de datos personales (Ley 21.719) porque grabas a personas.'},
+  'eventos':{t:'Eventos masivos',p:'Control de accesos y aforos, evacuación y primeros auxilios; conocer la Directiva de eventos que rige el evento donde trabajas.'},
+  'retail':{t:'Retail',p:'Detección de hurto, trato al cliente y qué hacer ante flagrancia (mira «Después del incidente»).'},
+  'industrial':{t:'Industrial',p:'Control de camiones y proveedores, prevención de riesgos del recinto, uso de extintores.'},
+  'condominio':{t:'Condominio',p:'Portería y control de visitas, conserjería, trato con residentes y administración (Ley 21.442).'},
+  'escolta-vip':{t:'Escolta / protección VIP',p:'Especialización con exigencias propias según el reglamento de la Ley 21.659; conducción defensiva y primeros auxilios.'},
+  'porteria':{t:'Portería',p:'Control de acceso, registro de visitas, atención a público.'},
+  'mineria':{t:'Minería',p:'Inducción y exámenes preocupacionales de la faena (altura geográfica), prevención de riesgos.'},
+  'tactico':{t:'Táctico',p:'Nivel de riesgo alto: la ley exige registro audiovisual durante la función (Ley 21.659, art. 54) y capacitación acorde.'},
+  'nochero':{t:'Nochero',p:'Rondas nocturnas, manejo de alarmas, comunicación con central.'},
+  'salud':{t:'Salud / hospitalario',p:'Manejo de crisis con pacientes y familias, protocolos del recinto de salud.'}
+};
+var CV_DOCS=null;
+function cvCargar(){ try{ var c=JSON.parse(localStorage.getItem('cplus_cv')||'null'); if(c) return c; }catch(e){} return {resumen:'',exp:[],cursos:[],esp:[],hab:[]}; }
+function cvGuardarLocal(c){ try{ localStorage.setItem('cplus_cv',JSON.stringify(c)); }catch(e){} }
+async function renderCarrera(){
+  var el=document.getElementById('carreraContent');
+  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🎓 Mi Carrera <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+    '<div class="auth-sub" style="margin-bottom:0">Tu CV profesional de guardia, armado con tu perfil, tu carpeta y lo que agregues aquí: listo para imprimir, guardar como PDF o mandar por WhatsApp a quien contrata. Y tu ruta: qué te falta para estar al día y para especializarte.</div></div>';
+  if(!CYC_TOKEN || !CYC_CM){
+    var cta;
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye esta herramienta y las demás de Premium. 30 días por cada pago, sin cobro automático.</div>'; }
+    el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Incluye: CV con tus datos, experiencia, cursos, especialidades y habilidades · aviso cuando tu OS-10 esté por vencer · ruta de especialización según el rubro que elijas.</div><div style="margin-top:14px">'+cta+'</div></div>';
+    return;
+  }
+  if(!CYC_PERFIL){ el.innerHTML=cab+'<div class="card"><div class="auth-sub">Primero completa tu perfil (nombre, comuna, teléfono, acreditación): el CV se arma desde ahí.</div><button class="btn-primario" onclick="location.hash=\'#perfil\'">Ir a mi perfil</button></div>'; return; }
+  if(CV_DOCS===null){ try{ var r=await fetch(API_URL+'/guardias/carpeta',{headers:{'Authorization':'Bearer '+CYC_TOKEN}}); var d=await r.json(); CV_DOCS=d.docs||[]; }catch(e){ CV_DOCS=[]; } }
+  var c=cvCargar();
+  var h=cab+'<div class="card cv-form"><div class="auth-title" style="font-size:.9rem">Datos del CV</div>'+
+    '<div class="cv-sec"><h4>Perfil profesional</h4><textarea id="cvR" placeholder="Ej: Guardia de seguridad con 6 años en retail e industria, acreditación OS-10 vigente, experiencia en control de acceso y CCTV. Responsable, puntual y con buen trato.">'+esc(c.resumen||'')+'</textarea><div class="p-nota">2 a 4 líneas. Es lo primero que lee quien contrata.</div></div>'+
+    '<div class="cv-sec"><h4>Experiencia</h4><div id="cvExp">'+(c.exp||[]).map(cvFilaExp).join('')+'</div><button class="btn-sm" onclick="cvAddExp()">+ Agregar trabajo</button></div>'+
+    '<div class="cv-sec"><h4>Cursos y certificaciones</h4><div class="p-nota" style="margin-bottom:6px">'+cvTextoOS10()+'</div><div id="cvCur">'+(c.cursos||[]).map(cvFilaCurso).join('')+'</div><button class="btn-sm" onclick="cvAddCurso()">+ Agregar curso</button></div>'+
+    '<div class="cv-sec"><h4>Especialidades (elige las tuyas)</h4><div class="cv-chips" id="cvEsp">'+Object.keys(NOMBRE_ESPECIALIDAD).filter(function(k){return k!=='otro';}).map(function(k){ var on=(c.esp||[]).indexOf(k)>=0; return '<label class="'+(on?'on':'')+'"><input type="checkbox" value="'+k+'"'+(on?' checked':'')+' onchange="this.parentNode.classList.toggle(\'on\',this.checked)">'+esc(NOMBRE_ESPECIALIDAD[k])+'</label>'; }).join('')+'</div></div>'+
+    '<div class="cv-sec"><h4>Habilidades</h4><div class="cv-chips" id="cvHab">'+CV_HABILIDADES.map(function(k){ var on=(c.hab||[]).indexOf(k)>=0; return '<label class="'+(on?'on':'')+'"><input type="checkbox" value="'+esc(k)+'"'+(on?' checked':'')+' onchange="this.parentNode.classList.toggle(\'on\',this.checked)">'+esc(k)+'</label>'; }).join('')+'</div></div>'+
+    '<div class="inc-btns"><button class="oro" onclick="cvGenerar()">Guardar y ver mi CV</button></div><div id="cvMsg" class="p-msg"></div></div>'+
+    '<div id="cvOut"></div>'+
+    '<div class="card" id="cvRuta">'+cvRutaHTML(c)+'</div>';
+  el.innerHTML=h;
+  if(!(c.exp||[]).length) cvAddExp();
+}
+function cvFilaExp(e){ e=e||{}; return '<div class="cv-fila"><button class="x" onclick="this.parentNode.remove()" aria-label="Quitar">✕</button><input class="e-empresa" placeholder="Empresa o cliente (ej: Seguridad XYZ / Mall Plaza)" value="'+esc(e.empresa||'')+'"><input class="e-cargo" placeholder="Cargo (ej: Guardia de seguridad, turno noche)" value="'+esc(e.cargo||'')+'"><div class="cv-2"><input class="e-desde" placeholder="Desde (ej: 03/2022)" value="'+esc(e.desde||'')+'"><input class="e-hasta" placeholder="Hasta (ej: actual)" value="'+esc(e.hasta||'')+'"></div><textarea class="e-func" placeholder="Qué hacías (2-3 líneas): control de acceso, rondas, CCTV, informes…">'+esc(e.funciones||'')+'</textarea></div>'; }
+function cvFilaCurso(k){ k=k||{}; return '<div class="cv-fila"><button class="x" onclick="this.parentNode.remove()" aria-label="Quitar">✕</button><input class="k-nombre" placeholder="Curso (ej: Primeros auxilios)" value="'+esc(k.nombre||'')+'"><div class="cv-2"><input class="k-inst" placeholder="Institución (ej: ACHS)" value="'+esc(k.inst||'')+'"><input class="k-anio" placeholder="Año" value="'+esc(k.anio||'')+'"></div></div>'; }
+function cvAddExp(){ document.getElementById('cvExp').insertAdjacentHTML('beforeend',cvFilaExp()); }
+function cvAddCurso(){ document.getElementById('cvCur').insertAdjacentHTML('beforeend',cvFilaCurso()); }
+function cvLeer(){
+  var c={resumen:(document.getElementById('cvR').value||'').trim().slice(0,600),exp:[],cursos:[],esp:[],hab:[]};
+  document.querySelectorAll('#cvExp .cv-fila').forEach(function(f){ var e={empresa:f.querySelector('.e-empresa').value.trim(),cargo:f.querySelector('.e-cargo').value.trim(),desde:f.querySelector('.e-desde').value.trim(),hasta:f.querySelector('.e-hasta').value.trim(),funciones:f.querySelector('.e-func').value.trim()}; if(e.empresa||e.cargo) c.exp.push(e); });
+  document.querySelectorAll('#cvCur .cv-fila').forEach(function(f){ var k={nombre:f.querySelector('.k-nombre').value.trim(),inst:f.querySelector('.k-inst').value.trim(),anio:f.querySelector('.k-anio').value.trim()}; if(k.nombre) c.cursos.push(k); });
+  document.querySelectorAll('#cvEsp input:checked').forEach(function(i){ c.esp.push(i.value); });
+  document.querySelectorAll('#cvHab input:checked').forEach(function(i){ c.hab.push(i.value); });
+  return c;
+}
+function cvOS10(){ var d=(CV_DOCS||[]).filter(function(x){return x.tipo==='os10';})[0]; return {doc:d, venc:(d&&d.vencimiento)||(CYC_PERFIL&&CYC_PERFIL.curso_vencimiento)||null, acred:CYC_PERFIL?CYC_PERFIL.acreditacion:null}; }
+function cvDiasA(iso){ try{ return Math.round((tuDeISO(iso)-new Date())/864e5); }catch(e){ return null; } }
+function cvTextoOS10(){
+  var o=cvOS10();
+  if(o.acred==='si'){ if(o.venc){ var dd=cvDiasA(o.venc); return 'OS-10: acreditación vigente'+(dd!==null?(dd<0?' — <b style="color:#e74c3c">venció el '+fechaCorta(o.venc)+'</b>':', vence el '+fechaCorta(o.venc)+(dd<=60?' <b style="color:#e74c3c">(en '+dd+' días)</b>':'')):'')+'. Se toma de tu perfil y tu carpeta.'; } return 'OS-10: acreditación vigente (sin fecha de vencimiento cargada; agrégala en Mi Carpeta para que te avisemos).'; }
+  if(o.acred==='tramite') return 'OS-10: acreditación en trámite (según tu perfil).';
+  return 'OS-10: sin acreditación según tu perfil. Es el primer paso de la ruta.';
+}
+function cvGenerar(){
+  var c=cvLeer(); cvGuardarLocal(c);
+  var m=document.getElementById('cvMsg'); m.className='p-msg ok'; m.textContent='CV guardado en este teléfono.';
+  var p=CYC_PERFIL, o=cvOS10();
+  var disp=(p.disponibilidad||'').split(',').filter(Boolean).map(function(d){return {dia:'día',noche:'noche',finde:'fines de semana'}[d]||d;}).join(', ');
+  var html='<div class="cvp"><h1>'+esc(p.nombre)+'</h1><div class="sub">Guardia de seguridad'+(c.esp.length?' · '+c.esp.map(function(k){return NOMBRE_ESPECIALIDAD[k]||k;}).join(', '):'')+'</div>'+
+    '<div class="dat">'+esc(p.comuna)+' · '+esc(p.telefono)+(CYC_EMAIL?' · '+esc(CYC_EMAIL):'')+(disp?' · Disponibilidad: '+esc(disp):'')+'</div>'+
+    (c.resumen?'<h2>Perfil</h2><p>'+esc(c.resumen)+'</p>':'')+
+    '<h2>Acreditación</h2><p>'+(o.acred==='si'?'Curso OS-10 aprobado — acreditación vigente'+(o.venc?' hasta el '+fechaCorta(o.venc)+' de '+tuDeISO(o.venc).getFullYear():''):(o.acred==='tramite'?'Acreditación OS-10 en trámite':'Sin acreditación OS-10'))+(o.doc?' · certificado disponible en Control+ (Mi Carpeta)':'')+'</p>'+
+    (c.exp.length?'<h2>Experiencia</h2>'+c.exp.map(function(e){return '<div class="exp"><b>'+esc(e.cargo||'Guardia de seguridad')+'</b> — '+esc(e.empresa)+(e.desde||e.hasta?' <span>('+esc(e.desde)+(e.hasta?' – '+esc(e.hasta):'')+')</span>':'')+(e.funciones?'<p>'+esc(e.funciones)+'</p>':'')+'</div>';}).join(''):'')+
+    (c.cursos.length?'<h2>Cursos y certificaciones</h2><ul>'+c.cursos.map(function(k){return '<li>'+esc(k.nombre)+(k.inst?' — '+esc(k.inst):'')+(k.anio?' ('+esc(k.anio)+')':'')+'</li>';}).join('')+'</ul>':'')+
+    (c.hab.length?'<h2>Habilidades</h2><p>'+c.hab.map(esc).join(' · ')+'</p>':'')+
+    '<div class="pie">CV generado con Control+ (app.controlyconfianza.cl) el '+new Date().toLocaleDateString('es-CL',{dateStyle:'long'})+'</div></div>';
+  window.__cvHtml=html;
+  window.__cvTxt=[p.nombre,'Guardia de seguridad'+(c.esp.length?' · '+c.esp.map(function(k){return NOMBRE_ESPECIALIDAD[k]||k;}).join(', '):''),p.comuna+' · '+p.telefono+(CYC_EMAIL?' · '+CYC_EMAIL:''),'',c.resumen,'',o.acred==='si'?'OS-10 vigente'+(o.venc?' hasta '+o.venc:''):(o.acred==='tramite'?'OS-10 en trámite':'Sin OS-10'),'']
+    .concat(c.exp.map(function(e){return '• '+(e.cargo||'Guardia')+' — '+e.empresa+' ('+e.desde+(e.hasta?' – '+e.hasta:'')+')'+(e.funciones?': '+e.funciones:'');}))
+    .concat(c.cursos.length?['','Cursos: '+c.cursos.map(function(k){return k.nombre+(k.inst?' ('+k.inst+(k.anio?', '+k.anio:'')+')':'');}).join('; ')]:[])
+    .concat(c.hab.length?['Habilidades: '+c.hab.join(', ')]:[]).join('\n');
+  document.getElementById('cvOut').innerHTML='<div class="card"><div class="auth-title" style="font-size:.9rem">Tu CV</div><div style="background:#fff;color:#111;border-radius:10px;padding:14px;font-family:Georgia,serif;font-size:.8rem;line-height:1.5">'+html.replace('class="cvp"','class="cvp" style="all:unset"')+'</div>'+
+    '<div class="inc-btns" style="margin-top:10px"><button class="oro" onclick="cvImprimir()">Imprimir / guardar PDF</button><button onclick="cvCopiar()">Copiar texto</button>'+(navigator.share?'<button onclick="cvCompartir()">Compartir</button>':'')+'</div><div id="cvMsg2" class="p-msg"></div></div>';
+  document.getElementById('cvRuta').innerHTML=cvRutaHTML(c);
+  document.getElementById('cvOut').scrollIntoView({behavior:'smooth',block:'start'});
+  cycTelemetria('guardias','cv_generado',true,String(c.exp.length));
+}
+function cvImprimir(){
+  var w=window.open('','_blank'); if(!w){ alert('El navegador bloqueó la ventana. Usa «Copiar texto».'); return; }
+  w.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>CV — '+esc(CYC_PERFIL.nombre)+'</title><style>body{font-family:Georgia,serif;max-width:760px;margin:36px auto;padding:0 24px;color:#111;line-height:1.5}h1{font-size:26px;margin:0}.sub{color:#8a6a00;font-weight:bold;margin:2px 0 4px}.dat{color:#555;font-size:13px;border-bottom:2px solid #d4a017;padding-bottom:10px;margin-bottom:14px}h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#8a6a00;margin:18px 0 6px}p,li{font-size:14px;margin:0 0 6px}.exp{margin-bottom:10px}.exp span{color:#666;font-size:13px}.exp p{color:#333}.pie{margin-top:30px;font-size:11px;color:#888}</style></head><body>'+window.__cvHtml+'<script>window.onload=function(){window.print();}<\/script></body></html>');
+  w.document.close();
+}
+function cvCopiar(){ var m=document.getElementById('cvMsg2'); try{ navigator.clipboard.writeText(window.__cvTxt).then(function(){ m.className='p-msg ok'; m.textContent='CV copiado como texto. Pégalo en WhatsApp o en un correo.'; }); }catch(e){ m.className='p-msg err'; m.textContent='No se pudo copiar.'; } }
+function cvCompartir(){ try{ navigator.share({title:'Mi CV — '+CYC_PERFIL.nombre,text:window.__cvTxt}); }catch(e){ cvCopiar(); } }
+function cvRutaHTML(c){
+  var o=cvOS10(), pasos=[];
+  if(o.acred==='si'){ var dd=o.venc?cvDiasA(o.venc):null; pasos.push({cl:dd!==null&&dd<=60?'alerta':'ok',e:dd!==null&&dd<=60?'⚠':'✓',t:'Acreditación OS-10 '+(dd!==null&&dd<0?'VENCIDA':'vigente'),p:o.venc?'Vence el '+fechaCorta(o.venc)+(dd!==null?(dd<0?'. Renueva con el curso de perfeccionamiento; sin acreditación vigente no puedes ejercer.':dd<=60?' (en '+dd+' días). Agenda ya el curso de perfeccionamiento: el cupo tarda.':'.'):''):'Carga la fecha de vencimiento en Mi Carpeta y te avisamos con tiempo.'}); }
+  else if(o.acred==='tramite'){ pasos.push({cl:'pend',e:'…',t:'Acreditación OS-10 en trámite',p:'Cuando te llegue, actualiza tu perfil y sube el certificado a Mi Carpeta: quien contrata lo mira primero.'}); }
+  else { pasos.push({cl:'pend',e:'1',t:'Obtener la acreditación OS-10',p:'Curso de formación con una entidad capacitadora autorizada y acreditación ante la Subsecretaría de Prevención del Delito (Ley 21.659). Recuerda: el curso lo paga el empleador (mira la Guía).'}); }
+  var tieneCV=(CV_DOCS||[]).some(function(x){return x.tipo==='cv';}), tieneCed=(CV_DOCS||[]).some(function(x){return x.tipo==='cedula_frente';});
+  pasos.push({cl:tieneCed?'ok':'pend',e:tieneCed?'✓':'•',t:'Carpeta lista para postular',p:tieneCed?'Cédula cargada en Mi Carpeta.':'Sube tu cédula (frente y dorso) en Mi Carpeta: te la piden en toda postulación.'});
+  pasos.push({cl:tieneCV?'ok':'pend',e:tieneCV?'✓':'•',t:'CV en Mi Carpeta',p:tieneCV?'Ya tienes un CV subido. Reemplázalo por el que generas aquí cuando lo actualices.':'Genera tu CV arriba, guárdalo como PDF y súbelo en Mi Carpeta.'});
+  var tienePA=(c.hab||[]).indexOf('Primeros auxilios')>=0||(c.cursos||[]).some(function(k){return /primeros auxilios/i.test(k.nombre);});
+  pasos.push({cl:tienePA?'ok':'pend',e:tienePA?'✓':'•',t:'Primeros auxilios',p:'Lo piden en eventos, retail e industria. Las mutuales (ACHS, IST, Mutual de Seguridad) dictan cursos para trabajadores de empresas adheridas; pregúntale a tu empleador.'});
+  (c.esp||[]).forEach(function(k){ var r=CV_RUTA[k]; if(r) pasos.push({cl:'pend',e:'→',t:'Especialización: '+r.t,p:r.p}); });
+  if(!(c.esp||[]).length) pasos.push({cl:'pend',e:'→',t:'Elige una especialidad',p:'Marca arriba el rubro al que quieres apuntar y te mostramos qué suma para ese camino.'});
+  return '<div class="auth-title" style="font-size:.9rem">Mi ruta</div>'+pasos.map(function(x){return '<div class="ruta-paso '+x.cl+'"><div class="e">'+x.e+'</div><div><b>'+x.t+'</b><p>'+x.p+'</p></div></div>';}).join('')+
+    '<div class="inc-fuente">La Ley 21.659 (art. 54) fija que los guardias deben cursar capacitaciones según el nivel de riesgo y que las especializaciones y su acreditación las define el reglamento; esta ruta es orientación de Control+, no un requisito oficial salvo donde se indica la ley.</div>';
 }
 
 /* ---------- Control+ Premium: compra real (04-09-2026) ----------
