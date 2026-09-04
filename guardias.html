@@ -268,6 +268,19 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .as-sug{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .as-sug button{background:#161616;border:1px solid #333;color:#ccc;border-radius:99px;padding:6px 10px;font-size:.72rem;cursor:pointer;font-family:inherit}
 .as-sug button:hover{border-color:#d4a017;color:#f0e8d0}
+/* Verificador de liquidación (Premium, 04-09-2026) */
+.liq-drop{border:2px dashed #3a3a3a;border-radius:14px;padding:18px;text-align:center;color:#aaa;font-size:.84rem;cursor:pointer;background:#141414}
+.liq-drop:hover{border-color:#d4a017}
+.liq-drop input{display:none}
+.liq-form{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin-top:10px}
+.liq-form label{margin:0 0 3px}
+.liq-form input{width:100%;background:#111;border:1px solid #333;border-radius:8px;color:#fff;padding:9px;font-size:.85rem;font-family:inherit}
+.liq-form .full{grid-column:1/-1}
+.liq-h{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid #222;font-size:.84rem}
+.liq-h .e{font-size:1rem}
+.liq-h b{color:#fff}
+.liq-h p{color:#999;font-size:.76rem;margin-top:2px;line-height:1.5}
+.liq-h.ok .e{color:#7dc800}.liq-h.rev .e{color:#e08a2b}.liq-h.alerta .e{color:#e74c3c}.liq-h.info .e{color:#999}
 /* Venta real de Premium (04-09-2026) */
 .p-lbl{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a7a45;margin:14px 0 8px}
 .p-tool.p-hoy{border-color:rgba(212,160,23,.55);background:#1a1200}
@@ -410,6 +423,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <a href="#bitacora" data-tab="bitacora">🔒 Bitácora blindada <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
       <a href="#carrera" data-tab="carrera">🎓 Mi Carrera <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
       <a href="#asistente" data-tab="asistente">🤖 Asistente gremial <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
+      <a href="#liquidacion" data-tab="liquidacion">🧾 Verificador de liquidación <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
     </div>
   </div>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
@@ -432,7 +446,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       </div>
       <h3>Herramientas para defender tu trabajo y tu plata</h3>
       <p class="p-sub"><b>La bolsa de trabajo y los avisos de ofertas siguen gratis para todos.</b> Premium es aparte: cada pago habilita 30 días y <b>no hay cobro automático</b> — renuevas cuando tú quieras.</p>
-      <div class="p-lbl">Incluido hoy</div>
+      <div class="p-lbl">Las 8 herramientas Premium, todas incluidas</div>
       <div class="p-grid">
         <div class="p-tool p-hoy"><div class="t">⭐ Perfil destacado</div><p>Tus postulaciones aparecen primero y con insignia Premium ante quien contrata.</p></div>
         <div class="p-tool p-hoy"><div class="t">⚖️ Después del incidente</div><p>Protocolo paso a paso para 7 situaciones: qué hacer, qué registrar, a quién avisar, tus derechos, y tu acta personal lista para imprimir. <a href="#incidente" style="color:#d4a017">Abrir →</a></p></div>
@@ -441,11 +455,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
         <div class="p-tool p-hoy"><div class="t">🔒 Bitácora blindada</div><p>Tu registro de novedades e incidentes con fecha y hora del servidor y sello encadenado: nada se edita ni se borra. Imprimible para mostrarlo a quien haga falta. <a href="#bitacora" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🎓 Mi Carrera</div><p>Tu CV profesional de guardia, listo para imprimir o mandar por WhatsApp, y tu ruta de especializaciones con el OS-10 al día. <a href="#carrera" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🤖 Asistente gremial IA</div><p>Pregúntale por tus leyes, tu sueldo, tus turnos o qué hacer ante un problema en el trabajo. Responde con la norma vigente y te dice cuándo ir a la Dirección del Trabajo o a un abogado. 30 preguntas al día. <a href="#asistente" style="color:#d4a017">Abrir →</a></p></div>
-      </div>
-      <div class="p-lbl">En camino — se activan en tu cuenta sin costo extra</div>
-      <div class="p-grid">
-        <div class="p-tool"><div class="t">🧾 Verificador de Liquidación</div><p>Le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p></div>
-        <div class="p-tool"><div class="t">🔔 Alertas a tu medida</div><p>Hoy ya recibes avisos por comuna y especialidad; podrás sumar turno y renta mínima.</p></div>
+        <div class="p-tool p-hoy"><div class="t">🧾 Verificador de liquidación</div><p>Le sacas una foto a tu liquidación, confirmas los números y la app revisa horas extra, gratificación, mínimo legal, descuentos y la suma. Referencial: tu liquidación siempre manda. <a href="#liquidacion" style="color:#d4a017">Abrir →</a></p></div>
       </div>
       <div class="p-lbl">Ya lo tienes gratis, con o sin Premium</div>
       <div class="p-grid">
@@ -490,6 +500,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <!-- ASISTENTE GREMIAL IA (Control+ Premium, 04-09-2026) -->
   <section class="view" id="view-asistente">
     <div id="asistenteContent"></div>
+  </section>
+
+  <!-- VERIFICADOR DE LIQUIDACIÓN (Control+ Premium, 04-09-2026) -->
+  <section class="view" id="view-liquidacion">
+    <div id="liquidacionContent"></div>
   </section>
 
   <!-- SUELDO / CALCULADORA (G3) -->
@@ -547,24 +562,22 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
 <div id="modPrem" class="solo-web" role="dialog" aria-modal="true" aria-labelledby="mpTitulo">
   <div class="mp-caja">
     <div class="mp-top">
-      <div class="mp-kicker">EN CAMINO · CONTROL+ PREMIUM</div>
+      <div class="mp-kicker">CONTROL+ PREMIUM</div>
       <button class="mp-cerrar" id="mpCerrar" aria-label="Cerrar">×</button>
     </div>
     <h3 id="mpTitulo">¿Seguro que te pagan<br>lo que corresponde?</h3>
-    <p class="mp-sub">Estamos construyendo un <b>verificador de liquidación</b>: le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p>
-    <div class="mp-lbl">Y MÁS HERRAMIENTAS EN CAMINO</div>
+    <p class="mp-sub">El <b>verificador de liquidación</b> ya está: le sacas una foto, confirmas los números y la app revisa horas extra, gratificación, mínimo legal y descuentos.</p>
+    <div class="mp-lbl">Y 7 HERRAMIENTAS MÁS, TODAS INCLUIDAS</div>
     <div class="mp-grid">
             <div class="mp-t">📁 Carpeta documental</div>
     </div>
     <div class="mp-gratis">
       <div class="g1">✅ La bolsa de trabajo sigue gratis</div>
-      <div class="g2">Los avisos de ofertas son gratis para todos, siempre. Esto es aparte: herramientas para defender tu trabajo. Control+ Premium ya se puede activar ($2.500 por 30 días) e incluye hoy el perfil destacado.</div>
+      <div class="g2">Los avisos de ofertas son gratis para todos, siempre. Esto es aparte: herramientas para defender tu trabajo. Control+ Premium: $2.500 por 30 días, sin cobro automático.</div>
     </div>
-    <input id="mpEmail" type="email" placeholder="tucorreo@ejemplo.cl" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false">
-    <button class="mp-cta" id="mpEnviar">Avísenme cuando esté listo</button>
+    <button class="mp-cta" id="mpVerTodo">Ver Control+ Premium y activarlo</button>
     <div class="mp-msg" id="mpMsg"></div>
-    <button class="mp-vertodo" id="mpVerTodo">Ver Control+ Premium y activarlo</button>
-    <p class="mp-legal">Solo usaremos tu correo para avisarte de Control+ Premium. <a href="terminos.html" target="_blank" rel="noopener">Términos y Privacidad</a>.</p>
+    <p class="mp-legal"><a href="terminos.html#controlplus" target="_blank" rel="noopener">Términos y Privacidad</a>.</p>
   </div>
 </div>
 
@@ -815,8 +828,8 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera','asistente','admin'];
-var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera','asistente'];
+var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera','asistente','liquidacion','admin'];
+var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','carrera','asistente','liquidacion'];
 function toggleMenuCuenta(e){
   // OJO: sin preventDefault — el clic en "Mi Perfil"/etc burbujea desde el <a> hijo
   // hasta este div padre, y preventDefault() aqui cancelaba tambien la navegacion
@@ -880,6 +893,7 @@ function renderView(){
   else if(v==='bitacora') renderBitacora();
   else if(v==='carrera') renderCarrera();
   else if(v==='asistente') renderAsistente();
+  else if(v==='liquidacion') renderLiquidacion();
   else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
 }
@@ -2471,7 +2485,7 @@ async function inscribirPremium(){
   });
 
   // Inscripción — mismo endpoint y misma convención de fuente que inscribirPremium()
-  document.getElementById('mpEnviar').addEventListener('click',async function(){
+  if(document.getElementById('mpEnviar')) document.getElementById('mpEnviar').addEventListener('click',async function(){
     var msg=document.getElementById('mpMsg'), campo=document.getElementById('mpEmail');
     var email=(campo.value||'').trim().toLowerCase();
     if(!email||email.indexOf('@')<1){ msg.textContent='Escribe un email válido.'; msg.className='mp-msg err'; return; }
@@ -3085,6 +3099,126 @@ async function asEnviar(){
     } else { esp.className='as-m a'; esp.style.color='#e74c3c'; esp.textContent=d.error||'No se pudo responder.'; cycTelemetria('guardias','asistente_ok',false,String(res.status)); }
   }catch(e){ var e2=document.getElementById('asEspera'); if(e2){ e2.className='as-m a'; e2.style.color='#e74c3c'; e2.textContent='Error de conexión. Intenta de nuevo.'; } }
   btn.disabled=false; ch.scrollTop=ch.scrollHeight; inp.focus();
+}
+
+/* ---------- Verificador de liquidación (Control+ Premium, 04-09-2026) ----------
+   Tres pasos: (1) foto → la IA del Worker solo TRANSCRIBE los montos; (2) el guardia
+   revisa y corrige los números; (3) la app revisa con reglas fijas (las mismas fórmulas de
+   la pestaña Sueldo). La foto no se guarda; los montos quedan solo en esta pestaña. */
+var LIQ_DATOS=null;
+function liqClp(n){ return '$'+Math.round(Number(n)||0).toLocaleString('es-CL'); }
+function renderLiquidacion(){
+  var el=document.getElementById('liquidacionContent');
+  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🧾 Verificador de liquidación <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+    '<div class="auth-sub" style="margin-bottom:0">Le sacas una foto a tu liquidación, confirmas los números y la app revisa lo que más falla en el rubro: horas extra bajo el 50 %, gratificación mal calculada, sueldo bajo el mínimo, descuentos que no corresponden (uniforme, curso) y que la suma cuadre. <b>Es referencial</b>: tu liquidación y tu contrato mandan, y ante una diferencia el paso es preguntar a tu empleador y, si no hay respuesta, reclamar en la Dirección del Trabajo.</div></div>';
+  if(!CYC_TOKEN || !CYC_CM){
+    var cta;
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye el verificador (10 lecturas al día) y las otras 7 herramientas Premium. 30 días por cada pago, sin cobro automático.</div>'; }
+    el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Revisa: valor hora y horas extra (+50 %) · gratificación art. 50 (25 % con tope de 4,75 IMM al año) · sueldo base vs. mínimo legal ($'+CALC_IMM.toLocaleString('es-CL')+') · descuentos legales (AFP, salud, cesantía) y descuentos que no corresponden · que haberes − descuentos = líquido.</div><div style="margin-top:14px">'+cta+'</div></div>';
+    return;
+  }
+  el.innerHTML=cab+'<div class="card"><div class="auth-title" style="font-size:.9rem">1. Tu liquidación</div>'+
+    '<label class="liq-drop" for="liqFoto">📷 Sácale una foto o elige la imagen de tu liquidación<br><span style="font-size:.72rem;color:#777">Con luz, derecha y completa. La foto no se guarda: solo se lee.</span><input id="liqFoto" type="file" accept="image/*" capture="environment" onchange="liqFoto(this)"></label>'+
+    '<div class="p-nota" style="text-align:center">o <a href="#" onclick="liqManual();return false" style="color:#d4a017">escribe los montos a mano</a></div><div id="liqMsg" class="p-msg"></div></div>'+
+    '<div id="liqPaso2"></div><div id="liqPaso3"></div>';
+}
+function liqMsg(t,cl){ var m=document.getElementById('liqMsg'); if(m){ m.textContent=t; m.className='p-msg '+(cl||''); } }
+function liqFoto(input){
+  var f=input.files&&input.files[0]; if(!f) return;
+  liqMsg('Leyendo la foto…','');
+  var img=new Image(), url=URL.createObjectURL(f);
+  img.onload=async function(){
+    var max=1400, esc_=Math.min(1,max/Math.max(img.width,img.height));
+    var c=document.createElement('canvas'); c.width=Math.round(img.width*esc_); c.height=Math.round(img.height*esc_);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+    var b64=c.toDataURL('image/jpeg',0.85).split(',')[1];
+    try{
+      var res=await fetch(API_URL+'/guardias/liquidacion/extraer',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({imagen:b64,tipo:'image/jpeg'})});
+      var d=await res.json();
+      if(!res.ok||!d.datos){ liqMsg(d.error||'No se pudo leer la foto.','err'); return; }
+      if(d.datos.legible===false){ liqMsg('No parece una liquidación o no se lee bien'+(d.datos.notas?': '+d.datos.notas:'')+'. Prueba otra foto o escribe los montos a mano.','err'); return; }
+      liqMsg('Foto leída. Revisa que los números coincidan con tu papel y corrige lo que haga falta.'+(d.datos.notas?' Nota: '+d.datos.notas:''),'ok');
+      cycTelemetria('guardias','liquidacion_foto',true);
+      liqFormulario(d.datos);
+    }catch(e){ liqMsg('Error de conexión. Intenta de nuevo.','err'); }
+  };
+  img.onerror=function(){ liqMsg('No se pudo abrir la imagen.','err'); };
+  img.src=url;
+}
+function liqManual(){ liqFormulario({}); document.getElementById('liqPaso2').scrollIntoView({behavior:'smooth'}); }
+function liqNum(v){ v=Number(v); return isFinite(v)&&v>0?Math.round(v):0; }
+function liqFormulario(d){
+  var otrosH=(d.otros_haberes||[]).reduce(function(a,x){return a+liqNum(x&&x.monto);},0);
+  var otrosD=(d.otros_descuentos||[]).map(function(x){return x&&x.nombre?x.nombre+(x.monto?' $'+liqNum(x.monto).toLocaleString('es-CL'):''):null;}).filter(Boolean).join(', ');
+  var otrosDm=(d.otros_descuentos||[]).reduce(function(a,x){return a+liqNum(x&&x.monto);},0);
+  function campo(id,label,val,full){ return '<div'+(full?' class="full"':'')+'><label for="'+id+'">'+label+'</label><input id="'+id+'" type="number" inputmode="numeric" min="0" value="'+(val?liqNum(val):'')+'" placeholder="0"></div>'; }
+  document.getElementById('liqPaso2').innerHTML='<div class="card"><div class="auth-title" style="font-size:.9rem">2. Confirma los números</div><div class="p-nota" style="margin-bottom:6px">'+(d.periodo?'Período leído: <b>'+esc(String(d.periodo))+'</b>. ':'')+(d.empleador?'Empleador: '+esc(String(d.empleador))+'. ':'')+'Deja en 0 lo que no aparezca en tu liquidación.</div><div class="liq-form">'+
+    campo('lqBase','Sueldo base',d.sueldo_base)+campo('lqDias','Días trabajados (30 si fue el mes completo)',d.dias_trabajados||30)+
+    campo('lqHeN','Horas extra (cantidad)',d.horas_extra_cantidad)+campo('lqHeM','Horas extra (monto pagado)',d.horas_extra_monto)+
+    campo('lqGrat','Gratificación',d.gratificacion)+campo('lqOtrosH','Bonos y otros haberes (colación, movilización, etc.)',liqNum(d.bono_colacion)+liqNum(d.bono_movilizacion)+otrosH)+
+    campo('lqTotH','Total haberes',d.total_haberes)+campo('lqAfp','AFP',d.afp)+campo('lqSalud','Salud',d.salud)+campo('lqCes','Seguro de cesantía',d.seguro_cesantia)+campo('lqImp','Impuesto único',d.impuesto_unico)+campo('lqOtrosD','Otros descuentos (monto)',otrosDm)+
+    '<div class="full"><label for="lqOtrosDt">Otros descuentos: ¿qué dicen?</label><input id="lqOtrosDt" type="text" value="'+esc(otrosD)+'" placeholder="Ej: uniforme, anticipo, préstamo"></div>'+
+    campo('lqTotD','Total descuentos',d.total_descuentos)+campo('lqLiq','Líquido a pagar',d.liquido)+
+    '</div><div class="inc-btns" style="margin-top:10px"><button class="oro" onclick="liqRevisar()">3. Revisar mi liquidación</button></div></div>';
+  document.getElementById('liqPaso3').innerHTML='';
+}
+function liqRevisar(){
+  var g=function(id){ return liqNum(document.getElementById(id).value); };
+  var base=g('lqBase'), dias=g('lqDias')||30, heN=g('lqHeN'), heM=g('lqHeM'), grat=g('lqGrat'), otrosH=g('lqOtrosH'), totH=g('lqTotH'), afp=g('lqAfp'), salud=g('lqSalud'), ces=g('lqCes'), imp=g('lqImp'), otrosD=g('lqOtrosD'), otrosDt=(document.getElementById('lqOtrosDt').value||'').toLowerCase(), totD=g('lqTotD'), liq=g('lqLiq');
+  var H=[]; function h(cl,e,t,p){ H.push({cl:cl,e:e,t:t,p:p}); }
+  if(!base){ document.getElementById('liqPaso3').innerHTML='<div class="card"><div class="p-msg err">Falta el sueldo base para revisar.</div></div>'; return; }
+  var mesCompleto=dias>=28;
+  // 1. Mínimo legal
+  if(mesCompleto){ if(base<CALC_IMM) h('alerta','⚠','Sueldo base bajo el mínimo legal','Tu base es '+liqClp(base)+' y el Ingreso Mínimo Mensual vigente es '+liqClp(CALC_IMM)+' (Ley 21.830, desde el 01-05-2026) para jornada completa. Si tu jornada es completa, esto es reclamable en la Dirección del Trabajo.'); else h('ok','✓','Sueldo base sobre el mínimo legal','Base '+liqClp(base)+' ≥ mínimo '+liqClp(CALC_IMM)+'.'); }
+  else h('info','•','Mes incompleto ('+dias+' días)','El mínimo legal se compara proporcional; revisa que la base corresponda a los días trabajados.');
+  // 2. Horas extra (misma fórmula de la pestaña Sueldo)
+  if(heN>0){
+    var baseHE=Math.max(base,CALC_IMM), valorHora=Math.round((baseHE/30*28)/(CALC_JORNADA*4)), esperado=Math.round(valorHora*1.5*heN);
+    if(!heM) h('rev','?','Horas extra sin monto','Marcaste '+heN+' horas extra pero no hay monto. A valor hora '+liqClp(valorHora)+' ×1,5, corresponderían aproximadamente '+liqClp(esperado)+'. Verifica en tu liquidación.');
+    else if(heM<esperado*0.9) h('rev','⚠','Horas extra posiblemente bajo el 50 %','Por '+heN+' horas, con valor hora '+liqClp(valorHora)+' (fórmula DT para jornada de '+CALC_JORNADA+' h) y recargo mínimo del 50 %, el cálculo referencial da '+liqClp(esperado)+'; te pagaron '+liqClp(heM)+'. Puede haber una razón (jornada distinta, horas de otro mes): pídele el detalle a tu empleador antes de reclamar.');
+    else h('ok','✓','Horas extra dentro de lo esperado','Referencial: '+liqClp(esperado)+' por '+heN+' horas; pagado '+liqClp(heM)+'.');
+    if(heN>(mesCompleto?48:40)) h('info','•','Muchas horas extra','Más de 2 horas extra por día como promedio supera el máximo legal (art. 31 CdT). No es un error de pago, pero es un dato para conversar.');
+  }
+  // 3. Gratificación art. 50
+  var topeGrat=Math.round(CALC_IMM*4.75/12), esperadoGrat=Math.round(Math.min(base*0.25,topeGrat));
+  if(grat>0){ if(grat<esperadoGrat*0.9 && grat<topeGrat*0.9) h('rev','⚠','Gratificación menor a la referencial','Con el sistema del art. 50 (25 % del sueldo con tope de 4,75 IMM al año), lo referencial sería '+liqClp(esperadoGrat)+' al mes; aparece '+liqClp(grat)+'. Puede ser otro sistema (art. 47, 30 % de utilidades) o mes proporcional: pregunta cuál usa tu empresa.'); else h('ok','✓','Gratificación en rango','Referencial art. 50: '+liqClp(esperadoGrat)+' (tope mensual '+liqClp(topeGrat)+'); aparece '+liqClp(grat)+'.'); }
+  else h('info','•','Sin gratificación en esta liquidación','Si tu contrato o la empresa paga gratificación legal, debería aparecer cada mes (art. 50) o al cierre del año (art. 47). Revísalo en tu contrato.');
+  // 4. Descuentos legales (rangos referenciales sobre la base imponible aproximada)
+  var imponible=base+heM+grat;
+  if(afp>0){ var pAfp=afp/imponible; if(pAfp<0.09||pAfp>0.125) h('rev','?','AFP fuera del rango habitual','El descuento de AFP suele ser 10 % más la comisión de la administradora (total entre 10 % y 12 %). Aquí es '+(pAfp*100).toFixed(1)+' % del imponible aproximado. Compara con tu cartola de AFP.'); else h('ok','✓','AFP en rango','≈ '+(pAfp*100).toFixed(1)+' % del imponible.'); }
+  if(salud>0){ var pSal=salud/imponible; if(pSal<0.065) h('rev','?','Salud bajo el 7 %','El descuento legal de salud es 7 % (Fonasa) o el plan pactado en isapre (7 % o más). Aquí es '+(pSal*100).toFixed(1)+' %.'); else h('ok','✓','Salud en rango','≈ '+(pSal*100).toFixed(1)+' % del imponible.'); }
+  if(ces>0){ var pCes=ces/imponible; if(pCes>0.0075) h('rev','?','Seguro de cesantía alto','Con contrato indefinido el trabajador aporta 0,6 %; con contrato a plazo fijo o por obra no aporta (lo paga el empleador). Aquí es '+(pCes*100).toFixed(2)+' %.'); else h('ok','✓','Seguro de cesantía en rango','≈ '+(pCes*100).toFixed(2)+' %.'); }
+  // 5. Otros descuentos
+  if(otrosD>0){
+    if(/uniform|curso|os.?10|capacit|equipo|chaleco|credencial|examen/.test(otrosDt)) h('alerta','⚠','Descuento que la ley no permite','Aparece un descuento por «'+esc(otrosDt)+'» de '+liqClp(otrosD)+'. El uniforme, los elementos de protección (art. 184 CdT; Ley 21.659 art. 53) y el curso OS-10 o de perfeccionamiento (dictámenes DT 3515/2014, 3518/2014, 3004/2018) son de cargo del empleador: no se pueden descontar del sueldo. Pide que lo devuelvan y, si no, reclama en la Dirección del Trabajo con la liquidación en mano.');
+    else if(/multa|atraso|falta|daño|perdida|pérdida|faltante/.test(otrosDt)) h('alerta','⚠','Multa o cobro por daños descontado','Descuento por «'+esc(otrosDt)+'» de '+liqClp(otrosD)+'. Las multas solo proceden si están en el reglamento interno y con tope del 25 % de la remuneración diaria (art. 157 CdT); cobrar daños o faltantes del sueldo no está permitido salvo autorización escrita tuya (art. 58). Reclamable.');
+    else h('rev','?','Otros descuentos: revisa que los hayas autorizado','«'+esc(otrosDt||'otros')+'» por '+liqClp(otrosD)+'. Los descuentos que no son legales (anticipos, préstamos, cuotas) requieren tu autorización escrita y tienen tope del 15 % de la remuneración (art. 58 CdT). Si no lo autorizaste, pregunta.');
+  }
+  // 6. Sumas
+  var haberesCalc=base+heM+grat+otrosH, descCalc=afp+salud+ces+imp+otrosD;
+  if(totH && Math.abs(totH-haberesCalc)>Math.max(1000,totH*0.01)) h('rev','?','El total de haberes no cuadra con las partidas','Sumadas las partidas que ingresaste dan '+liqClp(haberesCalc)+' y el total dice '+liqClp(totH)+'. Puede faltar una partida en el formulario o haber un error en la liquidación.');
+  if(totD && Math.abs(totD-descCalc)>Math.max(1000,totD*0.01)) h('rev','?','El total de descuentos no cuadra','Las partidas suman '+liqClp(descCalc)+' y el total dice '+liqClp(totD)+'.');
+  var liqCalc=(totH||haberesCalc)-(totD||descCalc);
+  if(liq && Math.abs(liq-liqCalc)>Math.max(1000,liq*0.01)) h('alerta','⚠','El líquido no cuadra','Haberes menos descuentos da '+liqClp(liqCalc)+' y el líquido dice '+liqClp(liq)+'. Diferencia: '+liqClp(Math.abs(liq-liqCalc))+'. Pide explicación con la liquidación en mano.');
+  else if(liq) h('ok','✓','La suma cuadra','Haberes − descuentos = '+liqClp(liqCalc)+' ≈ líquido '+liqClp(liq)+'.');
+  var alertas=H.filter(function(x){return x.cl==='alerta';}).length, rev=H.filter(function(x){return x.cl==='rev';}).length;
+  var resumen=alertas?'<b style="color:#e74c3c">'+alertas+' punto'+(alertas>1?'s':'')+' que conviene reclamar</b>':(rev?'<b style="color:#e08a2b">'+rev+' punto'+(rev>1?'s':'')+' para preguntar a tu empleador</b>':'<b style="color:#7dc800">No encontré diferencias con las reglas que reviso</b>');
+  var out=document.getElementById('liqPaso3');
+  out.innerHTML='<div class="card"><div class="auth-title" style="font-size:.9rem">3. Revisión referencial</div><div style="font-size:.86rem;margin-bottom:6px">'+resumen+'</div>'+
+    H.map(function(x){return '<div class="liq-h '+x.cl+'"><div class="e">'+x.e+'</div><div><b>'+x.t+'</b><p>'+x.p+'</p></div></div>';}).join('')+
+    '<div class="inc-fuente" style="margin-top:10px">Referencial, con las reglas oficiales de la Dirección del Trabajo y las mismas fórmulas de la pestaña Sueldo. Tu contrato y tu liquidación mandan: puede haber pactos (jornada, bonos, sistema de gratificación) que expliquen una diferencia. Camino recomendado: 1) pídele el detalle a tu empleador por escrito; 2) si no responde o no corresponde, reclamo en la <a href="https://www.dt.gob.cl" target="_blank" rel="noopener">Dirección del Trabajo</a>; 3) guarda esta revisión en tu Bitácora blindada.</div>'+
+    '<div class="inc-btns" style="margin-top:10px"><button onclick="liqABitacora()">Sellar en mi Bitácora blindada</button><button class="oro" onclick="location.hash=\'#asistente\'">Preguntarle al Asistente gremial</button></div><div id="liqMsg3" class="p-msg"></div></div>';
+  window.__liqTexto='REVISIÓN REFERENCIAL DE LIQUIDACIÓN (Control+)\nBase '+liqClp(base)+' · '+dias+' días · HE '+heN+' h '+liqClp(heM)+' · Grat. '+liqClp(grat)+' · Otros haberes '+liqClp(otrosH)+' · AFP '+liqClp(afp)+' · Salud '+liqClp(salud)+' · Cesantía '+liqClp(ces)+' · Otros desc. '+liqClp(otrosD)+(otrosDt?' ('+otrosDt+')':'')+' · Líquido '+liqClp(liq)+'\n\n'+H.map(function(x){return x.e+' '+x.t+': '+x.p.replace(/<[^>]+>/g,'');}).join('\n');
+  out.scrollIntoView({behavior:'smooth',block:'start'});
+  cycTelemetria('guardias','liquidacion_revisada',true,alertas+'a'+rev+'r');
+}
+async function liqABitacora(){
+  var m=document.getElementById('liqMsg3'); m.className='p-msg'; m.textContent='Sellando…';
+  try{
+    var res=await fetch(API_URL+'/guardias/bitacora',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({tipo:'otro',lugar:'Liquidación de sueldo',texto:window.__liqTexto})});
+    var d=await res.json(); m.className='p-msg '+(res.ok?'ok':'err'); m.textContent=res.ok?'Sellada en tu Bitácora el '+fechaCorta(d.ts)+'.':(d.error||'No se pudo sellar.');
+  }catch(e){ m.className='p-msg err'; m.textContent='Error de conexión.'; }
 }
 
 /* ---------- Control+ Premium: compra real (04-09-2026) ----------
