@@ -2392,7 +2392,7 @@ function renderPremiumEstado(){
   if(window.CYC_MODO_TIENDA){
     el.innerHTML = CYC_CM
       ? '<div class="p-activo">✅ Control+ Premium activo'+(CYC_CM.vence?' hasta el '+fechaCorta(CYC_CM.vence):'')+'.</div>'
-      : '<div class="p-nota">Si ya tienes Control+ Premium, inicia sesión con tu cuenta y tu insignia se activa sola.</div>';
+      : '<div class="p-nota">Control+ Premium se activa en nuestra web, controlyconfianza.cl — no desde esta app. Si ya lo tienes, inicia sesión con tu cuenta y tu insignia se activa sola.</div>';
     return;
   }
   if(CYC_CM){

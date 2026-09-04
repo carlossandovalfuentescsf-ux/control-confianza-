@@ -129,7 +129,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #d4a017;border-color:#
   <div class="card" id="authBox" style="display:none">
     <h2>Exclusivo Plan Empresa</h2>
     <p class="solo-web">El generador de Directivas es parte del <strong>Plan Empresa ($<span id="precioEmp"></span>/30 días)</strong>. Inicia sesión o crea tu cuenta para continuar.</p>
-    <p class="solo-tienda">El generador de Directivas es parte del <strong>Plan Empresa</strong>. Si ya lo tienes, inicia sesión con tu correo.</p>
+    <p class="solo-tienda">El generador de Directivas es parte del <strong>Plan Empresa</strong>, que se contrata en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu correo.</p>
     <label for="aEmail">Email</label>
     <input id="aEmail" type="email" placeholder="Email" autocomplete="email">
     <label for="aPass">Contraseña</label>
@@ -517,7 +517,7 @@ async function autenticar(modo){
     localStorage.setItem('cyc_token',d.token);
     const e=await estadoPlan();
     if(e.plan==='empresa'){document.getElementById('authBox').style.display='none';comenzar();}
-    else{document.getElementById('btnPagarEmp').style.display='block';msg('msgAuth',window.CYC_MODO_TIENDA?'Sesión iniciada. Esta cuenta no tiene el Plan Empresa activo.':'Sesión iniciada. Falta activar el Plan Empresa.','ok');}
+    else{document.getElementById('btnPagarEmp').style.display='block';msg('msgAuth',window.CYC_MODO_TIENDA?'Sesión iniciada. Esta cuenta no tiene el Plan Empresa activo; se contrata en nuestra web controlyconfianza.cl.':'Sesión iniciada. Falta activar el Plan Empresa.','ok');}
   }catch(err){msg('msgAuth','Sin conexión. Intenta de nuevo.','err');}
 }
 async function pagarEmpresa(){

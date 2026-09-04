@@ -1050,7 +1050,7 @@ function cycAplicarBloqueoResultado(){
   if(window.CYC_MODO_TIENDA){
     // Modo tienda (app instalada desde Play): sin precio ni botón de pago — solo entrar.
     overlay.innerHTML = logueado
-      ? '<div style="font-size:0.82rem;color:#ccc;font-weight:800">Desglose completo — incluido en el Plan Empresa</div><div style="font-size:0.72rem;color:#888;max-width:220px">Esta cuenta no tiene el Plan Empresa activo.</div>'
+      ? '<div style="font-size:0.82rem;color:#ccc;font-weight:800">Desglose completo — incluido en el Plan Empresa</div><div style="font-size:0.72rem;color:#888;max-width:220px">Esta cuenta no tiene el Plan Empresa activo. Se contrata en nuestra web, controlyconfianza.cl.</div>'
       : cycOverlayTienda('Plan Empresa','mr');
   } else if(logueado){
     overlay.innerHTML='<div style="font-size:0.82rem;color:#ccc;font-weight:800">Desglose completo — Plan Empresa</div>'+

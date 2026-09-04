@@ -619,7 +619,7 @@ function showResult(){
     if(window.CYC_MODO_TIENDA){
       // Modo tienda (app instalada desde Play): sin precio ni botón de pago — solo entrar.
       ctaHtml = logueado
-        ? '<div style="font-size:0.78rem;color:#888;margin-bottom:8px;">Esta cuenta no tiene el Plan Personal activo.</div>'
+        ? '<div style="font-size:0.78rem;color:#888;margin-bottom:8px;">Esta cuenta no tiene el Plan Personal activo. Se contrata en nuestra web, controlyconfianza.cl.</div>'
         : cycOverlayTienda('Plan Personal','ph');
     } else if(logueado){
       ctaHtml='<button onclick="cycPagarPersonalPH()" style="background:#d4a017;color:#111;border:none;padding:12px 22px;border-radius:8px;font-size:0.85rem;font-weight:800;cursor:pointer;margin-bottom:8px;">Pagar $'+CYC_CONFIG.precioPersonal+' y desbloquear ahora</button>'+
