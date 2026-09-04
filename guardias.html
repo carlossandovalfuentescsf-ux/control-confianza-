@@ -376,6 +376,7 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
       <a href="#incidente" data-tab="incidente" style="border-top:1px solid #2a2a2a;margin-top:4px;padding-top:8px">⚖️ Después del incidente <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
       <a href="#turnos" data-tab="turnos">📅 Turnos + familia <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
       <a href="#alertas" data-tab="alertas">🔔 Alertas a tu medida <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
+      <a href="#bitacora" data-tab="bitacora">🔒 Bitácora blindada <span style="color:#d4a017;font-size:.7em">PREMIUM</span></a>
     </div>
   </div>
   <a class="tab" href="#admin" data-tab="admin" id="tabAdmin" style="display:none">Admin</a>
@@ -404,12 +405,12 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
         <div class="p-tool p-hoy"><div class="t">⚖️ Después del incidente</div><p>Protocolo paso a paso para 7 situaciones: qué hacer, qué registrar, a quién avisar, tus derechos, y tu acta personal lista para imprimir. <a href="#incidente" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">📅 Turnos + familia</div><p>Tu pauta 4x4, 5x2, 6x1 o la que uses, proyectada en un calendario. Enlace para tu familia y archivo para el calendario del teléfono. <a href="#turnos" style="color:#d4a017">Abrir →</a></p></div>
         <div class="p-tool p-hoy"><div class="t">🔔 Alertas a tu medida</div><p>Hasta 5 alertas permanentes: comuna, especialidad, día o noche, pauta y renta o pago mínimo. Te llega un correo cada vez que aparece una oferta que calza. <a href="#alertas" style="color:#d4a017">Abrir →</a></p></div>
+        <div class="p-tool p-hoy"><div class="t">🔒 Bitácora blindada</div><p>Tu registro de novedades e incidentes con fecha y hora del servidor y sello encadenado: nada se edita ni se borra. Imprimible para mostrarlo a quien haga falta. <a href="#bitacora" style="color:#d4a017">Abrir →</a></p></div>
       </div>
       <div class="p-lbl">En camino — se activan en tu cuenta sin costo extra</div>
       <div class="p-grid">
         <div class="p-tool"><div class="t">🧾 Verificador de Liquidación</div><p>Le sacas una foto y te dice si hay recargos mal pagados o descuentos que no corresponden.</p></div>
         <div class="p-tool"><div class="t">🤖 Asistente Gremial IA</div><p>Consultas sobre tus leyes, dictámenes y procedimientos.</p></div>
-        <div class="p-tool"><div class="t">🔒 Bitácora Blindada</div><p>Registro personal de incidentes, inalterable y con export PDF.</p></div>
         <div class="p-tool"><div class="t">🎓 Mi Carrera</div><p>CV profesional en PDF y tu ruta de especializaciones.</p></div>
         <div class="p-tool"><div class="t">🔔 Alertas a tu medida</div><p>Hoy ya recibes avisos por comuna y especialidad; podrás sumar turno y renta mínima.</p></div>
       </div>
@@ -441,6 +442,11 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
   <!-- ALERTAS A TU MEDIDA (Control+ Premium, 04-09-2026) -->
   <section class="view" id="view-alertas">
     <div id="alertasContent"></div>
+  </section>
+
+  <!-- BITÁCORA BLINDADA (Control+ Premium, 04-09-2026) -->
+  <section class="view" id="view-bitacora">
+    <div id="bitacoraContent"></div>
   </section>
 
   <!-- SUELDO / CALCULADORA (G3) -->
@@ -507,7 +513,6 @@ body.extras-listas .premium,body.extras-listas .eco{display:block}
     <div class="mp-grid">
       <div class="mp-t">🤖 Asistente Gremial IA</div>
             <div class="mp-t">📁 Carpeta documental</div>
-      <div class="mp-t alt">🔒 Bitácora blindada</div>
       <div class="mp-t">🎓 Mi Carrera</div>
     </div>
     <div class="mp-gratis">
@@ -769,8 +774,8 @@ function cycCerrarSesion(silencioso){
 }
 
 /* ---------- Navegación por hash ---------- */
-var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','admin'];
-var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas'];
+var VISTAS=['ofertas','guia','sueldo','perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora','admin'];
+var VISTAS_CUENTA=['perfil','carpeta','mis-eventos','mis-postulaciones','incidente','turnos','alertas','bitacora'];
 function toggleMenuCuenta(e){
   // OJO: sin preventDefault — el clic en "Mi Perfil"/etc burbujea desde el <a> hijo
   // hasta este div padre, y preventDefault() aqui cancelaba tambien la navegacion
@@ -831,6 +836,7 @@ function renderView(){
   else if(v==='incidente') renderIncidente();
   else if(v==='turnos') renderTurnos();
   else if(v==='alertas') renderAlertas();
+  else if(v==='bitacora') renderBitacora();
   else if(v==='admin') renderAdmin();
   window.scrollTo(0,0);
 }
@@ -2574,7 +2580,8 @@ function incGenerar(){
     '<button class="oro" onclick="incCopiar()">Copiar</button>'+
     (navigator.share?'<button onclick="incCompartir()">Compartir</button>':'')+
     '<button onclick="incImprimir()">Imprimir / guardar PDF</button>'+
-    '<button onclick="incGuardar()">Guardar en este teléfono</button></div>'+
+    '<button onclick="incGuardar()">Guardar en este teléfono</button>'+
+    '<button class="oro" onclick="incABitacora()">Sellar en mi Bitácora blindada</button></div>'+
     '<div id="incActaMsg" class="p-msg"></div>';
   window.__incActa=acta;
   cycTelemetria('guardias','incidente_acta',true,INC_TIPO_ACTUAL);
@@ -2595,6 +2602,16 @@ function incGuardar(){
     localStorage.setItem('cplus_actas',JSON.stringify(lista.slice(0,20)));
     incMsg('Guardada en este teléfono (menú «Después del incidente» → Mis actas). Cuando la Bitácora blindada esté lista, tus actas pasan ahí con sello de fecha.',true);
   }catch(e){ incMsg('No se pudo guardar en este teléfono.',false); }
+}
+async function incABitacora(){
+  var t=incTipo(INC_TIPO_ACTUAL), lugar=(document.getElementById('incL')||{}).value||'';
+  incMsg('Sellando en el servidor…',true);
+  try{
+    var res=await fetch(API_URL+'/guardias/bitacora',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({tipo:'incidente',lugar:lugar,texto:window.__incActa})});
+    var d=await res.json();
+    if(res.ok){ incMsg('Sellada en tu Bitácora blindada el '+fechaCorta(d.ts)+' (sello '+String(d.hash).slice(0,12)+'…). Ya no se puede editar ni borrar.',true); cycTelemetria('guardias','bitacora_desde_acta',true); }
+    else incMsg(d.error||'No se pudo sellar.',false);
+  }catch(e){ incMsg('Error de conexión.',false); }
 }
 function incActasGuardadas(){
   var lista=[]; try{ lista=JSON.parse(localStorage.getItem('cplus_actas')||'[]'); }catch(e){}
@@ -2806,6 +2823,66 @@ async function alCrear(){
 async function alBorrar(id){
   try{ await fetch(API_URL+'/guardias/aviso-oferta/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+CYC_TOKEN}}); }catch(e){}
   alCargar();
+}
+
+/* ---------- Bitácora blindada (Control+ Premium, 04-09-2026) ----------
+   Solo se agrega: la fecha y hora las pone el servidor y cada entrada lleva un sello
+   encadenado con la anterior. No hay botón de editar ni de borrar, a propósito. */
+var BI_TIPOS={incidente:'Incidente',novedad:'Novedad del turno',entrega_turno:'Entrega / recepción de turno',instruccion:'Instrucción recibida',denuncia:'Denuncia o reclamo presentado',otro:'Otro'};
+var BI_DATOS=null;
+async function renderBitacora(){
+  var el=document.getElementById('bitacoraContent');
+  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🔒 Bitácora blindada <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+    '<div class="auth-sub" style="margin-bottom:0">Tu registro personal de lo que pasa en tus turnos: novedades, instrucciones que te dieron, entregas de turno, incidentes. <b>Blindada</b> porque la fecha y hora las pone nuestro servidor, cada entrada queda con un sello que depende de la anterior, y nada se puede editar ni borrar. Si mañana te acusan de algo, tienes tu versión escrita el mismo día.</div></div>';
+  if(!CYC_TOKEN || !CYC_CM){
+    var cta;
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.500</button><div class="p-nota">Incluye esta herramienta y las demás de Premium. 30 días por cada pago, sin cobro automático.</div>'; }
+    el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Cada entrada queda así: <span style="color:#999">«04-09-2026 21:52 · Novedad del turno · Acceso norte · Cámara 4 sin imagen desde las 21:30, avisé a central 21:35.» sello 7f3a9c…</span></div><div style="margin-top:14px">'+cta+'</div></div>';
+    return;
+  }
+  el.innerHTML=cab+'<div class="card inc-acta"><div class="auth-title" style="font-size:.9rem">Nueva entrada</div>'+
+    '<label for="biT">Tipo</label><select id="biT" style="width:100%;background:#111;border:1px solid #333;border-radius:8px;color:#fff;padding:10px;font-size:.85rem;margin-bottom:8px;font-family:inherit">'+Object.keys(BI_TIPOS).map(function(k){return '<option value="'+k+'">'+BI_TIPOS[k]+'</option>';}).join('')+'</select>'+
+    '<label for="biL">Lugar (recinto, puesto)</label><input id="biL" type="text" placeholder="Ej: Bodega 3, acceso norte">'+
+    '<label for="biX">Qué pasó (con horas, sin adjetivos)</label><textarea id="biX" placeholder="21:30 cámara 4 sin imagen. 21:35 avisé a central (Rodrigo). 21:50 llegó técnico."></textarea>'+
+    '<div class="inc-btns"><button class="oro" onclick="biCrear()">Sellar entrada</button></div><div id="biMsg" class="p-msg"></div>'+
+    '<div class="p-nota">Al sellar, la entrada queda con la hora del servidor y no se puede corregir. Si te equivocaste, agrega otra entrada aclarándolo.</div></div>'+
+    '<div id="biLista"><div class="spinner">Cargando tu bitácora…</div></div>';
+  biCargar();
+}
+async function biCargar(){
+  var box=document.getElementById('biLista'); if(!box) return;
+  try{
+    var res=await fetch(API_URL+'/guardias/bitacora',{headers:{'Authorization':'Bearer '+CYC_TOKEN}});
+    var d=await res.json(); BI_DATOS=d;
+    if(!res.ok){ box.innerHTML='<div class="empty">'+esc(d.error||'No se pudo cargar.')+'</div>'; return; }
+    if(!d.entradas.length){ box.innerHTML='<div class="card"><div class="auth-title" style="font-size:.9rem">Mi bitácora</div><div class="empty">Todavía no tienes entradas. La primera queda sellada arriba.</div></div>'; return; }
+    box.innerHTML='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px"><div class="auth-title" style="font-size:.9rem;margin:0">Mi bitácora ('+d.total+')</div>'+
+      '<span style="font-size:.74rem;font-weight:700;color:'+(d.integra?'#7dc800':'#e74c3c')+'">'+(d.integra?'✓ Cadena íntegra: ninguna entrada fue alterada':'⚠ Cadena rota en la entrada #'+d.rota+': avísanos')+'</span></div>'+
+      '<div class="inc-btns" style="margin-bottom:10px"><button onclick="biImprimir()">Imprimir / guardar PDF</button></div>'+
+      d.entradas.map(function(e){ return '<div class="post-card"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.74rem;color:#999"><span><b style="color:#f0e8d0">'+fechaHora(e.ts)+'</b> · '+esc(BI_TIPOS[e.tipo]||e.tipo)+(e.lugar?' · '+esc(e.lugar):'')+'</span><span title="'+esc(e.hash)+'">sello '+esc(String(e.hash).slice(0,10))+'…</span></div><div style="font-size:.84rem;color:#ddd;margin-top:6px;white-space:pre-wrap">'+esc(e.texto)+'</div></div>'; }).join('')+
+      '<div class="p-nota">Fechas y horas en hora de Chile, puestas por el servidor al sellar.</div></div>';
+  }catch(e){ box.innerHTML='<div class="empty">No se pudo cargar tu bitácora. Intenta de nuevo.</div>'; }
+}
+function fechaHora(ts){ try{ return fechaUTC(ts).toLocaleString('es-CL',{dateStyle:'medium',timeStyle:'short',timeZone:'America/Santiago'}); }catch(e){ return ts; } }
+async function biCrear(){
+  var m=document.getElementById('biMsg'), texto=(document.getElementById('biX').value||'').trim();
+  if(texto.length<3){ m.className='p-msg err'; m.textContent='Escribe qué pasó.'; return; }
+  m.className='p-msg'; m.textContent='Sellando en el servidor…';
+  try{
+    var res=await fetch(API_URL+'/guardias/bitacora',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify({tipo:document.getElementById('biT').value,lugar:document.getElementById('biL').value,texto:texto})});
+    var d=await res.json();
+    if(res.ok){ m.className='p-msg ok'; m.textContent='Sellada: '+fechaHora(d.ts)+' · sello '+String(d.hash).slice(0,12)+'…'; document.getElementById('biX').value=''; document.getElementById('biL').value=''; cycTelemetria('guardias','bitacora_entrada',true,document.getElementById('biT').value); biCargar(); }
+    else { m.className='p-msg err'; m.textContent=d.error||'No se pudo sellar.'; }
+  }catch(e){ m.className='p-msg err'; m.textContent='Error de conexión.'; }
+}
+function biImprimir(){
+  if(!BI_DATOS||!BI_DATOS.entradas) return;
+  var w=window.open('','_blank');
+  if(!w){ alert('El navegador bloqueó la ventana de impresión.'); return; }
+  var filas=BI_DATOS.entradas.slice().reverse().map(function(e){ return '<tr><td>'+esc(fechaHora(e.ts))+'</td><td>'+esc(BI_TIPOS[e.tipo]||e.tipo)+'</td><td>'+esc(e.lugar||'')+'</td><td style="white-space:pre-wrap">'+esc(e.texto)+'</td><td style="font-family:monospace;font-size:10px;word-break:break-all">'+esc(e.hash)+'</td></tr>'; }).join('');
+  w.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Bitácora blindada</title><style>body{font-family:Georgia,serif;margin:30px;color:#111}h1{font-size:18px;letter-spacing:.06em}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #999;padding:6px;vertical-align:top;text-align:left}th{background:#eee}p{font-size:12px;color:#444}</style></head><body><h1>CONTROL+ · BITÁCORA BLINDADA</h1><p>Guardia: '+esc(CYC_EMAIL||'')+' · '+BI_DATOS.total+' entradas · Integridad: '+(BI_DATOS.integra?'cadena íntegra':'CADENA ROTA')+' · Impresa el '+new Date().toLocaleString('es-CL')+'</p><p>Cada entrada fue sellada con la fecha y hora del servidor de Control y Confianza y un código SHA-256 que incluye el sello de la entrada anterior. Cualquier modificación posterior rompe la cadena. Registro personal del guardia; no constituye declaración jurada.</p><table><tr><th>Fecha y hora</th><th>Tipo</th><th>Lugar</th><th>Registro</th><th>Sello</th></tr>'+filas+'</table><script>window.onload=function(){window.print();}<\/script></body></html>');
+  w.document.close();
 }
 
 /* ---------- Control+ Premium: compra real (04-09-2026) ----------
