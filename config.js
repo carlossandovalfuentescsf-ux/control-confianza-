@@ -3,7 +3,7 @@ var CYC_CONFIG = {
   whatsapp: '56984600273',
   precioPersonal: '4.990',
   precioEmpresa: '49.990',
-  precioControlMas: '2.500',   // Control+ Premium, por 30 días, renovación manual
+  precioControlMas: '2.890',   // Control+ Premium, por 30 días ($2.500 + IVA), renovación manual
   // Canal condominios (APP-4, brief §5.ter 28-07-2026) — setup one-time "desde" + continuidad mensual, netos de IVA
   precioCondominioSetup: '249.990',
   precioCondominioMensual: '14.990',
