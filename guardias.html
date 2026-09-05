@@ -211,6 +211,7 @@ details.gficha .gcuerpo li{margin-bottom:4px}
 .inc-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .inc-btns button{background:#2a2a2a;color:#f0e8d0;border:none;border-radius:8px;padding:10px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
 .inc-btns button.oro{background:#d4a017;color:#111}
+.inc-volver{display:inline-block;font-size:.8rem;color:#d4a017;text-decoration:none;font-weight:700;margin:2px 0 10px;padding:6px 0}
 .inc-lock{background:#161616;border:1px solid rgba(212,160,23,.4);border-radius:14px;padding:16px;margin-top:12px}
 /* Turnos + familia (Premium, 04-09-2026) */
 .tu-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -2579,12 +2580,12 @@ var INC_TIPO_ACTUAL=null;
 function incTipo(id){ return INC_TIPOS.filter(function(x){return x.id===id;})[0]; }
 function renderIncidente(){
   var el=document.getElementById('incidenteContent');
-  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">⚖️ Después del incidente <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+  var cab='<a href="#perfil" class="inc-volver">← Volver a Mi cuenta</a><div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">⚖️ Después del incidente <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
     '<div class="auth-sub" style="margin-bottom:0">Pasó algo en tu turno. Aquí tienes, para cada situación, qué hacer ahora, qué registrar, a quién avisar y en qué plazo, tus derechos y los errores que cuestan caro. Al final generas tu <b>acta personal</b> del incidente para guardarla, copiarla o imprimirla. Orientación de referencia con la ley vigente en la mano; no reemplaza a un abogado.</div></div>';
   if(!CYC_TOKEN || !CYC_CM){
     var lista='<div class="inc-tipos">'+INC_TIPOS.map(function(t){return '<div class="inc-tipo" style="cursor:default;opacity:.75"><div class="it">'+t.t+'</div><div class="id">'+t.d+'</div></div>';}).join('')+'</div>';
     var cta;
-    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app): en la portada, botón «Ver Control+ Premium». Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
     else if(!CYC_TOKEN){ cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.890</button><div class="p-nota">Incluye esta herramienta y el perfil destacado. Primero creas tu cuenta gratis o inicias sesión.</div>'; }
     else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.890</button><div class="p-nota">Incluye esta herramienta y el perfil destacado. 30 días por cada pago, sin cobro automático.</div>'; }
     el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;margin-bottom:6px">Las 7 situaciones que cubre:</div>'+lista+'<div style="margin-top:14px">'+cta+'</div></div>';
@@ -2715,7 +2716,7 @@ function renderTurnos(){
   var h=(location.hash||'').replace('#','');
   var codigo=h.indexOf('turnos-')===0?h.slice(7):'';
   var compartido=codigo?tuDeCodigo(codigo):null;
-  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">📅 Turnos + familia <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+  var cab='<a href="#perfil" class="inc-volver">← Volver a Mi cuenta</a><div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">📅 Turnos + familia <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
     '<div class="auth-sub" style="margin-bottom:0">Tu pauta de turnos proyectada en un calendario, para que tú y tu familia sepan qué días trabajas y cuáles estás en casa. Compártelo con un enlace o cárgalo en el calendario del teléfono.</div></div>';
   if(compartido){
     if(!TU_MES){ var hoy=new Date(); TU_MES={y:hoy.getFullYear(),m:hoy.getMonth()}; }
@@ -2728,7 +2729,7 @@ function renderTurnos(){
   }
   if(!CYC_TOKEN || !CYC_CM){
     var cta;
-    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app): en la portada, botón «Ver Control+ Premium». Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
     else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.890</button><div class="p-nota">Incluye esta herramienta, el perfil destacado y «Después del incidente». 30 días por cada pago, sin cobro automático.</div>'; }
     var demo={p:'4x4',w:4,r:4,i:tuISO(new Date()),t:'dn',h:'08:00-20:00',n:''}; if(!TU_MES){ var hy=new Date(); TU_MES={y:hy.getFullYear(),m:hy.getMonth()}; }
     el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;margin-bottom:6px">Así se ve (ejemplo con pauta 4x4 día y noche):</div>'+tuCalendarioHTML(demo,true)+'<div style="margin-top:14px">'+cta+'</div></div>';
@@ -2833,11 +2834,11 @@ function tuICS(){
 var AL_PAUTAS=['4x4','5x2','6x1','2x2','3x3','7x7','6x2'];
 async function renderAlertas(){
   var el=document.getElementById('alertasContent');
-  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🔔 Alertas a tu medida <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+  var cab='<a href="#perfil" class="inc-volver">← Volver a Mi cuenta</a><div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🔔 Alertas a tu medida <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
     '<div class="auth-sub" style="margin-bottom:0">Dime qué trabajo buscas y te aviso por correo cada vez que aparezca una oferta que calce: tu comuna, tu especialidad, día o noche, tu pauta y el mínimo que aceptas. Hasta 5 alertas activas; las borras cuando quieras.</div></div>';
   if(!CYC_TOKEN || !CYC_CM){
     var cta;
-    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app): en la portada, botón «Ver Control+ Premium». Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
     else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.890</button><div class="p-nota">Incluye esta herramienta, el perfil destacado, «Después del incidente» y «Turnos + familia». 30 días por cada pago, sin cobro automático.</div>'; }
     el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Sin Premium puedes pedir un aviso gratis desde la pestaña Ofertas cuando tu búsqueda no tiene resultados: llega una vez, por comuna y especialidad. Premium agrega <b>día o noche, pauta, renta o pago mínimo</b> y que la alerta <b>siga activa</b> hasta que la borres.</div><div style="margin-top:14px">'+cta+'</div></div>';
     return;
@@ -2892,11 +2893,11 @@ var BI_TIPOS={incidente:'Incidente',novedad:'Novedad del turno',entrega_turno:'E
 var BI_DATOS=null;
 async function renderBitacora(){
   var el=document.getElementById('bitacoraContent');
-  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🔒 Bitácora blindada <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+  var cab='<a href="#perfil" class="inc-volver">← Volver a Mi cuenta</a><div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🔒 Bitácora blindada <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
     '<div class="auth-sub" style="margin-bottom:0">Tu registro personal de lo que pasa en tus turnos: novedades, instrucciones que te dieron, entregas de turno, incidentes. <b>Blindada</b> porque la fecha y hora las pone nuestro servidor, cada entrada queda con un sello que depende de la anterior, y nada se puede editar ni borrar. Si mañana te acusan de algo, tienes tu versión escrita el mismo día.</div></div>';
   if(!CYC_TOKEN || !CYC_CM){
     var cta;
-    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app): en la portada, botón «Ver Control+ Premium». Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
     else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.890</button><div class="p-nota">Incluye esta herramienta y las demás de Premium. 30 días por cada pago, sin cobro automático.</div>'; }
     el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Cada entrada queda así: <span style="color:#999">«04-09-2026 21:52 · Novedad del turno · Acceso norte · Cámara 4 sin imagen desde las 21:30, avisé a central 21:35.» sello 7f3a9c…</span></div><div style="margin-top:14px">'+cta+'</div></div>';
     return;
@@ -2968,11 +2969,11 @@ function cvCargar(){ try{ var c=JSON.parse(localStorage.getItem('cplus_cv')||'nu
 function cvGuardarLocal(c){ try{ localStorage.setItem('cplus_cv',JSON.stringify(c)); }catch(e){} }
 async function renderCarrera(){
   var el=document.getElementById('carreraContent');
-  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🎓 Mi Carrera <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+  var cab='<a href="#perfil" class="inc-volver">← Volver a Mi cuenta</a><div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🎓 Mi Carrera <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
     '<div class="auth-sub" style="margin-bottom:0">Tu CV profesional de guardia, armado con tu perfil, tu carpeta y lo que agregues aquí: listo para imprimir, guardar como PDF o mandar por WhatsApp a quien contrata. Y tu ruta: qué te falta para estar al día y para especializarte.</div></div>';
   if(!CYC_TOKEN || !CYC_CM){
     var cta;
-    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app): en la portada, botón «Ver Control+ Premium». Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
     else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.890</button><div class="p-nota">Incluye esta herramienta y las demás de Premium. 30 días por cada pago, sin cobro automático.</div>'; }
     el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Incluye: CV con tus datos, experiencia, cursos, especialidades y habilidades · aviso cuando tu OS-10 esté por vencer · ruta de especialización según el rubro que elijas.</div><div style="margin-top:14px">'+cta+'</div></div>';
     return;
@@ -3069,11 +3070,11 @@ function asGuardarHist(){ try{ sessionStorage.setItem('cplus_asistente',JSON.str
 function asMd(t){ return esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^- /gm,'• '); }
 function renderAsistente(){
   var el=document.getElementById('asistenteContent');
-  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🤖 Asistente gremial <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+  var cab='<a href="#perfil" class="inc-volver">← Volver a Mi cuenta</a><div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🤖 Asistente gremial <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
     '<div class="auth-sub" style="margin-bottom:0">Pregúntale lo que le preguntarías a un compañero que se sabe la ley: sueldo, horas extra, curso OS-10, despidos, accidentes, qué hacer ante un incidente. Responde con la norma vigente y te dice cuándo tienes que ir a la Dirección del Trabajo, a la mutual o a un abogado. Es orientación, no reemplaza a un abogado.</div></div>';
   if(!CYC_TOKEN || !CYC_CM){
     var cta;
-    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app): en la portada, botón «Ver Control+ Premium». Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
     else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.890</button><div class="p-nota">Incluye el asistente (20 preguntas al mes) y las demás herramientas Premium. 30 días por cada pago, sin cobro automático.</div>'; }
     el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Ejemplos de lo que le puedes preguntar:</div><div class="as-sug">'+AS_SUGERENCIAS.map(function(q){return '<button disabled style="opacity:.7">'+esc(q)+'</button>';}).join('')+'</div><div style="margin-top:14px">'+cta+'</div></div>';
     return;
@@ -3112,11 +3113,11 @@ var LIQ_DATOS=null;
 function liqClp(n){ return '$'+Math.round(Number(n)||0).toLocaleString('es-CL'); }
 function renderLiquidacion(){
   var el=document.getElementById('liquidacionContent');
-  var cab='<div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🧾 Verificador de liquidación <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
+  var cab='<a href="#perfil" class="inc-volver">← Volver a Mi cuenta</a><div class="card" style="border-color:rgba(212,160,23,.45)"><div class="auth-title">🧾 Verificador de liquidación <span style="color:#d4a017;font-size:.7em">PREMIUM</span></div>'+
     '<div class="auth-sub" style="margin-bottom:0">Le sacas una foto a tu liquidación, confirmas los números y la app revisa lo que más falla en el rubro: horas extra bajo el 50 %, gratificación mal calculada, sueldo bajo el mínimo, descuentos que no corresponden (uniforme, curso) y que la suma cuadre. <b>Es referencial</b>: tu liquidación y tu contrato mandan, y ante una diferencia el paso es preguntar a tu empleador y, si no hay respuesta, reclamar en la Dirección del Trabajo.</div></div>';
   if(!CYC_TOKEN || !CYC_CM){
     var cta;
-    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app). Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
+    if(window.CYC_MODO_TIENDA){ cta='<div class="p-nota">Esta herramienta es parte de Control+ Premium, que se activa en nuestra web, controlyconfianza.cl (no desde esta app): en la portada, botón «Ver Control+ Premium». Si ya lo tienes, inicia sesión con tu cuenta.</div>'; }
     else { cta='<button class="p-btn" onclick="cycActivarPremium()">Activar Control+ Premium — $2.890</button><div class="p-nota">Incluye el verificador (3 lecturas al mes) y las otras 7 herramientas Premium. 30 días por cada pago, sin cobro automático.</div>'; }
     el.innerHTML=cab+'<div class="inc-lock"><div style="font-size:.78rem;color:#ccc;line-height:1.5">Revisa: valor hora y horas extra (+50 %) · gratificación art. 50 (25 % con tope de 4,75 IMM al año) · sueldo base vs. mínimo legal ($'+CALC_IMM.toLocaleString('es-CL')+') · descuentos legales (AFP, salud, cesantía) y descuentos que no corresponden · que haberes − descuentos = líquido.</div><div style="margin-top:14px">'+cta+'</div></div>';
     return;
@@ -3245,12 +3246,12 @@ function renderPremiumEstado(){
   if(window.CYC_MODO_TIENDA){
     el.innerHTML = CYC_CM
       ? '<div class="p-activo">✅ Control+ Premium activo'+(CYC_CM.vence?' hasta el '+fechaCorta(CYC_CM.vence):'')+'.</div>'
-      : '<div class="p-nota">Control+ Premium se activa en nuestra web, controlyconfianza.cl — no desde esta app. Si ya lo tienes, inicia sesión con tu cuenta y tu insignia se activa sola.</div>';
+      : '<div class="p-nota">Control+ Premium se activa en nuestra web, controlyconfianza.cl — no desde esta app. En la portada, botón «Ver Control+ Premium». Si ya lo tienes, inicia sesión con tu cuenta y tu insignia se activa sola.</div>';
     return;
   }
   if(CYC_CM){
     var dias=CYC_CM.vence?Math.round((fechaUTC(CYC_CM.vence)-Date.now())/864e5):null;
-    el.innerHTML='<div class="p-activo">✅ Control+ Premium activo'+(CYC_CM.vence?' hasta el '+fechaCorta(CYC_CM.vence)+' ('+dias+(dias===1?' día':' días')+')':' — incluido en tu Plan Empresa')+'.</div>'+
+    el.innerHTML='<div class="p-activo">✅ Control+ Premium activo'+(CYC_CM.vence?' hasta el '+fechaCorta(CYC_CM.vence)+' ('+dias+(dias===1?' día':' días')+')':' — incluido con tu Plan Empresa de la App Control y Confianza')+'.</div>'+
       ((dias!==null&&dias<=5&&CYC_CM.plan==='controlmas')?'<button class="p-btn" style="margin-top:10px" onclick="cycActivarPremium()">Renovar 30 días más — $2.890</button>':'');
     return;
   }
@@ -3268,7 +3269,7 @@ function renderPremiumEstado(){
     '<div class="p-nota">Pagas con Flow (tarjeta, débito o transferencia) y vuelves a la app con tu Premium activo.</div>';
 }
 function premiumChip(){
-  if(CYC_CM) return '<div class="card" style="border-color:#4a8a4a;background:#0f1a0f"><div style="font-size:.8rem;color:#a5e0a5;font-weight:800">⭐ Control+ Premium activo'+(CYC_CM.vence?' · hasta el '+fechaCorta(CYC_CM.vence):' · incluido en tu Plan Empresa')+'</div><div style="font-size:.7rem;color:#9bb;margin-top:3px">Tus postulaciones aparecen primero y con insignia ante quien contrata.</div></div>';
+  if(CYC_CM) return '<div class="card" style="border-color:#4a8a4a;background:#0f1a0f"><div style="font-size:.8rem;color:#a5e0a5;font-weight:800">⭐ Control+ Premium activo'+(CYC_CM.vence?' · hasta el '+fechaCorta(CYC_CM.vence):' · incluido con tu Plan Empresa de la App Control y Confianza')+'</div><div style="font-size:.7rem;color:#9bb;margin-top:3px">Tus postulaciones aparecen primero y con insignia ante quien contrata.</div></div>';
   if(window.CYC_MODO_TIENDA) return '';
   return '<div class="card" style="border-color:rgba(212,160,23,.4)"><div style="font-size:.78rem;color:#e8dfc8;line-height:1.5"><b style="color:#d4a017">Control+ Premium</b> — perfil destacado por $2.890 cada 30 días ($2.500 + IVA), sin cobro automático. <a href="#ofertas" onclick="setTimeout(function(){var t=document.getElementById(\'premium\');if(t)t.scrollIntoView({behavior:\'smooth\'})},300)" style="color:#d4a017">Ver qué incluye →</a></div></div>';
 }
