@@ -678,7 +678,10 @@ var CYC_OFERTAS=[];
 var CYC_IS_ADMIN=false;
 var CYC_FILTRO_COMUNA=localStorage.getItem('cyc_filtro_comuna')||'';
 var CYC_FILTRO_ESP=localStorage.getItem('cyc_filtro_especialidad')||'';
-var CYC_OFERTAS_VISIBLES=parseInt(localStorage.getItem('cyc_ofertas_visibles'),10)||8;
+// Cuántas ofertas se ven antes de «Ver más». Se recuerda SOLO mientras la app está abierta
+// (sessionStorage): antes quedaba grabado en el teléfono y, tras dos «Ver más», la app abría
+// siempre con 24 de una vez (lo notó Carlos 04-09). Al reabrir, vuelve a 8.
+var CYC_OFERTAS_VISIBLES=parseInt(sessionStorage.getItem('cyc_ofertas_visibles'),10)||8;
 
 function fmtCLP(n){ if(n==null) return 'A convenir'; return '$'+Number(n).toLocaleString('es-CL'); }
 function fmtFecha(f){
@@ -766,7 +769,7 @@ function cambiarFiltroEsp(v){
   CYC_FILTRO_ESP=v;
   CYC_OFERTAS_VISIBLES=8;
   localStorage.setItem('cyc_filtro_especialidad',v);
-  localStorage.setItem('cyc_ofertas_visibles','8');
+  sessionStorage.setItem('cyc_ofertas_visibles','8');
   pintarOfertas();
 }
 function filtrarPorEspecialidad(lista){
@@ -777,7 +780,7 @@ function cambiarFiltroComuna(v){
   CYC_FILTRO_COMUNA=v;
   CYC_OFERTAS_VISIBLES=8;
   localStorage.setItem('cyc_filtro_comuna',v);
-  localStorage.setItem('cyc_ofertas_visibles','8');
+  sessionStorage.setItem('cyc_ofertas_visibles','8');
   pintarOfertas();
 }
 
@@ -971,7 +974,7 @@ function pintarOfertas(){
 }
 function verMasOfertas(){
   CYC_OFERTAS_VISIBLES+=8;
-  localStorage.setItem('cyc_ofertas_visibles', String(CYC_OFERTAS_VISIBLES));
+  sessionStorage.setItem('cyc_ofertas_visibles', String(CYC_OFERTAS_VISIBLES));
   pintarOfertas();
 }
 // La comuna ORDENA, no descarta (bug real 25-07-2026: Carlos veia 15 de 78 ofertas y
