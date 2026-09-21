@@ -1848,6 +1848,9 @@ function vistaPegar(){
       '<span id="pegarImagenNombre" style="font-size:.75rem;color:#999"></span>'+
     '</div>'+
     '<div id="pegarImagenPreview"></div>'+
+    '<label style="margin-top:10px">WhatsApp del remitente (opcional)</label>'+
+    '<input type="text" id="pegarRemitente" placeholder="56912345678">'+
+    '<div style="font-size:.72rem;color:#999;margin-top:4px">Solo si copiaste el mensaje suelto y no viene el número. Se usa nada más en las ofertas que no traigan uno propio.</div>'+
     '<button class="btn-guardar" id="btnExtraer" onclick="extraerOfertas()" style="margin-top:10px">🤖 Extraer ofertas</button>'+
     '<div class="form-msg" id="pegarMsg"></div>'+
     '</div>'+
@@ -1886,7 +1889,11 @@ async function extraerOfertas(){
     var res=await fetch(API_URL+'/guardias/admin/extraer',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
     var data=await res.json();
     if(!res.ok){ msg.textContent=data.error||'No se pudo extraer.'; msg.className='form-msg err'; return; }
-    ADMIN_EXTRAIDAS=(data.ofertas||[]).map(function(o){ o._publicada=false; return o; });
+    // El número del reclutador suele viajar en la cabecera del mensaje (copia con selección
+    // múltiple) y el Worker ya lo asigna. Este campo es el respaldo para el mensaje suelto.
+    var remEl=document.getElementById('pegarRemitente');
+    var rem=remEl?remEl.value.replace(/[^\d]/g,''):'';
+    ADMIN_EXTRAIDAS=(data.ofertas||[]).map(function(o){ o._publicada=false; if(!o.contacto_whatsapp && rem) o.contacto_whatsapp=rem; return o; });
     msg.textContent='Encontré '+ADMIN_EXTRAIDAS.length+' oferta'+(ADMIN_EXTRAIDAS.length==1?'':'s')+'. Revisa y publica:';
     msg.className='form-msg ok';
     pintarExtraidas();
