@@ -1899,13 +1899,41 @@ function campoPrev(i,campo,label,valor,placeholder){
     '<input type="text" id="ex_'+campo+'_'+i+'" value="'+esc(valor==null?'':String(valor))+'" placeholder="'+esc(placeholder||'')+'">';
 }
 
+/* Rubro y OS-10 en la previsualización (21-09-2026).
+   Hasta hoy este formulario no enviaba NI el rubro NI el OS-10 que la IA ya había
+   deducido: las 18 ofertas publicadas el 21-09 quedaron sin rubro, y una oferta sin
+   rubro es invisible para el guardia que filtra por el suyo (es la misma fuga del
+   30-08-2026, entrando por otra puerta). El valor de la IA viene preseleccionado; si
+   no lo trae, se sugiere leyendo el lugar con adivinarEspecialidad() — la misma regla
+   que usa el formulario a mano — y se avisa para que Carlos lo revise. */
+function selectEspecialidadPrev(i,o){
+  var val=o.especialidad||'';
+  var sug=val?'':(adivinarEspecialidad([o.titulo,o.lugar,o.empresa_nombre,o.descripcion,o.requisitos].join(' '))||'');
+  var elegido=val||sug;
+  var opciones='<option value="">— Sin rubro (no aparecerá en los filtros) —</option>'+
+    Object.keys(NOMBRE_ESPECIALIDAD).map(function(k){
+      return '<option value="'+k+'"'+(elegido===k?' selected':'')+'>'+esc(NOMBRE_ESPECIALIDAD[k])+'</option>';
+    }).join('');
+  return '<label style="margin-top:6px">Rubro (así la encuentra el guardia que filtra)</label>'+
+    '<select id="ex_especialidad_'+i+'">'+opciones+'</select>'+
+    (sug?'<div style="font-size:.72rem;color:#d4a017;margin-top:4px">Sugerido por el lugar — revísalo antes de publicar.</div>':'');
+}
+function selectOs10Prev(i,o){
+  var v=(o.requiere_os10===1||o.requiere_os10===true)?'1':((o.requiere_os10===0||o.requiere_os10===false)?'0':'');
+  return '<label style="margin-top:6px">¿Exige OS-10?</label>'+
+    '<select id="ex_os10_'+i+'">'+
+      '<option value=""'+(v===''?' selected':'')+'>No lo dice el aviso</option>'+
+      '<option value="1"'+(v==='1'?' selected':'')+'>Sí, lo exige</option>'+
+      '<option value="0"'+(v==='0'?' selected':'')+'>No lo exige</option>'+
+    '</select>';
+}
 function pintarExtraidas(){
   var el=document.getElementById('previewExtraidas');
   var html='';
   ADMIN_EXTRAIDAS.forEach(function(o,i){
     var esTurno=(o.tipo==='turno');
     html+='<div class="card" id="cardEx'+i+'" style="margin-top:12px'+(o._publicada?';opacity:.45':'')+'">'+
-      '<div class="oferta-top"><div class="oferta-titulo">Oferta '+(i+1)+(o._publicada?' — ✅ publicada':'')+'</div>'+
+      '<div class="oferta-top"><div class="oferta-titulo">Oferta '+(i+1)+(o._publicada?(o._nota?' — ↩︎ '+esc(o._nota):' — ✅ publicada'):'')+'</div>'+
       '<span class="chip">'+(esTurno?'Turno':'Empleo')+'</span></div>'+
       '<label style="margin-top:6px">Tipo</label>'+
       '<select id="ex_tipo_'+i+'" onchange="cambiarTipoExtraida('+i+')">'+
@@ -1923,6 +1951,8 @@ function pintarExtraidas(){
         '<input type="date" id="ex_fecha_inicio_'+i+'" value="'+esc(o.fecha_inicio||'')+'">'+
       '</div>'+
       campoPrev(i,'lugar','Lugar / dirección (opcional)',o.lugar)+
+      selectEspecialidadPrev(i,o)+
+      selectOs10Prev(i,o)+
       campoPrev(i,'cupos','Cupos',o.cupos||1)+
       campoPrev(i,'requisitos','Requisitos (opcional)',o.requisitos)+
       campoPrev(i,'contacto_whatsapp','WhatsApp del reclutador (obligatorio)',o.contacto_whatsapp,'56912345678')+
@@ -1947,6 +1977,8 @@ function leerExtraida(i){
   var tipoEl=document.getElementById('ex_tipo_'+i);
   var tipo=tipoEl?tipoEl.value:(ADMIN_EXTRAIDAS[i].tipo||'empleo');
   var fechaEl=document.getElementById('ex_fecha_inicio_'+i);
+  var espEl=document.getElementById('ex_especialidad_'+i);
+  var os10El=document.getElementById('ex_os10_'+i);
   return {
     tipo: tipo,
     origen: 'comunidad',
@@ -1963,7 +1995,9 @@ function leerExtraida(i){
     descripcion: v('descripcion')||null,
     fecha_inicio: (tipo==='turno'&&fechaEl) ? fechaEl.value.trim() : (ADMIN_EXTRAIDAS[i].fecha_inicio||null),
     fecha_fin: ADMIN_EXTRAIDAS[i].fecha_fin||null,
-    pago_turno: ADMIN_EXTRAIDAS[i].pago_turno||null
+    pago_turno: ADMIN_EXTRAIDAS[i].pago_turno||null,
+    especialidad: espEl ? (espEl.value||null) : (ADMIN_EXTRAIDAS[i].especialidad||null),
+    requiere_os10: os10El ? (os10El.value===''?null:parseInt(os10El.value,10)) : (ADMIN_EXTRAIDAS[i].requiere_os10==null?null:ADMIN_EXTRAIDAS[i].requiere_os10)
   };
 }
 
@@ -1975,12 +2009,35 @@ async function publicarExtraida(i){
   if(!body.comuna){ msg.textContent='Falta la comuna.'; msg.className='form-msg err'; return false; }
   if(!body.contacto_whatsapp){ msg.textContent='Falta el WhatsApp del reclutador (obligatorio en ofertas de la comunidad).'; msg.className='form-msg err'; return false; }
   if(body.tipo==='turno' && !/^\d{4}-\d{2}-\d{2}/.test(body.fecha_inicio||'')){ msg.textContent='Es un turno puntual: agrega la fecha, o cambia el "Tipo" a "Empleo permanente" si es una pauta recurrente sin día fijo.'; msg.className='form-msg err'; return false; }
+  // Rubro vacío: se avisa, no se bloquea (mismo criterio que el formulario a mano).
+  if(!body.especialidad){
+    var sugE=adivinarEspecialidad([body.titulo,body.lugar,body.empresa_nombre,body.descripcion,body.requisitos].join(' '));
+    var avisoE=sugE
+      ? 'Esta oferta va SIN rubro, así que no aparecerá cuando un guardia filtre por el suyo.\n\nPor el lugar, parece «'+NOMBRE_ESPECIALIDAD[sugE]+'».\n\nAceptar = publicar como '+NOMBRE_ESPECIALIDAD[sugE]+'\nCancelar = volver y elegirlo yo'
+      : 'Esta oferta va SIN rubro, así que no aparecerá cuando un guardia filtre por el suyo.\n\nNo pude deducirlo del texto.\n\nAceptar = publicar igual\nCancelar = volver y elegirlo yo';
+    if(confirm(avisoE)){ if(sugE) body.especialidad=sugE; }
+    else { msg.textContent='Elige el rubro y vuelve a publicar.'; msg.className='form-msg'; return false; }
+  }
   btn.disabled=true; btn.textContent='Publicando…';
   try{
     var res=await fetch(API_URL+'/guardias/ofertas',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
     var data=await res.json();
+    // Repetida: el servidor responde 409 {duplicado} SIN campo 'error', así que hasta el
+    // 21-09-2026 aquí se leía como «No se pudo publicar» — sin decir por qué y sin salida.
+    // Pegar dos veces el mismo grupo hacía fallar TODAS las ofertas a la vez.
+    if(res.status===409 && data.duplicado){
+      var ex=data.oferta_existente||{};
+      if(!confirm('Esta oferta YA está publicada: "'+ex.titulo+'" (id '+ex.id+', del '+String(ex.created_at||'').slice(0,10)+').\n\nAceptar = publicarla igual (quedan dos)\nCancelar = saltarla')){
+        ADMIN_EXTRAIDAS[i]._publicada=true; ADMIN_EXTRAIDAS[i]._nota='ya estaba publicada (id '+ex.id+'), se saltó';
+        pintarExtraidas();
+        return true;
+      }
+      body.forzar=true;
+      res=await fetch(API_URL+'/guardias/ofertas',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CYC_TOKEN},body:JSON.stringify(body)});
+      data=await res.json();
+    }
     if(!res.ok){ msg.textContent=data.error||'No se pudo publicar.'; msg.className='form-msg err'; btn.disabled=false; btn.textContent='Publicar esta oferta'; return false; }
-    ADMIN_EXTRAIDAS[i]._publicada=true;
+    ADMIN_EXTRAIDAS[i]._publicada=true; ADMIN_EXTRAIDAS[i]._nota=null;
     pintarExtraidas();
     return true;
   }catch(e){ msg.textContent='Error de conexión.'; msg.className='form-msg err'; btn.disabled=false; btn.textContent='Publicar esta oferta'; return false; }
